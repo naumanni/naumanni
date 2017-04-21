@@ -1,0 +1,76 @@
+env:
+  browser: true
+  commonjs: true
+  node: true
+  es6: true
+extends:
+  - eslint:recommended
+  - plugin:react/recommended
+  - google
+parser: babel-eslint
+parserOptions:
+  ecmaVersion: 8
+  ecmaFeatures:
+    experimentalObjectRestSpread: true
+    jsx: true
+  sourceType: module
+plugins:
+  - react
+  - import
+rules:
+  indent:
+    - error
+    - 2
+  linebreak-style: off
+  max-len:
+    - error
+    - code: 120
+      tabWidth: 2
+      ignoreUrls: true
+  quotes:
+    - error
+    - single
+  semi:
+    - error
+    - never
+  no-console: off
+  no-unused-vars:
+    - error
+    - args: none
+
+  react/sort-comp: warn
+  # react/sort-prop-types: warn
+  react/jsx-closing-bracket-location: warn
+  react/jsx-curly-spacing: warn
+  react/jsx-equals-spacing: warn
+  react/jsx-handler-names: warn
+  react/jsx-indent:
+    - warn
+    - 2
+  react/jsx-indent-props:
+    - warn
+    - 2
+  react/jsx-key: warn
+  # react/jsx-max-props-per-line:
+  #   - warn
+  #   - maximum: 3
+  # react/jsx-sort-props: warn
+  react/jsx-tag-spacing: warn
+  react/jsx-wrap-multilines: warn
+
+  import/no-unresolved: error
+  import/order:
+    - warn
+    - groups:
+      - builtin
+      - external
+      - internal
+      - parent
+      - sibling
+      - index
+  import/first: warn
+  import/no-duplicates: warn
+
+settings:
+  import/resolver:
+    babel-module: {}
