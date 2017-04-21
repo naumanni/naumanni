@@ -1,13 +1,12 @@
 env:
   browser: true
   commonjs: true
-  node: true
   es6: true
 extends:
   - eslint:recommended
-  - plugin:react/recommended
   - google
-parser: babel-eslint
+globals:
+  process: false
 parserOptions:
   ecmaVersion: 8
   ecmaFeatures:
@@ -21,56 +20,28 @@ rules:
   indent:
     - error
     - 2
-  linebreak-style: off
-  max-len:
-    - error
-    - code: 120
-      tabWidth: 2
-      ignoreUrls: true
+  linebreak-style:
+    - off
+  max-len: [2, {code: 120, tabWidth: 2, ignoreUrls: true}]
   quotes:
     - error
     - single
   semi:
     - error
     - never
-  no-console: off
+
+  no-console: 0
   no-unused-vars:
-    - error
-    - args: none
-
-  react/sort-comp: warn
-  # react/sort-prop-types: warn
-  react/jsx-closing-bracket-location: warn
-  react/jsx-curly-spacing: warn
-  react/jsx-equals-spacing: warn
-  react/jsx-handler-names: warn
-  react/jsx-indent:
-    - warn
     - 2
-  react/jsx-indent-props:
-    - warn
-    - 2
-  react/jsx-key: warn
-  # react/jsx-max-props-per-line:
-  #   - warn
-  #   - maximum: 3
-  # react/jsx-sort-props: warn
-  react/jsx-tag-spacing: warn
-  react/jsx-wrap-multilines: warn
+    - args: 'none'
+      varsIgnorePattern: "_|React"
 
-  import/no-unresolved: error
-  import/order:
-    - warn
-    - groups:
-      - builtin
-      - external
-      - internal
-      - parent
-      - sibling
-      - index
-  import/first: warn
-  import/no-duplicates: warn
+
+  import/no-unresolved: 2
+  import/named: 2
+  import/namespace: 2
+  import/default: 2
+  import/export: 2
 
 settings:
-  import/resolver:
-    babel-module: {}
+  import/parser: babel-eslint

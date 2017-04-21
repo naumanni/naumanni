@@ -6,8 +6,16 @@
   "author": "Shin ADACHI <shn@glucose.jp>",
   "license": "MIT",
   "scripts": {
+    "build": "run-s clean build:*",
+    "build:js": "webpack",
+    "build:css": "postcss src/css/main.css -d static",
     "clean": "rm static/*",
-    "build": "yarn run clean && webpack && postcss src/css/main.css -d static",
+    "lint": "eslint --config .eslintrc.yml --cache ./src/js/**/*.es6",
+    "lint:fix": "eslint --fix --ext=es6 --config .eslintrc.yml src/",
+    "test": "run-s build test:js",
+    "test:js": "mocha",
+    "test:browser": "zuul --local 7655 --ui mocha-bdd -- test/*-test.js",
+    "watch": "npm-run-all -p watch:*",
     "watch:js": "webpack --progress --colors --watch",
     "watch:css": "postcss src/css/main.css -d static -w"
   },
@@ -30,7 +38,9 @@
     "postcss-simple-vars": "^3.1.0",
     "raven-js": "^3.14.2",
     "react": "^15.5.4",
+    "react-dom": "^15.5.4",
     "react-intl": "^2.2.3",
+    "react-router": "^4.1.1",
     "superagent": "^3.5.2",
     "webpack": "^2.4.1"
   },
@@ -44,6 +54,9 @@
     "eslint-loader": "^1.7.1",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^6.10.3",
-    "postcss-cli": "^3.1.1"
+    "mocha": "^3.2.0",
+    "npm-run-all": "^4.0.2",
+    "postcss-cli": "^3.1.1",
+    "zuul": "^3.11.1"
   }
 }
