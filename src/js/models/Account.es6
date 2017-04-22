@@ -55,4 +55,10 @@ export default class Account extends AccountRecord {
   get address() {
     return `${this.id}@${this.host}`
   }
+
+  get account() {
+    if(this.acct.indexOf('@') >= 0)
+      return this.acct
+    return `${this.acct}@${this.host}`
+  }
 }

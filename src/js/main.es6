@@ -8,6 +8,8 @@ import Application from './Application'
 import AppStore from './store/AppStore'
 import initializeDatabase from './infra'
 
+import UpdateTokensUseCase from 'src/usecases/UpdateTokensUseCase'
+
 
 async function main() {
   const dispatcher = new Dispatcher()
@@ -25,6 +27,11 @@ async function main() {
 
   await initializeDatabase()
 
+  // init application
+  context.useCase(
+    new UpdateTokensUseCase()
+  ).execute()
+
   class RootElement extends React.Component {
     static get childContextTypes() {
       return {context: PropTypes.any}
@@ -39,7 +46,6 @@ async function main() {
     }
   }
 
-
   ReactDOM.render(
     <RootElement>
       <Router>
@@ -47,6 +53,9 @@ async function main() {
           <Switch>
             <Route exact path="/" component={require('./pages/AccountsPage.es6').default} />
             <Route exact path="/authorize" component={require('./pages/AuthorizePage.es6').default} />
+
+            <Route exact path="/compound/federation" component={require('./pages/TimelinePage.es6').default} />
+
           </Switch>
         </div>
       </Router>

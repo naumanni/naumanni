@@ -1,4 +1,4 @@
-import {Account} from 'src/models'
+import {Account, Status} from 'src/models'
 
 import APISpec from './APISpec'
 
@@ -14,5 +14,11 @@ export default APISpec.make({
     endpoint: '/accounts/verify_credentials',
     entity: Account,
     methods: 'raw',
+  },
+
+  publicTimeline: {
+    endpoint: '/timelines/public',
+    entity: Status,
+    methods: 'list',
   },
 })

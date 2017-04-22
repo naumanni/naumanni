@@ -2,6 +2,80 @@
 
 @import "_variables.css";
 
+
+@define-mixin clearfix {
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+
+
 body {
   background: $colorBackground;
+  font-size: 14px;
+}
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    padding: 16px;
+    border-bottom: 1px solid #aad8c9;
+  }
+
+}
+
+.status {
+  @mixin clearfix;
+
+  .status-avatar {
+    display: block;
+    float: left;
+    width: 64px;
+    height: 64px;
+    border-radius: 4px;
+  }
+
+  .status-info {
+    margin-left: 78px;
+    display: flex;
+
+    .status-createdAt {
+      flex-grow: 1;
+    }
+  }
+
+  .status-displayName {
+    font-weight: bold;
+    margin-right: 0.5em;
+    font-family: sans-serif;
+  }
+
+  .status-account {
+    font-family: sans-serif;
+    color: #666;
+  }
+
+  .status-createdAt {
+    text-align: right;
+    font-family: sans-serif;
+    color: #666;
+    text-decoration: none;
+  }
+
+  .status-content {
+    background: #eaefed;
+    border-radius: 6px;
+    margin: 4px 0 0 72px;
+    padding: 6px;
+
+    > p {
+      margin: 0;
+    }
+  }
 }

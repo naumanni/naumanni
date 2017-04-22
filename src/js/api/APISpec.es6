@@ -48,9 +48,19 @@ export default class APISpec {
       return null
     }
 
-    // single object
-    return entity.fromObject
-      ? entity.fromObject(responseBody)
-      : new entity(responseBody)  // eslint-disable-line new-cap
+    if(Array.isArray(responseBody)) {
+      return responseBody.map(
+        (obj) => {
+          return entity.fromObject
+            ? entity.fromObject(obj)
+            : new entity(obj)  // eslint-disable-line new-cap
+        }
+      )
+    } else {
+      // single object
+      return entity.fromObject
+        ? entity.fromObject(responseBody)
+        : new entity(responseBody)  // eslint-disable-line new-cap
+    }
   }
 }

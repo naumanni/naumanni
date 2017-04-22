@@ -309,7 +309,10 @@ class OAuthAPIRequester extends APIRequester {
       }
     }
 
-    return spec.normalize(method, response.body)
+    let responseBody = response.body
+    if(this.hooks.resonse)
+      responseBody = this.hooks.response(method, apiName, responseBody)
+    return spec.normalize(method, responseBody)
   }
 
   /**

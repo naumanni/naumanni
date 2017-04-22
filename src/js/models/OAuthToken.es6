@@ -1,10 +1,6 @@
 import moment from 'moment'
 import {Record} from 'immutable'
 
-import {makeOAuthAPIRequester} from 'src/api/APIRequester'
-import MastodonAPISpec from 'src/api/MastodonAPISpec'
-
-
 const OAuthTokenRecord = Record({  // eslint-disable-line new-cap
   host: '',
 
@@ -80,13 +76,22 @@ export default class OAuthToken extends OAuthTokenRecord {
    */
   get requester() {
     if(!this._requester) {
+      const {makeOAuthAPIRequester} = require('src/api/APIRequester')
+      const MastodonAPISpec = require('src/api/MastodonAPISpec').default
+
       this._requester = makeOAuthAPIRequester(
         MastodonAPISpec, {
           token: this,
           endpoint: `https://${this.host}/api/v1`,
           hooks: {
             response: (method, apiName, responseBody) => {
-              return {host: this.host, ...responseBody}
+              if(Array.isArray) {
+                return responseBody.map((obj) => {
+                  return {host: this.host, ...obj}
+                })
+              } else {
+                return {host: this.host, ...responseBody}
+              }
             },
           },
         })
