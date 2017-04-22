@@ -23,7 +23,7 @@ export default class AuthorizePage extends React.Component {
 
     authorize(host, code)
       .then((account) => {
-        this.history.push('/')
+        this.props.history.push('/')
       }, (error) => {
         this.setState({error: '' + error})
       })

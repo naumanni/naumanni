@@ -1,26 +1,111 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import {Link} from 'react-router-dom'
 
 import {makeAPIRequester} from 'src/api/APIRequester'
 import MastodonAPISpec from 'src/api/MastodonAPISpec'
 import OAuthApp from 'src/models/OAuthApp'
 import Database from 'src/infra/Database'
-
+import UpdateTokensUseCase from 'src/usecases/UpdateTokensUseCase'
 
 const ACCOUNT_REX = /^@([^@]+)@(.*)$/
 
 
 export default class AccountsPage extends React.Component {
+  static contextTypes = {
+    context: PropTypes.any,
+  }
+
+  constructor(...args) {
+    super(...args)
+
+    this.state = this.getStateFromContext()
+  }
+
+  /**
+   * @override
+   */
+  componentDidMount() {
+    // update accounts
+    const {context} = this.context
+
+    this.listenerRemovers = [
+      context.onChange(() => this.setState(this.getStateFromContext())),
+    ]
+
+    context.useCase(
+      new UpdateTokensUseCase()
+    ).execute()
+  }
+
+  /**
+   * @override
+   */
+  componentWillUnmount() {
+    for(const remover of this.listenerRemovers) {
+      remover()
+    }
+  }
+
+  /**
+   * @override
+   */
   render() {
+    const {accountsState} = this.state
+    const {tokensAndAccounts} = accountsState
+
     return (
       <div className="page page-accounts">
 
         <ul className="mastodonAccounts">
+          {tokensAndAccounts.map((ta) => this.renderTokenAndAccount(ta))}
           <li className="mastodonAccounts-addForm">
             <AddMastodonAccountWizard />
           </li>
         </ul>
 
+        <span style={{margin: '0 1em'}}>
+          <Link to="/compound/home">結合ホーム</Link>
+        </span>
+        <span style={{margin: '0 1em'}}>
+          <Link to="/compound/local">結合ローカル</Link>
+        </span>
+        <span style={{margin: '0 1em'}}>
+          <Link to="/compound/federation">結合連合</Link>
+        </span>
+
       </div>
+    )
+  }
+
+  getStateFromContext() {
+    const {accountsState} = this.context.context.getState()
+    return {
+      accountsState,
+    }
+  }
+
+  renderTokenAndAccount({token, account}) {
+    if(!account) {
+      return (
+        <li key={token.address}>
+          {token.address}
+        </li>
+      )
+    }
+    return (
+      <li key={token.address}>
+        {account.display_name} / {account.host}<br />
+        <span style={{margin: '0 1em'}}>
+          <Link to={`/account/@${account.acct}@${token.host}/home`}>ホーム</Link>
+        </span>
+        <span style={{margin: '0 1em'}}>
+          <Link to={`/account/@${account.acct}@${token.host}/local`}>ローカルタイムライン</Link>
+        </span>
+        <span style={{margin: '0 1em'}}>
+          <Link to={`/account/@${account.acct}@${token.host}/federation`}>連合タイムライン</Link>
+        </span>
+      </li>
     )
   }
 }
@@ -38,8 +123,7 @@ class AddMastodonAccountWizard extends React.Component {
   }
 
   async onClickSubmit() {
-    // const account = this.refs.account.value
-    const account = '@shn@oppai.tokyo'
+    const account = this.refs.account.value
     const match = account.match(ACCOUNT_REX)
 
     if(!match) {

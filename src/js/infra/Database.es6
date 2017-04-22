@@ -135,6 +135,33 @@ class DatabaseQuery {
       }
     })
   }
+
+  getAll(index, key) {
+    const storeName = this.modelClass.storeName
+    return new Promise((resolve, reject) => {
+      const transaction = this.database.db.transaction([storeName], 'readonly')
+
+      transaction.oncomplete = (e) => {
+        resolve(e)
+      }
+      transaction.onerror = (e) => {
+        reject(e)
+      }
+
+      const request = transaction.objectStore(storeName).getAll()
+
+      request.onsuccess = (e) => {
+        if(!e.target.result) {
+          reject(new Error('object not found'))
+        } else {
+          resolve(e.target.result.map((data) => new this.modelClass(data)))  // eslint-disable-line new-cap
+        }
+      }
+      request.onerror = (e) => {
+        reject(e)
+      }
+    })
+  }
 }
 
 

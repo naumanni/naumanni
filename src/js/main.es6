@@ -1,6 +1,7 @@
 import {Context, Dispatcher} from 'almin'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import PropTypes from 'prop-types'
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 
 import Application from './Application'
@@ -24,15 +25,32 @@ async function main() {
 
   await initializeDatabase()
 
+  class RootElement extends React.Component {
+    static get childContextTypes() {
+      return {context: PropTypes.any}
+    }
+
+    getChildContext() {
+      return {context}
+    }
+
+    render() {
+      return this.props.children
+    }
+  }
+
+
   ReactDOM.render(
-    <Router>
-      <div className="appContainer">
-        <Switch>
-          <Route exact path="/" component={require('./pages/AccountsPage.es6').default} />
-          <Route exact path="/authorize" component={require('./pages/AuthorizePage.es6').default} />
-        </Switch>
-      </div>
-    </Router>,
+    <RootElement>
+      <Router>
+        <div className="appContainer">
+          <Switch>
+            <Route exact path="/" component={require('./pages/AccountsPage.es6').default} />
+            <Route exact path="/authorize" component={require('./pages/AuthorizePage.es6').default} />
+          </Switch>
+        </div>
+      </Router>
+    </RootElement>,
     document.getElementById('appContainer')
   )
 }

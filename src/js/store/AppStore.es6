@@ -1,6 +1,5 @@
 import {StoreGroup} from 'almin'
 
-import Database from 'src/infra/Database'
 import AccountsStore from './AccountsStore'
 
 /**

@@ -1,6 +1,9 @@
 import moment from 'moment'
 import {Record} from 'immutable'
 
+import {makeOAuthAPIRequester} from 'src/api/APIRequester'
+import MastodonAPISpec from 'src/api/MastodonAPISpec'
+
 
 const OAuthTokenRecord = Record({  // eslint-disable-line new-cap
   host: '',
@@ -43,7 +46,7 @@ export default class OAuthToken extends OAuthTokenRecord {
   }
 
   get address() {
-    return `@${this.user}@${this.host}::${this.access_token}`
+    return `${this.host}::${this.access_token}`
   }
 
   get expiresAt() {
@@ -69,6 +72,26 @@ export default class OAuthToken extends OAuthTokenRecord {
     //   this.expires = expires
     // }
     throw new Error('not implemented')
+  }
+
+  /**
+   * APIRequesterを作る
+   * TODO: 場所を考える
+   */
+  get requester() {
+    if(!this._requester) {
+      this._requester = makeOAuthAPIRequester(
+        MastodonAPISpec, {
+          token: this,
+          endpoint: `https://${this.host}/api/v1`,
+          hooks: {
+            response: (method, apiName, responseBody) => {
+              return {host: this.host, ...responseBody}
+            },
+          },
+        })
+    }
+    return this._requester
   }
 
   /**
