@@ -3,26 +3,39 @@ import {Account, Status} from 'src/models'
 import APISpec from './APISpec'
 
 
+// TODO: normalizrを使う
+
 export default APISpec.make({
   postApp: {
     endpoint: '/apps',
-    methods: 'post',
+    method: 'post',
   },
 
   verifyCredentials: {
     endpoint: '/accounts/verify_credentials',
     entity: Account,
-    methods: 'get',
+    method: 'get',
   },
 
   updateCredentials: {
     endpoint: '/accounts/update_credentials',
-    methods: 'patch',
+    method: 'patch',
   },
 
   listPublicTimeline: {
     endpoint: '/timelines/public',
     entity: Status,
-    methods: 'get',
+    method: 'get',
+  },
+
+  searchAccount: {
+    endpoint: '/search',
+    method: 'get',
+  },
+
+  postStatus: {
+    endpoint: '/statuses',
+    entity: Status,
+    method: 'post',
   },
 })

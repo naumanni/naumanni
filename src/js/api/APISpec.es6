@@ -23,13 +23,7 @@ export default class APISpec {
       require('assert')(spec.endpoint, 'spec\'s endpoint is required')
     }
 
-    if(!spec.methods) {
-      spec.methods = 'get,post,put,patch,delete'
-    }
-    if(typeof spec.methods === 'string') {
-      spec.methods = spec.methods.toLowerCase().split(',')
-    }
-
+    spec.method = spec.method.toLowerCase()
     Object.assign(this, spec)
   }
 

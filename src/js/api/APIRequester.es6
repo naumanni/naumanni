@@ -65,12 +65,10 @@ class APIRequester {
     this.specs = specs
     this.hooks = hooks || {}
 
-    // bind api methods
+    // bind api method
     Object.keys(this.specs).forEach((apiName) => {
       const spec = this.specs[apiName]
-      spec.methods.forEach((method) => {
-        this[apiName] = this.call.bind(this, method, apiName)
-      })
+      this[apiName] = this.call.bind(this, spec.method, apiName)
     })
   }
 
@@ -104,10 +102,6 @@ class APIRequester {
 
     if(!spec) {
       throw new Error(`spec for api ${apiName} not found`)
-    }
-
-    if(spec.methods.indexOf(method) < 0) {
-      throw new Error(`unsupported method. ${method} is not supported api '${apiName}'`)
     }
 
     const queryFunc = (method === 'patch' || method === 'post' || method === 'put')

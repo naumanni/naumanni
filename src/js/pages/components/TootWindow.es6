@@ -1,6 +1,7 @@
 import React from 'react'
 import update from 'immutability-helper'
 import PropTypes from 'prop-types'
+import openpgp, {HKP, key as openpgpKey} from 'openpgp'
 
 
 import {Account} from 'src/models'
@@ -14,6 +15,11 @@ const VISIBLITY_PRIVATE = 'private'
 const VISIBLITY_UNLISTED = 'unlisted'
 const VISIBLITY_PUBLIC = 'public'
 
+const BLOCK_BEGIN_PGP_MESSAGE = '-----BEGIN PGP MESSAGE-----'
+const BLOCK_END_PGP_MESSAGE = '-----END PGP MESSAGE-----'
+
+
+// TODO: support reply
 
 /**
  * Status作成画面
@@ -30,16 +36,26 @@ export default class TootWindow extends React.Component {
       ...this.getStateFromContext(),
       statusContent: '',
       spoilerTextContent: '',
+      messageTo: '',
       sendFrom: [],
       mode: MODE_TOOT,
       showContentsWarning: true,
       visibility: VISIBLITY_PUBLIC,
+      isSending: false,
     }
     this.state.sendFrom.push(
       this.state.accountsState.tokensAndAccounts[0].account.address
     )
 
     require('assert')(this.state.accountsState.tokensAndAccounts.length > 0)
+
+    // debug
+    this.state = {
+      ...this.state,
+      mode: MODE_DIRECT,
+      statusContent: 'テストだぴょん',
+      messageTo: 'shn@oppai.tokyo',
+    }
   }
 
   /**
@@ -48,15 +64,19 @@ export default class TootWindow extends React.Component {
   render() {
     const {
       accountsState,
+      messageTo,
       showContentsWarning,
       statusContent,
       spoilerTextContent,
       mode,
       visibility,
+      isSending,
     } = this.state
     const {tokensAndAccounts} = accountsState
 
-    const canSend = this.state.sendFrom.length && statusContent.length
+    const canSend = !isSending && this.state.sendFrom.length && statusContent.length
+
+    // TODO: check valid messageTo
 
     return (
       <div className="tootWindow">
@@ -71,12 +91,14 @@ export default class TootWindow extends React.Component {
             <IconFont iconName="mail" /> DM</span>
         </div>
 
-        {mode === MODE_DIRECT && [
-          <h2>To</h2>,
-          <div className="toolWindow-messageTo">
-            <input type="text" />
-          </div>,
-        ]}
+        {mode === MODE_DIRECT && (
+          <div>
+            <h2>To</h2>,
+            <div className="toolWindow-messageTo">
+              <input type="text" value={messageTo} onChange={::this.onChangeMessageTo} />
+            </div>
+          </div>
+        )}
 
         <h2>From</h2>
         <ul className="tootWindow-sendFrom">
@@ -154,7 +176,9 @@ export default class TootWindow extends React.Component {
           </button>
 
           <div className="tootWindow-send">
-            <button disabled={!canSend} type="button">送信</button>
+            <span>{statusContent.length}</span>
+            <button disabled={!canSend} type="button"
+              onClick={::this.onClickSend}>送信</button>
           </div>
         </div>
       </div>
@@ -170,6 +194,10 @@ export default class TootWindow extends React.Component {
 
   onClickTab(mode) {
     this.setState({mode})
+  }
+
+  onChangeMessageTo(e) {
+    this.setState({messageTo: e.target.value})
   }
 
   onChangeSpoilerText(e) {
@@ -189,6 +217,7 @@ export default class TootWindow extends React.Component {
   }
 
   onToggleSendFrom(account) {
+    // TODO: DMのときはRadio、TootのときはMulti Post
     console.log('onToggleSendFrom', account)
     let {sendFrom} = this.state
     const idx = sendFrom.indexOf(account.address)
@@ -200,7 +229,129 @@ export default class TootWindow extends React.Component {
     }
     this.setState({sendFrom})
   }
+
+  async onClickSend() {
+    require('assert')(!this.state.isSending)
+
+    this.setState({isSending: true}, async () => {
+      try {
+        await this.sendMessageWithUI()
+
+        // send succeeded event to parent
+      } finally {
+        this.setState({isSending: false})
+      }
+    })
+  }
+
+  async sendMessageWithUI() {
+    require('assert')(this.state.isSending)
+
+    const {
+      accountsState,
+      messageTo,
+      statusContent,
+      spoilerTextContent,
+      showContentsWarning,
+      mode,
+      visibility,
+      sendFrom,
+    } = this.state
+    const {tokensAndAccounts} = accountsState
+
+    require('assert')(sendFrom.length > 0)
+
+    // DMなので、宛先にPGP出来るか見る
+    if(mode === MODE_DIRECT) {
+      const response = await sendDirectMessage(
+        tokensAndAccounts.find((ta) => ta.account.address === sendFrom[0]),
+        messageTo,
+        statusContent,
+        showContentsWarning ? spoilerTextContent : null
+      )
+    }
+  }
 }
+
+async function sendDirectMessage({token, account}, messageTo, status, spoilerText) {
+  // 宛先ユーザの情報を得る
+  const requester = token.requester
+  let response = await requester.searchAccount({
+    q: messageTo,
+    resolve: true,
+    limit: 1,
+  })
+  const {accounts} = response
+  const target = accounts && accounts.length >= 1 && new Account(accounts[0])
+
+  // 公開鍵をもっていたらメッセージを暗号化する
+  if(target.hasPublicKey) {
+    const hkp = new HKP('http://sks.oppai.tokyo')
+    const key = await hkp.lookup({
+      query: target.acct.indexOf('@') >= 0 ? target.acct : `${target.acct}@${target.host}`,
+      keyId: target.publicKeyId,
+    })
+
+    const pubkey = key && openpgpKey.readArmored(key)
+
+    if(pubkey) {
+      [status, spoilerText] = await Promise.all([
+        encryptText(pubkey, status),
+        encryptText(pubkey, spoilerText),
+      ])
+    } else {
+      console.log(`Failed to get ${target.acct}\'s public key (${target.publicKeyId})`)
+    }
+  }
+
+  // send
+  response = await requester.postStatus({
+    status: `@${target.acct} ${status}`,
+    spoiler_text: spoilerText,
+    visibility: 'direct',
+  })
+  console.log(response)
+}
+
+/**
+ */
+async function encryptText(pubkey, text) {
+  if(!text)
+    return text
+
+  const ciphertext = await openpgp.encrypt({
+    data: text,
+    publicKeys: pubkey.keys,
+    armor: false,
+    detached: true,
+  })
+  debugger
+  return slimPGPMessage(ciphertext.data)
+}
+
+
+/**
+ * see http://srgia.com/docs/rfc1991j.html#2.4.1
+ */
+function slimPGPMessage(pgpMessage) {
+  pgpMessage = pgpMessage.trim()
+  require('assert')(pgpMessage.startsWith(BLOCK_BEGIN_PGP_MESSAGE))
+  require('assert')(pgpMessage.endsWith(BLOCK_END_PGP_MESSAGE))
+
+  pgpMessage = pgpMessage.substring(
+    BLOCK_BEGIN_PGP_MESSAGE.length,
+    pgpMessage.length - BLOCK_END_PGP_MESSAGE.length)
+  pgpMessage = pgpMessage.replace(/\r\n/g, '\n').split('\n\n')[1].replace(/\n/g, '').trim()
+  return `<pgp>${pgpMessage}</pgp>`
+}
+
+
+function asyncSetState(component, state) {
+  return new Promise((resolve, reject) => {
+    component.setState(state, () => resolve())
+  })
+}
+
 
 // 細かいやつ あとで移す
 const AccountPropType = PropTypes.instanceOf(Account)

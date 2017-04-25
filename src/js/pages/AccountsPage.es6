@@ -112,7 +112,7 @@ export default class AccountsPage extends React.Component {
         </div>
 
         <div>
-          {account.hasKeypair ? (
+          {account.hasPublicKey ? (
             <span>
               🔑あり
               <button onClick={this.onClickGenerateKeypair.bind(this, token, account)}>鍵ペア再生成</button>

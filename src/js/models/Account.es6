@@ -62,7 +62,17 @@ export default class Account extends AccountRecord {
     return `${this.acct}@${this.host}`
   }
 
-  get hasKeypair() {
+  get hasPublicKey() {
     return this.note.match(REGEX_PGP_FINGERPRINT) ? true : false
+  }
+
+  get publicKeyId() {
+    const match = this.note.match(REGEX_PGP_FINGERPRINT)
+    if(!match)
+      return null
+    const fingerprint = match[1]
+    if(fingerprint.length != 40)
+      return null
+    return fingerprint.substring(24)
   }
 }

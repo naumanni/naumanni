@@ -43,6 +43,9 @@ rules:
   import/default: 2
   import/export: 2
 
+  # 暫定的
+  require-jsdoc: 0
+
   react/jsx-uses-vars: 1
 
 settings:
