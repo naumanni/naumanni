@@ -22,7 +22,6 @@ class NaummanniDatabase {
         const {oldVersion, newVersion} = e
         this.db = e.target.result
         metadata.migrate(this.db, e.target.transaction, oldVersion, newVersion)
-        resolve(this.db)
       }
     })
   }

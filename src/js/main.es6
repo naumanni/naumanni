@@ -1,5 +1,6 @@
 import {Context, Dispatcher} from 'almin'
 import React from 'react'
+import openpgp, {config as openPGPConfig} from 'openpgp'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
@@ -25,10 +26,17 @@ async function main() {
     logger.startLogging(context)
   }
 
+  // initialization phase
+
+  // init open pgp
+  openpgp.initWorker({
+    path: '/static/openpgp.worker.js',
+  })
+  openPGPConfig.aead_protect = true // activate fast AES-GCM mode (not yet OpenPGP standard)
+
   await initializeDatabase()
 
-  // init application
-  context.useCase(
+  await context.useCase(
     new UpdateTokensUseCase()
   ).execute()
 

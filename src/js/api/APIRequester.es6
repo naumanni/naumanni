@@ -69,10 +69,7 @@ class APIRequester {
     Object.keys(this.specs).forEach((apiName) => {
       const spec = this.specs[apiName]
       spec.methods.forEach((method) => {
-        const methodName = method !== 'raw'
-          ? `${method}${apiName[0].toUpperCase() + apiName.substr(1)}`
-          : apiName
-        this[methodName] = this.call.bind(this, method, apiName)
+        this[apiName] = this.call.bind(this, method, apiName)
       })
     })
   }
@@ -81,13 +78,15 @@ class APIRequester {
    * Proxyから呼ばれる。 API Callの実態
    * @param {string} method
    * @param {string} apiName
+   * @param {object} query
+   * @param {object} options
    * @return {object}
    */
-  async call(method, apiName, ...args) {
-    const {spec, req} = this._makeRequest(method, apiName, args)
+  async call(method, apiName, query, options) {
+    const {spec, req} = this._makeRequest(method, apiName, query, options)
     let response = await req
     let responseBody = response.body
-    if(this.hooks.resonse)
+    if(this.hooks.response)
       responseBody = this.hooks.response(method, apiName, responseBody)
     return spec.normalize(method, responseBody)
   }
@@ -96,10 +95,11 @@ class APIRequester {
    * 呼び出し情報から、apiと、そのリクエストオブジェクトを作る
    * @param {string} method
    * @param {string} apiName
-   * @param {object} args
+   * @param {object} query
+   * @param {object} options
    * @return {object}
    */
-  _makeRequest(method, apiName, args) {
+  _makeRequest(method, apiName, query, options={}) {
     const spec = this.specs[apiName]
 
     if(!spec) {
@@ -110,10 +110,12 @@ class APIRequester {
       throw new Error(`unsupported method. ${method} is not supported api '${apiName}'`)
     }
 
-    let [req, options] = this[method](spec, ...args)
+    const queryFunc = (method === 'patch' || method === 'post' || method === 'put')
+      ? 'send'
+      : 'query'
 
-    // modify req
-    req = req
+    let req = this._makeJsonRequest(method.toUpperCase(), spec.endpoint)
+    req = req[queryFunc](query || {})
       .use(this.prefixer)
       .set(options.headers || {})
 
@@ -128,117 +130,6 @@ class APIRequester {
    */
   _makeJsonRequest(method, endpoint) {
     return (new RetriableRequest(method, endpoint)).set('Accept', 'application/json')
-  }
-
-  /**
-   * list
-   * @param {APISpec} spec
-   * @param {object} query
-   * @param {object} options
-   * @return {superagent.request}
-   */
-  list(spec, query, options={}) {
-    return [
-      this._makeJsonRequest('GET', spec.endpoint).query(query || {}),
-      options,
-    ]
-  }
-
-  /**
-   * raw
-   * @param {APISpec} spec
-   * @param {object} query
-   * @param {object} options
-   * @return {superagent.request}
-   */
-  raw(spec, query, options={}) {
-    return [
-      this._makeJsonRequest('GET', spec.endpoint).query(query || {}),
-      options,
-    ]
-  }
-
-  /**
-   * get
-   * @param {APISpec} spec
-   * @param {int} id
-   * @param {object} query
-   * @param {object} options
-   * @return {superagent.request}
-   */
-  get(spec, id, query, options={}) {
-    return [
-      this._makeJsonRequest('GET', `${spec.endpoint}${id}/`).query(query || {}),
-      options,
-    ]
-  }
-
-  /**
-   * post
-   * @param {APISpec} spec
-   * @param {object} params
-   * @param {object} options
-   * @param {object} replacer
-   * @return {superagent.request}
-   */
-  post(spec, params, options={}, replacer={}) {
-    let endpoint = spec.endpoint
-    // endpointが/auth/users/<id>/password/のように実行時に決まるような場合
-    if(spec.endpointReplace) {
-      Object.keys(replacer).forEach((key) => {
-        endpoint = endpoint.replace(`<${key}>`, replacer[key])
-      })
-    }
-    return [
-      this._makeJsonRequest('POST', endpoint).send(params),
-      options,
-    ]
-  }
-
-  /**
-   * 画像アップロードのためのmethod
-   * @param {APISpec} spec
-   * @param {int} id
-   * @param {string} fieldName
-   * @param {object} params
-   * @param {object} options
-   * @return {superagent.request}
-   */
-  upload(spec, id, fieldName, params, options={}) {
-    return [
-      this._makeJsonRequest('PATCH', `${spec.endpoint}${id}/`).field(fieldName, params.file),
-      options,
-    ]
-  }
-
-  /**
-   * patch
-   * @param {APISpec} spec
-   * @param {int} id
-   * @param {object} params
-   * @param {object} options
-   * @return {superagent.request}
-   */
-  patch(spec, id, params, options={}) {
-    return [
-      this._makeJsonRequest('PATCH', `${spec.endpoint}${id}/`).send(params),
-      options,
-    ]
-  }
-
-  /**
-   * delete
-   * @param {APISpec} spec
-   * @param {int} id
-   * @param {object} params
-   * @param {object} options
-   * @return {superagent.request}
-   */
-  delete(spec, id, params, options={}) {
-    return [
-      this._makeJsonRequest('DELETE', `${spec.endpoint}${id}/`).send(params),
-      options,
-    ]
   }
 }
 export const makeAPIRequester = ::APIRequester.create
@@ -275,7 +166,7 @@ class OAuthAPIRequester extends APIRequester {
   /**
    * @override
    */
-  async call(method, apiName, ...args) {
+  async call(method, apiName, query, options) {
     if(!this.token) {
       throw new InvalidTokenError('token not set')
     }
@@ -286,7 +177,7 @@ class OAuthAPIRequester extends APIRequester {
       await this.extendToken()
     }
 
-    let {spec, req} = this._makeRequest(method, apiName, args)
+    let {spec, req} = this._makeRequest(method, apiName, query, options)
 
     req = req.set('Authorization', `Bearer ${this.token.accessToken}`)
 
@@ -310,7 +201,7 @@ class OAuthAPIRequester extends APIRequester {
     }
 
     let responseBody = response.body
-    if(this.hooks.resonse)
+    if(this.hooks.response)
       responseBody = this.hooks.response(method, apiName, responseBody)
     return spec.normalize(method, responseBody)
   }

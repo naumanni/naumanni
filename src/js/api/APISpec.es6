@@ -24,7 +24,7 @@ export default class APISpec {
     }
 
     if(!spec.methods) {
-      spec.methods = 'list,get,post,put,patch,delete'
+      spec.methods = 'get,post,put,patch,delete'
     }
     if(typeof spec.methods === 'string') {
       spec.methods = spec.methods.toLowerCase().split(',')

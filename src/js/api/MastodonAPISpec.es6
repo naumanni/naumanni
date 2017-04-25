@@ -4,21 +4,25 @@ import APISpec from './APISpec'
 
 
 export default APISpec.make({
-  app: {
+  postApp: {
     endpoint: '/apps',
-    // entity: OAuthApp,
     methods: 'post',
   },
 
   verifyCredentials: {
     endpoint: '/accounts/verify_credentials',
     entity: Account,
-    methods: 'raw',
+    methods: 'get',
   },
 
-  publicTimeline: {
+  updateCredentials: {
+    endpoint: '/accounts/update_credentials',
+    methods: 'patch',
+  },
+
+  listPublicTimeline: {
     endpoint: '/timelines/public',
     entity: Status,
-    methods: 'list',
+    methods: 'get',
   },
 })

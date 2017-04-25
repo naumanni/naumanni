@@ -6,7 +6,7 @@ import {makeAPIRequester} from 'src/api/APIRequester'
 import MastodonAPISpec from 'src/api/MastodonAPISpec'
 import OAuthApp from 'src/models/OAuthApp'
 import Database from 'src/infra/Database'
-import UpdateTokensUseCase from 'src/usecases/UpdateTokensUseCase'
+import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
 
 const ACCOUNT_REX = /^@([^@]+)@(.*)$/
 
@@ -32,10 +32,6 @@ export default class AccountsPage extends React.Component {
     this.listenerRemovers = [
       context.onChange(() => this.setState(this.getStateFromContext())),
     ]
-
-    context.useCase(
-      new UpdateTokensUseCase()
-    ).execute()
   }
 
   /**
@@ -64,15 +60,17 @@ export default class AccountsPage extends React.Component {
           </li>
         </ul>
 
-        <span style={{margin: '0 1em'}}>
-          <Link to="/compound/home">結合ホーム</Link>
-        </span>
-        <span style={{margin: '0 1em'}}>
-          <Link to="/compound/local">結合ローカル</Link>
-        </span>
-        <span style={{margin: '0 1em'}}>
-          <Link to="/compound/federation">結合連合</Link>
-        </span>
+        <div>
+          <span style={{margin: '0 1em'}}>
+            <Link to="/compound/home">結合ホーム</Link>
+          </span>
+          <span style={{margin: '0 1em'}}>
+            <Link to="/compound/local">結合ローカル</Link>
+          </span>
+          <span style={{margin: '0 1em'}}>
+            <Link to="/compound/federation">結合連合</Link>
+          </span>
+        </div>
 
       </div>
     )
@@ -96,17 +94,32 @@ export default class AccountsPage extends React.Component {
     return (
       <li key={token.address}>
         {account.display_name} / {account.host}<br />
-        <span style={{margin: '0 1em'}}>
-          <Link to={`/account/@${account.acct}@${token.host}/home`}>ホーム</Link>
-        </span>
-        <span style={{margin: '0 1em'}}>
-          <Link to={`/account/@${account.acct}@${token.host}/local`}>ローカルタイムライン</Link>
-        </span>
-        <span style={{margin: '0 1em'}}>
-          <Link to={`/account/@${account.acct}@${token.host}/federation`}>連合タイムライン</Link>
-        </span>
+
+        <div>
+          <span style={{margin: '0 1em'}}>
+            <Link to={`/account/@${account.acct}@${token.host}/home`}>ホーム</Link>
+          </span>
+          <span style={{margin: '0 1em'}}>
+            <Link to={`/account/@${account.acct}@${token.host}/local`}>ローカルタイムライン</Link>
+          </span>
+          <span style={{margin: '0 1em'}}>
+            <Link to={`/account/@${account.acct}@${token.host}/federation`}>連合タイムライン</Link>
+          </span>
+        </div>
+
+        <div>
+          <button onClick={this.onClickGenerateKeypair.bind(this, token, account)}>鍵ペア生成</button>
+        </div>
       </li>
     )
+  }
+
+  onClickGenerateKeypair(token, account) {
+    const {context} = this.context
+
+    context.useCase(
+      new GenerateKeypairUseCase()
+    ).execute(token, account)
   }
 }
 
@@ -123,6 +136,7 @@ class AddMastodonAccountWizard extends React.Component {
   }
 
   async onClickSubmit() {
+    // TODO: usecareにする
     const account = this.refs.account.value
     const match = account.match(ACCOUNT_REX)
 

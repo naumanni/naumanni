@@ -85,7 +85,7 @@ export default class OAuthToken extends OAuthTokenRecord {
           endpoint: `https://${this.host}/api/v1`,
           hooks: {
             response: (method, apiName, responseBody) => {
-              if(Array.isArray) {
+              if(Array.isArray(responseBody)) {
                 return responseBody.map((obj) => {
                   return {host: this.host, ...obj}
                 })
