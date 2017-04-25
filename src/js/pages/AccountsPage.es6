@@ -108,7 +108,18 @@ export default class AccountsPage extends React.Component {
         </div>
 
         <div>
-          <button onClick={this.onClickGenerateKeypair.bind(this, token, account)}>鍵ペア生成</button>
+          {account.hasKeypair ? (
+            <span>
+              🔑あり
+              <button onClick={this.onClickGenerateKeypair.bind(this, token, account)}>鍵ペア再生成</button>
+            </span>
+          ) : (
+            <span>
+              🔑なし
+              <button onClick={this.onClickGenerateKeypair.bind(this, token, account)}>鍵ペア生成</button>
+            </span>
+          )}
+
         </div>
       </li>
     )

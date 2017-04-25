@@ -1,5 +1,5 @@
 import {Record} from 'immutable'
-
+import {REGEX_PGP_FINGERPRINT} from 'src/constants'
 
 const AccountRecord = Record({  // eslint-disable-line new-cap
   host: '',
@@ -60,5 +60,9 @@ export default class Account extends AccountRecord {
     if(this.acct.indexOf('@') >= 0)
       return this.acct
     return `${this.acct}@${this.host}`
+  }
+
+  get hasKeypair() {
+    return this.note.match(REGEX_PGP_FINGERPRINT) ? true : false
   }
 }

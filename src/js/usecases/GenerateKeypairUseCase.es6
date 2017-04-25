@@ -1,9 +1,8 @@
 import {UseCase} from 'almin'
 import openpgp, {HKP} from 'openpgp'
 
-// import {OAuthToken} from 'src/models'
-// import * as actions from 'src/actions'
-const REX_PGP_FINGERPRINT = /PGP Key Fingerprint: ([0-9a-fA-F]+)/
+import {REGEX_PGP_FINGERPRINT} from 'src/constants'
+
 
 export default class GenerateKeypairUseCase extends UseCase {
   async execute(token, account) {
@@ -30,7 +29,7 @@ export default class GenerateKeypairUseCase extends UseCase {
     localStorage.setItem(`pgp::publicKey::${account.address}`, keypair.privateKeyArmored)
 
     // update profile
-    const note = account.note.replace(REX_PGP_FINGERPRINT, '').replace(/[\n\u21b5]+$/, '')
+    const note = account.note.replace(REGEX_PGP_FINGERPRINT, '').replace(/[\n\u21b5]+$/, '')
     const response = await token.requester.updateCredentials({
       note: `${note}\nPGP Key Fingerprint: ${fingerprint}`,
     })
