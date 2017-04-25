@@ -29,6 +29,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
     "eslint-import-resolver-babel-module": "^3.0.0",
+    "immutability-helper": "^2.1.2",
     "immutable": "^3.8.1",
     "moment": "^2.18.1",
     "normalize.css": "^6.0.0",

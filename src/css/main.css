@@ -1,6 +1,8 @@
 @import "normalize.css";
 
 @import "_variables.css";
+@import "_font.css";
+@import "components/_toot_window.css";
 
 
 @define-mixin clearfix {
@@ -13,7 +15,7 @@
 
 
 
-body {
+html {
   background: $colorBackground;
   font-size: 14px;
 }

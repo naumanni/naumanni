@@ -1,1 +1,10 @@
 $colorBackground: #B7E8D8;
+
+$fontSizeNormal: 1rem;
+$fontSizeSmall: 0.85rem;
+$fontSizeLarger: 1.2rem;
+
+$sizeAvatar: 48px;
+
+$marginDefault: 8px;
+$marginHalf: calc($marginDefault / 2);

@@ -8,6 +8,8 @@ import OAuthApp from 'src/models/OAuthApp'
 import Database from 'src/infra/Database'
 import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
 
+import TootWindow from './components/TootWindow'
+
 const ACCOUNT_REX = /^@([^@]+)@(.*)$/
 
 
@@ -71,6 +73,8 @@ export default class AccountsPage extends React.Component {
             <Link to="/compound/federation">結合連合</Link>
           </span>
         </div>
+
+        <TootWindow />
 
       </div>
     )
