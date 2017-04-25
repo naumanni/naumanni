@@ -1085,6 +1085,10 @@ base64-js@^1.0.2:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.2.0.tgz#a39992d723584811982be5e290bb6a53d86700f1"
 
+base65536@^1.0.65536:
+  version "1.0.65536"
+  resolved "https://registry.yarnpkg.com/base65536/-/base65536-1.0.65536.tgz#85a76d55f103db7c3b7deee33eb9a4dfd66c2487"
+
 batch@0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/batch/-/batch-0.5.0.tgz#fd2e05a7a5d696b4db9314013e285d8ff3557ec3"

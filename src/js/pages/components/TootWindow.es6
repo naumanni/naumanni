@@ -2,7 +2,7 @@ import React from 'react'
 import update from 'immutability-helper'
 import PropTypes from 'prop-types'
 import openpgp, {HKP, key as openpgpKey} from 'openpgp'
-
+import base65536 from 'base65536'
 
 import {Account} from 'src/models'
 
@@ -319,14 +319,17 @@ async function encryptText(pubkey, text) {
   if(!text)
     return text
 
+  console.log('begin cipher')
+
   const ciphertext = await openpgp.encrypt({
     data: text,
     publicKeys: pubkey.keys,
     armor: false,
     detached: true,
   })
-  debugger
-  return slimPGPMessage(ciphertext.data)
+
+  const encoded = `<nem>${base65536.encode(ciphertext.message.packets.write())}</nem>`
+  return encoded
 }
 
 

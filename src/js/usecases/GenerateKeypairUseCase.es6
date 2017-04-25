@@ -12,10 +12,10 @@ export default class GenerateKeypairUseCase extends UseCase {
       name: account.acct.trim(),
       email: `${account.acct}@${account.host}`,
     }]
-    console.log('generateKey 2048bit, no pass pharase', userIds)
+    console.log('generateKey 1024bit, no pass pharase', userIds)
     const keypair = await openpgp.generateKey({
       userIds,
-      numBits: 2048,
+      numBits: 1024,
       passphrase: '',
     })
     console.dir(keypair)
