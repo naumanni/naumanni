@@ -101,13 +101,13 @@ export default class AccountsPage extends React.Component {
 
         <div>
           <span style={{margin: '0 1em'}}>
-            <Link to={`/account/@${account.acct}@${token.host}/home`}>ホーム</Link>
+            <Link to={`/account/${account.address}/home`}>ホーム</Link>
           </span>
           <span style={{margin: '0 1em'}}>
-            <Link to={`/account/@${account.acct}@${token.host}/local`}>ローカルタイムライン</Link>
+            <Link to={`/account/${account.address}/local`}>ローカルタイムライン</Link>
           </span>
           <span style={{margin: '0 1em'}}>
-            <Link to={`/account/@${account.acct}@${token.host}/federation`}>連合タイムライン</Link>
+            <Link to={`/account/${account.address}/federation`}>連合タイムライン</Link>
           </span>
         </div>
 

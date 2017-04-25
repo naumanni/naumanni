@@ -4,15 +4,34 @@ import PropTypes from 'prop-types'
 
 import {Status} from 'src/models'
 
+
+const TIMELINE_FEDERATION = 'federation'
+const TIMELINE_LOCAL = 'local'
+const TIMELINE_HOME = 'home'
+
+const COMPOUND_TIMELINE = Symbol('COMPOUND_TIMELINE')
+
+
 export default class TimelinePage extends React.Component {
   static contextTypes = {
     context: PropTypes.any,
   }
 
-  constructor(...args) {
-    super(...args)
+  constructor(props, ...args) {
+    super(props, ...args)
 
-    this.listener = new TimelineListener()
+    // get timeline type
+    let subject
+    if(props.match.params.acct) {
+      // this is user local timeline
+      subject = props.match.params.acct
+    } else {
+      // this is compound timeline
+      subject = COMPOUND_TIMELINE
+    }
+    const timelineType = props.match.params[0]
+
+    this.listener = new TimelineListener(subject, timelineType)
     this.state = {
       timeline: this.listener.timeline,
       ...this.getStateFromContext(),
@@ -100,10 +119,14 @@ export default class TimelinePage extends React.Component {
 class TimelineListener extends EventEmitter {
   static EVENT_CHANGE = 'EVENT_CHANGE'
 
-  constructor() {
+  constructor(subject, timelineType) {
     super()
 
-    this.sources = {}
+    this.subject = subject
+    this.timelineType = timelineType
+
+    this.sources = []
+    this.websockets = {}
     this.timeline = []
   }
 
@@ -112,37 +135,98 @@ class TimelineListener extends EventEmitter {
   }
 
   updateTokens(tokensAndAccounts) {
-    const oldMap = {...this.sources}
-
-    this.sources = tokensAndAccounts.reduce((newMap, {token, account}) => {
-      if(oldMap.hasOwnProperty(token.address)) {
-        newMap[token.address] = oldMap[token.address]
-        delete oldMap[token.address]
-      } else {
-        // add new event source
-        const endpoint = `wss://${token.host}/api/v1/streaming/?access_token=${token.accessToken}&stream=public`
-        const source = new WebSocket(endpoint)
-
-        source.onopen = this.onOpen.bind(this, token)
-        source.onclose = this.onClose.bind(this, token)
-        source.onerror = this.onError.bind(this, token)
-        source.onmessage = this.onMessage.bind(this, token)
-
-        newMap[token.address] = source
-
-        // 追加時にTimelineをとってくる
-        this.onAddNewToken(token)
+    const _ = (token, type, fetcher) => {
+      return {
+        key: `${token.address}:${type}`,
+        fetcher: {token, type, ...fetcher},
       }
-      return newMap
-    }, {})
+    }
 
-    // close unused tokens
-    Object.values(oldMap).forEach((e) => e.close())
+    const newSources = tokensAndAccounts.reduce((newSources, {token, account}) => {
+      if(this.subject == COMPOUND_TIMELINE) {
+        // 複合タイムラインなのでALL OK
+      } else {
+        // Accountタイムラインなので、一致しないアカウントは無視
+        if(account.address !== this.subject)
+          return newSources
+      }
+
+      // add websocket
+      const websocketBase = `wss://${token.host}/api/v1/streaming/?access_token=${token.accessToken}&stream=`
+      const requester = token.requester
+
+      switch(this.timelineType) {
+      case TIMELINE_HOME:
+        newSources.push(
+            _(token, 'websocket', {url: `${websocketBase}user`}),
+            _(token, 'api', {func: ::requester.listHomeTimeline}),
+          )
+        break
+
+      case TIMELINE_LOCAL:
+        newSources.push(
+            _(token, 'websocket', {url: `${websocketBase}public:local`}),
+            _(token, 'api', {func: requester.listPublicTimeline.bind(requester, {'local': 'true'})}),
+          )
+        break
+
+      case TIMELINE_FEDERATION:
+        newSources.push(
+            _(token, 'websocket', {url: `${websocketBase}public`}),
+            _(token, 'api', {func: ::requester.listPublicTimeline}),
+          )
+        break
+      }
+      return newSources
+    }, [])
+
+    console.log('newSources', newSources)
+
+    const newKeys = new Set(newSources.map(({key}) => key))
+    const oldKeys = new Set(this.sources.map(({key}) => key))
+
+    // 新しい接続を開始する
+    newSources.forEach(({key, fetcher}) => {
+      if(oldKeys.has(key)) {
+        return
+      }
+
+      if(fetcher.type === 'websocket') {
+        const {token, url} = fetcher
+        console.log('open websocket', url)
+        const socket = new WebSocket(url)
+
+        socket.onopen = this.onOpen.bind(this, token)
+        socket.onclose = this.onClose.bind(this, token)
+        socket.onerror = this.onError.bind(this, token)
+        socket.onmessage = this.onMessage.bind(this, token)
+        this.websockets[url] = socket
+      } else if(fetcher.type === 'api') {
+        fetcher.func().then((timeline) => {
+          this.mergeTimeline(timeline)
+        })
+      }
+    })
+
+    // 古い接続を閉じる
+    this.sources.forEach(({key, fetcher}) => {
+      if(newKeys.has(key))
+        return
+
+      if(fetcher.type == 'websocket') {
+        const {url} = fetcher
+        console.log('close websocket', url)
+        this.websockets[url].close()
+        delete this.websockets[url]
+      }
+    })
+
+    this.sources = newSources
   }
 
   // websocket event handlers
-  onError(token, e) {
-    console.log('onError', arguments)
+  onError(token, e, ...args) {
+    console.log('onError', token, e, args)
   }
 
   onMessage(token, e) {
@@ -163,18 +247,12 @@ class TimelineListener extends EventEmitter {
     }
   }
 
-  onOpen(token, e) {
-    console.log('onOpen', arguments)
+  onOpen(token, e, ...args) {
+    console.log('onOpen', token, e, args)
   }
 
-  onClose(token, e) {
-    console.log('onClose', arguments)
-  }
-
-  // listener event handlers
-  async onAddNewToken(token) {
-    const timeline = await token.requester.listPublicTimeline()
-    this.mergeTimeline(timeline)
+  onClose(token, e, ...args) {
+    console.log('onClose', token, e, args)
   }
 
   //

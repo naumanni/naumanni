@@ -62,7 +62,8 @@ async function main() {
             <Route exact path="/" component={require('./pages/AccountsPage.es6').default} />
             <Route exact path="/authorize" component={require('./pages/AuthorizePage.es6').default} />
 
-            <Route exact path="/compound/federation" component={require('./pages/TimelinePage.es6').default} />
+            <Route exact path="/compound/(home|local|federation)" component={require('./pages/TimelinePage.es6').default} />
+            <Route exact path="/account/:acct/(home|local|federation)" component={require('./pages/TimelinePage.es6').default} />
 
           </Switch>
         </div>

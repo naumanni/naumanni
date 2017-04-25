@@ -28,6 +28,12 @@ export default APISpec.make({
     method: 'get',
   },
 
+  listHomeTimeline: {
+    endpoint: '/timelines/home',
+    entity: Status,
+    method: 'get',
+  },
+
   searchAccount: {
     endpoint: '/search',
     method: 'get',
