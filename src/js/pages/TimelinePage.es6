@@ -70,7 +70,7 @@ export default class TimelinePage extends React.Component {
     return (
       <div className="page page-timeline">
         <ul className="timeline">
-          {this.state.timeline.map((status) => this.renderTimelineStatus(status))}
+          {this.state.timeline.map((entry) => this.renderTimelineStatus(entry))}
         </ul>
       </div>
     )
@@ -95,8 +95,20 @@ export default class TimelinePage extends React.Component {
       })
   }
 
-  renderTimelineStatus(status) {
+  renderTimelineStatus({status, decryptedText}) {
     const account = status.accountObject
+
+    let isDecrypted = false
+    let content = status.sanitizedContent
+    let spoilerText = status.spoiler_text
+
+    if(decryptedText) {
+      isDecrypted = true
+      content = decryptedText.content
+      spoilerText = decryptedText.spoilerText
+    }
+
+
     return (
       <li key={status.uri} className="status">
         <img className="status-avatar" src={account.avatar} />
@@ -109,7 +121,15 @@ export default class TimelinePage extends React.Component {
              alt={status.created_at}>{status.createdAt.fromNow()}
           </a>
         </div>
-        <div className="status-content" dangerouslySetInnerHTML={{__html: status.sanitizedContent}} />
+
+        <div className="status-body">
+          {isDecrypted && <div className="status-isDecrypted"><span className="icon-lock" /> このメッセージは暗号化されています</div>}
+          {spoilerText && (
+            <div className="status-spoilerText">{spoilerText}</div>
+          )}
+
+          <div className="status-content" dangerouslySetInnerHTML={{__html: content}} />
+        </div>
       </li>
     )
   }
@@ -135,10 +155,10 @@ class TimelineListener extends EventEmitter {
   }
 
   updateTokens(tokensAndAccounts) {
-    const _ = (token, type, fetcher) => {
+    const _ = (token, account, type, fetcher) => {
       return {
         key: `${token.address}:${type}`,
-        fetcher: {token, type, ...fetcher},
+        fetcher: {account, token, type, ...fetcher},
       }
     }
 
@@ -158,29 +178,27 @@ class TimelineListener extends EventEmitter {
       switch(this.timelineType) {
       case TIMELINE_HOME:
         newSources.push(
-            _(token, 'websocket', {url: `${websocketBase}user`}),
-            _(token, 'api', {func: ::requester.listHomeTimeline}),
+            _(token, account, 'websocket', {url: `${websocketBase}user`}),
+            _(token, account, 'api', {func: ::requester.listHomeTimeline}),
           )
         break
 
       case TIMELINE_LOCAL:
         newSources.push(
-            _(token, 'websocket', {url: `${websocketBase}public:local`}),
-            _(token, 'api', {func: requester.listPublicTimeline.bind(requester, {'local': 'true'})}),
+            _(token, account, 'websocket', {url: `${websocketBase}public:local`}),
+            _(token, account, 'api', {func: requester.listPublicTimeline.bind(requester, {'local': 'true'})}),
           )
         break
 
       case TIMELINE_FEDERATION:
         newSources.push(
-            _(token, 'websocket', {url: `${websocketBase}public`}),
-            _(token, 'api', {func: ::requester.listPublicTimeline}),
+            _(token, account, 'websocket', {url: `${websocketBase}public`}),
+            _(token, account, 'api', {func: ::requester.listPublicTimeline}),
           )
         break
       }
       return newSources
     }, [])
-
-    console.log('newSources', newSources)
 
     const newKeys = new Set(newSources.map(({key}) => key))
     const oldKeys = new Set(this.sources.map(({key}) => key))
@@ -196,14 +214,14 @@ class TimelineListener extends EventEmitter {
         console.log('open websocket', url)
         const socket = new WebSocket(url)
 
-        socket.onopen = this.onOpen.bind(this, token)
-        socket.onclose = this.onClose.bind(this, token)
-        socket.onerror = this.onError.bind(this, token)
-        socket.onmessage = this.onMessage.bind(this, token)
+        socket.onopen = this.onOpen.bind(this, token, fetcher.account)
+        socket.onclose = this.onClose.bind(this, token, fetcher.account)
+        socket.onerror = this.onError.bind(this, token, fetcher.account)
+        socket.onmessage = this.onMessage.bind(this, token, fetcher.account)
         this.websockets[url] = socket
       } else if(fetcher.type === 'api') {
         fetcher.func().then((timeline) => {
-          this.mergeTimeline(timeline)
+          this.mergeTimeline(fetcher.token, fetcher.account, timeline)
         })
       }
     })
@@ -225,46 +243,63 @@ class TimelineListener extends EventEmitter {
   }
 
   // websocket event handlers
-  onError(token, e, ...args) {
-    console.log('onError', token, e, args)
+  onError(token, account, e, ...args) {
+    console.log('onError', token, account, e, args)
   }
 
-  onMessage(token, e) {
+  onMessage(token, account, e) {
     const frame = JSON.parse(e.data)
     const payload = frame.payload && JSON.parse(frame.payload)
     const {event} = frame
 
     switch(event) {
     case 'update':
-      this.pushStatus(new Status({
+      this.pushStatus(token, account, new Status({
         host: token.host,
         ...payload,
       }))
       break
     default:
-      console.log('onMessage', token, event, payload)
+      console.log('onMessage', token, account, event, payload)
       break
     }
   }
 
-  onOpen(token, e, ...args) {
-    console.log('onOpen', token, e, args)
+  onOpen(token, account, e, ...args) {
+    console.log('onOpen', token, account, e, args)
   }
 
-  onClose(token, e, ...args) {
-    console.log('onClose', token, e, args)
+  onClose(token, account, e, ...args) {
+    console.log('onClose', token, account, e, args)
   }
 
   //
-  mergeTimeline(newStatues) {
+  mergeTimeline(token, account, newStatues) {
     let newTimeline =
       newStatues
-        .filter((status) => !this.timeline.find((old) => old.uri === status.uri))
-        .concat(this.timeline)
+        .map((status) => {
+          return {status}
+        })
+        .filter((status) => !this.timeline.find((old) => old.status.uri === status.uri))
+
+    newTimeline.forEach((entry) => {
+      if(entry.status.hasEncryptedStatus) {
+        decryptStatus(account, entry.status)
+          .then((decryptedText, spoilerText) => {
+            entry.decryptedText = decryptedText
+            this.emitChange()
+          }, (error) => console.error('decrypt failed', error)
+        )
+      }
+    })
+
+    newTimeline = newTimeline.concat(this.timeline)
     newTimeline.sort((a, b) => {
-      if(a.created_at < b.created_at)
+      const aAt = a.status.created_at
+      const bAt = b.status.created_at
+      if(aAt < bAt)
         return 1
-      else if(a.created_at > b.created_at)
+      else if(aAt > bAt)
         return -1
       return 0
     })
@@ -274,13 +309,24 @@ class TimelineListener extends EventEmitter {
     this.emitChange()
   }
 
-  pushStatus(newStatus) {
-    if(this.timeline.find((old) => old.uri === newStatus.uri)) {
+  pushStatus(token, account, newStatus) {
+    if(this.timeline.find((old) => old.status.uri === newStatus.uri)) {
       // already exists
       return
     }
 
-    this.timeline = [newStatus].concat(this.timeline)
+    const entry = {status: newStatus}
+
+    if(entry.status.hasEncryptedStatus) {
+      decryptStatus(account, entry.status)
+        .then((decryptedText) => {
+          entry.decryptedText = decryptedText
+          this.emitChange()
+        }, (error) => console.error('decrypt failed', error)
+      )
+    }
+
+    this.timeline = [entry].concat(this.timeline)
     this.emitChange()
   }
 
@@ -292,4 +338,40 @@ class TimelineListener extends EventEmitter {
   emitChange() {
     this.emit(this.EVENT_CHANGE, [this])
   }
+}
+
+
+import base65536 from 'base65536'
+import openpgp, {key as openpgpKey, message as openpgpMessage} from 'openpgp'
+
+
+async function decryptStatus(account, status) {
+  const privatekey = openpgpKey.readArmored(account.privateKeyArmored)
+
+  // status
+  const response = {}
+
+  await Promise.all([
+    ['content', status.content, '&lt;nem&gt;', '&lt;/nem&gt;'],
+    ['spoilerText', status.spoiler_text, '<nem>', '</nem>'],
+  ].map(async ([key, text, open, close]) => {
+    const [before, content, after] = extractText(text, open, close)
+    const messageToDecrypt = openpgpMessage.read(base65536.decode(content))
+
+    const decyrptedText = await openpgp.decrypt({
+      message: messageToDecrypt,
+      privateKey: privatekey.keys[0],
+    })
+
+    response[key] = before + decyrptedText.data + after
+  }))
+
+  return response
+}
+
+
+function extractText(text, open, close) {
+  const [before, rest] = text.split(open, 2)
+  const [content, after] = rest.split(close, 2)
+  return [before, content, after]
 }

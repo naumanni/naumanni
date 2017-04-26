@@ -319,8 +319,6 @@ async function encryptText(pubkey, text) {
   if(!text)
     return text
 
-  console.log('begin cipher')
-
   const ciphertext = await openpgp.encrypt({
     data: text,
     publicKeys: pubkey.keys,

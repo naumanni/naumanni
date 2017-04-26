@@ -56,4 +56,12 @@ export default class Status extends StatusRecord {
   get createdAt() {
     return moment(this.created_at)
   }
+
+  get hasEncryptedStatus() {
+    if(this.content.indexOf('&lt;nem&gt;') >= 0)
+      return true
+    if(this.spoiler_text.indexOf('<nem>') >= 0)
+      return true
+    return false
+  }
 }

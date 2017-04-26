@@ -47,6 +47,10 @@ html {
     margin-left: 78px;
     display: flex;
 
+    > * {
+      white-space: nowrap;
+    }
+
     .status-createdAt {
       flex-grow: 1;
     }
@@ -56,6 +60,10 @@ html {
     font-weight: bold;
     margin-right: 0.5em;
     font-family: sans-serif;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .status-account {
@@ -70,14 +78,31 @@ html {
     text-decoration: none;
   }
 
-  .status-content {
+  .status-body {
     background: #eaefed;
     border-radius: 6px;
     margin: 4px 0 0 72px;
     padding: 6px;
 
-    > p {
-      margin: 0;
+    .status-isDecrypted {
+      background: #888;
+      padding: 4px;
+      border-radius: 4px;
+      font-size: $fontSizeSmall;
+      color: yellow;
+      margin: 0 0 8px;
+    }
+
+    .status-spoilerText {
+      padding-bottom: $marginHalf;
+      border-bottom: 1px solid #aaa;
+      margin-bottom: $marginHalf;
+    }
+
+    .status-content {
+      > p {
+        margin: 0;
+      }
     }
   }
 }

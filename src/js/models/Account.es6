@@ -75,4 +75,8 @@ export default class Account extends AccountRecord {
       return null
     return fingerprint.substring(24)
   }
+
+  get privateKeyArmored() {
+    return localStorage.getItem(`pgp::privateKey::${this.address}`)
+  }
 }
