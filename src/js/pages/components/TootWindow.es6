@@ -276,13 +276,12 @@ export default class TootWindow extends React.Component {
 async function sendDirectMessage({token, account}, messageTo, status, spoilerText) {
   // 宛先ユーザの情報を得る
   const requester = token.requester
-  let response = await requester.searchAccount({
+  let accounts = await requester.searchAccount({
     q: messageTo,
-    resolve: true,
     limit: 1,
   })
-  const {accounts} = response
   const target = accounts && accounts.length >= 1 && new Account(accounts[0])
+  const targetAcct = target ? target.acct : messageTo
 
   // 公開鍵をもっていたらメッセージを暗号化する
   if(target.hasPublicKey) {
@@ -305,8 +304,8 @@ async function sendDirectMessage({token, account}, messageTo, status, spoilerTex
   }
 
   // send
-  response = await requester.postStatus({
-    status: `@${target.acct} ${status}`,
+  const response = await requester.postStatus({
+    status: `@${targetAcct} ${status}`,
     spoiler_text: spoilerText,
     visibility: 'direct',
   })

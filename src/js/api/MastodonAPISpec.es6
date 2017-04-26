@@ -35,7 +35,8 @@ export default APISpec.make({
   },
 
   searchAccount: {
-    endpoint: '/search',
+    endpoint: '/accounts/search',
+    entity: Account,
     method: 'get',
   },
 
