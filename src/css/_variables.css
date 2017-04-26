@@ -1,10 +1,42 @@
-$colorBackground: #B7E8D8;
+/* 色値s 直接つかわないで! */
+$colorMainLighter: #A1887F;
+$colorMainNormal: #795548;
+$colorMainDarker: #5D4037;
+$colorMainDarkest: #3E2723;
+$colorLogo: #3F0000;
+
+$colorAccentLighter: transparent;
+$colorAccentNormal: #FF6E40;
+$colorAccentDarker: #FF3D00;
+
+$colorWhite: #FFFFFF;
+$colorGray1: #E0E0E0;
+$colorGray2: #BDBDBD;
+$colorGray3: #9E9E9E;
+
+
+/* 色 for App */
+/* ダッシュボードの背景 */
+$colorBackground: #efebe9;   /* TODO: 上の色に合わせる */
+$colorBackgroundWatermark: #d6c7c7;
+$colorBackgroundWatermarkShadow: $colorWhite;
+
+/* ダッシュボードのヘッダ */
+$colorHeaderBackground: $colorMainDarkest;
+$colorHeaderButton: $colorMainNormal;
+
 
 $fontSizeNormal: 1rem;
 $fontSizeSmall: 0.85rem;
 $fontSizeLarger: 1.2rem;
 
-$sizeAvatar: 48px;
+
+$sizeHeaderIcon: 24px;
+$sizeAvatar: 32px;
+$sizeBackgroundLogo: 400px;
+
+
+$radiusDefault: 4px;
 
 $marginDefault: 8px;
 $marginHalf: calc($marginDefault / 2);

@@ -7,9 +7,8 @@ import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 
 import Application from './Application'
 import AppStore from './store/AppStore'
-import initializeDatabase from './infra'
 
-import UpdateTokensUseCase from 'src/usecases/UpdateTokensUseCase'
+import Dashboard from 'src/pages/Dashboard'
 
 
 async function main() {
@@ -26,7 +25,7 @@ async function main() {
     logger.startLogging(context)
   }
 
-  // initialization phase
+  ReactDOM.render(<Dashboard app={Application} />, document.getElementById('appContainer'))
 
   // init open pgp
   openpgp.initWorker({
@@ -34,42 +33,36 @@ async function main() {
   })
   openPGPConfig.aead_protect = true // activate fast AES-GCM mode (not yet OpenPGP standard)
 
-  await initializeDatabase()
+  // class RootElement extends React.Component {
+  //   static get childContextTypes() {
+  //     return {context: PropTypes.any}
+  //   }
 
-  await context.useCase(
-    new UpdateTokensUseCase()
-  ).execute()
+  //   getChildContext() {
+  //     return {context}
+  //   }
 
-  class RootElement extends React.Component {
-    static get childContextTypes() {
-      return {context: PropTypes.any}
-    }
+  //   render() {
+  //     return this.props.children
+  //   }
+  // }
 
-    getChildContext() {
-      return {context}
-    }
+  // ReactDOM.render(
+  //   <RootElement>
+  //     <Router>
+  //       <div className="appContainer">
+  //         <Switch>
+  //           <Route exact path="/" component={require('./pages/AccountsPage.es6').default} />
+  //           <Route exact path="/authorize" component={require('./pages/AuthorizePage.es6').default} />
 
-    render() {
-      return this.props.children
-    }
-  }
+  //           <Route exact path="/compound/(home|local|federation)" component={require('./pages/TimelinePage.es6').default} />
+  //           <Route exact path="/account/:acct/(home|local|federation)" component={require('./pages/TimelinePage.es6').default} />
 
-  ReactDOM.render(
-    <RootElement>
-      <Router>
-        <div className="appContainer">
-          <Switch>
-            <Route exact path="/" component={require('./pages/AccountsPage.es6').default} />
-            <Route exact path="/authorize" component={require('./pages/AuthorizePage.es6').default} />
-
-            <Route exact path="/compound/(home|local|federation)" component={require('./pages/TimelinePage.es6').default} />
-            <Route exact path="/account/:acct/(home|local|federation)" component={require('./pages/TimelinePage.es6').default} />
-
-          </Switch>
-        </div>
-      </Router>
-    </RootElement>,
-    document.getElementById('appContainer')
-  )
+  //         </Switch>
+  //       </div>
+  //     </Router>
+  //   </RootElement>,
+  //   document.getElementById('appContainer')
+  // )
 }
 main()

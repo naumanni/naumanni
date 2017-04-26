@@ -119,25 +119,3 @@
     }
   }
 }
-
-.userIcon {
-  display: inline-block;
-  position: relative;
-
-  .userIcon-avatar {
-    display: block;
-    width: $sizeAvatar;
-    height: $sizeAvatar;
-  }
-
-  &.with-host {
-    .userIcon-host {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      width: calc($sizeAvatar / 3);
-      height: calc($sizeAvatar / 3);
-      opacity: 0.6;
-    }
-  }
-}

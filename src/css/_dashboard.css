@@ -1,0 +1,114 @@
+.naumanniDashboard {
+  background: url(/static/images/naumanni-bgLogo.svg) center center no-repeat;
+  background-size: $sizeBackgroundLogo;
+
+  width: 100vw;
+  height: 100vh;
+}
+
+
+.naumanniDashboard-initializationProgress {
+  padding-top: calc(50% + $sizeBackgroundLogo / 2 + 50px);
+  text-align: center;
+  color: $colorBackgroundWatermark;
+  text-shadow: 0 1px 0px $colorBackgroundWatermarkShadow;
+}
+
+
+.naumanniDashboard-header {
+  background: $colorHeaderBackground;
+  display: flex;
+  align-items: center;
+
+  .naumanniDashboard-header-logo {
+    width: $sizeHeaderIcon;
+    height: $sizeHeaderIcon;
+    margin: $marginDefault;
+  }
+
+  .naumanniDashboard-header-toot {
+    position: relative;
+    flex: 1 1 200px;
+
+    > input[type=text] {
+      width: 100%;
+      height: $sizeHeaderIcon;
+      background: $colorWhite;
+      border-radius: $radiusDefault;
+      border: none;
+      padding: $marginHalf;
+      box-sizing: border-box;
+    }
+  }
+
+  .naumanniDashboard-header-accounts {
+    list-style: none;
+    padding: 0;
+    margin: 0 $marginDefault;
+    display: flex;
+
+    > li {
+      width: $sizeHeaderIcon;
+      height: $sizeHeaderIcon;
+      margin: $marginHalf;
+    }
+
+    .userIcon {
+      .userIcon-avatar {
+        width: $sizeHeaderIcon;
+        height: $sizeHeaderIcon;
+      }
+    }
+
+    /**
+     * アカウント読み込み中のときの代わりのアイコン
+     */
+    .naumanniDashboard-header-noAccount {
+      border-radius: $radiusDefault;
+      background: $colorHeaderButton;
+      color: $colorHeaderBackground;
+      width: $sizeHeaderIcon;
+      height: $sizeHeaderIcon;
+      line-height: $sizeHeaderIcon;
+      font-size: calc($sizeHeaderIcon * 0.7);
+      font-weight: bold;
+      text-align: center;
+    }
+  }
+
+  .naumanniDashboard-header-spacer {
+    flex: 10 10 auto;
+  }
+
+  .naumanniDashboard-header-configButton,
+  .naumanniDashboard-header-addAccountButton {
+    color: $colorHeaderButton;
+    border: 1px solid $colorHeaderButton;
+    font-size: calc($sizeHeaderIcon * 0.7);
+
+    border: 1px solid $colorHeaderButton;
+    border-radius: $radiusDefault;
+
+    box-sizing: border-box;
+    padding: 0;
+    width: $sizeHeaderIcon;
+    height: $sizeHeaderIcon;
+    background: transparent;
+    margin: 0;
+
+    cursor: pointer;
+
+    /* remove iconfont's margin */
+    > span::before {
+      margin: 0;
+    }
+  }
+
+  .naumanniDashboard-header-configButton {
+    margin: $marginDefault;
+  }
+
+  .naumanniDashboard-header-addAccountButton {
+    border-style: dashed;
+  }
+}

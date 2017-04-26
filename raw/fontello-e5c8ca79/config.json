@@ -81,6 +81,18 @@
       "src": "fontawesome"
     },
     {
+      "uid": "bc64550dd022ce21604f97309b346cea",
+      "css": "cog",
+      "code": 59402,
+      "src": "entypo"
+    },
+    {
+      "uid": "1gf923f9wvaezxmfon515dglxa3drf0e",
+      "css": "plus",
+      "code": 59403,
+      "src": "typicons"
+    },
+    {
       "uid": "a70b0a7ad233888d003444ad6c75f30e",
       "css": "logo",
       "code": 59392,

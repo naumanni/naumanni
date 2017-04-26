@@ -11,6 +11,7 @@ export class Application {
      * @private
      */
     this._context = null
+    this._initialized = false
   }
 
   /**

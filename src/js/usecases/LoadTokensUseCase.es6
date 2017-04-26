@@ -3,7 +3,8 @@ import {UseCase} from 'almin'
 import {OAuthToken} from 'src/models'
 import * as actions from 'src/actions'
 
-export default class UpdateTokensUseCase extends UseCase {
+
+export default class LoadTokensUseCase extends UseCase {
   constructor() {
     super()
   }
