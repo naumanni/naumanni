@@ -20,3 +20,54 @@
     }
   }
 }
+
+
+.dropdownMenuButton {
+  position: relative;
+
+  .dropdownMenuButton-menu {
+    position: absolute;
+    z-index: $zIndexDropDownMenu;
+
+    background: $colorWhite;
+  }
+}
+
+
+.naumanniDashboard-header .naumanniDashboard-header-accounts .menu--header {
+  border: 1px solid $colorHeaderBackground;
+
+  .menu-description {
+    @mixin clearfix;
+    padding: $marginDefault;
+
+    .userIcon {
+      float: left;
+      display: block;
+    }
+
+    .userIcon-avatar {
+      width: $sizeAvatar;
+      height: $sizeAvatar;
+    }
+
+    .menu-descriptionNote {
+      margin-left: calc($sizeAvatar + $marginDefault);
+    }
+  }
+
+  .menu-item--message {
+    border-top-width: 2px;
+    border-top-style: solid;
+  }
+}
+
+
+.user-displayName {
+  font-weight: bold;
+}
+
+.user-account {
+  font-size: $fontSizeSmall;
+  color: $colorGray3;
+}

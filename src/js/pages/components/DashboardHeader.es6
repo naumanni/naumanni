@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import {ContextPropType} from 'src/propTypes'
-import {IconFont, UserIconWithHost} from 'src/pages/parts'
+import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
 
 
 /**
@@ -53,7 +53,9 @@ export default class DashboardHeader extends React.Component {
 
     return (
       <header className="naumanniDashboard-header">
-        <img className="naumanniDashboard-header-logo" src="/static/images/naumanni-headerLogo.svg" />
+        <DropdownMenuButton onRenderMenu={::this.onRenderCompoundMenu}>
+          <img className="naumanniDashboard-header-logo" src="/static/images/naumanni-headerLogo.svg" />
+        </DropdownMenuButton>
 
         <div className="naumanniDashboard-header-toot">
           <input type="text" placeholder="何してますか？忙しいですか？手伝ってもらってもいいですか？" />
@@ -93,43 +95,11 @@ export default class DashboardHeader extends React.Component {
 
     return (
       <li key={token.address}>
-        <UserIconWithHost account={account} />
+        <DropdownMenuButton onRenderMenu={this.onRenderAccountMenu.bind(this, token, account)}>
+          <UserIconWithHost account={account} />
+        </DropdownMenuButton>
       </li>
     )
-/*
-    return (
-      <li key={token.address}>
-        {account.display_name} / {account.host}<br />
-
-        <div>
-          <span style={{margin: '0 1em'}}>
-            <Link to={`/account/${account.address}/home`}>ホーム</Link>
-          </span>
-          <span style={{margin: '0 1em'}}>
-            <Link to={`/account/${account.address}/local`}>ローカルタイムライン</Link>
-          </span>
-          <span style={{margin: '0 1em'}}>
-            <Link to={`/account/${account.address}/federation`}>連合タイムライン</Link>
-          </span>
-        </div>
-
-        <div>
-          {account.hasPublicKey ? (
-            <span>
-              🔑あり
-              <button onClick={this.onClickGenerateKeypair.bind(this, token, account)}>鍵ペア再生成</button>
-            </span>
-          ) : (
-            <span>
-              🔑なし
-              <button onClick={this.onClickGenerateKeypair.bind(this, token, account)}>鍵ペア生成</button>
-            </span>
-          )}
-
-        </div>
-      </li>
-    )
-*/
   }
 
   getStateFromContext() {
@@ -139,4 +109,59 @@ export default class DashboardHeader extends React.Component {
     }
   }
 
+  // callbacks
+  onRenderCompoundMenu() {
+    return (
+      <ul className="menu menu--header">
+        <li className="menu-item">
+          <IconFont iconName="home" />
+          <span className="menu-itemLabel">結合ホームタイムライン</span>
+        </li>
+
+        <li className="menu-item">
+          <IconFont iconName="users" />
+          <span className="menu-itemLabel">結合ローカルタイムライン</span>
+        </li>
+
+        <li className="menu-item">
+          <IconFont iconName="globe" />
+          <span className="menu-itemLabel">結合連合タイムライン</span>
+        </li>
+
+        <li className="menu-item menu-item--message">
+          <IconFont iconName="mail" />
+          <span className="menu-itemLabel">メッセージ</span>
+        </li>
+
+      </ul>
+    )
+  }
+
+  onRenderAccountMenu(token, account) {
+    return (
+      <ul className="menu menu--header">
+        <li className="menu-description">
+          <UserIconWithHost account={account} />
+          <div className="menu-descriptionNote">
+            <span className="user-displayName">{account.display_name}</span><br />
+            <span className="user-account">{account.account}</span>
+          </div>
+        </li>
+        <li className="menu-item">
+          <IconFont iconName="home" />
+          <span>ホームタイムライン</span>
+        </li>
+
+        <li className="menu-item">
+          <IconFont iconName="users" />
+          <span>ローカルタイムライン</span>
+        </li>
+
+        <li className="menu-item">
+          <IconFont iconName="globe" />
+          <span>連合タイムライン</span>
+        </li>
+      </ul>
+    )
+  }
 }

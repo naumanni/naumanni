@@ -112,3 +112,38 @@
     border-style: dashed;
   }
 }
+
+
+
+.menu.menu--header {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  background: $colorMenuBackground;
+  color: $colorMenuText;
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: $marginDefault;
+    border-top: 1px dotted $colorMenuBorder;
+
+    > .icon {
+      display: inline-block;
+    }
+
+    > .menu-itemLabel {
+      flex: 1 1 auto;
+      margin: 0 0 0 $marginDefault;
+      white-space: nowrap;
+    }
+
+    &:hover {
+      background: $colorHoverBackground;
+      color: $colorHoverText;
+    }
+  }
+
+}

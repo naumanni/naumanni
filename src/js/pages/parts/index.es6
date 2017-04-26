@@ -1,4 +1,5 @@
+import DropdownMenuButton from './DropdownMenuButton'
 import IconFont from './IconFont'
 import {UserIconWithHost} from './UserIcon'
 
-export {IconFont, UserIconWithHost}
+export {DropdownMenuButton, IconFont, UserIconWithHost}

@@ -14,6 +14,6 @@ export default class IconFont extends React.Component {
    * @override
    */
   render() {
-    return <span className={`icon-${this.props.iconName}`} />
+    return <span className={`icon icon-${this.props.iconName}`} />
   }
 }
