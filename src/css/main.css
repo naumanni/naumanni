@@ -3,104 +3,18 @@
 @import "_mixins.css";
 @import "_font.css";
 @import "_parts.css";
+@import "components/_column_container.css";
+@import "components/_timeline_column.css";
 @import "components/_toot_window.css";
 @import "_dashboard.css";
 
 html {
   background: $colorBackground;
   font-size: 14px;
+  font-family: 'Roboto', sans-serif;
 }
 
 body {
   margin: 0;
   padding: 0;
 }
-
-/*
-.timeline {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-
-  li {
-    padding: 16px;
-    border-bottom: 1px solid #aad8c9;
-  }
-
-}
-
-.status {
-  @mixin clearfix;
-
-  .status-avatar {
-    display: block;
-    float: left;
-    width: 64px;
-    height: 64px;
-    border-radius: 4px;
-  }
-
-  .status-info {
-    margin-left: 78px;
-    display: flex;
-
-    > * {
-      white-space: nowrap;
-    }
-
-    .status-createdAt {
-      flex-grow: 1;
-    }
-  }
-
-  .status-displayName {
-    font-weight: bold;
-    margin-right: 0.5em;
-    font-family: sans-serif;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .status-account {
-    font-family: sans-serif;
-    color: #666;
-  }
-
-  .status-createdAt {
-    text-align: right;
-    font-family: sans-serif;
-    color: #666;
-    text-decoration: none;
-  }
-
-  .status-body {
-    background: #eaefed;
-    border-radius: 6px;
-    margin: 4px 0 0 72px;
-    padding: 6px;
-
-    .status-isDecrypted {
-      background: #888;
-      padding: 4px;
-      border-radius: 4px;
-      font-size: $fontSizeSmall;
-      color: yellow;
-      margin: 0 0 8px;
-    }
-
-    .status-spoilerText {
-      padding-bottom: $marginHalf;
-      border-bottom: 1px solid #aaa;
-      margin-bottom: $marginHalf;
-    }
-
-    .status-content {
-      > p {
-        margin: 0;
-      }
-    }
-  }
-}
-*/

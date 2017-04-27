@@ -1,0 +1,74 @@
+.columnContainer {
+  display: flex;
+  flex-wrap: nowrap;
+  box-sizing: border-box;
+  overflow-x: scroll;
+  height: calc(100vh - $sizeHeaderIcon - $marginDefault * 2);  /* もっとましな方法はないのか? */
+  padding: $marginHalf;
+
+  .column {
+    position: relative;
+    flex: 1 1 400px;
+    min-width: 320px;
+    max-width: 480px;
+    margin: $marginHalf;
+    background: #fff;
+    overflow: hidden;
+  }
+}
+
+
+.column {
+  .column-header {
+    display: flex;
+    align-items: center;
+    background: $colorColumnHeaderBackground;
+    height: 48px;
+    padding: $marginHalf $marginDefault;
+    box-sizing: border-box;
+
+    .column-headerTitle {
+      color: $colorColumnHeaderText;
+      font: $fontColumnHeaderText;
+      flex: 1 1 auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      .column-headerTitleMain {
+
+      }
+
+      .column-headerTitleSub {
+        font-size: $fontSizeSmall;
+        color: $colorMainLighter;
+      }
+    }
+
+    .column-headerMenu {
+      .column-headerMenuButton {
+        color: $colorColumnHeaderMenuButton;
+        font-size: 20px;  /* TODO: MAGIC NUMBER */
+
+        box-sizing: border-box;
+        padding: 0;
+        background: transparent;
+        margin: 0;
+        border: none;
+
+        cursor: pointer;
+
+        /* remove iconfont's margin */
+        > span::before {
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  .column-body {
+    width: 100%;
+    height: calc(100% - 48px);
+    overflow-y: scroll;
+  }
+}

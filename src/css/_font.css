@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'naumanni';
-  src: url('./font/naumanni.eot?39338594');
-  src: url('./font/naumanni.eot?39338594#iefix') format('embedded-opentype'),
-       url('./font/naumanni.woff2?39338594') format('woff2'),
-       url('./font/naumanni.woff?39338594') format('woff'),
-       url('./font/naumanni.ttf?39338594') format('truetype'),
-       url('./font/naumanni.svg?39338594#naumanni') format('svg');
+  src: url('./font/naumanni.eot?2750524');
+  src: url('./font/naumanni.eot?2750524#iefix') format('embedded-opentype'),
+       url('./font/naumanni.woff2?2750524') format('woff2'),
+       url('./font/naumanni.woff?2750524') format('woff'),
+       url('./font/naumanni.ttf?2750524') format('truetype'),
+       url('./font/naumanni.svg?2750524#naumanni') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -15,7 +15,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'naumanni';
-    src: url('./font/naumanni.svg?39338594#naumanni') format('svg');
+    src: url('./font/naumanni.svg?2750524#naumanni') format('svg');
   }
 }
 */
@@ -68,4 +68,11 @@
 .icon-cog:before { content: '\e80a'; } /* '' */
 .icon-plus:before { content: '\e80b'; } /* '' */
 .icon-home:before { content: '\e80c'; } /* '' */
+.icon-star-filled:before { content: '\e80d'; } /* '' */
+.icon-dot-3:before { content: '\e80e'; } /* '' */
+.icon-reply:before { content: '\e80f'; } /* '' */
+.icon-reply-all:before { content: '\e810'; } /* '' */
+.icon-picture-1:before { content: '\e812'; } /* '' */
 .icon-user-secret:before { content: '\f21b'; } /* '' */
+.icon-user-plus:before { content: '\f234'; } /* '' */
+.icon-user-times:before { content: '\f235'; } /* '' */

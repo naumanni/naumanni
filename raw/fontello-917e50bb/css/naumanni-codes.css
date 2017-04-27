@@ -12,4 +12,11 @@
 .icon-cog:before { content: '\e80a'; } /* '' */
 .icon-plus:before { content: '\e80b'; } /* '' */
 .icon-home:before { content: '\e80c'; } /* '' */
+.icon-star-filled:before { content: '\e80d'; } /* '' */
+.icon-dot-3:before { content: '\e80e'; } /* '' */
+.icon-reply:before { content: '\e80f'; } /* '' */
+.icon-reply-all:before { content: '\e810'; } /* '' */
+.icon-picture-1:before { content: '\e812'; } /* '' */
 .icon-user-secret:before { content: '\f21b'; } /* '' */
+.icon-user-plus:before { content: '\f234'; } /* '' */
+.icon-user-times:before { content: '\f235'; } /* '' */

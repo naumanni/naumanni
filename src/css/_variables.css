@@ -1,4 +1,4 @@
-/* 色値s 直接つかわないで! */
+/* 定数系 直接使わないで! */
 $colorMainLighter: #A1887F;
 $colorMainNormal: #795548;
 $colorMainDarker: #5D4037;
@@ -14,6 +14,23 @@ $colorGray1: #E0E0E0;
 $colorGray2: #BDBDBD;
 $colorGray3: #9E9E9E;
 $colorText: #222;
+
+
+$fontSizeNormal: 1rem;
+$fontSizeSmall: 0.85rem;
+$fontSizeLarger: 1.2rem;
+
+
+$sizeHeaderIcon: 24px;
+$sizeAvatar: 48px;
+$sizeBackgroundLogo: 400px;
+
+
+$radiusDefault: 4px;
+
+
+$marginDefault: 8px;
+$marginHalf: calc($marginDefault / 2);
 
 
 /* 色 for App */
@@ -32,21 +49,13 @@ $colorMenuBorder: $colorMainLighter;
 $colorHoverText: $colorMainNormal;
 $colorHoverBackground: $colorAccentLighter;
 
+$colorColumnHeaderBackground: $colorMainNormal;
+$colorColumnHeaderText: $colorWhite;
+$colorColumnHeaderMenuButton: $colorMainLighter;
+$fontColumnHeaderText: bold $fontSizeLarger/1.2 sans-serif;
+$sizeColumnHeader: 48px;
 
-$fontSizeNormal: 1rem;
-$fontSizeSmall: 0.85rem;
-$fontSizeLarger: 1.2rem;
-
-
-$sizeHeaderIcon: 24px;
-$sizeAvatar: 32px;
-$sizeBackgroundLogo: 400px;
-
-
-$radiusDefault: 4px;
-
-$marginDefault: 8px;
-$marginHalf: calc($marginDefault / 2);
-
+$colorStatusBorder: $colorGray1;
+$colorStatusDate: $colorGray3;
 
 $zIndexDropDownMenu: 1000;

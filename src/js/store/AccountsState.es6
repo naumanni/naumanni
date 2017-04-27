@@ -45,4 +45,8 @@ export default class AccountsState {
     })
     return new AccountsState(tokensAndAccounts)
   }
+
+  getAccountByAddress(address) {
+    return this.tokensAndAccounts.find((ta) => ta.account.address === address)
+  }
 }

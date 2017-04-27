@@ -1,6 +1,5 @@
 import moment from 'moment'
 import {Record} from 'immutable'
-import {sanitizeHtml} from 'sanitize-html'
 
 
 const StatusRecord = Record({  // eslint-disable-line new-cap
@@ -9,10 +8,10 @@ const StatusRecord = Record({  // eslint-disable-line new-cap
   id: '',
   uri: '',
   url: '',
-  account: '',
+  account: null,
   in_reply_to_id: '',
   in_reply_to_account_id: '',
-  reblog: '',
+  reblog: null,
   content: '',
   created_at: '',
   reblogs_count: '',
@@ -36,20 +35,30 @@ export default class Status extends StatusRecord {
   /**
    * @constructor
    */
-  constructor(...args) {
-    super(...args)
+  constructor(raw) {
+    if(raw.account) {
+      // avoid circular dependency
+      const Account = require('./Account').default
+      raw.account = new Account({
+        host: raw.host,
+        ...raw.account,
+      })
+    }
+    if(raw.reblog) {
+      raw.reblog = new Status(raw.reblog)
+    }
+
+    if(raw.media_attachments.length) {
+      const Attachment = require('./Attachment').default
+      raw.media_attachments = raw.media_attachments.map((rawmedia) => new Attachment(rawmedia))
+    }
+
+    super(raw)
   }
 
-  get accountObject() {
-    const Account = require('./Account').default
-    return new Account({
-      host: this.host,
-      ...this.account,
-    })
-  }
-
-  get sanitizedContent() {
+  get rawContent() {
     // TODO:sanitize
+    // import {sanitizeHtml} from 'sanitize-html'
     return this.content
   }
 

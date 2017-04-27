@@ -1,3 +1,4 @@
+/** UserIcon **/
 .userIcon {
   display: inline-block;
   position: relative;
@@ -14,14 +15,15 @@
       position: absolute;
       right: 0;
       bottom: 0;
-      width: calc($sizeAvatar / 3);
-      height: calc($sizeAvatar / 3);
+      width: 33%;
+      height: 33%;
       opacity: 0.6;
     }
   }
 }
 
 
+/** DropDownMenuButton **/
 .dropdownMenuButton {
   position: relative;
 
@@ -34,35 +36,41 @@
 }
 
 
-.naumanniDashboard-header .naumanniDashboard-header-accounts .menu--header {
-  border: 1px solid $colorHeaderBackground;
+/** DropDownMenuButton **/
+.menu.menu--header {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 
-  .menu-description {
-    @mixin clearfix;
+  background: $colorMenuBackground;
+  color: $colorMenuText;
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
     padding: $marginDefault;
+    border-top: 1px dotted $colorMenuBorder;
 
-    .userIcon {
-      float: left;
-      display: block;
+    > .icon {
+      display: inline-block;
     }
 
-    .userIcon-avatar {
-      width: $sizeAvatar;
-      height: $sizeAvatar;
+    > .menu-itemLabel {
+      flex: 1 1 auto;
+      margin: 0 0 0 $marginDefault;
+      white-space: nowrap;
     }
 
-    .menu-descriptionNote {
-      margin-left: calc($sizeAvatar + $marginDefault);
+    &:hover {
+      background: $colorHoverBackground;
+      color: $colorHoverText;
     }
-  }
-
-  .menu-item--message {
-    border-top-width: 2px;
-    border-top-style: solid;
   }
 }
 
 
+/** User name **/
 .user-displayName {
   font-weight: bold;
 }
@@ -70,4 +78,40 @@
 .user-account {
   font-size: $fontSizeSmall;
   color: $colorGray3;
+}
+
+
+/** NowLoading **/
+$loaderSize: 2rem;
+$loaderBorderWidth: 6px;
+$loaderBorderColor: #888;
+$loaderVMargin: 2rem;
+
+.niceLoader {
+  margin: $loaderVMargin auto;
+  font-size: 10px;
+  position: relative;
+  text-indent: -9999em;
+  border-top: $loaderBorderWidth solid color($loaderBorderColor a(20%));
+  border-right: $loaderBorderWidth solid color($loaderBorderColor a(20%));
+  border-bottom: $loaderBorderWidth solid color($loaderBorderColor a(20%));
+  border-left: $loaderBorderWidth solid $loaderBorderColor;
+  transform: translateZ(0);
+  animation: niceLoaderAnimation 1.1s infinite linear;
+
+  &, &::after {
+    border-radius: 50%;
+    width: $loaderSize;
+    height: $loaderSize;
+  }
+}
+
+
+@keyframes niceLoaderAnimation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

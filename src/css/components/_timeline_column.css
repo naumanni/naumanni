@@ -1,0 +1,79 @@
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    padding: $marginDefault;
+    border-bottom: 1px solid $colorStatusBorder;
+  }
+}
+
+$statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
+
+.status {
+  @mixin clearfix;
+
+  .status-avatar {
+    display: block;
+    float: left;
+    width: $sizeAvatar;
+    height: $sizeAvatar;
+    border-radius: $radiusDefault;
+  }
+
+  .status-info {
+    margin-left: $statusBodyMarginLeft;
+    display: flex;
+
+    > * {
+      white-space: nowrap;
+    }
+
+    .status-createdAt {
+      flex-grow: 1;
+    }
+  }
+
+  .status-displayName {
+    font-weight: bold;
+    margin-right: 0.5em;
+    font-family: sans-serif;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .status-createdAt {
+    text-align: right;
+    color: $colorStatusDate;
+    text-decoration: none;
+  }
+
+  .status-body {
+    margin: $marginHalf 0 0 $statusBodyMarginLeft;
+    word-break: break-all;
+
+    .status-isDecrypted {
+      background: #888;
+      padding: 4px;
+      border-radius: 4px;
+      font-size: $fontSizeSmall;
+      color: yellow;
+      margin: 0 0 8px;
+    }
+
+    .status-spoilerText {
+      padding-bottom: $marginHalf;
+      border-bottom: 1px solid #aaa;
+      margin-bottom: $marginHalf;
+    }
+
+    .status-content {
+      > p {
+        margin: 0;
+      }
+    }
+  }
+}

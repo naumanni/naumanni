@@ -8,7 +8,7 @@
 
 
 .naumanniDashboard-initializationProgress {
-  padding-top: calc(50% + $sizeBackgroundLogo / 2 + 50px);
+  padding-top: calc(50vh + $sizeBackgroundLogo / 2);
   text-align: center;
   color: $colorBackgroundWatermark;
   text-shadow: 0 1px 0px $colorBackgroundWatermarkShadow;
@@ -21,6 +21,7 @@
   align-items: center;
 
   .naumanniDashboard-header-logo {
+    display: block;
     width: $sizeHeaderIcon;
     height: $sizeHeaderIcon;
     margin: $marginDefault;
@@ -114,36 +115,30 @@
 }
 
 
+.naumanniDashboard-header .naumanniDashboard-header-accounts .menu--header {
+  border: 1px solid $colorHeaderBackground;
 
-.menu.menu--header {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-
-  background: $colorMenuBackground;
-  color: $colorMenuText;
-
-  .menu-item {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
+  .menu-description {
+    @mixin clearfix;
     padding: $marginDefault;
-    border-top: 1px dotted $colorMenuBorder;
 
-    > .icon {
-      display: inline-block;
+    .userIcon {
+      float: left;
+      display: block;
     }
 
-    > .menu-itemLabel {
-      flex: 1 1 auto;
-      margin: 0 0 0 $marginDefault;
-      white-space: nowrap;
+    .userIcon-avatar {
+      width: $sizeAvatar;
+      height: $sizeAvatar;
     }
 
-    &:hover {
-      background: $colorHoverBackground;
-      color: $colorHoverText;
+    .menu-descriptionNote {
+      margin-left: calc($sizeAvatar + $marginDefault);
     }
   }
 
+  .menu-item--message {
+    border-top-width: 2px;
+    border-top-style: solid;
+  }
 }

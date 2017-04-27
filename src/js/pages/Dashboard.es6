@@ -2,12 +2,16 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import InitializeApplicationUseCase from 'src/usecases/InitializeApplicationUseCase'
+import ColumnContainer from './components/ColumnContainer'
 import DashboardHeader from './components/DashboardHeader'
 
 
 export default class Dashboard extends React.Component {
   static get childContextTypes() {
-    return {context: PropTypes.any}
+    return {
+      app: PropTypes.any,
+      context: PropTypes.any,
+    }
   }
 
   constructor(...args) {
@@ -22,7 +26,10 @@ export default class Dashboard extends React.Component {
    * @override
    */
   getChildContext() {
-    return {context: this.props.app.context}
+    return {
+      app: this.props.app,
+      context: this.props.app.context,
+    }
   }
 
   /**
@@ -49,6 +56,7 @@ export default class Dashboard extends React.Component {
     return (
       <div className="naumanniDashboard">
         <DashboardHeader />
+        <ColumnContainer />
       </div>
     )
   }

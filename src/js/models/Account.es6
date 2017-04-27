@@ -1,6 +1,7 @@
 import {Record} from 'immutable'
 import {REGEX_PGP_FINGERPRINT} from 'src/constants'
 
+
 const AccountRecord = Record({  // eslint-disable-line new-cap
   host: '',
 
