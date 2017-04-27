@@ -63,7 +63,7 @@ export default class TimelineColumn extends Column {
   componentWillUnmount() {
     super.componentWillUnmount()
 
-    clearTimer(this.timer)
+    clearInterval(this.timer)
   }
 
   /**

@@ -72,3 +72,9 @@
     overflow-y: scroll;
   }
 }
+
+
+.menu--column {
+  position: absolute;
+  right: 0;
+}

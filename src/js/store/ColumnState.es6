@@ -18,6 +18,8 @@ export default class ColumnState {
     switch(payload.type) {
     case actions.COLUMN_ADD_REQUESTED:
       return this.onColumnAddRequested(payload.column)
+    case actions.COLUMN_REMOVE_REQUESTED:
+      return this.onColumnRemoveRequested(payload.column)
     default:
       return this
     }
@@ -30,6 +32,16 @@ export default class ColumnState {
       return this
 
     return new ColumnState([...this.columns, column])
+  }
+
+  onColumnRemoveRequested(column) {
+    const idx = this.columns.findIndex((x) => UIColumn.isEqual(x, column))
+    if(idx < 0)
+      return this
+
+    const newcolumns = [...this.columns]
+    newcolumns.splice(idx, 1)
+    return new ColumnState(newcolumns)
   }
 
   static fromJSON(jsonobj) {

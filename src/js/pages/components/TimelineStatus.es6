@@ -158,7 +158,8 @@ export default class TimelineStatus extends React.Component {
     return (
       <div className={className.join(' ')}>
         {mediaList.map((media) => (
-          <a className="status-media"
+          <a key={media.id}
+            className="status-media"
             style={{backgroundImage: `url(${media.preview_url})`}}
             target="_blank"
             href={media.url}

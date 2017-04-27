@@ -116,8 +116,6 @@
 
 
 .naumanniDashboard-header .naumanniDashboard-header-accounts .menu--header {
-  border: 1px solid $colorHeaderBackground;
-
   .menu-description {
     @mixin clearfix;
     padding: $marginDefault;

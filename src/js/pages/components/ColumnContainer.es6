@@ -53,6 +53,7 @@ export default class ColumnContainer extends React.Component {
         {columns.map((column) => React.createElement(
           this.columnClassByType(column.type), {
             key: column.key,
+            column: column,
             ...column.params,
           }))}
       </div>

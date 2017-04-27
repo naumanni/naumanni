@@ -4,6 +4,8 @@
 export default class UIColumn {
   /**
    * @constructor
+   * @param {string} type
+   * @param {object} params
    */
   constructor(type, params) {
     this.type = type

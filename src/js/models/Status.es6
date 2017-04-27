@@ -38,6 +38,7 @@ const StatusRecord = Record({  // eslint-disable-line new-cap
 export default class Status extends StatusRecord {
   /**
    * @constructor
+   * @param {object} raw
    */
   constructor(raw) {
     if(raw.account) {

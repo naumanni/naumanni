@@ -28,15 +28,16 @@
 
   .dropdownMenuButton-menu {
     position: absolute;
+    min-width: 100%;
     z-index: $zIndexDropDownMenu;
-
-    background: $colorWhite;
   }
 }
 
 
 /** DropDownMenuButton **/
-.menu.menu--header {
+.menu {
+  border: 1px solid $colorHeaderBackground;
+  background: $colorWhite;
   list-style: none;
   padding: 0;
   margin: 0;
