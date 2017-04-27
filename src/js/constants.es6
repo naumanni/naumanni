@@ -9,6 +9,7 @@ export const TIMELINE_LOCAL = 'local'
 export const TIMELINE_HOME = 'home'
 
 export const DIALOG_ADD_ACCOUNT = 'addAccount'
+export const DIALOG_AUTHORIZE_ACCOUNT = 'authorizeAccount'
 
 // MIXEDの方が良いかも
 export const COMPOUND_TIMELINE = '__COMPOUND_TIMELINE__'   // Symbolだとjsonizeできないのでダメ

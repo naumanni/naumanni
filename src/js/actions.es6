@@ -1,4 +1,5 @@
 export const TOKEN_LOADED = 'token_loaded'
+export const TOKEN_ADDED = 'TOKEN_ADDED'
 export const ACCOUNT_LOADED = 'account_loaded'
 
 // ui

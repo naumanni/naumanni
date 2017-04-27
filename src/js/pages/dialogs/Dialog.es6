@@ -24,6 +24,8 @@ export default class Dialog extends React.Component {
 
   constructor(...args) {
     super(...args)
+
+    this.state = {}
   }
 
   /**

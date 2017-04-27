@@ -1,5 +1,5 @@
 import ReplaceDialogsUseCase from 'src/usecases/ReplaceDialogsUseCase'
-import {DIALOG_ADD_ACCOUNT} from 'src/constants'
+import {DIALOG_ADD_ACCOUNT, DIALOG_AUTHORIZE_ACCOUNT} from 'src/constants'
 
 
 /**
@@ -49,6 +49,12 @@ export default class BrowserHistory {
     case '/account/add': (() => {
       this.context.useCase(new ReplaceDialogsUseCase())
         .execute([{type: DIALOG_ADD_ACCOUNT}])
+    })()
+      break
+
+    case '/authorize': (() => {
+      this.context.useCase(new ReplaceDialogsUseCase())
+        .execute([{type: DIALOG_AUTHORIZE_ACCOUNT}])
     })()
       break
 

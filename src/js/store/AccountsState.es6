@@ -21,6 +21,8 @@ export default class AccountsState {
     switch(payload.type) {
     case actions.TOKEN_LOADED:
       return this.onTokenLoaded(payload)
+    case actions.TOKEN_ADDED:
+      return this.onTokenAdded(payload)
     case actions.ACCOUNT_LOADED:
       return this.onAccountLoaded(payload)
     default:
@@ -37,7 +39,19 @@ export default class AccountsState {
     return new AccountsState(tokensAndAccounts)
   }
 
+  onTokenAdded({token}) {
+    require('assert')(token && token.address)
+    const ta = this.tokensAndAccounts.find((ta) => ta.token.address === token.address)
+    if(ta)
+      return this
+
+    const tokensAndAccounts = this.tokensAndAccounts.concat([new TokenAndAccount(token, null)])
+    return new AccountsState(tokensAndAccounts)
+  }
+
   onAccountLoaded({token, account}) {
+    require('assert')(token && token.address)
+    require('assert')(account && account.address)
     const tokensAndAccounts = this.tokensAndAccounts.map((ta) => {
       if(ta.token.address === token.address)
         return new TokenAndAccount(ta.token, account)

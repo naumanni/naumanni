@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import {DIALOG_ADD_ACCOUNT} from 'src/constants'
+import {DIALOG_ADD_ACCOUNT, DIALOG_AUTHORIZE_ACCOUNT} from 'src/constants'
 import {UIDialogPropType} from 'src/propTypes'
 
 /**
@@ -42,6 +42,7 @@ export default class ModalDialogContainer extends React.Component {
   dialogClassByType(type) {
     switch(type) {
     case DIALOG_ADD_ACCOUNT: return require('src/pages/dialogs/AddAccountDialog').default
+    case DIALOG_AUTHORIZE_ACCOUNT: return require('src/pages/dialogs/AuthorizeAccountDialog').default
     }
   }
 }
