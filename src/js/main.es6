@@ -66,3 +66,11 @@ async function main() {
   // )
 }
 main()
+
+
+window.resetAll = () => {
+  window.indexedDB.deleteDatabase('naummanni_database')
+  localStorage.removeItem('naumanni::columns')
+  history.replaceState('', null, '/')
+  location.reload()
+}
