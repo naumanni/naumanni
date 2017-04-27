@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import InitializeApplicationUseCase from 'src/usecases/InitializeApplicationUseCase'
 import ColumnContainer from './components/ColumnContainer'
 import DashboardHeader from './components/DashboardHeader'
+import ModalDialogContainer from './components/ModalDialogContainer'
 
 
 export default class Dashboard extends React.Component {
@@ -19,6 +20,27 @@ export default class Dashboard extends React.Component {
 
     this.state = {
       initializer: <AppIntializer app={this.props.app} onInitialized={::this.onAppInitialized} />,
+      ...this.getStateFromContext(),
+    }
+  }
+
+  /**
+   * @override
+   */
+  componentDidMount() {
+    const {context} = this.props.app
+
+    this.listenerRemovers = [
+      context.onChange(() => this.setState(this.getStateFromContext())),
+    ]
+  }
+
+  /**
+   * @override
+   */
+  componentWillUnmount() {
+    for(const remover of this.listenerRemovers) {
+      remover()
     }
   }
 
@@ -35,12 +57,6 @@ export default class Dashboard extends React.Component {
   /**
    * @override
    */
-  componentDidMount() {
-  }
-
-  /**
-   * @override
-   */
   render() {
     const {
       initializer,
@@ -52,13 +68,23 @@ export default class Dashboard extends React.Component {
       )
     }
 
+    const {dialogs} = this.state
 
     return (
-      <div className="naumanniDashboard">
-        <DashboardHeader />
-        <ColumnContainer />
+      <div className={`naumanniApp ${dialogs.length ? 'is-shownDialogs' : ''}`}>
+        <div className="naumanniDashboard">
+          <DashboardHeader />
+          <ColumnContainer />
+        </div>
+        <ModalDialogContainer dialogs={dialogs} />
       </div>
     )
+  }
+
+  getStateFromContext() {
+    const {context} = this.props.app
+    const state = context.getState()
+    return {dialogs: state.dialogsState.dialogs}
   }
 
   // callbacks
@@ -66,13 +92,15 @@ export default class Dashboard extends React.Component {
    * アプリの初期化が完了したら呼ばれる
    */
   onAppInitialized() {
-    this.setState({initializer: null})
+    this.setState({initializer: null}, () => {
+      // routing開始
+      this.props.app.history.start()
+    })
   }
 }
 
 
-// // Dashboard local components
-
+// Dashboard local components
 /**
  * 初期化して、ついでに状況を表示する奴
  */

@@ -31,6 +31,14 @@ export class Application {
 
     this._context = newContext
   }
+
+  pushState(state, title, path) {
+    this.history.pushState(state, title, path)
+  }
+
+  replaceState(state, title, path) {
+    this.history.replaceState(state, title, path)
+  }
 }
 
 // singleton

@@ -4,6 +4,10 @@
 
   width: 100vw;
   height: 100vh;
+
+  &.is-shownDialogs {
+    filter: blur(8px);
+  }
 }
 
 

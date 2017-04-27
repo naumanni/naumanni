@@ -46,7 +46,7 @@ export default class TimelineStatus extends React.Component {
     }
 
     return (
-      <div className="status timeline-status">
+      <article className="status timeline-status">
 
         {entry.isReblogged() && (
           <div className="status-row status-reblogFrom">
@@ -118,7 +118,7 @@ export default class TimelineStatus extends React.Component {
           </div>
         </div>
 
-      </div>
+      </article>
     )
   }
 

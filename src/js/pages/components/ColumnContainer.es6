@@ -68,6 +68,7 @@ export default class ColumnContainer extends React.Component {
     return this.context.context.getState()
   }
 
+  // TODO:しょぼい
   columnClassByType(type) {
     switch(type) {
     case COLUMN_TIMELINE: return TimelineColumn

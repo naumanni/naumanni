@@ -18,7 +18,8 @@ $colorBlack: #000000;
 
 $fontSizeNormal: 1rem;
 $fontSizeSmall: 0.85rem;
-$fontSizeLarger: 1.2rem;
+$fontSizeLarger: 1.1rem;
+$fontSizeLargest: 1.2rem;
 
 
 $sizeHeaderIcon: 24px;
@@ -35,6 +36,18 @@ $marginHalf: calc($marginDefault / 2);
 
 /* 色 for App */
 $colorText: #212121;
+
+$fontSizeButton: $fontSizeLarger;
+$sizeButtonHeight: 36px;
+$sizeButtonMinWidth: 120px;
+$colorPrimaryButtonBackground: #0088dc;
+$colorPrimaryButtonHoverBackground: #4cabe6;
+$colorPrimaryButtonText: #ffffff;
+$colorDangerButtonBackground: #d32f2f;
+$colorDangerButtonHoverBackground: #e06d6d;
+$colorDangerButtonText: #ffffff;
+$radiusButton: 6px;
+
 
 /* ダッシュボードの背景 */
 $colorBackground: #efebe9;   /* TODO: 上の色に合わせる */
@@ -71,5 +84,9 @@ $fontSizeStatusActionIcon: 1.5rem;
 $fontSizeStatusVisibilityIcon: 1rem;
 
 $colorUserAccount: colorGray3;
+
+$colorModalDialogContainerBackground: rgba(0, 0, 0, 0.5);
+$colorDialogBackground: $colorWhite;
+$radiusDialog: calc($radiusDefault * 2);
 
 $zIndexDropDownMenu: 1000;

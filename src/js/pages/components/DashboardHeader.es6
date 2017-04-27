@@ -2,7 +2,7 @@ import React from 'react'
 // import PropTypes from 'prop-types'
 
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
-import {ContextPropType} from 'src/propTypes'
+import {AppPropType, ContextPropType} from 'src/propTypes'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
 import {
   COLUMN_TIMELINE, COLUMN_FRIENDS,
@@ -16,6 +16,7 @@ import {
  */
 export default class DashboardHeader extends React.Component {
   static contextTypes = {
+    app: AppPropType,
     context: ContextPropType,
   }
 
@@ -69,7 +70,8 @@ export default class DashboardHeader extends React.Component {
         <ul className="naumanniDashboard-header-accounts">
           {tokensAndAccounts.map((ta) => this.renderTokenAndAccount(ta))}
           <li>
-            <button className="naumanniDashboard-header-addAccountButton">
+            <button className="naumanniDashboard-header-addAccountButton"
+              onClick={::this.onClickAddAccount}>
               <IconFont iconName="plus" />
             </button>
           </li>
@@ -182,6 +184,11 @@ export default class DashboardHeader extends React.Component {
         </li>
       </ul>
     )
+  }
+
+  onClickAddAccount() {
+    // TODO: named routingしたい
+    this.context.app.pushState({}, null, '/account/add')
   }
 
   onClickMenuItem(columnType, columnParams) {

@@ -2,6 +2,7 @@ import {StoreGroup} from 'almin'
 
 import AccountsStore from './AccountsStore'
 import ColumnStore from './ColumnStore'
+import DialogsStore from './DialogsStore'
 
 /**
  * 全Storeを纏める
@@ -15,6 +16,7 @@ export default class AppStoreGroup {
     return new StoreGroup([
       new AccountsStore(),
       new ColumnStore(),
+      new DialogsStore(),
     ])
   }
 }

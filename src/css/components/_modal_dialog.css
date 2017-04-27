@@ -1,0 +1,58 @@
+.modalDialogContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: $colorModalDialogContainerBackground;
+
+  .dialog {
+    display: none;
+    min-width: 400px;
+    background: $colorDialogBackground;
+    border-radius: $radiusDialog;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    &.is-visible {
+      display: block;
+    }
+  }
+}
+
+
+.dialog {
+  .dialog-header {
+    padding: $marginDefault;
+    border-bottom: 1px solid $colorGray1;
+
+    h1 {
+      margin: 0;
+      font-size: $fontSizeLargest;
+      color: $colorMainNormal;
+    }
+  }
+
+  .dialog-body {
+    padding: $marginDefault;
+  }
+
+  .dialog-footer {
+    padding: $marginDefault;
+    border-top: 1px solid $colorGray1;
+
+    .dialog-footerButtons {
+      text-align: right;
+      > * {
+        margin: 0 $marginDefault;
+
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}

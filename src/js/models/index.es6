@@ -6,5 +6,6 @@ import Status from './Status'
 export {Account, Attachment, OAuthApp, OAuthToken, Status}
 
 import UIColumn from './UIColumn'
+import UIDialog from './UIDialog'
 import UITimelineEntry from './UITimelineEntry'
-export {UIColumn, UITimelineEntry}
+export {UIColumn, UIDialog, UITimelineEntry}

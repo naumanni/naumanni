@@ -115,3 +115,33 @@ $loaderVMargin: 2rem;
     transform: rotate(360deg);
   }
 }
+
+
+/** Button **/
+.button-danger,
+.button-primary {
+  font-size: $fontSizeButton;
+  font-weight: bold;
+  line-height: $sizeButtonHeight;
+  min-width: $sizeButtonMinWidth;
+  border: none;
+  border-radius: $radiusButton;
+}
+
+.button-primary {
+  color: $colorPrimaryButtonText;
+  background: $colorPrimaryButtonBackground;
+
+  &:hover {
+    background: $colorPrimaryButtonHoverBackground;
+  }
+}
+
+.button-danger {
+  color: $colorDangerButtonText;
+  background: $colorDangerButtonBackground;
+
+  &:hover {
+    background: $colorDangerButtonHoverBackground;
+  }
+}

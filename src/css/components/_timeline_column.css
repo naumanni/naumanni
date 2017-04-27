@@ -195,6 +195,7 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
       text-align: center;
       padding: 0;
       opacity: 0.6;
+      cursor: pointer;
 
       .icon&::before {
         margin: 0;
