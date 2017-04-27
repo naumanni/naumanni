@@ -32,7 +32,7 @@
     },
     {
       "uid": "216891b0093d4dbef19877d5b00d1b16",
-      "css": "retweet",
+      "css": "reblog",
       "code": 59396,
       "src": "entypo"
     },
@@ -138,6 +138,18 @@
       "uid": "fb1c59faa93eb6e2248c2456625b08a2",
       "css": "user-times",
       "code": 62005,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "c5fd349cbd3d23e4ade333789c29c729",
+      "css": "eye",
+      "code": 59411,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "7fd683b2c518ceb9e5fa6757f2276faa",
+      "css": "eye-off",
+      "code": 59412,
       "src": "fontawesome"
     },
     {

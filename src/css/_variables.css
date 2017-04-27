@@ -13,7 +13,7 @@ $colorWhite: #FFFFFF;
 $colorGray1: #E0E0E0;
 $colorGray2: #BDBDBD;
 $colorGray3: #9E9E9E;
-$colorText: #222;
+$colorBlack: #000000;
 
 
 $fontSizeNormal: 1rem;
@@ -34,6 +34,8 @@ $marginHalf: calc($marginDefault / 2);
 
 
 /* 色 for App */
+$colorText: #212121;
+
 /* ダッシュボードの背景 */
 $colorBackground: #efebe9;   /* TODO: 上の色に合わせる */
 $colorBackgroundWatermark: #d6c7c7;
@@ -57,5 +59,17 @@ $sizeColumnHeader: 48px;
 
 $colorStatusBorder: $colorGray1;
 $colorStatusDate: $colorGray3;
+$colorStatusStatusMeta: $colorMainLighter;
+$colorStatusLink: $colorAccentNormal;
+$colorStatusText: $colorText;
+$colorStatusSpoilerOpenerBackground: $colorGray1;
+$colorStatusSpoilerOpenerText: $colorWhite;
+$colorStatusActionColor: $colorMainLighter;
+$colorStatusInactiveActionColor: $colorGray1;
+$colorStatusVisiblityColor: $colorGray1;
+$fontSizeStatusActionIcon: 1.5rem;
+$fontSizeStatusVisibilityIcon: 1rem;
+
+$colorUserAccount: colorGray3;
 
 $zIndexDropDownMenu: 1000;

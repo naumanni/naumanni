@@ -9,7 +9,7 @@
   .column {
     position: relative;
     flex: 1 1 400px;
-    min-width: 320px;
+    min-width: 360px;
     max-width: 480px;
     margin: $marginHalf;
     background: #fff;

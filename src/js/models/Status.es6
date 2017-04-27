@@ -1,6 +1,10 @@
 import moment from 'moment'
 import {Record} from 'immutable'
 
+import {
+  VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
+} from 'src/constants'
+
 
 const StatusRecord = Record({  // eslint-disable-line new-cap
   host: '',
@@ -21,7 +25,7 @@ const StatusRecord = Record({  // eslint-disable-line new-cap
   sensitive: '',
   spoiler_text: '',
   visibility: '',
-  media_attachments: '',
+  media_attachments: [],
   mentions: '',
   tags: '',
   application: '',
@@ -45,7 +49,10 @@ export default class Status extends StatusRecord {
       })
     }
     if(raw.reblog) {
-      raw.reblog = new Status(raw.reblog)
+      raw.reblog = new Status({
+        host: raw.host,
+        ...raw.reblog,
+      })
     }
 
     if(raw.media_attachments.length) {
@@ -72,5 +79,11 @@ export default class Status extends StatusRecord {
     if(this.spoiler_text.indexOf('<nem>') >= 0)
       return true
     return false
+  }
+
+  canReblog() {
+    return (this.visibility === VISIBLITY_PUBLIC || this.visibility === VISIBLITY_UNLISTED)
+      ? true
+      : false
   }
 }

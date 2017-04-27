@@ -80,4 +80,25 @@ export default class Account extends AccountRecord {
   get privateKeyArmored() {
     return localStorage.getItem(`pgp::privateKey::${this.address}`)
   }
+
+  get instance() {
+    const t = this.acct.split('@', 2)
+    if(t.length == 2)
+      return t[1]
+    return this.host
+  }
+
+  get safeAvatar() {
+    return this.safeUrl(this.avatar)
+  }
+
+  safeUrl(url) {
+    if(!url)
+      return null
+    if(url.startsWith('https://') || url.startsWith('http://'))
+      return url
+    if(!url.startsWith('/'))
+      url = '/' + url
+    return `https://${this.instance}${url}`
+  }
 }

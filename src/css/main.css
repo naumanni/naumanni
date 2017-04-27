@@ -12,9 +12,15 @@ html {
   background: $colorBackground;
   font-size: 14px;
   font-family: 'Roboto', sans-serif;
+  color: $colorText;
 }
 
 body {
   margin: 0;
   padding: 0;
+}
+
+/** multi column **/
+@media screen and (min-width: 750px) {
+  min-width: 750px;
 }

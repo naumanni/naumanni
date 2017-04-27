@@ -18,8 +18,10 @@ export class UserIconWithHost extends React.Component {
 
     return (
       <span className="userIcon with-host">
-        <img className="userIcon-avatar" src={account.avatar} alt={account.address} title={account.address} />
-        <img className="userIcon-host" src={`https://${account.host}/favicon.ico`} />
+        <img
+          className="userIcon-avatar" src={account.safeAvatar || '/images/no-avatar.png'}
+          alt={account.address} title={account.address} />
+        <img className="userIcon-host" src={`https://${account.instance}/favicon.ico`} />
       </span>
     )
   }

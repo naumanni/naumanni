@@ -10,3 +10,8 @@ export const TIMELINE_HOME = 'home'
 
 // MIXEDの方が良いかも
 export const COMPOUND_TIMELINE = '__COMPOUND_TIMELINE__'   // Symbolだとjsonizeできないのでダメ
+
+export const VISIBLITY_DIRECT = 'direct'
+export const VISIBLITY_PRIVATE = 'private'
+export const VISIBLITY_UNLISTED = 'unlisted'
+export const VISIBLITY_PUBLIC = 'public'

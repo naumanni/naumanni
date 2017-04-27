@@ -1,10 +1,14 @@
-import React from 'react'
+// import update from 'immutability-helper'
 import PropTypes from 'prop-types'
+import React from 'react'
+
 
 import {
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, COMPOUND_TIMELINE,
 } from 'src/constants'
 import TimelineListener from 'src/controllers/TimelineListener'
+import {UITimelineEntry} from 'src/models'
+import TimelineStatus from './TimelineStatus'
 import Column from './Column'
 
 
@@ -46,6 +50,20 @@ export default class TimelineColumn extends Column {
 
     // make event listener
     this.listener.open(this.state.accountsState.tokensAndAccounts)
+
+    // set timer for update dates
+    this.timer = setInterval(
+      () => this.setState({tick: (new Date())}),
+      30 * 1000)
+  }
+
+  /**
+   * @override
+   */
+  componentWillUnmount() {
+    super.componentWillUnmount()
+
+    clearTimer(this.timer)
   }
 
   /**
@@ -85,7 +103,12 @@ export default class TimelineColumn extends Column {
     return (
       <ul className="timeline">
         {timeline.map((entry) => (
-          <li key={entry.uri}><Status entry={entry} /></li>
+          <li key={entry.uri}>
+            <TimelineStatus
+              entry={entry}
+              onToggleContentOpen={::this.onStatusToggleContentOpen}
+              />
+          </li>
         ))}
       </ul>
     )
@@ -118,117 +141,12 @@ export default class TimelineColumn extends Column {
       timeline: this.listener.timeline.map((e) => new UITimelineEntry(e)),
     })
   }
-}
 
+  onStatusToggleContentOpen(entry) {
+    const idx = this.state.timeline.indexOf(entry)
+    require('assert')(idx >= 0)
 
-class UITimelineEntry {
-  constructor(entry) {
-    this.entry = entry
-    this.isSpoilerOpen = false
-  }
-
-  get mainStatus() {
-    const status = this.entry.status
-    if(status.reblog)
-      return status.reblog
-    return status
-  }
-
-  isReblogged() {
-    return this.entry.status.reblog ? true : false
-  }
-
-  /*
-   * ReblogしたUser
-   */
-  get rebloggedUser() {
-    return this.isReblogged() ? this.entry.status.account : null
-  }
-
-  get uri() {
-    return this.entry.status.uri
-  }
-
-  isDecrypted() {
-    return this.entry.decryptedText ? true : false
-  }
-
-  get content() {
-    return this.isDecrypted() ? this.entry.decryptedText.content : this.mainStatus.rawContent
-  }
-
-  get spoilerText() {
-    return this.isDecrypted() ? this.entry.decryptedText.spoilerText : this.mainStatus.spoiler_text
-  }
-
-  get hasSpoilerText() {
-    return this.mainStatus.spoiler_text ? true : false
-  }
-
-  /**
-   * contentを表示してよいか?
-   * @return {bool}
-   */
-  isContentOpen() {
-    if(this.hasSpoilerText && !this.isSpoilerOpen)
-      return false
-    return true
-  }
-}
-
-
-class Status extends React.Component {
-  static propTypes = {
-    entry: PropTypes.instanceOf(UITimelineEntry).isRequired,
-  }
-
-  render() {
-    const {entry} = this.props
-    const status = entry.mainStatus
-    const account = status.account
-
-    return (
-      <div className="status timeline-status">
-
-        {entry.isReblogged() && (
-          <div className="status-reblogFrom">
-            {entry.rebloggedUser.display_name} さんがブーストしました
-          </div>
-        )}
-
-        <img className="status-avatar" src={account.avatar} />
-        <div className="status-info">
-          <span className="user-displayName">{account.display_name || account.username}</span>
-          <span className="user-account">{account.account}</span>
-          <a className="status-createdAt"
-             href={status.url}
-             target="_blank"
-             alt={status.created_at}>{status.createdAt.fromNow()}
-          </a>
-        </div>
-
-        <div className="status-body">
-          {entry.isDecrypted() &&
-            <div className="status-isDecrypted"><span className="icon-lock" /> このメッセージは暗号化されています</div>}
-          {entry.hasSpoilerText && this.renderSpoilerText()}
-          {entry.isContentOpen() && <div className="status-content" dangerouslySetInnerHTML={{__html: entry.content}} />}
-        </div>
-
-      </div>
-    )
-  }
-
-  renderSpoilerText() {
-    const {entry} = this.props
-
-    if(!entry.hasSpoilerText)
-      return null
-
-    return (
-      <div className="status-spoilerText">
-        <p>{entry.spoilerText}</p>
-        {entry.isSpoilerOpen ? <a>閉じる</a> : <a>もっと見る...</a>}
-      </div>
-    )
+    entry.isContentOpen = !entry.isContentOpen
+    this.setState({timeline: this.state.timeline})
   }
 }

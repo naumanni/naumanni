@@ -12,26 +12,55 @@
 $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
 
 .status {
-  @mixin clearfix;
+  .status-row {
+    @mixin clearfix;
+    margin-bottom: $marginHalf;
+
+    .status-rowLeft {
+      float: left;
+      width: $sizeAvatar;
+      text-align: right;
+    }
+
+    .status-rowRight {
+      margin-left: $statusBodyMarginLeft;
+    }
+  }
+
+  .status-reblogFrom {
+    color: $colorStatusStatusMeta
+  }
 
   .status-avatar {
-    display: block;
-    float: left;
-    width: $sizeAvatar;
-    height: $sizeAvatar;
-    border-radius: $radiusDefault;
+  }
+
+  .status-visibility {
+    color: $colorStatusVisiblityColor;
+    font-size: $fontSizeStatusVisibilityIcon;
+
+    .icon::before {
+      margin: 0;
+    }
   }
 
   .status-info {
-    margin-left: $statusBodyMarginLeft;
     display: flex;
 
-    > * {
+    .status-author {
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
+      color: $colorGray3;
+
+      .user-displayName {
+        margin-right: 0.2em;
+      }
     }
 
     .status-createdAt {
       flex-grow: 1;
+      margin-left: 4px;
+      white-space: nowrap;
     }
   }
 
@@ -52,7 +81,7 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
   }
 
   .status-body {
-    margin: $marginHalf 0 0 $statusBodyMarginLeft;
+    margin-top: $marginHalf;
     word-break: break-all;
 
     .status-isDecrypted {
@@ -64,14 +93,202 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
       margin: 0 0 8px;
     }
 
-    .status-spoilerText {
-      padding-bottom: $marginHalf;
-      border-bottom: 1px solid #aaa;
-      margin-bottom: $marginHalf;
+    .status-contentOpener {
+      background: $colorStatusSpoilerOpenerBackground;
+      color: $colorStatusSpoilerOpenerText;
+      border-radius: $radiusDefault;
+      margin: 0 0 0 1em;
+      padding: 2px 4px;
+      cursor: pointer;
     }
 
     .status-content {
+      color: $colorStatusText;
+      line-height: 1.3;
+
       > p {
+        margin: 0;
+      }
+
+      /** なんかリンクにスタイル入ってる... */
+      a {
+        color: $colorStatusLink;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+
+        .invisible {
+          display: none;
+        }
+
+        .ellipsis::after {
+          content: "…";
+        }
+      }
+    }
+
+    &.has-spoilerText.is-contentOpen {
+      .status-spoilerText {
+        margin-bottom: calc($marginDefault * 2);
+      }
+    }
+  }
+
+  .status-mediaList {
+    height: 120px;
+    position: relative;
+    border-radius: $radiusDefault;
+    margin: $marginDefault 0 0 0;
+    overflow: hidden;
+
+    .status-media {
+      display: block;
+      height: 100%;
+      background-size: cover;
+      background-position: center center;
+      text-decoration: none;
+      cursor: zoom-in;
+
+      img {
+        display: block;
+        width: 100%;
+      }
+    }
+
+    .status-mediaListCover {
+      position: absolute;
+      text-align: center;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: $colorBlack;
+      color: $colorWhite;
+      border-radius: $radiusDefault;
+      cursor: pointer;
+
+      p {
+        margin: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        position: relative;
+      }
+
+      .sub {
+        font-size: smaller;
+      }
+    }
+
+    .status-buttonShowMediaListCover {
+      border: none;
+      background: rgba(0, 0, 0, 0.5);
+      color: $colorWhite;
+      position: absolute;
+      top: $marginHalf;
+      left: $marginHalf;
+      font-size: $fontSizeNormal;
+      border-radius: $radiusDefault;
+      width: 2rem;
+      height: 2rem;
+      text-align: center;
+      padding: 0;
+      opacity: 0.6;
+
+      .icon&::before {
+        margin: 0;
+      }
+    }
+
+    &.is-sensitive.is-opem {
+      .status-mediaListCover {
+        display: none;
+      }
+    }
+
+    &.status-mediaList1 {
+    }
+
+    &.status-mediaList2 {
+      .status-media:nth-child(1) {
+        float: left;
+        width: calc(50% - $marginHalf / 2);
+      }
+
+      .status-media:nth-child(2) {
+        margin-left: calc(50% + $marginHalf / 2);
+      }
+    }
+
+    &.status-mediaList3 {
+      .status-media:nth-child(1) {
+        float: left;
+        width: calc(50% - $marginHalf / 2);
+      }
+
+      .status-media:nth-child(2) {
+        margin-bottom: $marginHalf;
+      }
+      .status-media:nth-child(2),
+      .status-media:nth-child(3) {
+        margin-left: calc(50% + $marginHalf / 2);
+        height: calc(50% - $marginHalf / 2)
+      }
+    }
+
+    &.status-mediaList4 {
+      .status-media {
+        height: calc(50% - $marginHalf / 2)
+      }
+
+      .status-media:nth-child(1) {
+        float: left;
+        width: calc(50% - $marginHalf / 2);
+        margin-bottom: $marginHalf;
+      }
+      .status-media:nth-child(2) {
+        margin-left: calc(50% + $marginHalf / 2);
+        margin-bottom: $marginHalf;
+      }
+
+      .status-media:nth-child(3) {
+        float: left;
+        width: calc(50% - $marginHalf / 2);
+      }
+      .status-media:nth-child(4) {
+        margin-left: calc(50% + $marginHalf / 2);
+      }
+    }
+  }
+
+  .status-actions {
+    margin: $marginDefault 0 0;
+    color: $colorStatusInactiveActionColor;
+
+    button .icon {
+      color: $colorStatusActionColor;
+    }
+
+    > * {
+      margin: 0 $marginDefault;
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+
+    button {
+      background: transparent;
+      color: inherit;
+      border: none;
+      padding: 0;
+    }
+
+    .icon {
+      font-size: $fontSizeStatusActionIcon;
+
+      &::before {
         margin: 0;
       }
     }
