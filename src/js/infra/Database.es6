@@ -147,14 +147,27 @@ class DatabaseQuery {
         reject(e)
       }
 
-      const request = transaction.objectStore(storeName).getAll()
+      const request = transaction.objectStore(storeName).openCursor()
+      // const request = transaction.objectStore(storeName).getAll()
+      const result = []
 
       request.onsuccess = (e) => {
-        if(!e.target.result) {
-          reject(new Error('object not found'))
+        // openCursor() version
+        const cursor = e.target.result
+
+        if(cursor) {
+          result.push(new this.modelClass(cursor.value))  // eslint-disable-line new-cap
+          cursor.continue()
         } else {
-          resolve(e.target.result.map((data) => new this.modelClass(data)))  // eslint-disable-line new-cap
+          resolve(result)
         }
+
+        // getAll() version (Safari 9.1.2 (11601.7.7)だと動かない)
+        // if(!e.target.result) {
+        //   reject(new Error('object not found'))
+        // } else {
+        //   resolve(e.target.result.map((data) => new this.modelClass(data)))  // eslint-disable-line new-cap
+        // }
       }
       request.onerror = (e) => {
         reject(e)
