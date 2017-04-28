@@ -4,6 +4,7 @@ import React from 'react'
 
 import {SUBJECT_MIXED} from 'src/constants'
 import Column from './Column'
+import {IconFont, UserIconWithHost} from '../parts'
 
 
 /**
@@ -31,12 +32,13 @@ export default class FriendsColumn extends Column {
   componentDidMount() {
     super.componentDidMount()
 
-    // this.listenerRemovers.push(
-    //   this.listener.onChange(::this.onChangeTimeline),
-    // )
+    this.listenerRemovers.push(
+      this.listener.onChange(::this.onChangeFriends),
+    )
 
     // make event listener
-    this.listener.open(this.state.accountsState.tokensAndAccounts)
+    const ta = this.state.accountsState.getAccountByAddress(this.props.subject)
+    this.listener.open(ta || {token: null, account: null})
 
     // set timer for update dates
     this.timer = setInterval(
@@ -78,6 +80,20 @@ export default class FriendsColumn extends Column {
     if(this.state.loading) {
       return <NowLoading />
     }
+
+    const {friends} = this.state
+
+    return (
+      <ul className="friends">
+        {friends.map((friend) => (
+          <li key={friend.key}>
+            <FriendRow
+              friend={friend}
+              />
+          </li>
+        ))}
+      </ul>
+    )
   }
 
   /**
@@ -101,20 +117,119 @@ export default class FriendsColumn extends Column {
    */
   onChangeConext() {
     super.onChangeConext()
-    this.listener.open(this.state.accountsState.tokensAndAccounts)
+
+    const ta = this.state.accountsState.getAccountByAddress(this.props.subject)
+    this.listener.updateTokenAndAccount(ta || {token: null, account: null})
+  }
+
+  // cb
+  onChangeFriends() {
+    this.setState({
+      friends: this.listener.state.friends,
+      loading: false,
+    })
   }
 }
 
 
-class FriendsListener {
+class FriendRow extends React.Component {
+  render() {
+    const {account} = this.props.friend
+
+    return (
+      <article className="friend">
+        <div className="friend-avatar">
+          <UserIconWithHost account={account} />
+        </div>
+        <div className="friend-info">
+          <div className="friend-author">
+            <span className="user-displayName">{account.display_name || account.username}</span>
+            <span className="user-account">@{account.account}</span>
+          </div>
+        </div>
+      </article>
+    )
+  }
+}
+
+
+//
+import {EventEmitter} from 'events'
+
+
+class UIFriend {
+  constructor(account) {
+    this.account = account
+  }
+
+  get key() {
+    return this.account.address
+  }
+}
+
+
+/**
+ * とりまゴリゴリ書いてみる
+ */
+class FriendsListener extends EventEmitter {
+  static EVENT_CHANGE = 'EVENT_CHANGE'
+
   constructor(subject) {
+    super()
     this.subject = subject
   }
 
-  open(tokensAndAccounts) {
-    this.updateTokens(tokensAndAccounts)
+  open({token, account}) {
+    this.token = token
+    this.account = account
+    this.state = {
+      friends: null,
+    }
+    this.refresh()
   }
 
-  updateTokens(tokensAndAccounts) {
+  updateTokenAndAccount({token, account}) {
+    if(this.token.address === token.address) {
+      this.account = account
+      return
+    }
+
+    this.refresh()
+  }
+
+  async refresh() {
+    if(!this.token)
+      return
+
+    const {requester} = this.token
+    const response = await Promise.all([
+      requester.listFollowings({id: this.account.id, limit: 80}),
+      requester.listFollowers({id: this.account.id, limit: 80}),
+    ])
+
+    const friends = []
+    const keys = new Set()
+
+    response.forEach((accounts) => accounts.forEach((account) => {
+      if(keys.has(account.address))
+        return
+
+      friends.push(new UIFriend(account))
+      keys.add(account.address)
+    }))
+
+    // TODO: 最近お話した順でソートしたいね
+
+    this.state.friends = friends
+    this.emitChange()
+  }
+
+  onChange(cb) {
+    this.on(this.EVENT_CHANGE, cb)
+    return this.removeListener.bind(this, this.EVENT_CHANGE, cb)
+  }
+
+  emitChange() {
+    this.emit(this.EVENT_CHANGE, [this])
   }
 }

@@ -99,16 +99,27 @@ class APIRequester {
    */
   _makeRequest(method, apiName, query, options={}) {
     const spec = this.specs[apiName]
-
     if(!spec) {
       throw new Error(`spec for api ${apiName} not found`)
     }
 
+    let endpoint = spec.endpoint
     const queryFunc = (method === 'patch' || method === 'post' || method === 'put')
       ? 'send'
       : 'query'
 
-    let req = this._makeJsonRequest(method.toUpperCase(), spec.endpoint)
+    // modify endpoint
+    query = {...query}
+    endpoint = endpoint.replace(/\/:([^/]+)/g, (match, p1, offset) => {
+      if(query[p1]) {
+        const val = query[p1]
+        delete query[p1]
+        return '/' + val
+      }
+      return match
+    })
+
+    let req = this._makeJsonRequest(method.toUpperCase(), endpoint)
     req = req[queryFunc](query || {})
       .use(this.prefixer)
       .set(options.headers || {})

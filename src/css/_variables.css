@@ -85,6 +85,9 @@ $colorStatusVisiblityColor: $colorGray1;
 $fontSizeStatusActionIcon: 1.5rem;
 $fontSizeStatusVisibilityIcon: 1rem;
 
+$colorFriendBorder: $colorGray1;
+$colorFriendArrow: $colorMainNormal;
+
 $colorUserAccount: colorGray3;
 
 $colorModalDialogContainerBackground: rgba(0, 0, 0, 0.5);

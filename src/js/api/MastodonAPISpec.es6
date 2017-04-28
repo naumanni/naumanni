@@ -45,4 +45,16 @@ export default APISpec.make({
     entity: Status,
     method: 'post',
   },
+
+  listFollowers: {
+    endpoint: '/accounts/:id/followers',
+    entity: Account,
+    method: 'get',
+  },
+
+  listFollowings: {
+    endpoint: '/accounts/:id/following',
+    entity: Account,
+    method: 'get',
+  },
 })
