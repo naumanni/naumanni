@@ -1,7 +1,7 @@
 import {EventEmitter} from 'events'
 
 import {
-  TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, COMPOUND_TIMELINE,
+  TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
 } from 'src/constants'
 import {Status} from 'src/models'
 
@@ -53,7 +53,7 @@ export default class TimelineListener extends EventEmitter {
       if(!token || !account)
         return newSources
 
-      if(this.subject == COMPOUND_TIMELINE) {
+      if(this.subject == SUBJECT_MIXED) {
         // 複合タイムラインなのでALL OK
       } else {
         // Accountタイムラインなので、一致しないアカウントは無視

@@ -6,7 +6,7 @@ import {AppPropType, ContextPropType} from 'src/propTypes'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
 import {
   COLUMN_TIMELINE, COLUMN_FRIENDS,
-  TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, COMPOUND_TIMELINE,
+  TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
 } from 'src/constants'
 
 
@@ -122,30 +122,24 @@ export default class DashboardHeader extends React.Component {
       <ul className="menu menu--header">
         <li className="menu-item"
           onClick={this.onClickMenuItem.bind(
-            this, COLUMN_TIMELINE, {subject: COMPOUND_TIMELINE, timelineType: TIMELINE_HOME})}
+            this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_HOME})}
           >
           <IconFont iconName="home" />
-          <span className="menu-itemLabel">結合ホームタイムライン</span>
+          <span className="menu-itemLabel">統合ホームタイムライン</span>
         </li>
 
         <li className="menu-item"
           onClick={this.onClickMenuItem.bind(
-            this, COLUMN_TIMELINE, {subject: COMPOUND_TIMELINE, timelineType: TIMELINE_LOCAL})}>
+            this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_LOCAL})}>
           <IconFont iconName="users" />
-          <span className="menu-itemLabel">結合ローカルタイムライン</span>
+          <span className="menu-itemLabel">統合ローカルタイムライン</span>
         </li>
 
         <li className="menu-item"
           onClick={this.onClickMenuItem.bind(
-            this, COLUMN_TIMELINE, {subject: COMPOUND_TIMELINE, timelineType: TIMELINE_FEDERATION})}>
+            this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_FEDERATION})}>
           <IconFont iconName="globe" />
-          <span className="menu-itemLabel">結合連合タイムライン</span>
-        </li>
-
-        <li className="menu-item menu-item--message"
-          onClick={this.onClickMenuItem.bind(this, COLUMN_FRIENDS)}>
-          <IconFont iconName="mail" />
-          <span className="menu-itemLabel">メッセージ</span>
+          <span className="menu-itemLabel">統合連合タイムライン</span>
         </li>
 
       </ul>
@@ -181,6 +175,12 @@ export default class DashboardHeader extends React.Component {
             this, COLUMN_TIMELINE, {subject: account.address, timelineType: TIMELINE_FEDERATION})}>
           <IconFont iconName="globe" />
           <span>連合タイムライン</span>
+        </li>
+
+        <li className="menu-item"
+          onClick={this.onClickMenuItem.bind(this, COLUMN_FRIENDS, {subject: account.address})}>
+          <IconFont iconName="mail" />
+          <span>メッセージ</span>
         </li>
       </ul>
     )

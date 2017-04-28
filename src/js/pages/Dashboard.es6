@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import {NAUMANNI_VERSION} from 'src/constants'
 import InitializeApplicationUseCase from 'src/usecases/InitializeApplicationUseCase'
 import ColumnContainer from './components/ColumnContainer'
 import DashboardHeader from './components/DashboardHeader'
@@ -64,7 +65,12 @@ export default class Dashboard extends React.Component {
 
     if(initializer) {
       return (
-        <div className="naumanniDashboard">{initializer}</div>
+        <div className="naumanniDashboard">
+          <div className="naumanniDashboard-version">
+            {NAUMANNI_VERSION}
+            {initializer}
+          </div>
+        </div>
       )
     }
 
@@ -73,6 +79,7 @@ export default class Dashboard extends React.Component {
     return (
       <div className={`naumanniApp ${dialogs.length ? 'is-shownDialogs' : ''}`}>
         <div className="naumanniDashboard">
+          <div className="naumanniDashboard-version">{NAUMANNI_VERSION}</div>
           <DashboardHeader />
           <ColumnContainer />
         </div>

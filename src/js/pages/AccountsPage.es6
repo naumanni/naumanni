@@ -64,13 +64,13 @@ export default class AccountsPage extends React.Component {
 
         <div>
           <span style={{margin: '0 1em'}}>
-            <Link to="/compound/home">結合ホーム</Link>
+            <Link to="/compound/home">統合ホーム</Link>
           </span>
           <span style={{margin: '0 1em'}}>
-            <Link to="/compound/local">結合ローカル</Link>
+            <Link to="/compound/local">統合ローカル</Link>
           </span>
           <span style={{margin: '0 1em'}}>
-            <Link to="/compound/federation">結合連合</Link>
+            <Link to="/compound/federation">統合連合</Link>
           </span>
         </div>
 

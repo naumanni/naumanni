@@ -4,7 +4,7 @@ import React from 'react'
 
 
 import {
-  TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, COMPOUND_TIMELINE,
+  TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
 } from 'src/constants'
 import TimelineListener from 'src/controllers/TimelineListener'
 import {UITimelineEntry} from 'src/models'
@@ -72,8 +72,8 @@ export default class TimelineColumn extends Column {
   renderTitle() {
     const typeName = TYPENAMEMAP[this.props.timelineType]
 
-    if(this.isCompoundTimeline()) {
-      return `結合${typeName}`
+    if(this.isMixedTimeline()) {
+      return `統合${typeName}`
     } else {
       const {account} = this.state
 
@@ -120,7 +120,7 @@ export default class TimelineColumn extends Column {
   getStateFromContext() {
     const state = super.getStateFromContext()
 
-    if(!this.isCompoundTimeline()) {
+    if(!this.isMixedTimeline()) {
       const ta = state.accountsState.getAccountByAddress(this.props.subject)
 
       if(ta) {
@@ -134,8 +134,8 @@ export default class TimelineColumn extends Column {
     return state
   }
 
-  isCompoundTimeline() {
-    return this.props.subject === COMPOUND_TIMELINE
+  isMixedTimeline() {
+    return this.props.subject === SUBJECT_MIXED
   }
 
   onChangeConext() {

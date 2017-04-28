@@ -16,6 +16,8 @@
     color: $colorBackgroundWatermark;
     text-shadow: 0 1px 0px $colorBackgroundWatermarkShadow;
     width: 100%;
+    z-index: $zIndexBackground;
+    pointer-events: none;
   }
 }
 
@@ -32,6 +34,8 @@
   background: $colorHeaderBackground;
   display: flex;
   align-items: center;
+  position: relative;
+  z-index: $zIndexHeader;
 
   .naumanniDashboard-header-logo {
     display: block;

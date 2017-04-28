@@ -91,4 +91,6 @@ $colorModalDialogContainerBackground: rgba(0, 0, 0, 0.5);
 $colorDialogBackground: $colorWhite;
 $radiusDialog: calc($radiusDefault * 2);
 
+$zIndexBackground: 0;
+$zIndexHeader: 10;
 $zIndexDropDownMenu: 1000;

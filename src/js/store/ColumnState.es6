@@ -2,7 +2,7 @@ import * as actions from 'src/actions'
 import {UIColumn} from 'src/models'
 import {
   COLUMN_TIMELINE, COLUMN_FRIENDS,
-  TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, COMPOUND_TIMELINE,
+  TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
 } from 'src/constants'
 
 
@@ -49,7 +49,7 @@ export default class ColumnState {
       jsonobj.map((x) => {
         // SymbolがJSONizeできないので...
         if(x.type === COLUMN_TIMELINE && !x.params.subject)
-          x.params.subject = COMPOUND_TIMELINE
+          x.params.subject = SUBJECT_MIXED
 
         return new UIColumn(x.type, x.params)
       })
