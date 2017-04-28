@@ -2,7 +2,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import {SUBJECT_MIXED} from 'src/constants'
+import {SUBJECT_MIXED, COLUMN_TALK} from 'src/constants'
+import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import Column from './Column'
 import {IconFont, UserIconWithHost} from '../parts'
 
@@ -39,20 +40,6 @@ export default class FriendsColumn extends Column {
     // make event listener
     const ta = this.state.accountsState.getAccountByAddress(this.props.subject)
     this.listener.open(ta || {token: null, account: null})
-
-    // set timer for update dates
-    this.timer = setInterval(
-      () => this.setState({tick: (new Date())}),
-      30 * 1000)
-  }
-
-  /**
-   * @override
-   */
-  componentWillUnmount() {
-    super.componentWillUnmount()
-
-    clearInterval(this.timer)
   }
 
   /**
@@ -89,6 +76,7 @@ export default class FriendsColumn extends Column {
           <li key={friend.key}>
             <FriendRow
               friend={friend}
+              onClickFriend={::this.onClickFriend}
               />
           </li>
         ))}
@@ -129,23 +117,40 @@ export default class FriendsColumn extends Column {
       loading: false,
     })
   }
+
+  onClickFriend(friend) {
+    const {context} = this.context
+
+    context.useCase(new AddColumnUseCase()).execute(COLUMN_TALK, {
+      to: friend.account.address,
+      from: this.props.subject,
+    })
+  }
 }
 
 
 class FriendRow extends React.Component {
+  /**
+   * @override
+   */
   render() {
     const {account} = this.props.friend
 
     return (
-      <article className="friend">
+      <article className="friend" onClick={() => this.props.onClickFriend(this.props.friend)}>
         <div className="friend-avatar">
           <UserIconWithHost account={account} />
         </div>
         <div className="friend-info">
           <div className="friend-author">
+            {account.hasPublicKey && <span className="user-hasPulbickey"><IconFont iconName="key" /></span>}
+
             <span className="user-displayName">{account.display_name || account.username}</span>
             <span className="user-account">@{account.account}</span>
           </div>
+
+          <div className="friend-note" dangerouslySetInnerHTML={{__html: account.note}} />
+
         </div>
       </article>
     )
@@ -189,16 +194,18 @@ class FriendsListener extends EventEmitter {
   }
 
   updateTokenAndAccount({token, account}) {
-    if(this.token.address === token.address) {
-      this.account = account
-      return
-    }
+    // if(this.token && this.token.address === token.address) {
+    //   this.account = account
+    //   return
+    // }
 
+    this.token = token
+    this.account = account
     this.refresh()
   }
 
   async refresh() {
-    if(!this.token)
+    if(!this.token || !this.account)
       return
 
     const {requester} = this.token

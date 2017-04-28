@@ -2,10 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import {
-  COLUMN_TIMELINE, COLUMN_FRIENDS,
+  COLUMN_TIMELINE, COLUMN_FRIENDS, COLUMN_TALK,
 } from 'src/constants'
-import TimelineColumn from './TimelineColumn'
-import FriendsColumn from './FriendsColumn'
 
 /**
  * カラムのコンテナ
@@ -71,8 +69,9 @@ export default class ColumnContainer extends React.Component {
   // TODO:しょぼい
   columnClassByType(type) {
     switch(type) {
-    case COLUMN_TIMELINE: return TimelineColumn
-    case COLUMN_FRIENDS: return FriendsColumn
+    case COLUMN_TIMELINE: return require('./TimelineColumn').default
+    case COLUMN_FRIENDS: return require('./FriendsColumn').default
+    case COLUMN_TALK: return require('./TalkColumn').default
     }
   }
 }

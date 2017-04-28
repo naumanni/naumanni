@@ -17,7 +17,7 @@ export default class UIColumn {
       let keys = Object.keys(this.params)
         .sort()
         .map((key) => `${key}=${encodeURIComponent(this.params[key])}`)
-        .join('=')
+        .join('&')
 
       this._key = `${this.type}?${keys}`
     }
