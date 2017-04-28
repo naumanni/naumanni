@@ -54,6 +54,7 @@ module.exports = {
   plugins: [
     new DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.NAUMANNI_VERSION': JSON.stringify(process.env.NAUMANNI_VERSION),
     }),
     new LoggerPlugin(),
   ],

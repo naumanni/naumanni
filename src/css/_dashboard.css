@@ -8,11 +8,20 @@
   &.is-shownDialogs {
     filter: blur(8px);
   }
+
+  .naumanniDashboard-version {
+    position: absolute;
+    padding-top: calc(50vh + $sizeBackgroundLogo / 2);
+    text-align: center;
+    color: $colorBackgroundWatermark;
+    text-shadow: 0 1px 0px $colorBackgroundWatermarkShadow;
+    width: 100%;
+  }
 }
 
 
 .naumanniDashboard-initializationProgress {
-  padding-top: calc(50vh + $sizeBackgroundLogo / 2);
+  margin-top: $marginDefault;
   text-align: center;
   color: $colorBackgroundWatermark;
   text-shadow: 0 1px 0px $colorBackgroundWatermarkShadow;
@@ -88,11 +97,8 @@
   .naumanniDashboard-header-configButton,
   .naumanniDashboard-header-addAccountButton {
     color: $colorHeaderButton;
-    border: 1px solid $colorHeaderButton;
+    border: none;
     font-size: calc($sizeHeaderIcon * 0.7);
-
-    border: 1px solid $colorHeaderButton;
-    border-radius: $radiusDefault;
 
     box-sizing: border-box;
     padding: 0;
@@ -107,6 +113,11 @@
     > span::before {
       margin: 0;
     }
+  }
+
+  .naumanniDashboard-header-addAccountButton {
+    border: 1px solid $colorHeaderButton;
+    border-radius: $radiusDefault;
   }
 
   .naumanniDashboard-header-configButton {

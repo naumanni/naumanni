@@ -1,13 +1,15 @@
 /* 定数系 直接使わないで! */
-$colorMainLighter: #A1887F;
-$colorMainNormal: #795548;
-$colorMainDarker: #5D4037;
-$colorMainDarkest: #3E2723;
+$colorMainLightest: #EFEBE9;
+$colorMainLighter: #AEC8D9;
+$colorMainNormal: #0884CC;
+$colorMainDarker: #066399;
+$colorMainDarkest: #03324d;
 $colorLogo: #3F0000;
 
+$colorAccentLightest: #FFFFFF;
 $colorAccentLighter: #FF9E80;
 $colorAccentNormal: #FF6E40;
-$colorAccentDarker: #FF3D00;
+$colorAccentDarker: #FF4F19;
 
 $colorWhite: #FFFFFF;
 $colorGray1: #E0E0E0;
@@ -40,8 +42,8 @@ $colorText: #212121;
 $fontSizeButton: $fontSizeLarger;
 $sizeButtonHeight: 36px;
 $sizeButtonMinWidth: 120px;
-$colorPrimaryButtonBackground: #0088dc;
-$colorPrimaryButtonHoverBackground: #4cabe6;
+$colorPrimaryButtonBackground: #08ABCC;
+$colorPrimaryButtonHoverBackground: #52C5DC;
 $colorPrimaryButtonText: #ffffff;
 $colorDangerButtonBackground: #d32f2f;
 $colorDangerButtonHoverBackground: #e06d6d;
@@ -50,8 +52,8 @@ $radiusButton: 6px;
 
 
 /* ダッシュボードの背景 */
-$colorBackground: #efebe9;   /* TODO: 上の色に合わせる */
-$colorBackgroundWatermark: #d6c7c7;
+$colorBackground: #F0F3F5;   /* TODO: 上の色に合わせる */
+$colorBackgroundWatermark: #cfdde6;
 $colorBackgroundWatermarkShadow: $colorWhite;
 
 /* ダッシュボードのヘッダ */

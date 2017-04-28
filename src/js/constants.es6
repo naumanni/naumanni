@@ -1,3 +1,5 @@
+export const NAUMANNI_VERSION = `naumanni ${process.env.NAUMANNI_VERSION || 'development ver.'}`
+
 export const REGEX_PGP_FINGERPRINT = /PGP Key Fingerprint: ([0-9a-fA-F]+)/
 
 export const COLUMN_TIMELINE = 'timeline'
@@ -12,7 +14,7 @@ export const DIALOG_ADD_ACCOUNT = 'addAccount'
 export const DIALOG_AUTHORIZE_ACCOUNT = 'authorizeAccount'
 
 // MIXEDの方が良いかも
-export const COMPOUND_TIMELINE = '__COMPOUND_TIMELINE__'   // Symbolだとjsonizeできないのでダメ
+export const SUBJECT_MIXED = '!!__SUBJECT_MIXED__!!'   // Symbolだとjsonizeできないのでダメ
 
 export const VISIBLITY_DIRECT = 'direct'
 export const VISIBLITY_PRIVATE = 'private'
