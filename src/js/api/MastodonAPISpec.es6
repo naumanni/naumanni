@@ -1,4 +1,4 @@
-import {Account, Status} from 'src/models'
+import {Account, Notification, Status} from 'src/models'
 
 import APISpec from './APISpec'
 
@@ -55,6 +55,24 @@ export default APISpec.make({
   listFollowings: {
     endpoint: '/accounts/:id/following',
     entity: Account,
+    method: 'get',
+  },
+
+  listNotifications: {
+    endpoint: '/notifications',
+    entity: Notification,
+    method: 'get',
+  },
+
+  listReports: {
+    endpoint: '/reports',
+    // entity: Account,
+    method: 'get',
+  },
+
+  listStatuses: {
+    endpoint: '/accounts/:id/statuses',
+    entity: Status,
     method: 'get',
   },
 })

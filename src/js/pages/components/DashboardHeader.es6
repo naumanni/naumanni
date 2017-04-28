@@ -2,6 +2,7 @@ import React from 'react'
 // import PropTypes from 'prop-types'
 
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
+import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
 import {AppPropType, ContextPropType} from 'src/propTypes'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
 import {
@@ -154,6 +155,14 @@ export default class DashboardHeader extends React.Component {
           <div className="menu-descriptionNote">
             <span className="user-displayName">{account.display_name}</span><br />
             <span className="user-account">{account.account}</span>
+
+            <div>
+              {account.hasPublicKey && <span className="user-hasPublickey"><IconFont iconName="key" />pub</span>}
+            </div>
+            <div>
+              {account.hasPrivateKey && <span className="user-hasPrivatekey"><IconFont iconName="key" />prv</span>}
+            </div>
+            <button onClick={this.onClickGenKey.bind(this, token, account)}>鍵生成</button>
           </div>
         </li>
         <li className="menu-item"
@@ -195,5 +204,13 @@ export default class DashboardHeader extends React.Component {
     const {context} = this.context
 
     context.useCase(new AddColumnUseCase()).execute(columnType, columnParams)
+  }
+
+  onClickGenKey(token, account) {
+    const {context} = this.context
+
+    context.useCase(
+      new GenerateKeypairUseCase()
+    ).execute(token, account)
   }
 }

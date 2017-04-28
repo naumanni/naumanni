@@ -20,6 +20,10 @@ export class TimelineEntry {
       return -1
     return 0
   }
+
+  static compareReversed(a, b) {
+    return -TimelineEntry.compare(a, b)
+  }
 }
 
 
@@ -211,7 +215,7 @@ import base65536 from 'base65536'
 import openpgp, {key as openpgpKey, message as openpgpMessage} from 'openpgp'
 
 
-async function decryptStatus(account, status) {
+export async function decryptStatus(account, status) {
   const privatekey = openpgpKey.readArmored(account.privateKeyArmored)
 
   // status
@@ -222,6 +226,11 @@ async function decryptStatus(account, status) {
     ['spoilerText', status.spoiler_text, '<nem>', '</nem>'],
   ].map(async ([key, text, open, close]) => {
     const [before, content, after] = extractText(text, open, close)
+    if(!content) {
+      response[key] = before + content + after
+      return
+    }
+
     const messageToDecrypt = openpgpMessage.read(base65536.decode(content))
 
     const decyrptedText = await openpgp.decrypt({
@@ -238,6 +247,9 @@ async function decryptStatus(account, status) {
 
 function extractText(text, open, close) {
   const [before, rest] = text.split(open, 2)
+  if(!rest) {
+    return ['', '', text]
+  }
   const [content, after] = rest.split(close, 2)
   return [before, content, after]
 }

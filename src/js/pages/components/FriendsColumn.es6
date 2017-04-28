@@ -122,7 +122,7 @@ export default class FriendsColumn extends Column {
     const {context} = this.context
 
     context.useCase(new AddColumnUseCase()).execute(COLUMN_TALK, {
-      to: friend.account.address,
+      to: friend.account.acct,
       from: this.props.subject,
     })
   }

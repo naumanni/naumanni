@@ -87,4 +87,12 @@ export default class Status extends StatusRecord {
       ? true
       : false
   }
+
+  /**
+   * そいつあてのMentionが含まれているか？
+   */
+  isMentionTo(acct) {
+    return this.mentions.find((m) => m.acct === acct) ? true : false
+  }
+
 }

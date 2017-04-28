@@ -25,8 +25,8 @@ export default class GenerateKeypairUseCase extends UseCase {
     const {fingerprint} = keypair.key.primaryKey
 
     // save privateKey
-    localStorage.setItem(`pgp::fingerprint::${account.address}`, fingerprint)
-    localStorage.setItem(`pgp::publicKey::${account.address}`, keypair.privateKeyArmored)
+    localStorage.setItem(`pgp::fingerprint::${account.account}`, fingerprint)
+    localStorage.setItem(`pgp::privateKey::${account.account}`, keypair.privateKeyArmored)
 
     // update profile
     const note = account.note.replace(REGEX_PGP_FINGERPRINT, '').replace(/[\n\u21b5]+$/, '')

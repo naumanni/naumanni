@@ -2,7 +2,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import {SUBJECT_MIXED, COLUMN_TALK} from 'src/constants'
+import {SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT} from 'src/constants'
 import Column from './Column'
 import {IconFont, UserIconWithHost} from '../parts'
 
@@ -21,7 +21,7 @@ export default class TalkColumn extends Column {
     require('assert')(args[0].subject !== SUBJECT_MIXED)
     super(...args)
 
-    this.listener = new TalkListener()
+    this.listener = new TalkListener(this.props.to)
     this.state.loading = true
   }
 
@@ -61,7 +61,7 @@ export default class TalkColumn extends Column {
     return (
       <h1 className="column-headerTitle">
         <div className="column-headerTitleSub">{fromAccount.account}</div>
-        <div className="column-headerTitleMain">{toAccount.display_name} トーク</div>
+        <div className="column-headerTitleMain">{toAccount.display_name || toAccount.acct}とトーク</div>
       </h1>
     )
   }
@@ -74,19 +74,16 @@ export default class TalkColumn extends Column {
       return <NowLoading />
     }
 
-    const {friends} = this.state
+    const {talk} = this.state
 
     return (
-      <ul className="friends">
-        {friends.map((friend) => (
-          <li key={friend.key}>
-            <FriendRow
-              friend={friend}
-              onClickFriend={::this.onClickFriend}
-              />
-          </li>
-        ))}
-      </ul>
+      <div className="talk">
+        <ul className="talk-speaks">
+          {talk.map((statusGroup) => this.renderStatusGroup(statusGroup))}
+        </ul>
+        <div className="talk-form">
+        </div>
+      </div>
     )
   }
 
@@ -95,16 +92,9 @@ export default class TalkColumn extends Column {
    */
   getStateFromContext() {
     const state = super.getStateFromContext()
-
-    const toTA = state.accountsState.getAccountByAddress(this.props.to)
     const fromTA = state.accountsState.getAccountByAddress(this.props.from)
 
-    if(toTA && fromTA) {
-      require('assert')(toTA.token.address === fromTA.token.address)
-    }
-
-    state.token = (toTA && toTA.token) || (fromTA && fromTA.token)
-    state.toAccount = toTA && toTA.account
+    state.token = fromTA && fromTA.token
     state.fromAccount = fromTA && fromTA.account
 
     return state
@@ -119,8 +109,38 @@ export default class TalkColumn extends Column {
     this.listener.updateTokenAndAccount(this.state)
   }
 
+  renderStatusGroup(statusGroup) {
+    const {speaker, statuses} = statusGroup
+    const isMe = speaker.address == this.state.fromAccount.address
+    console.log(statuses[0])
+    const key = `speak-${speaker.address}-${statuses[0].status.id}`
+
+    return (
+      <div className={`talk-speak ${isMe ? 'is-me' : 'is-you'}`} key={key}>
+        {!isMe && (
+          <div className="talk-speaker">
+            <UserIconWithHost account={speaker} />
+          </div>
+        )}
+        <ul className="talk-speakStatuses">
+          {statuses.map((entry) => {
+            const {status} = entry
+            return (
+              <div key={status.id} className="status-content" dangerouslySetInnerHTML={{__html: status.content}} />
+            )
+          })}
+        </ul>
+      </div>
+    )
+  }
+
   // cb
   onChangeTalk() {
+    this.setState({
+      toAccount: this.listener.toAccount,
+      talk: this.listener.talk,
+      loading: this.listener.talk === null ? true : false,
+    })
   }
 }
 
@@ -129,15 +149,16 @@ export default class TalkColumn extends Column {
 import {EventEmitter} from 'events'
 
 
-// class UIFriend {
-//   constructor(account) {
-//     this.account = account
-//   }
+class UIStatusGroup {
+  constructor(speaker) {
+    this.speaker = speaker
+    this.statuses = []
+  }
 
-//   get key() {
-//     return this.account.address
-//   }
-// }
+  pushStatus(status) {
+    this.statuses.push(status)
+  }
+}
 
 
 /**
@@ -146,55 +167,178 @@ import {EventEmitter} from 'events'
 class TalkListener extends EventEmitter {
   static EVENT_CHANGE = 'EVENT_CHANGE'
 
-  constructor() {
+  constructor(toAcct) {
     super()
     this.token = null
-    this.toAccount = null
-    this.fromAccount = null
+    this.fromAccount = null  // reader
+
+    this.toAcct = toAcct
+    this.toAccount = null  // sender
+
+    this._acquiringNotifications = false
+    this._acquiringMyTalks = false
+
+    this.statuses = []
+    this.talk = null
   }
 
-  open({token, toAccount, fromAccount}) {
+  get sender() {
+    return this.toAccount
+  }
+
+  get receiver() {
+    return this.fromAccount
+  }
+
+  open({token, fromAccount}) {
     this.token = token
-    this.toAccount = toAccount
     this.fromAccount = fromAccount
+
     this.refresh()
   }
 
-  updateTokenAndAccount({token, toAccount, fromAccount}) {
+  updateTokenAndAccount({token, fromAccount}) {
     this.token = token
-    this.toAccount = toAccount
     this.fromAccount = fromAccount
+
     this.refresh()
   }
 
   async refresh() {
-    if(!this.token)
+    // まだ自分が何者かわかってない
+    if(!(this.token && this.fromAccount))
       return
 
+    const {requester} = this.token
+
+    // toAccountがなければ取りに行く
+    if(!this.toAccount) {
+      const toAccounts = await requester.searchAccount({q: this.toAcct, limit: 1})
+
+      if(toAccounts.length == 0)
+        return
+      // 複数ってなんだ？
+      require('assert')(toAccounts.length == 1)
+      this.toAccount = toAccounts[0]
+      this.emitChange()
+    }
+
     // 現状 Talkを取るAPIが無い。 notifiationsとかを辿るしかない
+    if(!this._acquiringNotifications) {
+      this.accquireNotifications()
+    }
 
+    if(!this._acquiringMyTalks) {
+      this.accquireMyTalks()
+    }
+  }
 
-    // const {requester} = this.token
-    // const response = await Promise.all([
-    //   requester.listFollowings({id: this.account.id, limit: 80}),
-    //   requester.listFollowers({id: this.account.id, limit: 80}),
-    // ])
+  /**
+   * 相手からの発言を探す
+   */
+  async accquireNotifications() {
+    const {requester} = this.token
+    this._acquiringNotifications = true
 
-    // const friends = []
-    // const keys = new Set()
+    try {
+      let maxId = undefined
+      for(;;) {
+        let changed = false
 
-    // response.forEach((accounts) => accounts.forEach((account) => {
-    //   if(keys.has(account.address))
-    //     return
+        const notifications = await requester.listNotifications({limit: 30, max_id: maxId})
+        if(!notifications.length)
+          break
 
-    //   friends.push(new UIFriend(account))
-    //   keys.add(account.address)
-    // }))
+        for(const noty of notifications) {
+          if(noty.type === NOTIFICATION_TYPE_MENTION &&
+             noty.status.visibility === VISIBLITY_DIRECT &&
+             noty.account.acct === this.toAcct) {
+            if(this.pushStatus(noty.status))
+              changed = true
+          }
+        }
 
-    // // TODO: 最近お話した順でソートしたいね
+        maxId = notifications[notifications.length - 1].id
 
-    // this.state.friends = friends
-    // this.emitChange()
+        if(changed)
+          this.emitChange()
+      }
+    } finally {
+      this._acquiringNotifications = false
+    }
+  }
+
+  async accquireMyTalks() {
+    const {requester} = this.token
+    this._acquiringMyTalks = true
+
+    try {
+      let maxId = undefined
+      for(;;) {
+        let changed = false
+
+        const statuses = await requester.listStatuses({id: this.fromAccount.id, limit: 40, max_id: maxId})
+        if(!statuses.length)
+          break
+
+        for(const st of statuses) {
+          if(st.visibility === VISIBLITY_DIRECT && st.isMentionTo(this.toAcct)) {
+            if(this.pushStatus(st))
+              changed = true
+          }
+        }
+
+        maxId = statuses[statuses.length - 1].id
+
+        if(changed)
+          this.emitChange()
+      }
+    } finally {
+      this._acquiringMyTalks = false
+    }
+  }
+
+  pushStatus(status) {
+    // TODO:富豪的
+    let old = this.statuses.find((e) => e.status.id === status.id)
+    if(old)
+      return false
+
+    const {UITimelineEntry} = require('src/models')
+    const {TimelineEntry, decryptStatus} = require('src/controllers/TimelineListener')
+    const entry = new TimelineEntry(status)
+
+    // if(status.hasEncryptedStatus) {
+    //   // 他人から送られたStatusだけ復号
+    //   if(this.sender.isEqual(status.account)) {
+    //     decryptStatus(this.receiver, status)
+    //       .then((decryptedText) => {
+    //         entry.decryptedText = decryptedText
+    //         this.emitChange()
+    //       }, (error) => console.error('decrypt failed', error)
+    //     )
+    //   }
+    // }
+
+    this.statuses.push(entry)
+    this.statuses.sort(TimelineEntry.compareReversed)
+
+    // rebuild talk
+    let statusGroup = null
+    let talk = []
+    for(const entry of this.statuses) {
+      const st = entry.status
+      if(!statusGroup || statusGroup.speaker.address !== st.account.address) {
+        statusGroup = new UIStatusGroup(st.account)
+        talk.push(statusGroup)
+      }
+
+      // statusGroup.pushStatus(new UITimelineEntry(entry))
+      statusGroup.pushStatus(entry)
+    }
+    this.talk = talk
+
+    return true
   }
 
   onChange(cb) {

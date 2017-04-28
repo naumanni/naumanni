@@ -50,11 +50,17 @@ export default class Account extends AccountRecord {
     return js
   }
 
+  isEqual(another) {
+    return this.address === another.address
+  }
+
+
   /**
    * 一意な識別子を返す
    */
   get address() {
-    return `${this.id}@${this.host}`
+    // acctは@を含んでないことが有る
+    return this.account
   }
 
   get account() {
@@ -63,8 +69,16 @@ export default class Account extends AccountRecord {
     return `${this.acct}@${this.host}`
   }
 
+  get hasKeypair() {
+    return this.hasPublicKey && this.hasPrivateKey
+  }
+
   get hasPublicKey() {
     return this.note.match(REGEX_PGP_FINGERPRINT) ? true : false
+  }
+
+  get hasPrivateKey() {
+    return this.privateKeyArmored ? true : false
   }
 
   get publicKeyId() {
@@ -78,7 +92,8 @@ export default class Account extends AccountRecord {
   }
 
   get privateKeyArmored() {
-    return localStorage.getItem(`pgp::privateKey::${this.address}`)
+    const keydata = localStorage.getItem(`pgp::privateKey::${this.account}`)
+    return keydata
   }
 
   get instance() {

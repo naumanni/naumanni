@@ -20,3 +20,8 @@ export const VISIBLITY_DIRECT = 'direct'
 export const VISIBLITY_PRIVATE = 'private'
 export const VISIBLITY_UNLISTED = 'unlisted'
 export const VISIBLITY_PUBLIC = 'public'
+
+export const NOTIFICATION_TYPE_MENTION = 'mention'
+export const NOTIFICATION_TYPE_REBLOG = 'reblog'
+export const NOTIFICATION_TYPE_FAVOURITE = 'favourite'
+export const NOTIFICATION_TYPE_FOLLOW = 'follow'
