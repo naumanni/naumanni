@@ -50,6 +50,9 @@ export default class TimelineListener extends EventEmitter {
     }
 
     const newSources = tokensAndAccounts.reduce((newSources, {token, account}) => {
+      if(!token || !account)
+        return newSources
+
       if(this.subject == COMPOUND_TIMELINE) {
         // 複合タイムラインなのでALL OK
       } else {

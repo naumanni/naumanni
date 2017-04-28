@@ -61,6 +61,6 @@ export default class AccountsState {
   }
 
   getAccountByAddress(address) {
-    return this.tokensAndAccounts.find((ta) => ta.account.address === address)
+    return this.tokensAndAccounts.find((ta) => ta.account && ta.account.address === address)
   }
 }

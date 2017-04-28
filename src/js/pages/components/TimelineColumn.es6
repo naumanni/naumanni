@@ -123,8 +123,12 @@ export default class TimelineColumn extends Column {
     if(!this.isCompoundTimeline()) {
       const ta = state.accountsState.getAccountByAddress(this.props.subject)
 
-      state.token = ta.token
-      state.account = ta.account
+      if(ta) {
+        state.token = ta.token
+        state.account = ta.account
+      } else {
+        state.token = state.account = null
+      }
     }
 
     return state
@@ -132,6 +136,11 @@ export default class TimelineColumn extends Column {
 
   isCompoundTimeline() {
     return this.props.subject === COMPOUND_TIMELINE
+  }
+
+  onChangeConext() {
+    super.onChangeConext()
+    this.listener.open(this.state.accountsState.tokensAndAccounts)
   }
 
   // callbacks
