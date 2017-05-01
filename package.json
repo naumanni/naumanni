@@ -13,8 +13,7 @@
     "lint": "eslint --config .eslintrc.yml --cache ./src/js/**/*.es6",
     "lint:fix": "eslint --fix --ext=es6 --config .eslintrc.yml src/",
     "test": "run-s build test:js",
-    "test:js": "mocha",
-    "test:browser": "zuul --local 7655 --ui mocha-bdd -- test/*-test.js",
+    "test:js": "jest",
     "watch": "npm-run-all -p watch:*",
     "watch:js": "webpack --progress --colors --watch",
     "watch:css": "postcss src/css/main.css -d static -w"
@@ -60,15 +59,32 @@
     "almin-logger": "^4.0.3",
     "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.2",
+    "babel-jest": "^19.0.0",
+    "babel-polyfill": "^6.23.0",
     "babel-preset-power-assert": "^1.0.0",
     "eslint": "^3.19.0",
     "eslint-config-google": "^0.7.1",
     "eslint-loader": "^1.7.1",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^6.10.3",
-    "mocha": "^3.2.0",
+    "jest": "^19.0.2",
     "npm-run-all": "^4.0.2",
-    "postcss-cli": "^3.1.1",
-    "zuul": "^3.11.1"
+    "postcss-cli": "^3.1.1"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "es6",
+      "js"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.es6"
+    ],
+    "roots": [
+      "<rootDir>/src/js/"
+    ],
+    "transform": {
+      "^.+\\.es6$": "babel-jest"
+    },
+    "verbose": true
   }
 }
