@@ -2,10 +2,12 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import {SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT} from 'src/constants'
+import {
+  SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
+  KEY_ENTER} from 'src/constants'
 import Column from './Column'
 import {IconFont, UserIconWithHost} from '../parts'
-
+import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 
 /**
  * タイムラインのカラム
@@ -23,6 +25,7 @@ export default class TalkColumn extends Column {
 
     this.listener = new TalkListener(this.props.to)
     this.state.loading = true
+    this.state.newMessage = ''
   }
 
   /**
@@ -82,6 +85,11 @@ export default class TalkColumn extends Column {
           {talk.map((statusGroup) => this.renderStatusGroup(statusGroup))}
         </ul>
         <div className="talk-form">
+          <textarea
+            value={this.state.newMessage}
+            onChange={::this.onChangeMessage}
+            onKeyDown={::this.onKeyDownMessage}
+            placeholder="なんか入力してShift+Enter" />
         </div>
       </div>
     )
@@ -111,13 +119,12 @@ export default class TalkColumn extends Column {
 
   renderStatusGroup(statusGroup) {
     const {speaker, statuses} = statusGroup
-    const isMe = speaker.address == this.state.fromAccount.address
-    console.log(statuses[0])
+    const isReceiver = speaker.address == this.state.fromAccount.address
     const key = `speak-${speaker.address}-${statuses[0].status.id}`
 
     return (
-      <div className={`talk-speak ${isMe ? 'is-me' : 'is-you'}`} key={key}>
-        {!isMe && (
+      <div className={`talk-speak ${isReceiver ? 'is-receiver' : 'is-sender'}`} key={key}>
+        {isReceiver && (
           <div className="talk-speaker">
             <UserIconWithHost account={speaker} />
           </div>
@@ -141,6 +148,29 @@ export default class TalkColumn extends Column {
       talk: this.listener.talk,
       loading: this.listener.talk === null ? true : false,
     })
+  }
+
+  onChangeMessage(e) {
+    this.setState({newMessage: e.target.value})
+  }
+
+  onKeyDownMessage(e) {
+    const message = this.state.newMessage.trim()
+    if(e.shiftKey && e.keyCode == KEY_ENTER && message.length) {
+      console.log('send message', message)
+
+      e.preventDefault()
+
+      const {context} = this.context
+      context.useCase(new SendDirectMessageUseCase()).execute(
+        this.state.token, message, this.state.toAccount)
+
+      this.setState({
+        newMessage: '',
+      }, () => {
+        console.log(this.state)
+      })
+    }
   }
 }
 
@@ -308,17 +338,16 @@ class TalkListener extends EventEmitter {
     const {TimelineEntry, decryptStatus} = require('src/controllers/TimelineListener')
     const entry = new TimelineEntry(status)
 
-    // if(status.hasEncryptedStatus) {
-    //   // 他人から送られたStatusだけ復号
-    //   if(this.sender.isEqual(status.account)) {
-    //     decryptStatus(this.receiver, status)
-    //       .then((decryptedText) => {
-    //         entry.decryptedText = decryptedText
-    //         this.emitChange()
-    //       }, (error) => console.error('decrypt failed', error)
-    //     )
-    //   }
-    // }
+    // 今のところ他人から送られたStatusだけ復号
+    if(status.hasEncryptedStatus && this.sender.isEqual(status.account)) {
+      decryptStatus(this.receiver, status)
+        .then((decryptedText) => {
+          debugger
+          entry.decryptedText = decryptedText
+          this.emitChange()
+        }, (error) => console.error('decrypt failed >', error)
+        )
+    }
 
     this.statuses.push(entry)
     this.statuses.sort(TimelineEntry.compareReversed)

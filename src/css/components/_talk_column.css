@@ -1,5 +1,5 @@
-$colorTalkMyStatus: $colorMainLightest;
-$colorTalkYourStatus: $colorMainLighter;
+$colorTalkSenderStatus: $colorGray1;
+$colorTalkReceiverStatus: #6CAED9;
 $colorTalkFormBorder: $colorGray3;
 $sizeTalkFormHeight: 96px;
 
@@ -75,18 +75,18 @@ $sizeTalkFormHeight: 96px;
     }
   }
 
-  &.is-me {
+  &.is-receiver {
     .talk-speakStatuses {
       width: calc(100% - 140px);
       margin-left: auto;
 
       .status-content {
-        background: $colorTalkMyStatus;
+        background: $colorTalkReceiverStatus;
       }
     }
   }
 
-  &.is-you {
+  &.is-sender {
     .talk-speaker {
       float: left;
       width: $sizeAvatar;
@@ -96,7 +96,7 @@ $sizeTalkFormHeight: 96px;
       width: calc(100% - 140px);
 
       .status-content {
-        background: $colorTalkYourStatus;
+        background: $colorTalkSenderStatus;
       }
     }
   }

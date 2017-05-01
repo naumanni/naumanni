@@ -25,3 +25,5 @@ export const NOTIFICATION_TYPE_MENTION = 'mention'
 export const NOTIFICATION_TYPE_REBLOG = 'reblog'
 export const NOTIFICATION_TYPE_FAVOURITE = 'favourite'
 export const NOTIFICATION_TYPE_FOLLOW = 'follow'
+
+export const KEY_ENTER = 13

@@ -226,6 +226,7 @@ export async function decryptStatus(account, status) {
     ['spoilerText', status.spoiler_text, '<nem>', '</nem>'],
   ].map(async ([key, text, open, close]) => {
     const [before, content, after] = extractText(text, open, close)
+    console.log(text, '->', content)
     if(!content) {
       response[key] = before + content + after
       return
