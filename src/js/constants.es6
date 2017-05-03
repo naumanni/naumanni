@@ -1,3 +1,6 @@
+// Mastodon's max message size
+export const MASTODON_MAX_CONTENT_SIZE = 500
+
 export const NAUMANNI_VERSION = `naumanni ${process.env.NAUMANNI_VERSION || 'development ver.'}`
 
 export const REGEX_PGP_FINGERPRINT = /PGP Key Fingerprint: ([0-9a-fA-F]+)/
@@ -13,7 +16,6 @@ export const TIMELINE_HOME = 'home'
 export const DIALOG_ADD_ACCOUNT = 'addAccount'
 export const DIALOG_AUTHORIZE_ACCOUNT = 'authorizeAccount'
 
-// MIXEDの方が良いかも
 export const SUBJECT_MIXED = '!!__SUBJECT_MIXED__!!'   // Symbolだとjsonizeできないのでダメ
 
 export const VISIBLITY_DIRECT = 'direct'

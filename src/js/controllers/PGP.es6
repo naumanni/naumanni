@@ -5,7 +5,7 @@ import CRC32 from 'crc-32'  // OpenPGPのCRC24使いたい...
 
 // [N]aummanni [E]ncrypted [M]essage
 const MESSAGE_TAG_LENGTH = '--NEM.ffffffff.00/00--\n'.length
-const MESSAGE_TAG_REX = /--NEM\.([0-9a-f]{8})\.(\d+)\/(\d+)--/
+export const MESSAGE_TAG_REX = /--NEM\.([0-9a-f]{8})\.(\d+)\/(\d+)--/
 
 /**
  * contentを与えられたaddressesとsenderPublicKeyで暗号化する。maxLengthごとにBlockに分割される
@@ -95,7 +95,7 @@ export async function decryptBlocks(encodedBlocks, privateKey) {
   const message = openpgpMessage.read(concatenated)
   const decrypted = await openpgp.decrypt({
     message,
-    privateKey
+    privateKey,
   })
 
   return decrypted.data
@@ -112,7 +112,7 @@ export async function decryptBlocks(encodedBlocks, privateKey) {
 function splitDataWithBase65536(data, preferredBlockSize) {
   const blocks = []
 
-  for(let pos=0;pos < data.length;) {
+  for(let pos=0; pos < data.length;) {
     let blockSize = Math.floor(preferredBlockSize / 0.8)
     let encoded
     let blockData
@@ -150,6 +150,6 @@ function splitDataWithBase65536(data, preferredBlockSize) {
 
 function getCheckSum(data) {
   const c = CRC32.buf(data)
-  const bytes = new Uint8Array([c >> 24, (c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF]);
-  return Buffer.from(bytes).toString('hex');
+  const bytes = new Uint8Array([c >> 24, (c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF])
+  return Buffer.from(bytes).toString('hex')
 }

@@ -1,4 +1,6 @@
-import {key as openpgpKey, config as openPGPConfig} from 'openpgp'
+import {key as openpgpKey} from 'openpgp'
+
+import {initOpenPGPTest} from 'src/testUtils'
 import {encryptText, decryptBlocks} from '../PGP'
 
 const KEYS = require('./PGP.test.fixtures.json')
@@ -8,19 +10,8 @@ const KEYS = require('./PGP.test.fixtures.json')
 const TEST_TEXT = '寿限無、寿限無 五劫の擦り切れ 海砂利水魚の水行末 雲来末 風来末 食う寝る処に住む処 藪ら柑子の藪柑子 パイポ　パイポ　パイポのシューリンガン シューリンガンのグーリンダイ グーリンダイのポンポコピーのポンポコナーの長久命の長助'
 
 
-beforeEach(() => {
-  if(!window.crypto) {
-    const crypto = require('crypto')
-
-    window.crypto = {
-      getRandomValues: function(buf) {
-        var bytes = crypto.randomBytes(buf.length);
-        buf.set(bytes);
-      }
-    }
-  }
-
-  openPGPConfig.aead_protect = true // activate fast AES-GCM mode (not yet OpenPGP standard)
+beforeAll(() => {
+  initOpenPGPTest()
 })
 
 
