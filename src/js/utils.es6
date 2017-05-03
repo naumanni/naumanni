@@ -59,3 +59,15 @@ export function parseQuery(queryString) {
   })
   return query
 }
+
+
+// function prettyPrint(data) {
+//   if(data instanceof Uint8Array) {
+//     const content = Array.from(data.subarray(0, 16)).map((x) => x.toString(16))
+//     if(data.length > 16)
+//       content.push('...')
+//     return `<Uint8Array (${data.length}) [ ${content.join(', ')} ]>`
+//   } else {
+//     return JSON.stringify(data)
+//   }
+// }
