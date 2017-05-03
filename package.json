@@ -73,6 +73,11 @@
     "postcss-cli": "^3.1.1"
   },
   "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "**/*.es6"
+    ],
+    "coverageDirectory": "./coverage",
     "moduleFileExtensions": [
       "es6",
       "js"
