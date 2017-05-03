@@ -1,0 +1,173 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DropdownMenuButton can render button 1`] = `
+<div
+  className="dropdownMenuButton"
+  onMouseLeave={[Function]}
+>
+  <div
+    className="dropdownMenuButton-button"
+    onClick={[Function]}
+  >
+    <div>
+      child!!
+    </div>
+  </div>
+</div>
+`;
+
+exports[`DropdownMenuButton can show and hide menu : button and menu are visible 1`] = `
+<div
+  className="dropdownMenuButton"
+  onMouseLeave={[Function]}
+>
+  <div
+    className="dropdownMenuButton-button"
+    onClick={[Function]}
+  >
+    <div>
+      child!!
+    </div>
+  </div>
+  <div
+    className="dropdownMenuButton-menu"
+    onClick={[Function]}
+  >
+    <div>
+      <a
+        href="http://goo.gl"
+      >
+        NiceLink
+      </a>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`DropdownMenuButton can show and hide menu : button and menu are visible 2`] = `
+<div
+  className="dropdownMenuButton"
+  onMouseLeave={[Function]}
+>
+  <div
+    className="dropdownMenuButton-button"
+    onClick={[Function]}
+  >
+    <div>
+      child!!
+    </div>
+  </div>
+  <div
+    className="dropdownMenuButton-menu"
+    onClick={[Function]}
+  >
+    <div>
+      <a
+        href="http://goo.gl"
+      >
+        NiceLink
+      </a>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`DropdownMenuButton can show and hide menu : only button is visible 1`] = `
+<div
+  className="dropdownMenuButton"
+  onMouseLeave={[Function]}
+>
+  <div
+    className="dropdownMenuButton-button"
+    onClick={[Function]}
+  >
+    <div>
+      child!!
+    </div>
+  </div>
+</div>
+`;
+
+exports[`DropdownMenuButton can show and hide menu : only button is visible 2`] = `
+<div
+  className="dropdownMenuButton"
+  onMouseLeave={[Function]}
+>
+  <div
+    className="dropdownMenuButton-button"
+    onClick={[Function]}
+  >
+    <div>
+      child!!
+    </div>
+  </div>
+</div>
+`;
+
+exports[`DropdownMenuButton can show and hide menu : only button is visible 3`] = `
+<div
+  className="dropdownMenuButton"
+  onMouseLeave={[Function]}
+>
+  <div
+    className="dropdownMenuButton-button"
+    onClick={[Function]}
+  >
+    <div>
+      child!!
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IconFont 1`] = `
+<span
+  className="icon icon-iconA"
+/>
+`;
+
+exports[`IconFont 2`] = `
+<span
+  className="icon icon-iconB"
+/>
+`;
+
+exports[`NowLoading 1`] = `
+<div
+  className="niceLoader"
+/>
+`;
+
+exports[`UserIconWithHost can show default icon if not avatar was present 1`] = `
+<span
+  className="userIcon with-host"
+>
+  <img
+    alt="shn@oppai.tokyo"
+    className="userIcon-avatar"
+    src="/images/no-avatar.png"
+    title="shn@oppai.tokyo"
+  />
+  <img
+    className="userIcon-host"
+    src="https://oppai.tokyo/favicon.ico"
+  />
+</span>
+`;
+
+exports[`UserIconWithHost can show user icon 1`] = `
+<span
+  className="userIcon with-host"
+>
+  <img
+    alt="shn@oppai.tokyo"
+    className="userIcon-avatar"
+    src="https://ot-mastodon.s3.amazonaws.com/accounts/avatars/000/000/001/original/2408e330e310f168.png?1492583237"
+    title="shn@oppai.tokyo"
+  />
+  <img
+    className="userIcon-host"
+    src="https://oppai.tokyo/favicon.ico"
+  />
+</span>
+`;

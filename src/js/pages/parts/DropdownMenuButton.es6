@@ -38,11 +38,11 @@ export default class DropdownMenuButton extends React.Component {
     this.setState({menuVisible: !this.state.menuVisible})
   }
 
-  onClickMenu(e) {
+  onClickMenu() {
     this.setState({menuVisible: false})
   }
 
-  onMouseLeave(e) {
+  onMouseLeave() {
     this.setState({menuVisible: false})
   }
 }
