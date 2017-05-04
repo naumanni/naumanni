@@ -39,10 +39,7 @@ export default class SendDirectMessageUseCase extends UseCase {
     }
 
     // TODO: 雑よね
-    if(keyIds.length == 0) {
-      // だれも鍵もってないので、plainに送る
-      await this.sendPlainMessage({token, self, message, recipients})
-    } else if(keyIds.length == targets.length) {
+    if(keyIds.length == targets.length) {
       // 全員鍵をもっているので、暗号化して送る
       const publicKeys = (await PublicKeyCache.fetchKeys(keyIds))
         .reduce((publicKeys, storedKey) => {
@@ -51,8 +48,8 @@ export default class SendDirectMessageUseCase extends UseCase {
         }, {})
       await this.sendEncryptedMessage({token, self, message, recipients, publicKeys})
     } else {
-      // 中途半端なのでエラーにする
-      throw new Error('__TODO_ERROR_MESSAGE__')
+      // 鍵もってないのがいるので、plainに送る
+      await this.sendPlainMessage({token, self, message, recipients})
     }
   }
 

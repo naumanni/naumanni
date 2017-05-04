@@ -77,6 +77,7 @@ $colorStatusDate: $colorGray3;
 $colorStatusStatusMeta: $colorMainLighter;
 $colorStatusLink: $colorAccentNormal;
 $colorStatusText: $colorText;
+$colorStatusInfo: $colorGray2;
 $colorStatusSpoilerOpenerBackground: $colorGray1;
 $colorStatusSpoilerOpenerText: $colorWhite;
 $colorStatusActionColor: $colorMainLighter;
@@ -84,6 +85,8 @@ $colorStatusInactiveActionColor: $colorGray1;
 $colorStatusVisiblityColor: $colorGray1;
 $fontSizeStatusActionIcon: 1.5rem;
 $fontSizeStatusVisibilityIcon: 1rem;
+$fontSizeStatusInfo: 0.8rem;
+$sizeStatusAvatar: calc($sizeAvatar / 2);
 
 $colorFriendBorder: $colorGray1;
 $colorFriendArrow: $colorMainNormal;

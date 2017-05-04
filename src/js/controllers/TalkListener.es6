@@ -41,7 +41,7 @@ class EncryptedStatus {
 }
 
 
-class UITalkBlock {
+class TalkBlock {
   constructor(lastStatus) {
     this.statuses = [lastStatus]
 
@@ -49,7 +49,7 @@ class UITalkBlock {
   }
 
   push(newStatus) {
-    require('assert')(newStatus.isAfter(this.statuses[0]))
+    require('assert')(newStatus.createdAt.isAfter(this.statuses[0].createdAt))
     this.statuses.unshift(newStatus)
   }
 
@@ -57,13 +57,13 @@ class UITalkBlock {
     if(newStatus instanceof EncryptedStatus) {
       require('assert')(0, 'not implemented')
     }
-
     // 発言者が違えば違うBlock
-    if(newStatus.account.isEqual(this.account))
+    if(!newStatus.account.isEqual(this.account))
       return false
 
     // 30分離れていたら違うBlock
-    if(newStatus.createdAt.isAfter(this.statuses[0].createdAt.add(30, 'm')))
+    const latestAt = this.statuses[0].createdAt
+    if(newStatus.createdAt.isAfter(latestAt.add(30, 'm')))
       return false
 
     return true
@@ -129,6 +129,10 @@ export default class TalkListener extends EventEmitter {
 
   isWatching() {
     return this.state === _STATE_WATCHING
+  }
+
+  isLoading() {
+    return this.state !== _STATE_WATCHING
   }
 
   // private
@@ -289,7 +293,7 @@ export default class TalkListener extends EventEmitter {
       if(latestTalkBlock && latestTalkBlock.isMatch(status)) {
         latestTalkBlock.push(status)
       } else {
-        latestTalkBlock = new UITalkBlock(status)
+        latestTalkBlock = new TalkBlock(status)
         talk.push(latestTalkBlock)
       }
     }

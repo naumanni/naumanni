@@ -26,8 +26,15 @@ export default class TalkColumn extends Column {
     super(...args)
 
     this.listener = new TalkListener([this.props.to])
-    this.state.loading = true
-    this.state.newMessage = ''
+    // コードからスクロール量を変更している場合はtrue
+    this.scrollChanging = false
+    this.state = {
+      ...this.state,
+      loading: true,
+      sendingMessage: false,
+      newMessage: '',
+      keepAtBottom: true,
+    }
   }
 
   /**
@@ -56,17 +63,32 @@ export default class TalkColumn extends Column {
   /**
    * @override
    */
-  renderTitle() {
-    const {fromAccount, toAccount} = this.state
+  componentDidUpdate(prevProps, prevState) {
+    if(this.state.keepAtBottom) {
+      const node = this.refs.talkGroups
+      if(node) {
+        this.scrollChanging = true
+        node.scrollTop = node.scrollHeight
+      }
+    }
+  }
 
-    if(!toAccount || !fromAccount) {
+  /**
+   * @override
+   */
+  renderTitle() {
+    const {me, members} = this.state
+
+    if(!me || !members) {
       return 'トーク'
     }
 
+    const memberNames = Object.values(members).map((a) => a.display_name || a.account)
+
     return (
       <h1 className="column-headerTitle">
-        <div className="column-headerTitleSub">{fromAccount.account}</div>
-        <div className="column-headerTitleMain">{toAccount.display_name || toAccount.acct}とトーク</div>
+        <div className="column-headerTitleSub">{me.account}</div>
+        <div className="column-headerTitleMain">{memberNames}とトーク</div>
       </h1>
     )
   }
@@ -83,8 +105,8 @@ export default class TalkColumn extends Column {
 
     return (
       <div className="talk">
-        <ul className="talk-speaks">
-          {(talk || []).map((statusGroup) => this.renderStatusGroup(statusGroup))}
+        <ul className="talk-talkGroups" ref="talkGroups" onScroll={::this.onScrollTalkGroups}>
+          {(talk || []).map((talkGroup, idx, talk) => this.renderTalkGroup(talkGroup, talk[idx - 1], talk[idx + 1]))}
         </ul>
         <div className="talk-form">
           <textarea
@@ -119,23 +141,34 @@ export default class TalkColumn extends Column {
     this.listener.updateTokenAndAccount(this.state)
   }
 
-  renderStatusGroup(statusGroup) {
-    const {speaker, statuses} = statusGroup
-    const isReceiver = speaker.address == this.state.fromAccount.address
-    const key = `speak-${speaker.address}-${statuses[0].status.id}`
+  renderTalkGroup(talkGroup, prevTalkGroup, nextTalkGroup) {
+    const isMyTalk = talkGroup.account.isEqual(this.state.me)
+    // memberのtalkgroupは、前のTalkGroupが自分であれば名前を表示しない
+    const showName = !isMyTalk && !(prevTalkGroup && prevTalkGroup.account.isEqual(talkGroup.account))
+    // memberのtalkgroupは、次のTalkGroupが自分であればアバターを表示しない
+    const showAvatar = !isMyTalk && !(nextTalkGroup && nextTalkGroup.account.isEqual(talkGroup.account))
+
+    const key = `speak-${talkGroup.account.account}-${talkGroup.statuses[0].id}`
 
     return (
-      <div className={`talk-speak ${isReceiver ? 'is-receiver' : 'is-sender'}`} key={key}>
-        {isReceiver && (
-          <div className="talk-speaker">
-            <UserIconWithHost account={speaker} />
+      <div className={`talk-talkGroup ${isMyTalk ? 'is-me' : 'is-member'}`} key={key}>
+        {showName && (
+          <div className="talk-speakerName">
+            {talkGroup.account.display_name || talkGroup.account.account}
           </div>
         )}
-        <ul className="talk-speakStatuses">
-          {statuses.map((entry) => {
-            const {status} = entry
+        {showAvatar && (
+          <div className="talk-speakerAvatar">
+            <UserIconWithHost account={talkGroup.account} />
+          </div>
+        )}
+        <ul className="talk-talkGroupStatuses">
+          {talkGroup.statuses.map((status) => {
             return (
-              <div key={status.id} className="status-content" dangerouslySetInnerHTML={{__html: status.content}} />
+              <li key={status.id}>
+                <div className="status-content" dangerouslySetInnerHTML={{__html: status.content}} />
+                <div className="status-date">{status.createdAt.format('YYYY-MM-DD HH:mm:ss')}</div>
+              </li>
             )
           })}
         </ul>
@@ -143,13 +176,59 @@ export default class TalkColumn extends Column {
     )
   }
 
+  sendMessage() {
+    const message = this.state.newMessage.trim()
+    console.log('send message', message)
+
+    this.setState({sendingMessage: true}, async () => {
+      const {context} = this.context
+      const {token, me, members} = this.state
+
+      try {
+        await context.useCase(new SendDirectMessageUseCase()).execute({
+          token,
+          self: me,
+          message: message,
+          recipients: Object.values(members),
+        })
+
+        this.setState({
+          newMessage: '',
+          sendingMessage: false,
+        })
+      } catch(e) {
+        console.dir(e)
+        this.setState({sendingMessage: false})
+      }
+    })
+  }
+
   // cb
   onChangeTalk() {
+    const {me, members, talk} = this.listener
+
     this.setState({
-      toAccount: this.listener.toAccount,
-      talk: this.listener.talk,
-      loading: this.listener.talk === null ? true : false,
+      me,
+      members,
+      talk,
+      loading: this.listener.isLoading(),
     })
+  }
+
+  onScrollTalkGroups(e) {
+    // コードから変更された場合は何もしない
+    if(this.scrollChanging) {
+      this.scrollChanging = false
+      return
+    }
+
+    const node = e.target
+    const atBottom = node.scrollTop + node.clientHeight >= node.scrollHeight ? true : false
+
+    if(!atBottom && this.state.keepAtBottom)
+      this.setState({keepAtBottom: false})
+    else if(atBottom && !this.state.keepAtBottom)
+      this.setState({keepAtBottom: true})
   }
 
   onChangeMessage(e) {
@@ -157,21 +236,11 @@ export default class TalkColumn extends Column {
   }
 
   onKeyDownMessage(e) {
-    const message = this.state.newMessage.trim()
-    if(e.shiftKey && e.keyCode == KEY_ENTER && message.length) {
-      console.log('send message', message)
+    require('assert')(!this.state.loading)
 
+    if(e.shiftKey && e.keyCode == KEY_ENTER) {
       e.preventDefault()
-
-      const {context} = this.context
-      context.useCase(new SendDirectMessageUseCase()).execute(
-        this.state.token, message, this.state.toAccount)
-
-      this.setState({
-        newMessage: '',
-      }, () => {
-        console.log(this.state)
-      })
+      this.sendMessage()
     }
   }
 }
