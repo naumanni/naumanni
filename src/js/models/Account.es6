@@ -50,10 +50,9 @@ export default class Account extends AccountRecord {
     return js
   }
 
-  isEqual(another) {
-    return this.address === another.address
+  isEqual(other) {
+    return this.account === other.account
   }
-
 
   /**
    * 一意な識別子を返す

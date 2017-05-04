@@ -29,3 +29,5 @@ export const NOTIFICATION_TYPE_FAVOURITE = 'favourite'
 export const NOTIFICATION_TYPE_FOLLOW = 'follow'
 
 export const KEY_ENTER = 13
+
+export const MESSAGE_TAG_REX = /--NEM\.([0-9a-f]{8})\.(\d+)\/(\d+)--/

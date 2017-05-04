@@ -1,7 +1,7 @@
+import {MESSAGE_TAG_REX} from 'src/constants'
 import {Account, OAuthToken} from 'src/models'
 import PublicKeyCache, {StoredPublicKey} from 'src/infra/PublicKeyCache'
 import {initOpenPGPTest} from 'src/testUtils'
-import {MESSAGE_TAG_REX} from 'src/controllers/PGP'
 import SendDirectMessageUseCase from '../SendDirectMessageUseCase'
 
 const TEST_TEXT = '寿限無、寿限無 五劫の擦り切れ 海砂利水魚の水行末 雲来末 風来末 食う寝る処に住む処 藪ら柑子の藪柑子 パイポ　パイポ　パイポのシューリンガン シューリンガンのグーリンダイ グーリンダイのポンポコピーのポンポコナーの長久命の長助'

@@ -1,11 +1,12 @@
-import openpgp, {HKP, key as openpgpKey, armor as openpgpArmor, message as openpgpMessage} from 'openpgp'
+import openpgp, {message as openpgpMessage} from 'openpgp'
 import base65536 from 'base65536'
 import CRC32 from 'crc-32'  // OpenPGPのCRC24使いたい...
+
+import {MESSAGE_TAG_REX} from 'src/constants'
 
 
 // [N]aummanni [E]ncrypted [M]essage
 const MESSAGE_TAG_LENGTH = '--NEM.ffffffff.00/00--\n'.length
-export const MESSAGE_TAG_REX = /--NEM\.([0-9a-f]{8})\.(\d+)\/(\d+)--/
 
 /**
  * contentを与えられたaddressesとsenderPublicKeyで暗号化する。maxLengthごとにBlockに分割される
@@ -29,7 +30,6 @@ export async function encryptText({content, addresses, senderPublicKey, maxLengt
   })
 
   const prefix = Object.keys(addresses).map((acct) => `@${acct}`).join(' ') + ' '
-  const buf = ciphertext.message.packets.write()
 
   // preferredBlockSizeでBlockを分割して出力
   const preferredBlockSize = maxLength - prefix.length - MESSAGE_TAG_LENGTH
@@ -151,5 +151,6 @@ function splitDataWithBase65536(data, preferredBlockSize) {
 function getCheckSum(data) {
   const c = CRC32.buf(data)
   const bytes = new Uint8Array([c >> 24, (c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF])
+  // TODO: Bufferってなんだ?
   return Buffer.from(bytes).toString('hex')
 }

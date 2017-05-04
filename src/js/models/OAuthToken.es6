@@ -37,6 +37,13 @@ export default class OAuthToken extends OAuthTokenRecord {
     return js
   }
 
+  isEqual(other) {
+    return
+    this.access_token === other.access_token &&
+      this.scope === other.access_token &&
+      this.token_type === other.token_type
+  }
+
   get accessToken() {
     return this.access_token
   }

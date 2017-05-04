@@ -2,6 +2,7 @@ import moment from 'moment'
 import {Record} from 'immutable'
 
 import {
+  MESSAGE_TAG_REX,
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
 
@@ -74,14 +75,6 @@ export default class Status extends StatusRecord {
     return moment(this.created_at)
   }
 
-  get hasEncryptedStatus() {
-    if(this.content.indexOf('&lt;nem&gt;') >= 0)
-      return true
-    if(this.spoiler_text.indexOf('<nem>') >= 0)
-      return true
-    return false
-  }
-
   canReblog() {
     return (this.visibility === VISIBLITY_PUBLIC || this.visibility === VISIBLITY_UNLISTED)
       ? true
@@ -91,8 +84,30 @@ export default class Status extends StatusRecord {
   /**
    * そいつあてのMentionが含まれているか？
    */
-  isMentionTo(acct) {
-    return this.mentions.find((m) => m.acct === acct) ? true : false
+  isMentionToId(accountId) {
+    return this.mentions.find((m) => m.id === accountId) ? true : false
   }
 
+  static compareCreatedAt(a, b) {
+    const aAt = a.created_at
+    const bAt = b.created_at
+    if(aAt < bAt)
+      return 1
+    else if(aAt > bAt)
+      return -1
+    return 0
+  }
+
+  // naumanni用機能
+  get messageBlockInfo() {
+    const match = this.content.match(MESSAGE_TAG_REX)
+    if(!match)
+      return null
+
+    return {
+      checksum: match[1],
+      index: +match[2],
+      total: +match[3],
+    }
+  }
 }

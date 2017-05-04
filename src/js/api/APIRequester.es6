@@ -42,7 +42,7 @@ RetriableRequest.prototype.reset = function() {
 /**
  * 普通にAPIをリクエストするリクエスタ
  */
-class APIRequester {
+export class APIRequester {
   /**
    * factory
    * @param {object} specs
@@ -82,8 +82,7 @@ class APIRequester {
    */
   async call(method, apiName, query, options) {
     const {spec, req} = this._makeRequest(method, apiName, query, options)
-    let response = await req
-    let responseBody = response.body
+    let responseBody = (await req).body
     if(this.hooks.response)
       responseBody = this.hooks.response(method, apiName, responseBody)
     return spec.normalize(method, responseBody)
