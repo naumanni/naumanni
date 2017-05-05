@@ -51,8 +51,9 @@ class TalkBlock {
   }
 
   push(newStatus) {
-    require('assert')(newStatus.createdAt.isAfter(this.statuses[0].createdAt))
-    this.statuses.unshift(newStatus)
+    // require('assert')(newStatus.createdAt.isAfter(this.statuses[0].createdAt))
+    this.statuses.push(newStatus)
+    this.statuses.sort((a, b) => -Status.compareCreatedAt(a, b))
   }
 
   isMatch(newStatus) {

@@ -25,6 +25,7 @@ export default class FriendsColumn extends Column {
 
     this.listener = new FriendsListener(subject)
     this.state.loading = true
+    this.state.filter = ''
   }
 
   /**
@@ -68,19 +69,22 @@ export default class FriendsColumn extends Column {
       return <NowLoading />
     }
 
-    const {friends} = this.state
+    const friends = this.state.sortedFriends || this.state.friends
 
     return (
-      <ul className="friends">
-        {friends.map((friend) => (
-          <li key={friend.key}>
-            <FriendRow
-              friend={friend}
-              onClickFriend={::this.onClickFriend}
-              />
-          </li>
-        ))}
-      </ul>
+      <div className="friends">
+        {this.renderFilter()}
+        <ul className="friends-list">
+          {friends.map((friend) => (
+            <li key={friend.key}>
+              <FriendRow
+                friend={friend}
+                onClickFriend={::this.onClickFriend}
+                />
+            </li>
+          ))}
+        </ul>
+      </div>
     )
   }
 
@@ -101,6 +105,16 @@ export default class FriendsColumn extends Column {
     this.listener.updateTokens(this.state.token)
   }
 
+  renderFilter() {
+    const {filter} = this.state
+
+    return (
+      <div className="friends-filter">
+        <input type="text" value={filter} onChange={::this.onChangeFilter} placeholder="絞り込む" />
+      </div>
+    )
+  }
+
   // cb
   onChangeFriends() {
     this.setState({
@@ -116,6 +130,44 @@ export default class FriendsColumn extends Column {
       to: friend.account.acct,
       from: this.props.subject,
     })
+  }
+
+  /**
+   * 絞り込む。とりあえずusernameをレーベンシュタイン距離でソートしてみる
+   */
+  onChangeFilter(e) {
+    const filter = e.target.value
+    let sortedFriends
+
+    if(filter.length) {
+      const levenshtein = require('fast-levenshtein')
+      const distanceCache = {}
+
+      const _getDistance = (account) => {
+        if(distanceCache[account.account] === undefined) {
+          distanceCache[account.account] = levenshtein.get(filter, account.username)
+        }
+        return distanceCache[account.account]
+      }
+
+      const _compare = (a, b) => {
+        if(a > b)
+          return 1
+        else if(a < b)
+          return -1
+        return 0
+      }
+
+      sortedFriends = [].concat(this.state.friends)
+      sortedFriends.sort((a, b) => {
+        let r = _compare(_getDistance(a.account), _getDistance(b.account))
+        if(r === 0)
+          r = _compare(a.id, b.id)
+        return r
+      })
+    }
+
+    this.setState({filter, sortedFriends})
   }
 }
 

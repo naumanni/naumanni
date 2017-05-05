@@ -1,16 +1,30 @@
 $marginFriendInfo: calc($sizeAvatar + $marginDefault);
 
 
-.friends {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  height: 100%;
-  overflow-y: scroll;
+$sizeFriendsFilterHeight: 20px;
 
-  li {
-    padding: $marginDefault;
-    border-bottom: 1px solid $colorFriendBorder;
+
+.friends {
+  .friends-filter {
+    height: $sizeFriendsFilterHeight;
+
+    > input {
+      box-sizing: border-box;
+      width: 100%;
+    }
+  }
+
+  .friends-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    height: calc(100% - $sizeFriendsFilterHeight);
+    overflow-y: scroll;
+
+    li {
+      padding: $marginDefault;
+      border-bottom: 1px solid $colorFriendBorder;
+    }
   }
 }
 
