@@ -59,6 +59,12 @@ $colorBackgroundWatermarkShadow: $colorWhite;
 /* ダッシュボードのヘッダ */
 $colorHeaderBackground: $colorMainDarkest;
 $colorHeaderButton: $colorMainNormal;
+$sizeHeaderHeight: calc($sizeHeaderIcon + $marginDefault * 2);
+
+/* Toot画面 */
+$colorTootPanelBackground: $colorMainDarker;
+$colorTootContentBackground: #fff;
+$colorTootTextInactive: $colorGray2;
 
 $colorMenuText: $colorText;
 $colorMenuBackground: $colorWhite;

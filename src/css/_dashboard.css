@@ -36,6 +36,7 @@
   align-items: center;
   position: relative;
   z-index: $zIndexHeader;
+  height: $sizeHeaderHeight;
 
   .naumanniDashboard-header-logo {
     display: block;
@@ -46,6 +47,7 @@
 
   .naumanniDashboard-header-toot {
     position: relative;
+    height: 100%;
     flex: 1 1 200px;
 
     > input[type=text] {
@@ -56,6 +58,11 @@
       border: none;
       padding: $marginHalf;
       box-sizing: border-box;
+      margin: $marginDefault 0;
+
+      &.is-hidden {
+        visibility: hidden;
+      }
     }
   }
 

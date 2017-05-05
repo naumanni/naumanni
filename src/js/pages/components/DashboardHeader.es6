@@ -9,7 +9,7 @@ import {
   COLUMN_TIMELINE, COLUMN_FRIENDS,
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
 } from 'src/constants'
-
+import TootWindow from './TootWindow'
 
 /**
  * ダッシュボードのヘッダ
@@ -28,6 +28,7 @@ export default class DashboardHeader extends React.Component {
     super(...args)
 
     this.state = this.getStateFromContext()
+    this.state.isShowTootWindow = false
   }
 
   /**
@@ -55,7 +56,7 @@ export default class DashboardHeader extends React.Component {
    * @override
    */
   render() {
-    const {accountsState} = this.state
+    const {accountsState, isShowTootWindow} = this.state
     const {tokens} = accountsState
 
     return (
@@ -65,7 +66,11 @@ export default class DashboardHeader extends React.Component {
         </DropdownMenuButton>
 
         <div className="naumanniDashboard-header-toot">
-          <input type="text" placeholder="何してますか？忙しいですか？手伝ってもらってもいいですか？" />
+          <input
+            className={`${isShowTootWindow ? 'is-hidden' : ''}`}
+            type="text" placeholder="何してますか？忙しいですか？手伝ってもらってもいいですか？"
+            onFocus={::this.onTootFocus} />
+          {isShowTootWindow && <TootWindow onClose={::this.onTootWindowClose} />}
         </div>
 
         <ul className="naumanniDashboard-header-accounts">
@@ -214,5 +219,13 @@ export default class DashboardHeader extends React.Component {
     context.useCase(
       new GenerateKeypairUseCase()
     ).execute(token, account)
+  }
+
+  onTootFocus(e) {
+    this.setState({isShowTootWindow: true})
+  }
+
+  onTootWindowClose() {
+    this.setState({isShowTootWindow: false})
   }
 }

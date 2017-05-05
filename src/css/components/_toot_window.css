@@ -1,15 +1,61 @@
-.tootWindow {
-  border: 1px solid black;
+.naumanniDashboard-header-toot .tootWindow {
+  background: $colorHeaderBackground;
+  position: absolute;
+  padding: $marginDefault;
+  top: 0;
+  border-radius: $marginDefault;
+  width: 100%;
+  box-sizing: border-box;
+}
 
-  background: #ddd;
-  width: 400px;
-  padding: 8px;
-  margin: 60px 0;
+
+.tootWindow {
+  position: relative;
+  color: #fff;
+
+  .tootWindow-close {
+    position: absolute;
+    right: $marginHalf;
+    top: $marginHalf;
+
+    > button {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+
+      > span::before {
+        width: auto;
+        margin: 0;
+      }
+    }
+  }
+
+  .tootWindow-tabs {
+    .tootWindow-tab {
+      display: inline-block;
+      padding: $marginHalf $marginDefault;
+      color: $colorTootTextInactive;
+      cursor: pointer;
+
+      &.is-active {
+        background: $colorTootPanelBackground;
+        border-radius: $marginHalf $marginHalf 0 0;
+        color: #fff;
+      }
+    }
+  }
+  .tootWindow-form {
+    background: $colorTootPanelBackground;
+    border-radius: 0 $marginHalf $marginHalf $marginHalf;
+    padding: $marginDefault;
+  }
 
   h2 {
     font-size: $fontSizeSmall;
-    font-weigh: bold;
-    margin: 0;
+    font-weight: bold;
+    font-family: sans-serif;
+    margin: $marginDefault 0 $marginHalf 0;
   }
 
   .tootWindow-sendFrom {
@@ -22,30 +68,34 @@
     li {
       display: block;
       float: left;
-      border: 1px solid #ddd;
-      border-radius: 2px;
-      margin: $marginHalf;
-      padding: $marginHalf;
-
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-radius: $marginHalf;
+      margin: 0 $marginHalf $marginHalf 0;
+      padding: 0;
       filter: grayscale(100%);
 
+      > * {
+        display: block;
+      }
+
       &.is-selected {
-        border: 1px solid #444;
+        border-color: #fff;
         filter: none;
       }
     }
   }
 
-  .tootWindow-form {
-    background: #eee;
-    border-radius: 4px;
+  .tootWindow-content {
+    background: $colorTootContentBackground;
+    border-radius: $marginHalf $marginHalf $marginHalf 0;
 
     .tootWindow-spoilerText {
+      display: block;
       background: transparent;
       border: none;
       width: 100%;
       padding: 8px;
-      margin: 0 0 $marginDefault 0;
+      margin: 0;
       box-sizing: border-box;
       min-height: 4ex;
       border-bottom: 1px solid #444;
@@ -53,6 +103,7 @@
     }
 
     .tootWindow-status {
+      display: block;
       background: transparent;
       border: none;
       width: 100%;
@@ -68,25 +119,27 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    display: flex;
 
     li {
-      display: flex;
-      align-items: center;
+      flex: 1 1 auto;
+      color: $colorTootTextInactive;
       cursor: pointer;
 
-      > span {
-        display: inline-block;
-        margin: 0 0.5em;
+      > b {
+        display: block;
+        margin: $marginHalf 0.5em;
       }
 
       > p {
-        flex: 1 1 auto;
         margin: 1ex 0.5em;
+        font-size: $fontSizeSmall;
       }
 
       &.is-active {
-        background: blue;
-        color: #fff;
+        background: #fff;
+        color: #000;
+        border-radius: 0 0 $marginHalf $marginHalf;
       }
     }
   }
@@ -94,11 +147,16 @@
   /* .tootWindow-actions */
   .tootWindow-actions {
     display: flex;
+    margin: $marginDefault 0 0 0;
   }
 
   .tootWindow-send {
     flex: 1 1 auto;
     text-align: right;
+  }
+
+  .tootWindow-charCount {
+    margin-right: 1ex;
   }
 }
 
