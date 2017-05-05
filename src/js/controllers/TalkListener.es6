@@ -2,7 +2,7 @@ import {EventEmitter} from 'events'
 
 import {EVENT_UPDATE, EVENT_NOTIFICATION, NOTIFICATION_TYPE_MENTION, STREAM_HOME, VISIBLITY_DIRECT, WEBSOCKET_EVENT_MESSAGE} from 'src/constants'
 import {Status} from 'src/models'
-import WebSocketManager from 'src/controllers/WebSocketManager'
+import WebsocketManager from 'src/controllers/WebsocketManager'
 import {makeWebsocketUrl} from 'src/utils'
 
 
@@ -238,7 +238,7 @@ export default class TalkListener extends EventEmitter {
   }
 
   async listenWebsocket() {
-    WebSocketManager.listen(
+    WebsocketManager.listen(
       makeWebsocketUrl(this.token, STREAM_HOME),
       ::this.onNewMessageReceived
     )
