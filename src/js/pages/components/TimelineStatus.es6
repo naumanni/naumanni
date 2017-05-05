@@ -38,8 +38,6 @@ export default class TimelineStatus extends React.Component {
     const account = mainStatus.account
     const statusBodyClass = ['status-body']
 
-    console.log(mainStatus.spoilerText, mainStatus.spoilerText.length)
-
     if(mainStatus.spoilerText.length) {
       statusBodyClass.push(
         'has-spoilerText',
