@@ -8,5 +8,4 @@ export {Account, Attachment, Notification, OAuthApp, OAuthToken, Status}
 
 import UIColumn from './UIColumn'
 import UIDialog from './UIDialog'
-import UITimelineEntry from './UITimelineEntry'
-export {UIColumn, UIDialog, UITimelineEntry}
+export {UIColumn, UIDialog}

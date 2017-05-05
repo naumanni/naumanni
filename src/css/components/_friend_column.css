@@ -5,6 +5,8 @@ $marginFriendInfo: calc($sizeAvatar + $marginDefault);
   list-style: none;
   padding: 0;
   margin: 0;
+  height: 100%;
+  overflow-y: scroll;
 
   li {
     padding: $marginDefault;
@@ -16,7 +18,6 @@ $marginFriendInfo: calc($sizeAvatar + $marginDefault);
 .friend {
   @mixin clearfix;
   position: relative;
-
   cursor: pointer;
 
   .friend-avatar {

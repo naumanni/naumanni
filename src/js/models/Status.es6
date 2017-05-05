@@ -75,6 +75,14 @@ export default class Status extends StatusRecord {
     return moment(this.created_at)
   }
 
+  get hasSpoilerText() {
+    return this.spoiler_text.length > 0
+  }
+
+  get spoilerText() {
+    return this.spoiler_text
+  }
+
   canReblog() {
     return (this.visibility === VISIBLITY_PUBLIC || this.visibility === VISIBLITY_UNLISTED)
       ? true
@@ -83,6 +91,8 @@ export default class Status extends StatusRecord {
 
   /**
    * そいつあてのMentionが含まれているか？
+   * @param {Int} accountId そいつ
+   * @return {bool}
    */
   isMentionToId(accountId) {
     return this.mentions.find((m) => m.id === accountId) ? true : false

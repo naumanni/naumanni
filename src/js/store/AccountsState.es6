@@ -1,20 +1,12 @@
 import * as actions from 'src/actions'
 
 
-class TokenAndAccount {
-  constructor(token, account) {
-    this.token = token
-    this.account = account
-  }
-}
-
-
 export default class AccountsState {
   /**
-   * @param {TokenAndAccount[]} tokensAndAccounts
+   * @param {OAuthToken[]} tokens
    */
-  constructor(tokensAndAccounts=[]) {
-    this.tokensAndAccounts = tokensAndAccounts
+  constructor(tokens=[]) {
+    this.tokens = tokens
   }
 
   reduce(payload) {
@@ -23,44 +15,20 @@ export default class AccountsState {
       return this.onTokenLoaded(payload)
     case actions.TOKEN_ADDED:
       return this.onTokenAdded(payload)
-    case actions.ACCOUNT_LOADED:
-      return this.onAccountLoaded(payload)
     default:
       return this
     }
   }
 
   onTokenLoaded({tokens}) {
-    const tokensAndAccounts = tokens.map((token) => {
-      const old = this.tokensAndAccounts.find((ta) => ta.token.address === token.address)
-      const account = old ? old.account : null
-      return new TokenAndAccount(token, account)
-    })
-    return new AccountsState(tokensAndAccounts)
+    return new AccountsState(tokens)
   }
 
   onTokenAdded({token}) {
-    require('assert')(token && token.address)
-    const ta = this.tokensAndAccounts.find((ta) => ta.token.address === token.address)
-    if(ta)
-      return this
-
-    const tokensAndAccounts = this.tokensAndAccounts.concat([new TokenAndAccount(token, null)])
-    return new AccountsState(tokensAndAccounts)
+    return new AccountsState([...this.tokens, token])
   }
 
-  onAccountLoaded({token, account}) {
-    require('assert')(token && token.address)
-    require('assert')(account && account.address)
-    const tokensAndAccounts = this.tokensAndAccounts.map((ta) => {
-      if(ta.token.address === token.address)
-        return new TokenAndAccount(ta.token, account)
-      return ta
-    })
-    return new AccountsState(tokensAndAccounts)
-  }
-
-  getAccountByAddress(address) {
-    return this.tokensAndAccounts.find((ta) => ta.account && ta.account.address === address)
+  getTokenByAcct(acct) {
+    return this.tokens.find((token) => token.acct === acct)
   }
 }

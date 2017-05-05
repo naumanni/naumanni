@@ -45,10 +45,6 @@ export default class AuthorizeAccountUseCase extends UseCase {
       ...tokenData,
     })
     Database.save(token)
-    this.dispatch({
-      type: actions.TOKEN_ADDED,
-      token,
-    })
 
     // get my info
     const requester = makeOAuthAPIRequester(
@@ -62,11 +58,11 @@ export default class AuthorizeAccountUseCase extends UseCase {
         },
       })
     const account = await requester.verifyCredentials()
+    token.account = account
 
     this.dispatch({
-      type: actions.ACCOUNT_LOADED,
+      type: actions.TOKEN_ADDED,
       token,
-      account,
     })
 
     return {token, account}

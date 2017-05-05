@@ -116,4 +116,21 @@ export default class OAuthToken extends OAuthTokenRecord {
 
     return this.expires.isBefore(moment())
   }
+
+  //
+  set account(newAccount) {
+    this._account = newAccount
+  }
+
+  get account() {
+    return this._account
+  }
+
+  get acct() {
+    return this._account ? this._account.account : null
+  }
+
+  toString() {
+    return `<OAuthToken ${this.acct || this.host}:${this.accessToken}>`
+  }
 }

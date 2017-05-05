@@ -38,23 +38,23 @@ export default class FriendsColumn extends Column {
     )
 
     // make event listener
-    const ta = this.state.accountsState.getAccountByAddress(this.props.subject)
-    this.listener.open(ta || {token: null, account: null})
+    const token = this.state.accountsState.getTokenByAcct(this.props.subject)
+    this.listener.open(token)
   }
 
   /**
    * @override
    */
   renderTitle() {
-    const {account} = this.state
+    const {token} = this.state
 
-    if(!account) {
+    if(!token) {
       return 'メッセージ'
     }
 
     return (
       <h1 className="column-headerTitle">
-        <div className="column-headerTitleSub">{account.account}</div>
+        <div className="column-headerTitleSub">{token.acct}</div>
         <div className="column-headerTitleMain">メッセージ</div>
       </h1>
     )
@@ -89,14 +89,7 @@ export default class FriendsColumn extends Column {
    */
   getStateFromContext() {
     const state = super.getStateFromContext()
-    const ta = state.accountsState.getAccountByAddress(this.props.subject)
-
-    if(ta) {
-      state.account = ta.account
-    } else {
-      state.account = null
-    }
-
+    state.token = state.accountsState.getTokenByAcct(this.props.subject)
     return state
   }
 
@@ -105,9 +98,7 @@ export default class FriendsColumn extends Column {
    */
   onChangeConext() {
     super.onChangeConext()
-
-    const ta = this.state.accountsState.getAccountByAddress(this.props.subject)
-    this.listener.updateTokenAndAccount(ta || {token: null, account: null})
+    this.listener.updateTokens(this.state.token)
   }
 
   // cb
@@ -182,36 +173,30 @@ class FriendsListener extends EventEmitter {
   constructor(subject) {
     super()
     this.subject = subject
-  }
-
-  open({token, account}) {
-    this.token = token
-    this.account = account
+    this.token = null
     this.state = {
       friends: null,
     }
+  }
+
+  open(token) {
+    this.token = token
     this.refresh()
   }
 
-  updateTokenAndAccount({token, account}) {
-    // if(this.token && this.token.address === token.address) {
-    //   this.account = account
-    //   return
-    // }
-
+  updateTokens(token) {
     this.token = token
-    this.account = account
     this.refresh()
   }
 
   async refresh() {
-    if(!this.token || !this.account)
+    if(!this.token)
       return
 
-    const {requester} = this.token
+    const {requester, account} = this.token
     const response = await Promise.all([
-      requester.listFollowings({id: this.account.id, limit: 80}),
-      requester.listFollowers({id: this.account.id, limit: 80}),
+      requester.listFollowings({id: account.id, limit: 80}),
+      requester.listFollowers({id: account.id, limit: 80}),
     ])
 
     const friends = []

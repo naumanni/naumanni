@@ -10,27 +10,23 @@ export default class LoadTokensUseCase extends UseCase {
   }
 
   async execute() {
-    const tokens = await OAuthToken.query.getAll()
+    let tokens = await OAuthToken.query.getAll()
+
+    tokens = await Promise.all(
+      tokens.map(async (token) => {
+        try {
+          const account = await token.requester.verifyCredentials()
+          token.account = account
+        } catch(e) {
+          console.error(e)
+        }
+        return token
+      })
+    )
 
     this.dispatch({
       type: actions.TOKEN_LOADED,
       tokens,
     })
-
-    for(const token of tokens) {
-      const requester = token.requester
-      let account
-      try {
-        account = await requester.verifyCredentials()
-      } catch(e) {
-        account = null
-      }
-
-      this.dispatch({
-        type: actions.ACCOUNT_LOADED,
-        token,
-        account,
-      })
-    }
   }
 }

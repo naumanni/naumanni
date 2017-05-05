@@ -7,7 +7,6 @@ import {
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
 } from 'src/constants'
 import TimelineListener from 'src/controllers/TimelineListener'
-import {UITimelineEntry} from 'src/models'
 import TimelineStatus from './TimelineStatus'
 import Column from './Column'
 
@@ -49,7 +48,7 @@ export default class TimelineColumn extends Column {
     )
 
     // make event listener
-    this.listener.open(this.state.accountsState.tokensAndAccounts)
+    this.listener.updateTokens(this.state.accountsState.tokens)
 
     // set timer for update dates
     this.timer = setInterval(
@@ -75,15 +74,14 @@ export default class TimelineColumn extends Column {
     if(this.isMixedTimeline()) {
       return `統合${typeName}`
     } else {
-      const {account} = this.state
+      const {token} = this.state
 
-      if(!account) {
+      if(!token)
         return typeName
-      }
 
       return (
         <h1 className="column-headerTitle">
-          <div className="column-headerTitleSub">{account.account}</div>
+          <div className="column-headerTitleSub">{token.acct}</div>
           <div className="column-headerTitleMain">{typeName}</div>
         </h1>
       )
@@ -102,12 +100,9 @@ export default class TimelineColumn extends Column {
 
     return (
       <ul className="timeline">
-        {timeline.map((entry) => (
-          <li key={entry.uri}>
-            <TimelineStatus
-              entry={entry}
-              onToggleContentOpen={::this.onStatusToggleContentOpen}
-              />
+        {timeline.map((status) => (
+          <li key={status.uri}>
+            <TimelineStatus status={status} />
           </li>
         ))}
       </ul>
@@ -119,20 +114,13 @@ export default class TimelineColumn extends Column {
    */
   getStateFromContext() {
     const state = super.getStateFromContext()
-
     if(!this.isMixedTimeline()) {
-      const ta = state.accountsState.getAccountByAddress(this.props.subject)
-
-      if(ta) {
-        state.token = ta.token
-        state.account = ta.account
-      } else {
-        state.token = state.account = null
-      }
+      // ヘッダに表示するために自分のTokenを保存している
+      state.token = state.accountsState.getTokenByAcct(this.props.subject)
     }
-
     return state
   }
+
 
   isMixedTimeline() {
     return this.props.subject === SUBJECT_MIXED
@@ -140,22 +128,14 @@ export default class TimelineColumn extends Column {
 
   onChangeConext() {
     super.onChangeConext()
-    this.listener.open(this.state.accountsState.tokensAndAccounts)
+    this.listener.updateTokens(this.state.accountsState.tokens)
   }
 
   // callbacks
   onChangeTimeline() {
     this.setState({
       loading: false,
-      timeline: this.listener.timeline.map((e) => new UITimelineEntry(e)),
+      timeline: this.listener.timeline,
     })
-  }
-
-  onStatusToggleContentOpen(entry) {
-    const idx = this.state.timeline.indexOf(entry)
-    require('assert')(idx >= 0)
-
-    entry.isContentOpen = !entry.isContentOpen
-    this.setState({timeline: this.state.timeline})
   }
 }

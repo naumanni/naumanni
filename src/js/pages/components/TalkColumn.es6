@@ -48,7 +48,7 @@ export default class TalkColumn extends Column {
     )
 
     // make event listener
-    this.listener.updateTokenAndAccount(this.state)
+    this.listener.updateToken(this.state.token)
   }
 
   /**
@@ -126,11 +126,7 @@ export default class TalkColumn extends Column {
    */
   getStateFromContext() {
     const state = super.getStateFromContext()
-    const ta = state.accountsState.getAccountByAddress(this.props.from)
-
-    state.token = ta && ta.token
-    state.account = ta && ta.account
-
+    state.token = state.accountsState.getTokenByAcct(this.props.from)
     return state
   }
 
@@ -140,7 +136,7 @@ export default class TalkColumn extends Column {
   onChangeConext() {
     super.onChangeConext()
 
-    this.listener.updateTokenAndAccount(this.state)
+    this.listener.updateToken(this.state.token)
   }
 
   renderTalkGroup(talkGroup, prevTalkGroup, nextTalkGroup) {

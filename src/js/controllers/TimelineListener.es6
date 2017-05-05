@@ -1,9 +1,14 @@
 import {EventEmitter} from 'events'
 
 import {
+  EVENT_UPDATE, EVENT_NOTIFICATION,
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
+  STREAM_HOME, STREAM_LOCAL, STREAM_FEDERATION,
+  WEBSOCKET_EVENT_MESSAGE,
 } from 'src/constants'
 import {Status} from 'src/models'
+import {makeWebsocketUrl} from 'src/utils'
+import WebsocketManager from './WebsocketManager'
 
 
 export class TimelineEntry {
@@ -33,224 +38,185 @@ export default class TimelineListener extends EventEmitter {
   constructor(subject, timelineType) {
     super()
 
+    this.timeline = []
     this.subject = subject
     this.timelineType = timelineType
 
-    this.sources = []
-    this.websockets = {}
-    this.timeline = []
+    this.tokens = {}
+    this.websocketRemovers = {}
+    // this.timelineFetchers = {}
   }
 
-  open(tokensAndAccounts) {
-    this.updateTokens(tokensAndAccounts)
-  }
-
-  updateTokens(tokensAndAccounts) {
-    const _ = (token, account, type, fetcher) => {
-      return {
-        key: `${token.address}:${type}`,
-        fetcher: {account, token, type, ...fetcher},
-      }
+  updateTokens(tokens) {
+    if(this.subject !== SUBJECT_MIXED) {
+      // Accountタイムラインなので、一致するアカウントのみ
+      tokens = tokens.filter((token) => token.acct === this.subject)
     }
+    tokens = tokens.reduce((map, token) => {
+      map[token.acct] = token
+      return map
+    }, {})
 
-    const newSources = tokensAndAccounts.reduce((newSources, {token, account}) => {
-      if(!token || !account)
-        return newSources
+    // new tokens
+    Object.values(tokens)
+      .filter((newToken) => !this.tokens[newToken.acct] || !this.tokens[newToken.acct].isEqual(newToken))
+      .forEach((token) => {
+        if(this.tokens[token.acct]) {
+          // token updated
+          require('assert')(0, 'not implemented')
+        } else {
+          // token added
+          console.log(`token added ${token.toString()}`)
+          this.onTokenAdded(token)
+        }
+      })
 
-      if(this.subject == SUBJECT_MIXED) {
-        // 複合タイムラインなのでALL OK
-      } else {
-        // Accountタイムラインなので、一致しないアカウントは無視
-        if(account.address !== this.subject)
-          return newSources
-      }
+    // disposed tokens
+    Object.values(this.tokens)
+      .filter((oldToken) => !tokens[oldToken.acct] || !tokens[oldToken.acct].isEqual(oldToken))
+      .forEach((token) => {
+        if(tokens[token.acct]) {
+          // token updated
+          require('assert')(0, 'not implemented')
+        } else {
+          // token removed
+          console.log(`token removed ${token.toString()}`)
+          this.onTokenRemoved(token)
+        }
+      })
 
-      // add websocket
-      const websocketBase = `wss://${token.host}/api/v1/streaming/?access_token=${token.accessToken}&stream=`
-      const requester = token.requester
-
-      switch(this.timelineType) {
-      case TIMELINE_HOME:
-        newSources.push(
-            _(token, account, 'websocket', {url: `${websocketBase}user`}),
-            _(token, account, 'api', {func: ::requester.listHomeTimeline}),
-          )
-        break
-
-      case TIMELINE_LOCAL:
-        newSources.push(
-            _(token, account, 'websocket', {url: `${websocketBase}public:local`}),
-            _(token, account, 'api', {func: requester.listPublicTimeline.bind(requester, {'local': 'true'})}),
-          )
-        break
-
-      case TIMELINE_FEDERATION:
-        newSources.push(
-            _(token, account, 'websocket', {url: `${websocketBase}public`}),
-            _(token, account, 'api', {func: ::requester.listPublicTimeline}),
-          )
-        break
-      }
-      return newSources
-    }, [])
-
-    const newKeys = new Set(newSources.map(({key}) => key))
-    const oldKeys = new Set(this.sources.map(({key}) => key))
-
-    // 新しい接続を開始する
-    newSources.forEach(({key, fetcher}) => {
-      if(oldKeys.has(key)) {
-        return
-      }
-
-      if(fetcher.type === 'websocket') {
-        const {token, url} = fetcher
-        console.log('open websocket', url)
-        const socket = new WebSocket(url)
-
-        socket.onopen = this.onOpen.bind(this, token, fetcher.account)
-        socket.onclose = this.onClose.bind(this, token, fetcher.account)
-        socket.onerror = this.onError.bind(this, token, fetcher.account)
-        socket.onmessage = this.onMessage.bind(this, token, fetcher.account)
-        this.websockets[url] = socket
-      } else if(fetcher.type === 'api') {
-        fetcher.func().then((timeline) => {
-          this.pushStatus(fetcher.token, fetcher.account, timeline)
-        })
-      }
-    })
-
-    // 古い接続を閉じる
-    this.sources.forEach(({key, fetcher}) => {
-      if(newKeys.has(key))
-        return
-
-      if(fetcher.type == 'websocket') {
-        const {url} = fetcher
-        console.log('close websocket', url)
-        this.websockets[url].close()
-        delete this.websockets[url]
-      }
-    })
-
-    this.sources = newSources
-  }
-
-  // websocket event handlers
-  onError(token, account, e, ...args) {
-    console.log('onError', token, account, e, args)
-  }
-
-  onMessage(token, account, e) {
-    const frame = JSON.parse(e.data)
-    const payload = frame.payload && JSON.parse(frame.payload)
-    const {event} = frame
-
-    switch(event) {
-    case 'update':
-      this.pushStatus(token, account, new Status({
-        host: token.host,
-        ...payload,
-      }))
-      break
-    default:
-      console.log('onMessage', token, account, event, payload)
-      break
-    }
-  }
-
-  onOpen(token, account, e, ...args) {
-    console.log('onOpen', token, account, e, args)
-  }
-
-  onClose(token, account, e, ...args) {
-    console.log('onClose', token, account, e, args)
+    this.tokens = tokens
   }
 
   /**
-   * StatusをTimelineに追加する
-   * @param {OAuthTokeb} token
-   * @param {Account} account
-   * @param {Status[]} newStatuses
+   * EVENT_CHANGEのリスナを登録する
+   * @param {func} cb
+   * @return {func} リスナの登録を削除するハンドラ
    */
-  pushStatus(token, account, newStatuses) {
-    if(!Array.isArray(newStatuses)) {
-      newStatuses = [newStatuses]
-    }
-
-    // remove exists
-    newStatuses = newStatuses
-      .filter((status) => !this.timeline.find((old) => old.status.uri === status.uri))
-      .map((status) => new TimelineEntry(status))
-
-    newStatuses.forEach((entry) => {
-      if(entry.status.hasEncryptedStatus) {
-        decryptStatus(account, entry.status)
-          .then((decryptedText) => {
-            entry.decryptedText = decryptedText
-            this.emitChange()
-          }, (error) => console.error('decrypt failed', error)
-        )
-      }
-    })
-
-    this.timeline = newStatuses
-      .concat(this.timeline)
-      .sort(TimelineEntry.compare)
-    this.emitChange()
-  }
-
   onChange(cb) {
     this.on(this.EVENT_CHANGE, cb)
     return this.removeListener.bind(this, this.EVENT_CHANGE, cb)
   }
 
+  /**
+   * 新しいTokenが追加された(アカウントが追加された)
+   * @param {OAuthToken} token 新しいToken
+   * @private
+   */
+  onTokenAdded(token) {
+    // websocketをlistenする
+    const websocketUrl = makeWebsocketUrlByTimelineType(this.timelineType, token)
+
+    this.websocketRemovers[token.acct] = WebsocketManager.listen(
+      websocketUrl, this.onWebsocketMessage.bind(this, token)
+    )
+
+    // とりあえずTimelineをとってくる
+    const fetcher = makeFetcherByTimelineType(this.timelineType, token)
+    fetcher().then((statuses) => {
+      this.pushStatuses(token, statuses)
+    })
+  }
+
+  /**
+   * Tokenが削除された(アカウントが削除された)
+   * @param {OAuthToken} token 削除されたToken
+   * @private
+   */
+  onTokenRemoved(token) {
+    // websocketをunlistenする
+    if(this.websocketRemovers[token.acct]) {
+      this.websocketRemovers[token.acct]()
+      delete this.websocketRemovers[token.acct]
+    }
+
+    // TODO: remove all statuses for this token
+  }
+
+  /**
+   * Websocketに何かあったら呼ばれる
+   * @param {OAuthToken} token
+   * @param {String} type
+   * @param {Object} payload
+   * @private
+   */
+  onWebsocketMessage(token, {type, payload}) {
+    if(type === WEBSOCKET_EVENT_MESSAGE) {
+      if(payload.event === EVENT_UPDATE) {
+        this.pushStatuses(token, new Status({
+          host: token.host,
+          ...payload.payload,
+        }))
+      }
+    }
+  }
+
+  /**
+   * StatusをTimelineに追加する
+   * @param {OAuthTokeb} token
+   * @param {Status[]} newStatuses
+   * @private
+   */
+  pushStatuses(token, newStatuses) {
+    if(!Array.isArray(newStatuses)) {
+      newStatuses = [newStatuses]
+    }
+    console.log('pushStatuses', token, newStatuses)
+    // remove exists
+    newStatuses = newStatuses
+      .filter((status) => !this.timeline.find((old) => old.uri === status.uri))
+
+    this.timeline = newStatuses
+      .concat(this.timeline)
+      .sort(Status.compareCreatedAt)
+    this.emitChange()
+  }
+
+  /**
+   * @private
+   */
   emitChange() {
     this.emit(this.EVENT_CHANGE, [this])
   }
 }
 
 
-import base65536 from 'base65536'
-import openpgp, {key as openpgpKey, message as openpgpMessage} from 'openpgp'
+function makeWebsocketUrlByTimelineType(timelineType, token) {
+  let url
 
+  switch(timelineType) {
+  case TIMELINE_HOME:
+    url = makeWebsocketUrl(token, STREAM_HOME)
+    break
 
-export async function decryptStatus(account, status) {
-  const privatekey = openpgpKey.readArmored(account.privateKeyArmored)
+  case TIMELINE_LOCAL:
+    url = makeWebsocketUrl(token, STREAM_LOCAL)
+    break
 
-  // status
-  const response = {}
-
-  await Promise.all([
-    ['content', status.content, '&lt;nem&gt;', '&lt;/nem&gt;'],
-    ['spoilerText', status.spoiler_text, '<nem>', '</nem>'],
-  ].map(async ([key, text, open, close]) => {
-    const [before, content, after] = extractText(text, open, close)
-    console.log(text, '->', content)
-    if(!content) {
-      response[key] = before + content + after
-      return
-    }
-
-    const messageToDecrypt = openpgpMessage.read(base65536.decode(content))
-
-    const decyrptedText = await openpgp.decrypt({
-      message: messageToDecrypt,
-      privateKey: privatekey.keys[0],
-    })
-
-    response[key] = before + decyrptedText.data + after
-  }))
-
-  return response
+  case TIMELINE_FEDERATION:
+    url = makeWebsocketUrl(token, STREAM_FEDERATION)
+    break
+  }
+  return url
 }
 
 
-function extractText(text, open, close) {
-  const [before, rest] = text.split(open, 2)
-  if(!rest) {
-    return ['', '', text]
+function makeFetcherByTimelineType(timelineType, token) {
+  const {requester} = token
+
+  let fetcher
+  switch(timelineType) {
+  case TIMELINE_HOME:
+    fetcher = ::requester.listHomeTimeline
+    break
+
+  case TIMELINE_LOCAL:
+    fetcher = requester.listPublicTimeline.bind(requester, {'local': 'true'})
+    break
+
+  case TIMELINE_FEDERATION:
+    fetcher = ::requester.listPublicTimeline
+    break
   }
-  const [content, after] = rest.split(close, 2)
-  return [before, content, after]
+  return fetcher
 }

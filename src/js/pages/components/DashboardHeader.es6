@@ -56,7 +56,7 @@ export default class DashboardHeader extends React.Component {
    */
   render() {
     const {accountsState} = this.state
-    const {tokensAndAccounts} = accountsState
+    const {tokens} = accountsState
 
     return (
       <header className="naumanniDashboard-header">
@@ -69,7 +69,7 @@ export default class DashboardHeader extends React.Component {
         </div>
 
         <ul className="naumanniDashboard-header-accounts">
-          {tokensAndAccounts.map((ta) => this.renderTokenAndAccount(ta))}
+          {tokens.map((token) => this.renderAccount(token))}
           <li>
             <button className="naumanniDashboard-header-addAccountButton"
               onClick={::this.onClickAddAccount}>
@@ -92,8 +92,8 @@ export default class DashboardHeader extends React.Component {
    * ヘッダに顔アイコンを書くよ
    * @return {React.Component}
    */
-  renderTokenAndAccount({token, account}) {
-    if(!account) {
+  renderAccount(token) {
+    if(!token.account) {
       return (
         <li key={token.address}>
           <div className="naumanniDashboard-header-noAccount">?</div>
@@ -103,8 +103,8 @@ export default class DashboardHeader extends React.Component {
 
     return (
       <li key={token.address}>
-        <DropdownMenuButton onRenderMenu={this.onRenderAccountMenu.bind(this, token, account)}>
-          <UserIconWithHost account={account} />
+        <DropdownMenuButton onRenderMenu={this.onRenderAccountMenu.bind(this, token)}>
+          <UserIconWithHost account={token.account} />
         </DropdownMenuButton>
       </li>
     )
@@ -147,7 +147,9 @@ export default class DashboardHeader extends React.Component {
     )
   }
 
-  onRenderAccountMenu(token, account) {
+  onRenderAccountMenu(token) {
+    const {account} = token
+
     return (
       <ul className="menu menu--header">
         <li className="menu-description">

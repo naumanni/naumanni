@@ -49,7 +49,6 @@ class PublicKeyCache {
   /**
    * KeyIdの配列から、Keyを得る
    * @param {Object[]} keyIds {keyId, user}の配列
-   * @return {Object<String, StoredPublicKey>}
    */
   async fetchKeys(keyIds) {
     // keyIdは重複していないでほしい

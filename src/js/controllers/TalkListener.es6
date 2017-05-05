@@ -108,17 +108,17 @@ export default class TalkListener extends EventEmitter {
     this.removeWebsocketListenerHandler = null
   }
 
-  updateTokenAndAccount({token, account}) {
+  updateToken(token) {
     if(this.state === _STATE_INITIAL) {
       this.token = token
-      this.me = account
+      this.me = token && token.account
 
       if(this.token && this.me)
         this.loadStatuses()
     } else {
       require('assert')(this.token)
       require('assert')(this.me)
-      if(this.token.isEqual(token) && this.me.isEqual(account)) {
+      if(this.token.isEqual(token) && this.me.isEqual(token ? token.account : null)) {
         // nothing changed
       } else {
         require('assert')(0, 'not implemented')
@@ -127,7 +127,6 @@ export default class TalkListener extends EventEmitter {
   }
 
   close() {
-    debugger
     if(this.removeWebsocketListenerHandler) {
       this.removeWebsocketListenerHandler()
       this.removeWebsocketListenerHandler = null
@@ -335,7 +334,6 @@ export default class TalkListener extends EventEmitter {
 
   onNewMessageReceived({type, payload}) {
     if(type === WEBSOCKET_EVENT_MESSAGE) {
-      debugger
       let status
 
       if(payload.event === EVENT_UPDATE) {

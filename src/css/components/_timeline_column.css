@@ -16,7 +16,6 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
 .status {
   .status-row {
     @mixin clearfix;
-    margin-bottom: $marginHalf;
 
     .status-rowLeft {
       float: left;
@@ -266,7 +265,7 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
   }
 
   .status-actions {
-    margin: $marginDefault 0 0;
+    margin: $marginDefault 0 $marginHalf;
     color: $colorStatusInactiveActionColor;
 
     button .icon {

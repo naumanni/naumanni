@@ -4,14 +4,13 @@ import PropTypes from 'prop-types'
 import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
-import {UITimelineEntry} from 'src/models'
+import {Status} from 'src/models'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from '../parts'
 
 
 export default class TimelineStatus extends React.Component {
   static propTypes = {
-    entry: PropTypes.instanceOf(UITimelineEntry).isRequired,
-    onToggleContentOpen: PropTypes.func.isRequired,
+    status: PropTypes.instanceOf(Status).isRequired,
   }
 
   /**
@@ -20,11 +19,12 @@ export default class TimelineStatus extends React.Component {
   constructor(...args) {
     super(...args)
 
-    const {entry} = this.props
-    const status = entry.mainStatus
+    const {status} = this.props
+    const mainStatus = status.reblog || status
 
     this.state = {
       isShowMediaCover: status.sensitive,
+      isContentOpen: mainStatus.hasSpoilerText ? false : true,
     }
   }
 
@@ -32,27 +32,29 @@ export default class TimelineStatus extends React.Component {
    * @override
    */
   render() {
-    const {entry} = this.props
-    const status = entry.mainStatus
-    const account = status.account
-
+    const {status} = this.props
+    const {isContentOpen} = this.state
+    const mainStatus = status.reblog || status
+    const account = mainStatus.account
     const statusBodyClass = ['status-body']
 
-    if(entry.hasSpoilerText) {
+    console.log(mainStatus.spoilerText, mainStatus.spoilerText.length)
+
+    if(mainStatus.spoilerText.length) {
       statusBodyClass.push(
         'has-spoilerText',
-        entry.canShowContent() ? 'is-contentOpen' : 'is-contentClose'
+        isContentOpen ? 'is-contentOpen' : 'is-contentClose'
       )
     }
 
     return (
       <article className="status timeline-status">
 
-        {entry.isReblogged() && (
+        {status.reblog && (
           <div className="status-row status-reblogFrom">
             <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
             <div className="status-rowRight">
-              {entry.rebloggedUser.display_name} さんにブーストされました
+              {status.account.display_name} さんにブーストされました
             </div>
           </div>
         )}
@@ -74,18 +76,16 @@ export default class TimelineStatus extends React.Component {
                 <span className="user-account">@{account.account}</span>
               </div>
               <a className="status-createdAt"
-                 href={status.url}
+                 href={mainStatus.url}
                  target="_blank"
-                 alt={status.created_at}>{status.createdAt.fromNow()}
+                 alt={mainStatus.created_at}>{mainStatus.createdAt.fromNow()}
               </a>
             </div>
 
             <div className={statusBodyClass.join(' ')}>
-              {entry.isDecrypted() &&
-                <div className="status-isDecrypted"><span className="icon-lock" /> このメッセージは暗号化されています</div>}
-              {entry.hasSpoilerText && this.renderSpoilerText()}
-              {entry.canShowContent() && (
-                <div className="status-content" dangerouslySetInnerHTML={{__html: entry.content}} />
+              {this.renderSpoilerText()}
+              {isContentOpen && (
+                <div className="status-content" dangerouslySetInnerHTML={{__html: mainStatus.content}} />
               )}
             </div>
 
@@ -109,7 +109,7 @@ export default class TimelineStatus extends React.Component {
               </button>
 
               <button className="status-actionMenu">
-                <DropdownMenuButton onRenderMenu={this.onRenderStatusMenu.bind(this, entry)}>
+                <DropdownMenuButton onRenderMenu={::this.onRenderStatusMenu}>
                   <IconFont iconName="dot-3" />
                 </DropdownMenuButton>
               </button>
@@ -123,27 +123,29 @@ export default class TimelineStatus extends React.Component {
   }
 
   renderSpoilerText() {
-    const {entry} = this.props
+    const {status} = this.props
+    const {isContentOpen} = this.state
+    const mainStatus = status.reblog || status
 
-    if(!entry.hasSpoilerText)
+    if(!mainStatus.hasSpoilerText)
       return null
 
     return (
       <div className="status-spoilerText">
-        {entry.spoilerText}
+        {mainStatus.spoilerText}
         <a className="status-contentOpener"
-          onClick={() => this.props.onToggleContentOpen(this.props.entry)}>
-          {entry.isContentOpen ? '閉じる' : 'もっと見る...'}
+          onClick={() => this.setState({isContentOpen: !isContentOpen})}>
+          {isContentOpen ? '閉じる' : 'もっと見る...'}
         </a>
       </div>
     )
   }
 
   renderMedia() {
-    const {entry} = this.props
+    const {status} = this.props
     const {isShowMediaCover} = this.state
-    const status = entry.mainStatus
-    const mediaList = status.media_attachments
+    const mainStatus = status.reblog || status
+    const mediaList = mainStatus.media_attachments
     if(!mediaList.length)
       return null
 
@@ -151,7 +153,7 @@ export default class TimelineStatus extends React.Component {
       'status-mediaList',
       `status-mediaList${mediaList.length}`,
     ]
-    if(status.sensitive) {
+    if(mainStatus.sensitive) {
       className.push('is-sensitive')
     }
 
