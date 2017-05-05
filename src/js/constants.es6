@@ -31,3 +31,17 @@ export const NOTIFICATION_TYPE_FOLLOW = 'follow'
 export const KEY_ENTER = 13
 
 export const MESSAGE_TAG_REX = /--NEM\.([0-9a-f]{8})\.(\d+)\/(\d+)--/
+
+export const STREAM_HOME = 'user'
+export const STREAM_LOCAL = 'public:local'
+export const STREAM_FEDERATION = 'public'
+
+// MastodonのWebsocketから送られてくるframeのevent types
+export const EVENT_UPDATE = 'update'
+export const EVENT_NOTIFICATION = 'notification'
+
+// WebsocketManagerのlistnerに送られるevent type
+export const WEBSOCKET_EVENT_ERROR = 'error'
+export const WEBSOCKET_EVENT_OPEN = 'open'
+export const WEBSOCKET_EVENT_MESSAGE = 'message'
+export const WEBSOCKET_EVENT_CLOSE = 'close'

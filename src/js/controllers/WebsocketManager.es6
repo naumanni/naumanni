@@ -1,3 +1,7 @@
+import {
+  WEBSOCKET_EVENT_ERROR, WEBSOCKET_EVENT_OPEN, WEBSOCKET_EVENT_MESSAGE, WEBSOCKET_EVENT_CLOSE,
+} from 'src/constants'
+
 
 class WebsocketConnection {
   constructor(url) {
@@ -33,17 +37,17 @@ class WebsocketConnection {
 
   onError(e) {
     console.log('onError', e)
-    this.emit('error', null, e)
+    this.emit(WEBSOCKET_EVENT_ERROR, null, e)
   }
 
   onMessage(e) {
     console.log('onMessage', e)
 
-    /// mastodon orientedな処理
+    // / mastodon orientedな処理
     try {
       const frame = JSON.parse(e.data)
       frame.payload = frame.payload && JSON.parse(frame.payload)
-      this.emit('message', frame, e)
+      this.emit(WEBSOCKET_EVENT_MESSAGE, frame, e)
     } catch(e) {
       console.error(e)
       throw e
@@ -52,19 +56,18 @@ class WebsocketConnection {
 
   onOpen(e) {
     console.log('onOpen', e)
-    this.emit('open', null, e)
+    this.emit(WEBSOCKET_EVENT_OPEN, null, e)
   }
 
   onClose(e) {
     console.log('onClose', e)
-    this.emit('close', null, e)
+    this.emit(WEBSOCKET_EVENT_CLOSE, null, e)
   }
 
   emit(type, payload, source) {
-    const message = {type, payload, source}
     for(const l of this.listeners) {
       // TODO: try/catch要るかな?
-      l(this, message)
+      l({connection: this, type, payload, source})
     }
   }
 }

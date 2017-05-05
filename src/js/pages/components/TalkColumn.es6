@@ -58,6 +58,8 @@ export default class TalkColumn extends Column {
     super.componentWillUnmount()
 
     clearInterval(this.timer)
+    this.listener.close()
+    delete this.listener
   }
 
   /**

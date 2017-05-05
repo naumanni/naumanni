@@ -71,3 +71,12 @@ export function parseQuery(queryString) {
 //     return JSON.stringify(data)
 //   }
 // }
+
+
+/**
+ * WebsocketのUrlを作る。
+ * TODO: どっかに移したい
+ */
+export function makeWebsocketUrl(token, stream) {
+  return `wss://${token.host}/api/v1/streaming/?access_token=${token.accessToken}&stream=${stream}`
+}
