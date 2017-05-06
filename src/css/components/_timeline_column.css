@@ -295,4 +295,30 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
       }
     }
   }
+
+  .status-replyPanel {
+    &::before {
+      content: "";
+      display: block;
+      position: relative;
+      width: 0;
+      height: 0;
+      border: solid $marginDefault;
+      border-color: transparent transparent $colorTootPanelBackground transparent;
+      left: calc($statusBodyMarginLeft + 0.75rem - $marginDefault);
+      margin-top: calc(-$marginDefault / 2);
+    }
+
+    > div {
+      overflow: hidden;
+    }
+
+    .tootPanel {
+      transition: margin-top 0.3s ease-in-out;
+      margin-top: 0;
+    }
+    &.off .tootPanel {
+      margin-top: -120%;  /* 100%だとなんでかはみ出る。なんで? */
+    }
+  }
 }

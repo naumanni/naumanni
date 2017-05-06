@@ -19,6 +19,11 @@
       height: 33%;
     }
   }
+
+  &.size-small .userIcon-avatar {
+    width: calc($sizeAvatar / 4 * 3);
+    height: calc($sizeAvatar / 4 * 3);
+  }
 }
 
 

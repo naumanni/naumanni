@@ -6,11 +6,13 @@ import {
 } from 'src/constants'
 import {Status} from 'src/models'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from '../parts'
+import TootPanel from './TootPanel'
 
 
 export default class TimelineStatus extends React.Component {
   static propTypes = {
     status: PropTypes.instanceOf(Status).isRequired,
+    ...TootPanel.propTypes,
   }
 
   /**
@@ -25,6 +27,8 @@ export default class TimelineStatus extends React.Component {
     this.state = {
       isShowMediaCover: status.sensitive,
       isContentOpen: mainStatus.hasSpoilerText ? false : true,
+      isShowReplyPanel: false,
+      beginReplyPanelAnimation: true,
     }
   }
 
@@ -33,7 +37,7 @@ export default class TimelineStatus extends React.Component {
    */
   render() {
     const {status} = this.props
-    const {isContentOpen} = this.state
+    const {isContentOpen, isShowReplyPanel} = this.state
     const mainStatus = status.reblog || status
     const account = mainStatus.account
     const statusBodyClass = ['status-body']
@@ -90,7 +94,9 @@ export default class TimelineStatus extends React.Component {
             {this.renderMedia()}
 
             <div className="status-actions">
-              <button className="status-actionReply">
+              <button
+                className={`status-actionReply ${isShowReplyPanel ? 'is-active' : ''}`}
+                onClick={::this.onClickToggleReply}>
                 <IconFont iconName="reply" />
               </button>
 
@@ -115,6 +121,8 @@ export default class TimelineStatus extends React.Component {
 
           </div>
         </div>
+
+        {isShowReplyPanel && this.renderReplyPanel()}
 
       </article>
     )
@@ -183,6 +191,20 @@ export default class TimelineStatus extends React.Component {
     )
   }
 
+  renderReplyPanel() {
+    const {beginReplyPanelAnimation} = this.state
+
+    return (
+      <div className={`status-replyPanel ${beginReplyPanelAnimation ? 'off' : ''}`}>
+        <div>
+          <TootPanel {...this.props}
+            onSend={::this.onSendReply}
+            />
+        </div>
+      </div>
+    )
+  }
+
   // callbacks
   onRenderStatusMenu(entry) {
     return (
@@ -192,6 +214,38 @@ export default class TimelineStatus extends React.Component {
 
   onClickMediaCover() {
     this.setState({isShowMediaCover: !this.state.isShowMediaCover})
+  }
+
+  onClickToggleReply(e) {
+    e.preventDefault()
+    this.showHideReplyPanel(!this.state.isShowReplyPanel)
+  }
+
+  showHideReplyPanel(show) {
+    if(show) {
+      this.setState(
+        {isShowReplyPanel: true, beginReplyPanelAnimation: true},
+        () => this.setState({beginReplyPanelAnimation: false})
+      )
+    } else {
+      this.setState(
+        {isShowReplyPanel: true, beginReplyPanelAnimation: true},
+        () => setTimeout(() => this.setState({isShowReplyPanel: false}), 300)
+      )
+    }
+  }
+
+
+  /**
+   * TootPanel用のonSendをoverrideする。
+   * Send完了時にTootPanelを閉じたい
+   */
+  onSendReply(...args) {
+    // TODO: 突然閉じるのでアニメーションしたい...
+    return this.props.onSend(...args)
+      .then(() => {
+        this.showHideReplyPanel(false)
+      })
   }
 }
 

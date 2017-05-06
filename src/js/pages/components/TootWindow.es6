@@ -2,6 +2,7 @@ import React from 'react'
 import update from 'immutability-helper'
 import PropTypes from 'prop-types'
 
+import {VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC} from 'src/constants'
 import {Account} from 'src/models'
 import {IconFont, UserIconWithHost} from 'src/pages/parts'
 
@@ -9,16 +10,6 @@ import {IconFont, UserIconWithHost} from 'src/pages/parts'
 const MODE_TOOT = 'toot'
 const MODE_DIRECT = 'direct'
 
-// const VISIBLITY_DIRECT = 'direct'
-const VISIBLITY_PRIVATE = 'private'
-const VISIBLITY_UNLISTED = 'unlisted'
-const VISIBLITY_PUBLIC = 'public'
-
-const BLOCK_BEGIN_PGP_MESSAGE = '-----BEGIN PGP MESSAGE-----'
-const BLOCK_END_PGP_MESSAGE = '-----END PGP MESSAGE-----'
-
-
-// TODO: support reply
 
 /**
  * Status作成画面
@@ -47,14 +38,6 @@ export default class TootWindow extends React.Component {
         this.state.accountsState.tokens[0].account.account
       )
     }
-
-    // debug
-    // this.state = {
-    //   ...this.state,
-    //   mode: MODE_DIRECT,
-    //   statusContent: 'テストだぴょん',
-    //   messageTo: 'shn@oppai.tokyo',
-    // }
   }
 
   /**

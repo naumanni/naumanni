@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types'
 import {Context} from 'almin'
 
-import {Account, UIDialog} from 'src/models'
+import {
+  Account, OAuthToken,
+  UIDialog
+} from 'src/models'
 
 
 // almin
@@ -12,7 +15,8 @@ export {ContextPropType}
 // naumanni
 const AppPropType = PropTypes.any
 const AccountPropType = PropTypes.instanceOf(Account)
-export {AccountPropType, AppPropType}
+const OAuthTokenArrayPropType = PropTypes.arrayOf(PropTypes.instanceOf(OAuthToken))
+export {AccountPropType, AppPropType, OAuthTokenArrayPropType}
 
 
 // naumanni UI
