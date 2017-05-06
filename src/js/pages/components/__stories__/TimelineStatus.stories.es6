@@ -1,0 +1,45 @@
+import React from 'react'
+import { storiesOf, action, linkTo } from '@kadira/storybook'
+
+import {Status} from 'src/models'
+import TimelineStatus from '../TimelineStatus'
+
+
+const PUBLIC_STATUS = new Status({
+  host: 'oppai.tokyo',
+
+  "id":8159,
+  "created_at":"2017-05-06T11:49:51.396Z","in_reply_to_id":null,
+  "in_reply_to_account_id":null,
+  "sensitive":false,"spoiler_text":"","visibility":"public",
+  "application":{"name":"Web","website":null},
+  "account":{
+    "id":1,"username":"shn","acct":"shn","display_name":"shn@oppai.tokyo✅","locked":false,
+    "created_at":"2017-04-19T05:54:24.431Z","followers_count":63,"following_count":22,"statuses_count":123,
+    "note":"<p>ぶっちゃけ最近は尻も好きです<br />PGP Key Fingerprint: c3760e259ed09aae51d7d85e893ab07b862199c1</p>",
+    "url":"https://oppai.tokyo/@shn",
+    "avatar":"https://ot-mastodon.s3.amazonaws.com/accounts/avatars/000/000/001/original/2408e330e310f168.png",
+    "avatar_static":"https://ot-mastodon.s3.amazonaws.com/accounts/avatars/000/000/001/original/2408e330e310f168.png",
+    "header":"/headers/original/missing.png",
+    "header_static":"/headers/original/missing.png"
+  },
+  "media_attachments":[],"mentions":[],"tags":[],
+  "uri":"tag:oppai.tokyo,2017-05-06:objectId=8159:objectType=Status",
+  "content":"<p>aaa</p>",
+  "url":"https://oppai.tokyo/@shn/8159",
+  "reblogs_count":0,"favourites_count":0,"reblog":null,"favourited":null,"reblogged":null
+})
+
+
+storiesOf('TimelineStatus', module)
+  .addDecorator((story) => (
+    <div className="storybookContainer" style={{width: '360px'}}>
+      {story()}
+    </div>
+  ))
+
+  .add('Public', () => {
+    return (
+      <TimelineStatus status={PUBLIC_STATUS} />
+    )
+  })

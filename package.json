@@ -16,7 +16,11 @@
     "test:js": "jest",
     "watch": "npm-run-all -p watch:*",
     "watch:js": "webpack --progress --colors --watch",
-    "watch:css": "postcss src/css/main.css -d static -w"
+    "watch:css": "postcss src/css/main.css -d static -w",
+    "watch:storybook_css": "postcss src/css/storybook.css -d static -w",
+    "start-storybook": "start-storybook -s ./static -p 6006",
+    "storybook": "npm-run-all -p watch:storybook_css start-storybook",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "almin": "^0.11.0",
@@ -58,6 +62,7 @@
     "webpack": "^2.4.1"
   },
   "devDependencies": {
+    "@kadira/storybook": "^2.21.0",
     "almin-logger": "^4.0.3",
     "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.2",
@@ -78,7 +83,8 @@
   "jest": {
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "**/*.es6"
+      "**/*.es6",
+      "!**/__stories__/*.js"
     ],
     "coverageDirectory": "./coverage",
     "moduleFileExtensions": [
