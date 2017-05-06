@@ -169,6 +169,9 @@ export default class TimelineListener extends EventEmitter {
     this.timeline = newStatuses
       .concat(this.timeline)
       .sort(Status.compareCreatedAt)
+    // とりま100件に制限
+    this.timeline.splice(100)
+
     this.emitChange()
   }
 
