@@ -97,12 +97,16 @@ export default class TimelineColumn extends Column {
     }
 
     const {timeline} = this.state
+    const {tokens} = this.state.accountsState
 
     return (
       <ul className="timeline">
         {timeline.map((status) => (
           <li key={status.uri}>
-            <TimelineStatus status={status} />
+            <TimelineStatus
+              status={status}
+              tokens={tokens}
+              onSendReply={this.onSendReply.bind(this, status)} />
           </li>
         ))}
       </ul>
@@ -137,5 +141,20 @@ export default class TimelineColumn extends Column {
       loading: false,
       timeline: this.listener.timeline,
     })
+  }
+
+  async onSendReply(status, {sendFrom, message}) {
+    // とりまこっから送る
+    const responses = await Promise.all(
+      sendFrom.map(async (token) => {
+        // in_reply_to_id を付加する
+        // 同Hostにしか付加できない
+        if(status.hosts.indexOf(token.host) >= 0) {
+          // TODO: tootpanelの方にwarning出す?
+          message.in_reply_to_id = status.id
+        }
+        return await token.requester.postStatus(message)
+      })
+    )
   }
 }

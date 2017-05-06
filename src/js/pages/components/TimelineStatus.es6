@@ -12,7 +12,8 @@ import TootPanel from './TootPanel'
 export default class TimelineStatus extends React.Component {
   static propTypes = {
     status: PropTypes.instanceOf(Status).isRequired,
-    ...TootPanel.propTypes,
+    tokens: TootPanel.propTypes.tokens,
+    onSendReply: TootPanel.propTypes.onSend,
   }
 
   /**
@@ -242,7 +243,7 @@ export default class TimelineStatus extends React.Component {
    */
   onSendReply(...args) {
     // TODO: 突然閉じるのでアニメーションしたい...
-    return this.props.onSend(...args)
+    return this.props.onSendReply(...args)
       .then(() => {
         this.showHideReplyPanel(false)
       })

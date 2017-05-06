@@ -65,6 +65,11 @@ export default class Status extends StatusRecord {
     super(raw)
   }
 
+  // とりあえず
+  get hosts() {
+    return [this.host]
+  }
+
   get rawContent() {
     // TODO:sanitize
     // import {sanitizeHtml} from 'sanitize-html'

@@ -3,7 +3,7 @@ import {Context} from 'almin'
 
 import {
   Account, OAuthToken,
-  UIDialog
+  UIDialog,
 } from 'src/models'
 
 

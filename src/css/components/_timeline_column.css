@@ -5,7 +5,7 @@
   height: 100%;
   overflow-y: scroll;
 
-  li {
+  > li {
     padding: $marginDefault;
     border-bottom: 1px solid $colorStatusBorder;
   }
@@ -101,6 +101,11 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
       margin: 0 0 0 1em;
       padding: 2px 4px;
       cursor: pointer;
+      white-space: nowrap;
+
+      &:hover {
+        text-decoration: none;
+      }
     }
 
     .status-content {

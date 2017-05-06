@@ -55,9 +55,9 @@ storiesOf('TimelineStatus', module)
     return (
       <TimelineStatus status={PUBLIC_STATUS}
         tokens={tokens}
-        onSend={(...args) => {
-        action('send')(...args)
-        return setTimeoutAsync(500)
-      }} />
+        onSendReply={(...args) => {
+          action('send')(...args)
+          return setTimeoutAsync(500)
+        }} />
     )
   })

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import {
   MASTODON_MAX_CONTENT_SIZE,
-  VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC
+  VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
 import {OAuthTokenArrayPropType} from 'src/propTypes'
 import {IconFont, UserIconWithHost} from 'src/pages/parts'
@@ -57,8 +57,10 @@ export default class TootPanel extends React.Component {
     const {error, isSending, showContentsWarning, sendFrom, statusContent, spoilerTextContent, visibility} = this.state
 
     const trimmedStatusLength = statusContent.trim().length
+    const textLength = trimmedStatusLength + (showContentsWarning ? spoilerTextContent.trim().length : 0)
     const canSend = !isSending && sendFrom.length &&
-      trimmedStatusLength > 0 && trimmedStatusLength < maxContentLength
+      trimmedStatusLength > 0 && textLength < maxContentLength
+
 
     return (
       <div className="tootPanel">
@@ -144,7 +146,7 @@ export default class TootPanel extends React.Component {
           </button>
 
           <div className="tootPanel-send">
-            <span className="tootPanel-charCount">{statusContent.length}</span>
+            <span className="tootPanel-charCount">{500 - textLength}</span>
             <button disabled={!canSend} type="button"
               onClick={::this.onClickSend}>送信</button>
           </div>
@@ -183,8 +185,8 @@ export default class TootPanel extends React.Component {
       (token) => sendFrom.find((acct) => acct === token.acct)
     )
     const message = {
-      status: this.state.statusContent,
-      spoiler_text: showContentsWarning ? spoilerTextContent : null,
+      status: statusContent.trim(),
+      spoiler_text: showContentsWarning ? spoilerTextContent.trim() : null,
       visibility,
     }
 
@@ -210,7 +212,7 @@ export default class TootPanel extends React.Component {
    * @param {MouseEvent} e
    */
   onToggleSendFrom(account, e) {
-    let {mode, sendFrom} = this.state
+    let {sendFrom} = this.state
 
     if(e.shiftKey) {
       sendFrom = [...sendFrom]
