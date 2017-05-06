@@ -16,8 +16,7 @@ describe('WebsocketManager', () => {
 
     let count = 0
     const remover = WebsocketManager.listen(
-      TEST_WEBSOCKET_HOST, (connection, {type, payload}) => {
-        console.log(type, payload)
+      TEST_WEBSOCKET_HOST, ({connection, type, payload, source}) => {
         count += 1
       }
     )

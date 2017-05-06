@@ -2,6 +2,11 @@ import {OAuthToken, Account} from 'src/models'
 import TalkListener from '../TalkListener'
 
 jest.mock('src/api/APIRequester')
+jest.mock('src/controllers/WebsocketManager', () => {
+  return {
+    listen: jest.fn()
+  }
+})
 
 
 beforeAll(() => {
@@ -18,6 +23,7 @@ describe('TalkListener', () => {
       acct: 'shn@oppai.tokyo',
       note: `PGP Key Fingerprint: 0001FFFF`,
     })
+    mockToken.account = mockSelf
     const mockRecipient = 'shn@mstdn.onosendai.jp'
     require('src/api/APIRequester').__setScenario(require('./TalkListener.scenario.json'))
 
@@ -45,7 +51,7 @@ describe('TalkListener', () => {
       })
     }
 
-    listener.updateTokenAndAccount({token: mockToken, account: mockSelf})
+    listener.updateToken(mockToken)
 
     // accountsをとってくると、一旦changeが来る
     let state

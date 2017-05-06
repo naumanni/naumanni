@@ -238,7 +238,7 @@ export default class TalkListener extends EventEmitter {
   }
 
   async listenWebsocket() {
-    WebsocketManager.listen(
+    this.removeWebsocketListenerHandler = WebsocketManager.listen(
       makeWebsocketUrl(this.token, STREAM_HOME),
       ::this.onNewMessageReceived
     )
