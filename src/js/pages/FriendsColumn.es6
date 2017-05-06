@@ -5,7 +5,7 @@ import React from 'react'
 import {SUBJECT_MIXED, COLUMN_TALK} from 'src/constants'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import Column from './Column'
-import {IconFont, UserIconWithHost} from '../parts'
+import {IconFont, UserIconWithHost} from './parts'
 
 
 /**

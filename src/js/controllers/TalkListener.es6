@@ -1,6 +1,9 @@
 import {EventEmitter} from 'events'
 
-import {EVENT_UPDATE, EVENT_NOTIFICATION, NOTIFICATION_TYPE_MENTION, STREAM_HOME, VISIBLITY_DIRECT, WEBSOCKET_EVENT_MESSAGE} from 'src/constants'
+import {
+  EVENT_UPDATE, EVENT_NOTIFICATION, NOTIFICATION_TYPE_MENTION,
+  STREAM_HOME, VISIBLITY_DIRECT, WEBSOCKET_EVENT_MESSAGE,
+} from 'src/constants'
 import {Status} from 'src/models'
 import WebsocketManager from 'src/controllers/WebsocketManager'
 import {makeWebsocketUrl} from 'src/utils'

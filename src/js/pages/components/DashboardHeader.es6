@@ -1,24 +1,24 @@
 import React from 'react'
-// import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 
-import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
-import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
-import {AppPropType, ContextPropType} from 'src/propTypes'
+import {OAuthTokenArrayPropType} from 'src/propTypes'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
 import {
   COLUMN_TIMELINE, COLUMN_FRIENDS,
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
 } from 'src/constants'
-import TootWindow from './TootWindow'
+import TootWindow from '../TootWindow'
 
 /**
  * ダッシュボードのヘッダ
  * [logo] [toot欄] [account icon] [account icon] [account icon] [account icon] .... [歯車]
  */
 export default class DashboardHeader extends React.Component {
-  static contextTypes = {
-    app: AppPropType,
-    context: ContextPropType,
+  static propTypes = {
+    tokens: OAuthTokenArrayPropType.isRequired,
+    onStartAddAccount: PropTypes.func.isRequired,
+    onOpenColumn: PropTypes.func.isRequired,
+    onGenKey: PropTypes.func.isRequired,
   }
 
   /**
@@ -27,28 +27,8 @@ export default class DashboardHeader extends React.Component {
   constructor(...args) {
     super(...args)
 
-    this.state = this.getStateFromContext()
-    this.state.isShowTootWindow = false
-  }
-
-  /**
-   * @override
-   */
-  componentDidMount() {
-    // update accounts
-    const {context} = this.context
-
-    this.listenerRemovers = [
-      context.onChange(() => this.setState(this.getStateFromContext())),
-    ]
-  }
-
-  /**
-   * @override
-   */
-  componentWillUnmount() {
-    for(const remover of this.listenerRemovers) {
-      remover()
+    this.state = {
+      isShowTootWindow: false,
     }
   }
 
@@ -56,8 +36,8 @@ export default class DashboardHeader extends React.Component {
    * @override
    */
   render() {
-    const {accountsState, isShowTootWindow} = this.state
-    const {tokens} = accountsState
+    const {isShowTootWindow} = this.state
+    const {tokens} = this.props
 
     return (
       <header className="naumanniDashboard-header">
@@ -77,7 +57,7 @@ export default class DashboardHeader extends React.Component {
           {tokens.map((token) => this.renderAccount(token))}
           <li>
             <button className="naumanniDashboard-header-addAccountButton"
-              onClick={::this.onClickAddAccount}>
+              onClick={() => this.props.onStartAddAccount()}>
               <IconFont iconName="plus" />
             </button>
           </li>
@@ -95,6 +75,7 @@ export default class DashboardHeader extends React.Component {
 
   /**
    * ヘッダに顔アイコンを書くよ
+   * @param {OAuthToken} token
    * @return {React.Component}
    */
   renderAccount(token) {
@@ -115,19 +96,12 @@ export default class DashboardHeader extends React.Component {
     )
   }
 
-  getStateFromContext() {
-    const {accountsState} = this.context.context.getState()
-    return {
-      accountsState,
-    }
-  }
-
   // callbacks
   onRenderCompoundMenu() {
     return (
       <ul className="menu menu--header">
         <li className="menu-item"
-          onClick={this.onClickMenuItem.bind(
+          onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_HOME})}
           >
           <IconFont iconName="home" />
@@ -135,14 +109,14 @@ export default class DashboardHeader extends React.Component {
         </li>
 
         <li className="menu-item"
-          onClick={this.onClickMenuItem.bind(
+          onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_LOCAL})}>
           <IconFont iconName="users" />
           <span className="menu-itemLabel">統合ローカルタイムライン</span>
         </li>
 
         <li className="menu-item"
-          onClick={this.onClickMenuItem.bind(
+          onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_FEDERATION})}>
           <IconFont iconName="globe" />
           <span className="menu-itemLabel">統合連合タイムライン</span>
@@ -169,56 +143,37 @@ export default class DashboardHeader extends React.Component {
             <div>
               {account.hasPrivateKey && <span className="user-hasPrivatekey"><IconFont iconName="key" />prv</span>}
             </div>
-            <button onClick={this.onClickGenKey.bind(this, token, account)}>鍵生成</button>
+            <button onClick={this.props.onGenKey.bind(this, token, account)}>鍵生成</button>
           </div>
         </li>
         <li className="menu-item"
-          onClick={this.onClickMenuItem.bind(
+          onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.address, timelineType: TIMELINE_HOME})}>
           <IconFont iconName="home" />
           <span>ホームタイムライン</span>
         </li>
 
         <li className="menu-item"
-          onClick={this.onClickMenuItem.bind(
+          onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.address, timelineType: TIMELINE_LOCAL})}>
           <IconFont iconName="users" />
           <span>ローカルタイムライン</span>
         </li>
 
         <li className="menu-item"
-          onClick={this.onClickMenuItem.bind(
+          onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.address, timelineType: TIMELINE_FEDERATION})}>
           <IconFont iconName="globe" />
           <span>連合タイムライン</span>
         </li>
 
         <li className="menu-item"
-          onClick={this.onClickMenuItem.bind(this, COLUMN_FRIENDS, {subject: account.address})}>
+          onClick={this.props.onOpenColumn.bind(this, COLUMN_FRIENDS, {subject: account.address})}>
           <IconFont iconName="mail" />
           <span>メッセージ</span>
         </li>
       </ul>
     )
-  }
-
-  onClickAddAccount() {
-    // TODO: named routingしたい
-    this.context.app.pushState({}, null, '/account/add')
-  }
-
-  onClickMenuItem(columnType, columnParams) {
-    const {context} = this.context
-
-    context.useCase(new AddColumnUseCase()).execute(columnType, columnParams)
-  }
-
-  onClickGenKey(token, account) {
-    const {context} = this.context
-
-    context.useCase(
-      new GenerateKeypairUseCase()
-    ).execute(token, account)
   }
 
   onTootFocus(e) {

@@ -7,7 +7,7 @@ import {
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
 } from 'src/constants'
 import TimelineListener from 'src/controllers/TimelineListener'
-import TimelineStatus from './TimelineStatus'
+import TimelineStatus from './components/TimelineStatus'
 import Column from './Column'
 
 
@@ -101,14 +101,19 @@ export default class TimelineColumn extends Column {
 
     return (
       <ul className="timeline">
-        {timeline.map((status) => (
-          <li key={status.uri}>
-            <TimelineStatus
-              status={status}
-              tokens={tokens}
-              onSendReply={this.onSendReply.bind(this, status)} />
-          </li>
-        ))}
+        {timeline.map((status) => {
+          const tokenForThisHost = tokens.find((t) => status.hosts.indexOf(t.host) >= 0)
+          return (
+            <li key={status.uri}>
+              <TimelineStatus
+                status={status}
+                tokens={tokens}
+                onSendReply={this.onSendReply.bind(this, status)}
+                initialSendFrom={tokenForThisHost ? [tokenForThisHost.acct] : null}
+              />
+            </li>
+          )
+        })}
       </ul>
     )
   }

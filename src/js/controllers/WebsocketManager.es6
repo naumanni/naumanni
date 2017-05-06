@@ -21,6 +21,10 @@ class WebsocketConnection {
     this.listeners.splice(idx, 1)
   }
 
+  close() {
+    this.socket.close()
+  }
+
   get countListeners() {
     return this.listeners.length
   }

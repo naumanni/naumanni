@@ -5,10 +5,10 @@ import React from 'react'
 import {
   SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
   KEY_ENTER} from 'src/constants'
-import Column from './Column'
-import {IconFont, UserIconWithHost} from '../parts'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener from 'src/controllers/TalkListener'
+import Column from './Column'
+import {IconFont, UserIconWithHost} from './parts'
 
 
 /**

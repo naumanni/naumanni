@@ -2,17 +2,21 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import {NAUMANNI_VERSION} from 'src/constants'
+import {AppPropType, ContextPropType, OAuthTokenArrayPropType} from 'src/propTypes'
 import InitializeApplicationUseCase from 'src/usecases/InitializeApplicationUseCase'
-import ColumnContainer from './components/ColumnContainer'
+import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
+import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
+
 import DashboardHeader from './components/DashboardHeader'
 import ModalDialogContainer from './components/ModalDialogContainer'
+import ColumnContainer from './ColumnContainer'
 
 
 export default class Dashboard extends React.Component {
   static get childContextTypes() {
     return {
-      app: PropTypes.any,
-      context: PropTypes.any,
+      app: AppPropType,
+      context: ContextPropType,
     }
   }
 
@@ -74,13 +78,18 @@ export default class Dashboard extends React.Component {
       )
     }
 
-    const {dialogs} = this.state
+    const {dialogs, tokens} = this.state
 
     return (
       <div className={`naumanniApp ${dialogs.length ? 'is-shownDialogs' : ''}`}>
         <div className="naumanniDashboard">
           <div className="naumanniDashboard-version">{NAUMANNI_VERSION}</div>
-          <DashboardHeader />
+          <DashboardHeader
+            tokens={tokens}
+            onStartAddAccount={::this.onStartAddAccount}
+            onOpenColumn={::this.onOpenColumn}
+            onGenKey={::this.onGenKey}
+          />
           <ColumnContainer />
         </div>
         <ModalDialogContainer dialogs={dialogs} />
@@ -91,7 +100,10 @@ export default class Dashboard extends React.Component {
   getStateFromContext() {
     const {context} = this.props.app
     const state = context.getState()
-    return {dialogs: state.dialogsState.dialogs}
+    return {
+      dialogs: state.dialogsState.dialogs,
+      tokens: state.accountsState.tokens,
+    }
   }
 
   // callbacks
@@ -103,6 +115,26 @@ export default class Dashboard extends React.Component {
       // routing開始
       this.props.app.history.start()
     })
+  }
+
+  onStartAddAccount() {
+    // TODO: named routingしたい
+    const {app} = this.props
+    app.pushState({}, null, '/account/add')
+  }
+
+  onOpenColumn(columnType, columnParams) {
+    const {context} = this.props.app
+
+    context.useCase(new AddColumnUseCase()).execute(columnType, columnParams)
+  }
+
+  onGenKey(token, account) {
+    const {context} = this.props.app
+
+    context.useCase(
+      new GenerateKeypairUseCase()
+    ).execute(token, account)
   }
 }
 

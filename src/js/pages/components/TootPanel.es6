@@ -17,10 +17,12 @@ export default class TootPanel extends React.Component {
     maxContentLength: PropTypes.number,
     tokens: OAuthTokenArrayPropType.isRequired,
     onSend: PropTypes.func.isRequired,
+    initialSendFrom: PropTypes.arrayOf(PropTypes.string),
   }
 
   static defaultProps = {
     maxContentLength: MASTODON_MAX_CONTENT_SIZE,
+    initialSendFrom: null,
   }
 
   /**
@@ -29,11 +31,13 @@ export default class TootPanel extends React.Component {
   constructor(...args) {
     super(...args)
 
+    const {initialSendFrom, tokens} = this.props
+
     this.state = {
       error: null,
       isSending: false,
       messageTo: '',
-      sendFrom: [],
+      sendFrom: initialSendFrom != null ? initialSendFrom : tokens[0].acct,
       showContentsWarning: false,
       spoilerTextContent: '',
       statusContent: '',
@@ -105,7 +109,7 @@ export default class TootPanel extends React.Component {
             onChange={::this.onChangeStatus}></textarea>
         </div>
 
-        <ul className="toolWindow-messageTo">
+        <ul className="tootPanel-messageTo">
           <li
             className={visibility === VISIBLITY_PUBLIC ? 'is-active' : ''}
             onClick={this.onClickVisibility.bind(this, VISIBLITY_PUBLIC)}>

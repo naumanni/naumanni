@@ -5,6 +5,8 @@ $sizeFriendsFilterHeight: 20px;
 
 
 .friends {
+  height: 100%;
+
   .friends-filter {
     height: $sizeFriendsFilterHeight;
 
