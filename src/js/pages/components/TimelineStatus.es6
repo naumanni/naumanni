@@ -191,6 +191,7 @@ export default class TimelineStatus extends React.Component {
             style={{backgroundImage: `url(${media.preview_url})`}}
             target="_blank"
             href={media.url}
+            onClick={this.onClickMedia.bind(this, media)}
             />
         ))}
 
@@ -286,6 +287,11 @@ export default class TimelineStatus extends React.Component {
     }
   }
 
+  onClickMedia(media, e) {
+    e.preventDefault()
+
+    this.props.onClickMedia(media)
+  }
 
   /**
    * TootPanel用のonSendをoverrideする。

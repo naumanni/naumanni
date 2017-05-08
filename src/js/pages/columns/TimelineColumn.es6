@@ -4,12 +4,13 @@ import React from 'react'
 
 
 import {
-  TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
+  TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED, DIALOG_MEDIA_VIEWER,
 } from 'src/constants'
 import TimelineListener from 'src/controllers/TimelineListener'
-import TimelineStatus from '../components/TimelineStatus'
 import TimelineData, {postStatusManaged} from 'src/infra/TimelineData'
+import PushDialogUseCase from 'src/usecases/PushDialogUseCase'
 import Column from './Column'
+import TimelineStatus from '../components/TimelineStatus'
 
 
 // TODO: i10n
@@ -110,6 +111,7 @@ export default class TimelineColumn extends Column {
                 onSendReply={this.onSendReply.bind(this, statusRef)}
                 onReblogStatus={::this.onReblogStatus}
                 onFavouriteStatus={::this.onFavouriteStatus}
+                onClickMedia={::this.onClickMedia}
               />
             </li>
           )
@@ -194,5 +196,13 @@ export default class TimelineColumn extends Column {
       id: status.getIdByHost(token.host),
     }, {token})
     return TimelineData.mergeStatuses(entities, [result])[0]
+  }
+
+  onClickMedia(media) {
+    const {context} = this.context
+
+    context.useCase(
+      new PushDialogUseCase()
+    ).execute(DIALOG_MEDIA_VIEWER, {media})
   }
 }

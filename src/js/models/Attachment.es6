@@ -3,6 +3,7 @@ import {Record} from 'immutable'
 
 const AttachmentRecord = Record({  // eslint-disable-line new-cap
   'id': '',
+  'meta': [],
   'type': '',
   'url': '',
   'remote_url': '',

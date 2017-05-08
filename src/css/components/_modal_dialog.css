@@ -9,13 +9,13 @@
   .dialog {
     display: none;
     min-width: 400px;
-    background: $colorDialogBackground;
-    border-radius: $radiusDialog;
 
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+
+    border-radius: $radiusDialog;
 
     &.is-visible {
       display: block;
@@ -25,6 +25,8 @@
 
 
 .dialog {
+  background: $colorDialogBackground;
+
   .dialog-header {
     padding: $marginDefault;
     border-bottom: 1px solid $colorGray1;
@@ -54,5 +56,34 @@
         }
       }
     }
+  }
+
+  .dialog-closeButton {
+    position: absolute;
+    z-index: 1;
+    border: 0;
+    background: transparent;
+
+    top: $marginHalf;
+    right: $marginHalf;
+
+    font-size: 2rem;
+    color: #000;
+    text-shadow: 0 0 4px #fff;
+  }
+}
+
+
+.dialog.dialog--mediaViewer {
+  background-color: transparent;
+  background-repeat: no-repeat;;
+  background-size: contain;
+  background-position: center center;
+  min-width: initial;
+  border-radius: none;
+
+  video, img {
+    max-width: 90vw;
+    max-height: 90vh;
   }
 }

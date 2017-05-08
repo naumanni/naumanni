@@ -39,13 +39,8 @@ export default class Dialog extends React.Component {
    * @override
    */
   render() {
-    const dialogClassName = ['dialog']
-
-    if(this.props.visible)
-      dialogClassName.push('is-visible')
-
     return (
-      <div className={dialogClassName.join(' ')}>
+      <div className={this.dialogClassName}>
         <header className="dialog-header">
           {this.renderHeader()}
         </header>
@@ -57,6 +52,19 @@ export default class Dialog extends React.Component {
         </footer>
       </div>
     )
+  }
+
+  /**
+   * @private
+   * @return {string}
+   */
+  get dialogClassName() {
+    const dialogClassName = ['dialog']
+
+    if(this.props.visible)
+      dialogClassName.push('is-visible')
+
+    return dialogClassName.join(' ')
   }
 
   renderHeader() {

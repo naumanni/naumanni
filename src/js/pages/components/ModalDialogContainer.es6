@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import {DIALOG_ADD_ACCOUNT, DIALOG_AUTHORIZE_ACCOUNT} from 'src/constants'
+import {DIALOG_ADD_ACCOUNT, DIALOG_AUTHORIZE_ACCOUNT, DIALOG_MEDIA_VIEWER} from 'src/constants'
 import {UIDialogPropType} from 'src/propTypes'
 
 /**
@@ -22,7 +22,7 @@ export default class ModalDialogContainer extends React.Component {
       return null
 
     return (
-      <div className="modalDialogContainer">
+      <div className="modalDialogContainer" onClick={::this.onClickBackground}>
         {dialogs.map((dialog, idx) => {
           const dialogClass = this.dialogClassByType(dialog.type)
 
@@ -31,6 +31,7 @@ export default class ModalDialogContainer extends React.Component {
               key: dialog.key,
               dialog: dialog,
               visible: idx === dialogs.length - 1 ? true : false,
+              ref: idx === dialogs.length - 1 ? 'top' : null,
               ...dialog.params,
             })
         })}
@@ -43,6 +44,15 @@ export default class ModalDialogContainer extends React.Component {
     switch(type) {
     case DIALOG_ADD_ACCOUNT: return require('src/pages/dialogs/AddAccountDialog').default
     case DIALOG_AUTHORIZE_ACCOUNT: return require('src/pages/dialogs/AuthorizeAccountDialog').default
+    case DIALOG_MEDIA_VIEWER: return require('src/pages/dialogs/MediaViewerDialog').default
+    default: require('assert')(0, 'invalid dialog type')
     }
+  }
+
+  onClickBackground(e) {
+    const dialog = this.refs.top
+
+    if(dialog.onClickBackground)
+      dialog.onClickBackground(e)
   }
 }
