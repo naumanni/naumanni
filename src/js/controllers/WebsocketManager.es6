@@ -40,14 +40,14 @@ class WebsocketConnection {
   }
 
   onError(e) {
-    console.log('onError', e)
+    // console.log('onError', e)
     this.emit(WEBSOCKET_EVENT_ERROR, null, e)
   }
 
   onMessage(e) {
-    console.log('onMessage', e)
+    // console.log('onMessage', e)
 
-    // / mastodon orientedな処理
+    // mastodon orientedな処理
     try {
       const frame = JSON.parse(e.data)
       frame.payload = frame.payload && JSON.parse(frame.payload)
@@ -59,12 +59,12 @@ class WebsocketConnection {
   }
 
   onOpen(e) {
-    console.log('onOpen', e)
+    // console.log('onOpen', e)
     this.emit(WEBSOCKET_EVENT_OPEN, null, e)
   }
 
   onClose(e) {
-    console.log('onClose', e)
+    // console.log('onClose', e)
     this.emit(WEBSOCKET_EVENT_CLOSE, null, e)
   }
 

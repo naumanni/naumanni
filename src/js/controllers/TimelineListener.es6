@@ -66,7 +66,6 @@ export default class TimelineListener extends EventEmitter {
           require('assert')(0, 'not implemented')
         } else {
           // token added
-          console.log(`token added ${token.toString()}`)
           this.onTokenAdded(token)
         }
       })

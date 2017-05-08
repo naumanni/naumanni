@@ -17,9 +17,11 @@ export default class AddColumnUseCase extends UseCase {
    * @param {object} params
    */
   async execute(type, params) {
+    const column = new UIColumn(type, params)
+
     this.dispatch({
       type: actions.COLUMN_ADD_REQUESTED,
-      column: new UIColumn(type, params),
+      column: column,
     })
   }
 }

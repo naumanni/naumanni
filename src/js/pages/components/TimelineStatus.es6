@@ -15,7 +15,7 @@ export default class TimelineStatus extends React.Component {
     account: AccountPropType.isRequired,
     status: StatusPropType.isRequired,
     reblog: StatusPropType,
-    reblogAccount: AccountPropType.isRequired,
+    reblogAccount: AccountPropType,
     tokens: TootPanel.propTypes.tokens,
     // Reply送信ボタンが押された
     onSendReply: TootPanel.propTypes.onSend,

@@ -7,7 +7,7 @@ import {
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
 } from 'src/constants'
 import TimelineListener from 'src/controllers/TimelineListener'
-import TimelineStatus from './components/TimelineStatus'
+import TimelineStatus from '../components/TimelineStatus'
 import TimelineData, {postStatusManaged} from 'src/infra/TimelineData'
 import Column from './Column'
 

@@ -26,6 +26,7 @@ export default class ColumnState {
   }
 
   onColumnAddRequested(column) {
+    require('assert')(column)
     // 既に追加されていたら追加しない
     const old = this.columns.find((x) => UIColumn.isEqual(x, column))
     if(old)
@@ -35,6 +36,7 @@ export default class ColumnState {
   }
 
   onColumnRemoveRequested(column) {
+    require('assert')(column)
     const idx = this.columns.findIndex((x) => UIColumn.isEqual(x, column))
     if(idx < 0)
       return this

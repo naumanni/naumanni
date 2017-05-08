@@ -1,14 +1,15 @@
 import React from 'react'
 
+import * as actions from 'src/actions'
 import {NAUMANNI_VERSION} from 'src/constants'
 import {AppPropType, ContextPropType} from 'src/propTypes'
 import InitializeApplicationUseCase from 'src/usecases/InitializeApplicationUseCase'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
 
+import ColumnContainer from './components/ColumnContainer'
 import DashboardHeader from './components/DashboardHeader'
 import ModalDialogContainer from './components/ModalDialogContainer'
-import ColumnContainer from './ColumnContainer'
 
 
 export default class Dashboard extends React.Component {
@@ -36,6 +37,7 @@ export default class Dashboard extends React.Component {
 
     this.listenerRemovers = [
       context.onChange(() => this.setState(this.getStateFromContext())),
+      context.onDispatch(::this.onContextDispatch),
     ]
   }
 
@@ -77,7 +79,7 @@ export default class Dashboard extends React.Component {
       )
     }
 
-    const {dialogs, tokens} = this.state
+    const {columns, dialogs, tokens} = this.state
 
     return (
       <div className={`naumanniApp ${dialogs.length ? 'is-shownDialogs' : ''}`}>
@@ -89,7 +91,7 @@ export default class Dashboard extends React.Component {
             onOpenColumn={::this.onOpenColumn}
             onGenKey={::this.onGenKey}
           />
-          <ColumnContainer />
+          <ColumnContainer ref="columnContainer" columns={columns} />
         </div>
         <ModalDialogContainer dialogs={dialogs} />
       </div>
@@ -100,6 +102,7 @@ export default class Dashboard extends React.Component {
     const {context} = this.props.app
     const state = context.getState()
     return {
+      columns: state.columnState.columns,
       dialogs: state.dialogsState.dialogs,
       tokens: state.tokenState.tokens,
     }
@@ -114,6 +117,18 @@ export default class Dashboard extends React.Component {
       // routing開始
       this.props.app.history.start()
     })
+  }
+
+  onContextDispatch(payload) {
+    console.log(payload)
+    switch(payload.type) {
+    case actions.COLUMN_ADD_REQUESTED: {
+        // カラムが追加されたらそこにFocusする
+      const {column} = payload
+      this.refs.columnContainer.scrollToColumn(column.key)
+      break
+    }
+    }
   }
 
   onStartAddAccount() {

@@ -1,3 +1,9 @@
+import bezierEasing from 'bezier-easing'
+
+export const easeIn = bezierEasing(0.42, 0, 1, 1)
+export const easeOut = bezierEasing(0, 0, 0.58, 1)
+export const easeInOut = bezierEasing(0.42, 0, 0.58, 1)
+
 /**
  * Builtinを継承するためのユーティリティ
  * @param {func} cls
@@ -108,4 +114,18 @@ export function isObjectSame(a, b) {
     return false
 
   return true
+}
+
+
+export function niceScrollLeft(containerNode, targetX) {
+  const lastTimestamp = performance.now()
+  const startX = containerNode.scrollLeft
+  function _step(timestamp) {
+    const t = (timestamp - lastTimestamp) / 300
+    containerNode.scrollLeft = startX + (targetX - startX) * easeOut(Math.min(t, 1.0))
+    if(t <= 1.0) {
+      requestAnimationFrame(_step)
+    }
+  }
+  requestAnimationFrame(_step)
 }
