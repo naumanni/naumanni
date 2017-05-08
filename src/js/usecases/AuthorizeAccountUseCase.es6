@@ -58,14 +58,14 @@ export default class AuthorizeAccountUseCase extends UseCase {
           },
         },
       })
-    const account = await requester.verifyCredentials()
-    token.account = account
+    const {entities, result} = await requester.verifyCredentials()
+    token.attachAccount(entities.accounts[result])
 
     this.dispatch({
       type: actions.TOKEN_ADDED,
       token,
     })
 
-    return {token, account}
+    return {token, account: token.account}
   }
 }
