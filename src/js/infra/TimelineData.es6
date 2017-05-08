@@ -31,8 +31,8 @@ class TimelineData extends EventEmitter {
 
       // こんなチェックせずに、全てchangedとして扱えばいいのでは
       if(this.accounts.has(uri)) {
-        const {changed, merged} = this.accounts.get(uri).merge(account)
-        if(changed) {
+        const {isChanged, merged} = this.accounts.get(uri).checkMerge(account)
+        if(isChanged) {
           account = merged
           changes.accounts[account.uri] = account
         }
@@ -45,8 +45,9 @@ class TimelineData extends EventEmitter {
       const uri = status.uri
 
       if(this.statuses.has(uri)) {
-        const {changed, merged} = this.statuses.get(uri).merge(status)
-        if(changed) {
+        const {isChanged, merged} = this.statuses.get(uri).checkMerge(status)
+
+        if(isChanged) {
           status = merged
           changes.statuses[status.uri] = status
         }

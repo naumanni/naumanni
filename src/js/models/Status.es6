@@ -112,20 +112,24 @@ export default class Status extends StatusRecord {
     return false
   }
 
-  merge(newObj) {
-    let changed = false
+  checkMerge(newObj) {
+    let isChanged = false
+
     const merged = super.mergeDeepWith((prev, next, key) => {
+      let result = next
       if(typeof prev === 'object') {
-        if(!isObjectSame(prev, next))
-          changed = true
+        if(!isObjectSame(prev, next)) {
+          isChanged = true
+          result = {...(prev || {}), ...(next || {})}
+        }
+      } else if(prev !== next) {
+        isChanged = true
       }
-      if(prev !== next) {
-        changed = true
-      }
-      return next
+
+      return result
     }, newObj)
 
-    return {changed, merged}
+    return {isChanged, merged}
   }
 
   static compareCreatedAt(a, b) {

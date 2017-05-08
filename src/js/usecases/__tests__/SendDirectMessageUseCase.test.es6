@@ -60,6 +60,7 @@ describe('SendDirectMessageUseCase', () => {
     mockPostStatus.mock.calls.forEach(([token, {status, visibility}], idx) => {
       // status must begin with recipient's account
       expect.assertions(status.indexOf('@bob') >= 0)
+      console.log(status)
       // status must have NEM header
       const match = status.match(MESSAGE_TAG_REX)
       expect(match[2]).toBe('' + (idx + 1))

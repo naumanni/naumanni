@@ -92,10 +92,10 @@ export function makeWebsocketUrl(token, stream) {
  * @return {bool}
  */
 export function isObjectSame(a, b) {
-  if(!a || !b)
-    return false
   if(!a && !b)
     return true
+  if(!a || !b)
+    return false
 
   const aKeys = Object.keys(a)
   const bKeys = Object.keys(b)
@@ -106,5 +106,6 @@ export function isObjectSame(a, b) {
     return false
   if(aKeys.find((k) => a[k] !== b[k]))
     return false
+
   return true
 }

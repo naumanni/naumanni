@@ -27,12 +27,6 @@ const AccountRecord = Record({  // eslint-disable-line new-cap
  * OAuthでのApp登録を表すModel
  */
 export default class Account extends AccountRecord {
-  // static storeName = 'accounts'
-  // static keyPath = 'address'
-  // static indexes = [
-  //   ['host', 'host', {}],
-  // ]
-
   /**
    * @constructor
    */
@@ -129,20 +123,21 @@ export default class Account extends AccountRecord {
     return `https://${this.instance}${url}`
   }
 
-  merge(newObj) {
-    let changed = false
+  checkMerge(newObj) {
+    let isChanged = false
     const merged = super.mergeDeepWith((prev, next, key) => {
       if(typeof prev === 'object') {
-        if(!isObjectSame(prev, next))
-          changed = true
-      }
-      if(prev !== next) {
-        changed = true
+        if(!isObjectSame(prev, next)) {
+          isChanged = true
+          return {...(prev || {}), ...(next || {})}
+        }
+      } else if(prev !== next) {
+        isChanged = true
       }
       return next
     }, newObj)
 
-    return {changed, merged}
+    return {isChanged, merged}
   }
 }
 
