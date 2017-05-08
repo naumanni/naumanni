@@ -102,7 +102,7 @@ export default class Dashboard extends React.Component {
     const state = context.getState()
     return {
       dialogs: state.dialogsState.dialogs,
-      tokens: state.accountsState.tokens,
+      tokens: state.tokenState.tokens,
     }
   }
 

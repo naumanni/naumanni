@@ -49,8 +49,8 @@ export default class AccountsPage extends React.Component {
    * @override
    */
   render() {
-    const {accountsState} = this.state
-    const {tokensAndAccounts} = accountsState
+    const {tokenState} = this.state
+    const {tokensAndAccounts} = tokenState
 
     return (
       <div className="page page-accounts">
@@ -81,9 +81,9 @@ export default class AccountsPage extends React.Component {
   }
 
   getStateFromContext() {
-    const {accountsState} = this.context.context.getState()
+    const {tokenState} = this.context.context.getState()
     return {
-      accountsState,
+      tokenState,
     }
   }
 

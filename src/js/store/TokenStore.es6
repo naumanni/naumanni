@@ -1,18 +1,18 @@
 import {Store} from 'almin'
 
-import AccountsState from './AccountsState'
+import TokenState from './TokenState'
 
 /**
  * 各Mastodonのアカウント情報を格納する
  */
-export default class AccountsStore extends Store {
+export default class TokenStore extends Store {
   /**
    * @constructor
    */
   constructor() {
     super()
 
-    this.state = new AccountsState()
+    this.state = new TokenState()
 
     this.onDispatch((payload) => {
       const newState = this.state.reduce(payload)
@@ -28,7 +28,7 @@ export default class AccountsStore extends Store {
    */
   getState() {
     return {
-      accountsState: this.state,
+      tokenState: this.state,
     }
   }
 }

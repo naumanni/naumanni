@@ -1,7 +1,7 @@
 import * as actions from 'src/actions'
 
 
-export default class AccountsState {
+export default class TokenState {
   /**
    * @param {OAuthToken[]} tokens
    */
@@ -21,11 +21,11 @@ export default class AccountsState {
   }
 
   onTokenLoaded({tokens}) {
-    return new AccountsState(tokens)
+    return new TokenState(tokens)
   }
 
   onTokenAdded({token}) {
-    return new AccountsState([...this.tokens, token])
+    return new TokenState([...this.tokens, token])
   }
 
   getTokenByAcct(acct) {

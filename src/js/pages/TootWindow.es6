@@ -52,7 +52,7 @@ export default class TootWindow extends React.Component {
    * @override
    */
   render() {
-    const {tokens} = this.state.accountsState
+    const {tokens} = this.state.tokenState
 
     return (
       <div className="tootWindow">
@@ -73,9 +73,9 @@ export default class TootWindow extends React.Component {
   }
 
   getStateFromContext() {
-    const {accountsState} = this.context.context.getState()
+    const {tokenState} = this.context.context.getState()
     return {
-      accountsState,
+      tokenState,
     }
   }
 

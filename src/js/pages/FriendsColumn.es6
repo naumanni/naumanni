@@ -39,7 +39,7 @@ export default class FriendsColumn extends Column {
     )
 
     // make event listener
-    const token = this.state.accountsState.getTokenByAcct(this.props.subject)
+    const token = this.state.tokenState.getTokenByAcct(this.props.subject)
     this.listener.open(token)
   }
 
@@ -93,7 +93,7 @@ export default class FriendsColumn extends Column {
    */
   getStateFromContext() {
     const state = super.getStateFromContext()
-    state.token = state.accountsState.getTokenByAcct(this.props.subject)
+    state.token = state.tokenState.getTokenByAcct(this.props.subject)
     return state
   }
 

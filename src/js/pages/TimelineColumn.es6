@@ -48,7 +48,7 @@ export default class TimelineColumn extends Column {
     )
 
     // make event listener
-    this.listener.updateTokens(this.state.accountsState.tokens)
+    this.listener.updateTokens(this.state.tokenState.tokens)
 
     // set timer for update dates
     this.timer = setInterval(
@@ -97,7 +97,7 @@ export default class TimelineColumn extends Column {
     }
 
     const {timeline} = this.state
-    const {tokens} = this.state.accountsState
+    const {tokens} = this.state.tokenState
 
     return (
       <ul className="timeline">
@@ -125,7 +125,7 @@ export default class TimelineColumn extends Column {
     const state = super.getStateFromContext()
     if(!this.isMixedTimeline()) {
       // ヘッダに表示するために自分のTokenを保存している
-      state.token = state.accountsState.getTokenByAcct(this.props.subject)
+      state.token = state.tokenState.getTokenByAcct(this.props.subject)
     }
     return state
   }
@@ -137,7 +137,7 @@ export default class TimelineColumn extends Column {
 
   onChangeConext() {
     super.onChangeConext()
-    this.listener.updateTokens(this.state.accountsState.tokens)
+    this.listener.updateTokens(this.state.tokenState.tokens)
   }
 
   // callbacks

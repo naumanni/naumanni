@@ -1,6 +1,6 @@
 import {StoreGroup} from 'almin'
 
-import AccountsStore from './AccountsStore'
+import TokenStore from './TokenStore'
 import ColumnStore from './ColumnStore'
 import DialogsStore from './DialogsStore'
 
@@ -14,7 +14,7 @@ export default class AppStoreGroup {
    */
   static create() {
     return new StoreGroup([
-      new AccountsStore(),
+      new TokenStore(),
       new ColumnStore(),
       new DialogsStore(),
     ])

@@ -126,7 +126,7 @@ export default class TalkColumn extends Column {
    */
   getStateFromContext() {
     const state = super.getStateFromContext()
-    state.token = state.accountsState.getTokenByAcct(this.props.from)
+    state.token = state.tokenState.getTokenByAcct(this.props.from)
     return state
   }
 
