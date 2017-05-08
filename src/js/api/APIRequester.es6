@@ -119,10 +119,29 @@ export class APIRequester {
       return match
     })
 
+    const fields = (spec.fields || []).reduce((fields, field) => {
+      fields[field] = query[field]
+      delete query[field]
+      return fields
+    }, {})
+
     let req = this._makeJsonRequest(method.toUpperCase(), endpoint)
-    req = req[queryFunc](query || {})
+    req = req
       .use(this.prefixer)
       .set(options.headers || {})
+
+    if(options.onprogress) {
+      req = req.on('progress', options.onprogress)
+    }
+
+    if(spec.fields) {
+      require('assert')(method !== 'get')
+      Object.keys(fields).forEach((key) => {
+        req = req.field(key, fields[key])
+      })
+    } else {
+      req = req[queryFunc](query || {})
+    }
 
     return {spec, req}
   }

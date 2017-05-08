@@ -57,10 +57,10 @@ export default class SendDirectMessageUseCase extends UseCase {
       // to入れるとサイズオーバーしてしまった...
       throw new Error('__TODO_ERROR_MESSAGE__')
     }
-    await postStatusManaged(token, {
+    await postStatusManaged(token, {message: {
       status,
       visibility: 'direct',
-    })
+    }})
   }
 
   async sendEncryptedMessage({token, self, message, recipients, publicKeys}) {
@@ -76,10 +76,10 @@ export default class SendDirectMessageUseCase extends UseCase {
 
     await Promise.all(
       encryptedBlocks.map((block) => {
-        postStatusManaged(token, {
+        postStatusManaged(token, {message: {
           status: block,
           visibility: 'direct',
-        })
+        }})
       })
     )
   }

@@ -134,7 +134,21 @@ export default _TimelineData
 
 
 // とりえあず...
-export async function postStatusManaged(token, message) {
-  const {entities, result} = await token.requester.postStatus(message, {token})
+export async function postStatusManaged(token, {mediaFiles, message}) {
+  const {requester} = token
+
+  if(mediaFiles) {
+    const mediaFileResponses = await Promise.all(
+      mediaFiles.map((file) => {
+        return requester.createMedia({file}, {onprogress: (e) => {
+          console.log('upload', e.percent)
+        }})
+      })
+    )
+
+    message.media_ids = mediaFileResponses.map((a) => a.id)
+  }
+
+  const {entities, result} = await requester.postStatus(message, {token})
   return _TimelineData.mergeStatuses(entities, [result])[0]
 }

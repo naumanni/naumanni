@@ -150,6 +150,11 @@ $loaderVMargin: 2rem;
       background: $colorDangerButtonHoverBackground;
     }
   }
+
+  &[disabled], &[disabled]:hover {
+    color: #bdbdbd;
+    background: #e0e0e0;
+  }
 }
 
 

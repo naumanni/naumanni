@@ -11,6 +11,8 @@ import {IconFont, UserIconWithHost} from 'src/pages/parts'
 import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
 
 
+const MAX_MEDIA_FILES = 4
+
 /**
  * Tootを編集する。ロジックは提供しないよ
  */
@@ -63,12 +65,17 @@ export default class TootPanel extends React.Component {
    */
   render() {
     const {maxContentLength, tokens} = this.props
-    const {error, isSending, showContentsWarning, sendFrom, statusContent, spoilerTextContent, visibility} = this.state
+    let {error} = this.state
+    const {isSending, showContentsWarning, sendFrom, statusContent, spoilerTextContent, visibility} = this.state
 
     const trimmedStatusLength = statusContent.trim().length
     const textLength = trimmedStatusLength + (showContentsWarning ? spoilerTextContent.trim().length : 0)
     const canSend = !isSending && sendFrom.length &&
-      trimmedStatusLength > 0 && textLength < maxContentLength
+      trimmedStatusLength > 0 && textLength < maxContentLength &&
+      this.state.mediaFiles.length <= MAX_MEDIA_FILES
+
+    if(this.state.mediaFiles.length > MAX_MEDIA_FILES)
+      error = `添付できるメディアは${MAX_MEDIA_FILES}つまでです`
 
     return (
       <div className="tootPanel">
@@ -243,8 +250,8 @@ export default class TootPanel extends React.Component {
     }
 
     this.setState({isSending: true, error: null}, () => {
-      this.props.onSend({
-        sendFrom: sendFromTokens,
+      this.props.onSend(sendFromTokens, {
+        mediaFiles: this.state.mediaFiles,
         message,
       })
         .then(() => {

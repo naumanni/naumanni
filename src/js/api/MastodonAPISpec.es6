@@ -249,4 +249,10 @@ export default MastodonAPISpec.make({
     entity: status,
     method: 'post',
   },
+
+  createMedia: {
+    endpoint: '/media',
+    method: 'post',
+    fields: ['file'],
+  },
 })
