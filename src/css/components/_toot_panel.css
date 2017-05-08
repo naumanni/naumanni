@@ -80,6 +80,42 @@
       min-height: 20ex;
       font-size: $fontSizeNormal;
     }
+
+    .tootPanel-contentActions {
+      text-align: right;
+
+      > * {
+        display: inline-block;
+        border: none;
+        background: transparent;
+        font-size: 1.2rem;
+        color: $colorGray3;
+
+        &.is-active {
+          color: $colorAccentNormal;
+        }
+
+        .icon::before {
+          width: auto;
+          margin: 0;
+        }
+      }
+    }
+
+    .tootPanel-mediaFiles {
+      display: flex;
+      flex-wrap: wrap;
+      width: calc(100% - 2px);
+      margin: 0 auto;
+
+      .mediaThumbnail {
+        height: 60px;
+        flex: 1 1 35%;
+        min-width: 35%;
+        margin: calc($marginHalf / 2);
+        border-radius: $marginHalf;
+      }
+    }
   }
 
   .tootPanel-messageTo {
@@ -116,13 +152,8 @@
     }
   }
 
-  /* .tootPanel-actions */
-  .tootPanel-actions {
-    display: flex;
-    margin: $marginDefault 0;
-  }
-
   .tootPanel-send {
+    margin: $marginDefault 0;
     flex: 1 1 auto;
     text-align: right;
   }

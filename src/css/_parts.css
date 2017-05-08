@@ -123,30 +123,67 @@ $loaderVMargin: 2rem;
 
 
 /** Button **/
-.button-danger,
-.button-primary {
+.button {
   font-size: $fontSizeButton;
-  font-weight: bold;
   line-height: $sizeButtonHeight;
   min-width: $sizeButtonMinWidth;
   border: none;
   border-radius: $radiusButton;
-}
 
-.button-primary {
-  color: $colorPrimaryButtonText;
-  background: $colorPrimaryButtonBackground;
+  background: #fff;
+  color: #212121;
 
-  &:hover {
-    background: $colorPrimaryButtonHoverBackground;
+  &.button--primary {
+    color: $colorPrimaryButtonText;
+    background: $colorPrimaryButtonBackground;
+
+    &:hover {
+      background: $colorPrimaryButtonHoverBackground;
+    }
+  }
+
+  &.button--danger {
+    color: $colorDangerButtonText;
+    background: $colorDangerButtonBackground;
+
+    &:hover {
+      background: $colorDangerButtonHoverBackground;
+    }
   }
 }
 
-.button-danger {
-  color: $colorDangerButtonText;
-  background: $colorDangerButtonBackground;
 
-  &:hover {
-    background: $colorDangerButtonHoverBackground;
+/** mediaThumbnail **/
+.mediaThumbnail {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  background: $colorGray1;
+
+  .mediaThumbnail-close {
+    position: absolute;
+    right: $marginHalf;
+    top: $marginHalf;
+    border: none;
+    font-size: 1.5rem;
+    background: transparent;
+    text-shadow: 0 0 4px #fff;
+
+    .icon::before {
+      width: auto;
+      margin: 0;
+    }
+  }
+
+  .mediaThumbnail-genericFile {
+    color: black;
+    text-align: center;
+  }
+
+  > canvas {
+    display: block;
+    width: 100%;
   }
 }

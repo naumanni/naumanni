@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import update from 'immutability-helper'
 
 import {
   MASTODON_MAX_CONTENT_SIZE,
@@ -7,6 +8,7 @@ import {
 } from 'src/constants'
 import {OAuthTokenArrayPropType} from 'src/propTypes'
 import {IconFont, UserIconWithHost} from 'src/pages/parts'
+import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
 
 
 /**
@@ -36,6 +38,7 @@ export default class TootPanel extends React.Component {
     this.state = {
       error: null,
       isSending: false,
+      mediaFiles: [],
       messageTo: '',
       sendFrom: initialSendFrom != null ? initialSendFrom : [tokens[0].acct],
       showContentsWarning: false,
@@ -43,6 +46,8 @@ export default class TootPanel extends React.Component {
       statusContent: '',
       visibility: VISIBLITY_PUBLIC,
     }
+    this.mediaFileKeys = new WeakMap()
+    this.mediaFileCounter = 0
   }
 
   /**
@@ -64,7 +69,6 @@ export default class TootPanel extends React.Component {
     const textLength = trimmedStatusLength + (showContentsWarning ? spoilerTextContent.trim().length : 0)
     const canSend = !isSending && sendFrom.length &&
       trimmedStatusLength > 0 && textLength < maxContentLength
-
 
     return (
       <div className="tootPanel">
@@ -107,6 +111,24 @@ export default class TootPanel extends React.Component {
             className="tootPanel-status" value={statusContent}
             placeholder="何してますか？忙しいですか？手伝ってもらってもいいですか？"
             onChange={::this.onChangeStatus}></textarea>
+
+          {this.renderMediaFiles()}
+
+          <div className="tootPanel-contentActions">
+            <label className="tootPanel-addMedia">
+              <IconFont iconName="camera" />
+              <input
+                type="file"
+                multiple="multiple"
+                style={{display: 'none'}} ref="fileInput" onChange={::this.onChangeMediaFile} />
+            </label>
+            <button
+              className={`tootPanel-toggleContentsWarning ${showContentsWarning ? 'is-active' : ''}`}
+              type="button"
+              onClick={::this.onClickToggleShowContentsWarning}>
+              <IconFont iconName="attention" />
+            </button>
+          </div>
         </div>
 
         <ul className="tootPanel-messageTo">
@@ -139,22 +161,31 @@ export default class TootPanel extends React.Component {
           </li>
         </ul>
 
-
-        <div className="tootPanel-actions">
-          <button className="tootPanel-addMedia" type="button">
-            <IconFont iconName="camera" />メディアを追加
-          </button>
-          <button className="tootPanel-toggleContentsWarning" type="button"
-            onClick={::this.onClickToggleShowContentsWarning}>
-            CW
-          </button>
-
-          <div className="tootPanel-send">
-            <span className="tootPanel-charCount">{500 - textLength}</span>
-            <button disabled={!canSend} type="button"
-              onClick={::this.onClickSend}>送信</button>
-          </div>
+        <div className="tootPanel-send">
+          <span className="tootPanel-charCount">{500 - textLength}</span>
+          <button
+            className="button button--primary"
+            disabled={!canSend} type="button"
+            onClick={::this.onClickSend}>送信</button>
         </div>
+      </div>
+    )
+  }
+
+  renderMediaFiles() {
+    const {mediaFiles} = this.state
+
+    if(!mediaFiles) {
+      return null
+    }
+
+    return (
+      <div className="tootPanel-mediaFiles">
+        {mediaFiles.map((file) => {
+          return <MediaFileThumbnail
+            key={this.mediaFileKeys.get(file)} mediaFile={file} showClose={true}
+            onClose={this.onRemoveMediaFile.bind(this, file)} />
+        })}
       </div>
     )
   }
@@ -170,6 +201,23 @@ export default class TootPanel extends React.Component {
 
   onClickVisibility(visibility) {
     this.setState({visibility})
+  }
+
+  onChangeMediaFile(e) {
+    let files = Array.from(e.target.files)
+
+    for(const file of files) {
+      this.mediaFileKeys.set(file, ++this.mediaFileCounter)
+    }
+
+    this.setState(update(this.state, {mediaFiles: {$push: files}}))
+    e.target.value = null
+  }
+
+  onRemoveMediaFile(file) {
+    const idx = this.state.mediaFiles.indexOf(file)
+    if(idx >= 0)
+      this.setState(update(this.state, {mediaFiles: {$splice: [[idx, 1]]}}))
   }
 
   onClickToggleShowContentsWarning() {

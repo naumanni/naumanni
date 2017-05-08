@@ -25,12 +25,6 @@
       "src": "entypo"
     },
     {
-      "uid": "e335adbc2d898c7d85d40c507796e7b4",
-      "css": "mail",
-      "code": 59395,
-      "src": "entypo"
-    },
-    {
       "uid": "216891b0093d4dbef19877d5b00d1b16",
       "css": "reblog",
       "code": 59396,
@@ -163,6 +157,30 @@
       "css": "cancel",
       "code": 59413,
       "src": "entypo"
+    },
+    {
+      "uid": "97902f87200ce74d181044df02a0458d",
+      "css": "attention",
+      "code": 59415,
+      "src": "entypo"
+    },
+    {
+      "uid": "429fba993b729174468a9493613ad1ba",
+      "css": "nsfw",
+      "code": 59395,
+      "src": "entypo"
+    },
+    {
+      "uid": "0f99ab40ab0b4d64a74f2d0deeb03e42",
+      "css": "videocam",
+      "code": 59414,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "1b5a5d7b7e3c71437f5a26befdd045ed",
+      "css": "doc",
+      "code": 59416,
+      "src": "fontawesome"
     },
     {
       "uid": "a70b0a7ad233888d003444ad6c75f30e",
