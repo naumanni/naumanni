@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import {Context} from 'almin'
 
 import {
-  Account, OAuthToken,
+  Account, OAuthToken, Status,
   UIDialog,
 } from 'src/models'
 
@@ -16,7 +16,14 @@ export {ContextPropType}
 const AppPropType = PropTypes.any
 const AccountPropType = PropTypes.instanceOf(Account)
 const OAuthTokenArrayPropType = PropTypes.arrayOf(PropTypes.instanceOf(OAuthToken))
-export {AccountPropType, AppPropType, OAuthTokenArrayPropType}
+// ProxyなObjectをinstanceOfしたい...???
+// const StatusLikePropType = PropTypes.oneOfType([
+//   PropTypes.instanceOf(Status),
+//   PropTypes.instanceOf(Proxy),
+// ])
+const StatusLikePropType = PropTypes.any
+const AccountLikePropType = PropTypes.any
+export {AccountPropType, AccountLikePropType, AppPropType, OAuthTokenArrayPropType, StatusLikePropType}
 
 
 // naumanni UI

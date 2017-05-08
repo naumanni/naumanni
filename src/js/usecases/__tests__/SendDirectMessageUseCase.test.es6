@@ -8,6 +8,8 @@ const TEST_TEXT = '寿限無、寿限無 五劫の擦り切れ 海砂利水魚�
 const TEST_KEYS = require('./test_keys.json')
 
 
+jest.mock('src/infra/TimelineData')
+
 
 beforeAll(() => {
   // init open pgp
@@ -34,18 +36,16 @@ describe('SendDirectMessageUseCase', () => {
     const mockSelf = new Account({
       acct: 'alice@my.host',
       note: `PGP Key Fingerprint: 0001FFFF`,
+      url: 'http://dummy/@alice',
     })
     const mockRecipient = new Account({
       acct: 'bob@my.host',
       note: `PGP Key Fingerprint: 0002FFFF`,
+      url: 'http://dummy/@bob',
     })
 
-    const mockPostStatus = jest.fn(() => {})
-
-    mockToken._requester = {
-      postStatus: mockPostStatus,
-    }
-
+    const mockPostStatus = require('src/infra/TimelineData').__postStatusManaged
+    mockPostStatus.mockClear()
     const usecase = new SendDirectMessageUseCase()
 
     await usecase.execute({
@@ -57,7 +57,7 @@ describe('SendDirectMessageUseCase', () => {
 
     // このテスト文だと2回ぐらいコールされるはず
     expect(mockPostStatus.mock.calls.length).toBe(2)
-    mockPostStatus.mock.calls.forEach(([{status, visibility}], idx) => {
+    mockPostStatus.mock.calls.forEach(([token, {status, visibility}], idx) => {
       // status must begin with recipient's account
       expect.assertions(status.indexOf('@bob') >= 0)
       // status must have NEM header
@@ -79,18 +79,16 @@ describe('SendDirectMessageUseCase', () => {
     const mockSelf = new Account({
       acct: 'alice@my.host',
       note: 'no public key!!',
+      url: 'http://dummy/@alice',
     })
     const mockRecipient = new Account({
       acct: 'bob@my.host',
       note: 'no public key!!',
+      url: 'http://dummy/@bob',
     })
 
-    const mockPostStatus = jest.fn(() => {})
-
-    mockToken._requester = {
-      postStatus: mockPostStatus,
-    }
-
+    const mockPostStatus = require('src/infra/TimelineData').__postStatusManaged
+    mockPostStatus.mockClear()
     const usecase = new SendDirectMessageUseCase()
 
     await usecase.execute({
@@ -103,7 +101,7 @@ describe('SendDirectMessageUseCase', () => {
     // このテスト文だと1回コールされるはず
     expect(mockPostStatus.mock.calls.length).toBe(1)
 
-    const [[{status, visibility}]] = mockPostStatus.mock.calls
+    const [[token, {status, visibility}]] = mockPostStatus.mock.calls
 
     // status must begin with recipient's account
     expect.assertions(status.indexOf('@bob') >= 0)

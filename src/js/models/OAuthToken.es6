@@ -53,26 +53,6 @@ export default class OAuthToken extends OAuthTokenRecord {
 
   get expiresAt() {
     // Mastodonでは使わん
-    // const {
-    //   access_token,
-    //   refresh_token,
-    //   expires,
-    //   expires_in,
-    // } = token
-
-    // require('assert')(access_token && refresh_token)
-    // this.accessToken = access_token
-    // this.refreshToken = refresh_token
-
-    // require('assert')(!(expires && expires_in), 'expires and expires_in cannot set simultaneously')
-    // require('assert')(expires || expires_in, 'expires or expires_in is required')
-
-    // if(expires_in) {
-    //   // 時刻設定連れを考慮して10%の誤差を...
-    //   this.expires = moment().add(expires_in * 0.9, 's')
-    // } else {
-    //   this.expires = expires
-    // }
     throw new Error('not implemented')
   }
 
@@ -89,17 +69,17 @@ export default class OAuthToken extends OAuthTokenRecord {
         MastodonAPISpec, {
           token: this,
           endpoint: `https://${this.host}/api/v1`,
-          hooks: {
-            response: (method, apiName, responseBody) => {
-              if(Array.isArray(responseBody)) {
-                return responseBody.map((obj) => {
-                  return {host: this.host, ...obj}
-                })
-              } else {
-                return {host: this.host, ...responseBody}
-              }
-            },
-          },
+          // hooks: {
+          //   response: (method, apiName, responseBody) => {
+          //     if(Array.isArray(responseBody)) {
+          //       return responseBody.map((obj) => {
+          //         return {host: this.host, ...obj}
+          //       })
+          //     } else {
+          //       return {host: this.host, ...responseBody}
+          //     }
+          //   },
+          // },
         })
     }
     return this._requester
@@ -118,7 +98,7 @@ export default class OAuthToken extends OAuthTokenRecord {
   }
 
   //
-  set account(newAccount) {
+  attachAccount(newAccount) {
     this._account = newAccount
   }
 
@@ -127,7 +107,7 @@ export default class OAuthToken extends OAuthTokenRecord {
   }
 
   get acct() {
-    return this._account ? this._account.account : null
+    return this._account ? this._account.acct : null
   }
 
   toString() {

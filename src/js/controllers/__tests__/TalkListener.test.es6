@@ -17,13 +17,16 @@ beforeAll(() => {
 
 describe('TalkListener', () => {
   it('can fetch talks', async () => {
-    const mockToken = new OAuthToken({})
+    const mockToken = new OAuthToken({
+      host: 'dummy',
+    })
     const mockSelf = new Account({
-      id: 1,
+      id_by_host: {'dummy': 1},
       acct: 'shn@oppai.tokyo',
+      url: 'https://oppai.tokyo/@shn',
       note: `PGP Key Fingerprint: 0001FFFF`,
     })
-    mockToken.account = mockSelf
+    mockToken.attachAccount(mockSelf)
     const mockRecipient = 'shn@mstdn.onosendai.jp'
     require('src/api/APIRequester').__setScenario(require('./TalkListener.scenario.json'))
 

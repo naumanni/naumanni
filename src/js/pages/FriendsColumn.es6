@@ -134,6 +134,7 @@ export default class FriendsColumn extends Column {
 
   /**
    * 絞り込む。とりあえずusernameをレーベンシュタイン距離でソートしてみる
+   * @param {Event} e
    */
   onChangeFilter(e) {
     const filter = e.target.value
@@ -144,10 +145,10 @@ export default class FriendsColumn extends Column {
       const distanceCache = {}
 
       const _getDistance = (account) => {
-        if(distanceCache[account.account] === undefined) {
-          distanceCache[account.account] = levenshtein.get(filter, account.username)
+        if(distanceCache[account.acct] === undefined) {
+          distanceCache[account.acct] = levenshtein.get(filter, account.username)
         }
-        return distanceCache[account.account]
+        return distanceCache[account.acct]
       }
 
       const _compare = (a, b) => {
@@ -189,7 +190,7 @@ class FriendRow extends React.Component {
             {account.hasPublicKey && <span className="user-hasPulbickey"><IconFont iconName="key" /></span>}
 
             <span className="user-displayName">{account.display_name || account.username}</span>
-            <span className="user-account">@{account.account}</span>
+            <span className="user-account">@{account.acct}</span>
           </div>
 
           <div className="friend-note" dangerouslySetInnerHTML={{__html: account.note}} />
@@ -211,7 +212,7 @@ class UIFriend {
   }
 
   get key() {
-    return this.account.address
+    return this.account.uri
   }
 }
 
@@ -247,24 +248,22 @@ class FriendsListener extends EventEmitter {
 
     const {requester, account} = this.token
     const response = await Promise.all([
-      requester.listFollowings({id: account.id, limit: 80}),
-      requester.listFollowers({id: account.id, limit: 80}),
+      requester.listFollowings({id: account.getIdByHost(this.token.host), limit: 80}),
+      requester.listFollowers({id: account.getIdByHost(this.token.host), limit: 80}),
     ])
+    const friends = new Map()
 
-    const friends = []
-    const keys = new Set()
-
-    response.forEach((accounts) => accounts.forEach((account) => {
-      if(keys.has(account.address))
-        return
-
-      friends.push(new UIFriend(account))
-      keys.add(account.address)
-    }))
+    response.forEach(({entities, result}) => {
+      const {accounts} = entities
+      Object.values(accounts).forEach((account) => {
+        if(!friends.has(account.uri))
+          friends.set(account.uri, new UIFriend(account))
+      })
+    })
 
     // TODO: 最近お話した順でソートしたいね
 
-    this.state.friends = friends
+    this.state.friends = Array.from(friends.values())
     this.emitChange()
   }
 

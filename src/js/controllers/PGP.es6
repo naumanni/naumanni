@@ -14,6 +14,7 @@ const MESSAGE_TAG_LENGTH = '--NEM.ffffffff.00/00--\n'.length
  * @params {Object<String, Key>} addresses 送信先のアドレスと、KeyのMap
  * @params {Key} senderPublicKey 自分の公開鍵。無いと自分で読めない
  * @params {Int} maxLength ブロック最大長
+ * @return {String[]} ブロックに別れた暗号化済みのテキスト
  */
 export async function encryptText({content, addresses, senderPublicKey, maxLength}) {
   require('assert')(typeof content === 'string' && content.length > 0)
@@ -108,6 +109,7 @@ export async function decryptBlocks(encodedBlocks, privateKey) {
  * @param {UInt8Array} data
  * @param {Int} preferredBlockSize
  * @param {String[]} array
+ * @return {String[]} コード済ブロック
  */
 function splitDataWithBase65536(data, preferredBlockSize) {
   const blocks = []

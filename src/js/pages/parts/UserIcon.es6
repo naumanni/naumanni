@@ -1,14 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import {AccountPropType} from 'src/propTypes'
+import {AccountLikePropType} from 'src/propTypes'
 
 /**
  * ユーザーの顔アイコン with ホスト
  */
 export class UserIconWithHost extends React.Component {
   static propTypes = {
-    account: AccountPropType.isRequired,
+    account: AccountLikePropType.isRequired,
     size: PropTypes.string,
   }
 
@@ -26,7 +26,7 @@ export class UserIconWithHost extends React.Component {
       <span className={className}>
         <img
           className="userIcon-avatar" src={account.safeAvatar || '/images/no-avatar.png'}
-          alt={account.address} title={account.address} />
+          alt={account.acct} title={account.acct} />
         <img className="userIcon-host" src={`https://${account.instance}/favicon.ico`} />
       </span>
     )

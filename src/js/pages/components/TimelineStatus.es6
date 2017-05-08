@@ -1,19 +1,21 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
 import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
-import {Status} from 'src/models'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from '../parts'
 import TootPanel from './TootPanel'
+import {StatusLikePropType} from 'src/propTypes'
 
 
 export default class TimelineStatus extends React.Component {
   static propTypes = {
-    status: PropTypes.instanceOf(Status).isRequired,
+    status: StatusLikePropType.isRequired,
     tokens: TootPanel.propTypes.tokens,
+    // Reply送信ボタンが押された
     onSendReply: TootPanel.propTypes.onSend,
+    // Fav/UnfavがClickされた
+    // onFavourite: PropTypes.func.isRequired,
   }
 
   /**
@@ -76,7 +78,7 @@ export default class TimelineStatus extends React.Component {
             <div className="status-info">
               <div className="status-author">
                 <span className="user-displayName">{account.display_name || account.username}</span>
-                <span className="user-account">@{account.account}</span>
+                <span className="user-account">@{account.acct}</span>
               </div>
               <a className="status-createdAt"
                  href={mainStatus.url}
@@ -102,14 +104,16 @@ export default class TimelineStatus extends React.Component {
               </button>
 
               {status.canReblog() ? (
-                <button className="status-actionReblog">
+                <button className={`status-actionReblog ${status.reblogged ? 'is-active' : ''}`}>
                   <IconFont iconName="reblog" />
                 </button>
               ) : (
                 <VisibilityIcon visibility={status.visibility} />
               )}
 
-              <button className="status-actionFavorite">
+              <button
+                className="status-actionFavorite"
+                onClick={::this.onClickToggleFavourite}>
                 <IconFont iconName="star-filled" />
               </button>
 
@@ -193,13 +197,19 @@ export default class TimelineStatus extends React.Component {
   }
 
   renderReplyPanel() {
+    const {status, tokens} = this.props
+    console.log(status.resolve().toJSON())
     const {beginReplyPanelAnimation} = this.state
+
+    // デフォルトの返信元。 Statusと同じホストの最初のアカウントから選ぶ
+    let sendFrom = tokens.filter((t) => t.host === status.account.instance).map((a) => a.acct)
 
     return (
       <div className={`status-replyPanel ${beginReplyPanelAnimation ? 'off' : ''}`}>
         <div>
           <TootPanel {...this.props}
             onSend={::this.onSendReply}
+            initialSendFrom={sendFrom}
             />
         </div>
       </div>
@@ -222,6 +232,12 @@ export default class TimelineStatus extends React.Component {
     this.showHideReplyPanel(!this.state.isShowReplyPanel)
   }
 
+  onClickToggleFavourite(e) {
+    e.preventDefault()
+
+    // this.porp.onFavourite(status.)
+  }
+
   showHideReplyPanel(show) {
     if(show) {
       this.setState(
@@ -240,6 +256,7 @@ export default class TimelineStatus extends React.Component {
   /**
    * TootPanel用のonSendをoverrideする。
    * Send完了時にTootPanelを閉じたい
+   * @return {Promise}
    */
   onSendReply(...args) {
     // TODO: 突然閉じるのでアニメーションしたい...

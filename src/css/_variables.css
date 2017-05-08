@@ -88,6 +88,7 @@ $colorStatusSpoilerOpenerBackground: $colorGray1;
 $colorStatusSpoilerOpenerText: $colorWhite;
 $colorStatusActionColor: $colorMainLighter;
 $colorStatusInactiveActionColor: $colorGray1;
+$colorStatusActiveActionColor: $colorAccentNormal;
 $colorStatusVisiblityColor: $colorGray1;
 $fontSizeStatusActionIcon: 1.5rem;
 $fontSizeStatusVisibilityIcon: 1rem;

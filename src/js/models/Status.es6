@@ -5,31 +5,30 @@ import {
   MESSAGE_TAG_REX,
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
+import {isObjectSame} from 'src/utils'
 
 
 const StatusRecord = Record({  // eslint-disable-line new-cap
-  host: '',
-
-  id: '',
+  id_by_host: {},
   uri: '',
   url: '',
-  account: null,
-  in_reply_to_id: '',
-  in_reply_to_account_id: '',
-  reblog: null,
   content: '',
   created_at: '',
+  account: '',
   reblogs_count: '',
   favourites_count: '',
-  reblogged: '',
-  favourited: '',
   sensitive: '',
   spoiler_text: '',
   visibility: '',
   media_attachments: [],
-  mentions: '',
-  tags: '',
+  mentions_by_host: {},
+  tags: [],
   application: '',
+  reblog: null,
+  in_reply_to_id_by_host: {},
+  in_reply_to_account_id_by_host: {},
+  reblogged_by_acct: {},
+  favourited_by_acct: {},
 })
 
 
@@ -42,21 +41,6 @@ export default class Status extends StatusRecord {
    * @param {object} raw
    */
   constructor(raw) {
-    if(raw.account) {
-      // avoid circular dependency
-      const Account = require('./Account').default
-      raw.account = new Account({
-        host: raw.host,
-        ...raw.account,
-      })
-    }
-    if(raw.reblog) {
-      raw.reblog = new Status({
-        host: raw.host,
-        ...raw.reblog,
-      })
-    }
-
     if(raw.media_attachments.length) {
       const Attachment = require('./Attachment').default
       raw.media_attachments = raw.media_attachments.map((rawmedia) => new Attachment(rawmedia))
@@ -67,7 +51,20 @@ export default class Status extends StatusRecord {
 
   // とりあえず
   get hosts() {
-    return [this.host]
+    return Object.keys(this.id_by_host)
+  }
+
+  get id() {
+    console.error('deprecated attribute')
+    require('assert')(0)
+  }
+
+  getIdByHost(host) {
+    return this.id_by_host[host]
+  }
+
+  getInReplyToIdByHost(host) {
+    return this.in_reply_to_id_by_host[host]
   }
 
   get rawContent() {
@@ -94,13 +91,38 @@ export default class Status extends StatusRecord {
       : false
   }
 
+  isMentionToId(accountId) {
+    console.error('deprecated function')
+    require('assert')(0, 'deprecated function')
+  }
+
   /**
    * そいつあてのMentionが含まれているか？
-   * @param {Int} accountId そいつ
+   * @param {URI} uri そいつ
    * @return {bool}
    */
-  isMentionToId(accountId) {
-    return this.mentions.find((m) => m.id === accountId) ? true : false
+  isMentionToURI(uri) {
+    for(const mentions of Object.values(this.mentions_by_host)) {
+      if(mentions.find((m) => m.url === uri))
+        return true
+    }
+    return false
+  }
+
+  merge(newObj) {
+    let changed = false
+    const merged = super.mergeDeepWith((prev, next, key) => {
+      if(typeof prev === 'object') {
+        if(!isObjectSame(prev, next))
+          changed = true
+      }
+      if(prev !== next) {
+        changed = true
+      }
+      return next
+    }, newObj)
+
+    return {changed, merged}
   }
 
   static compareCreatedAt(a, b) {

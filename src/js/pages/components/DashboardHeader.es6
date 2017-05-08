@@ -135,7 +135,7 @@ export default class DashboardHeader extends React.Component {
           <UserIconWithHost account={account} />
           <div className="menu-descriptionNote">
             <span className="user-displayName">{account.display_name}</span><br />
-            <span className="user-account">{account.account}</span>
+            <span className="user-account">{account.acct}</span>
 
             <div>
               {account.hasPublicKey && <span className="user-hasPublickey"><IconFont iconName="key" />pub</span>}
@@ -148,27 +148,27 @@ export default class DashboardHeader extends React.Component {
         </li>
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
-            this, COLUMN_TIMELINE, {subject: account.address, timelineType: TIMELINE_HOME})}>
+            this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_HOME})}>
           <IconFont iconName="home" />
           <span>ホームタイムライン</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
-            this, COLUMN_TIMELINE, {subject: account.address, timelineType: TIMELINE_LOCAL})}>
+            this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_LOCAL})}>
           <IconFont iconName="users" />
           <span>ローカルタイムライン</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
-            this, COLUMN_TIMELINE, {subject: account.address, timelineType: TIMELINE_FEDERATION})}>
+            this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_FEDERATION})}>
           <IconFont iconName="globe" />
           <span>連合タイムライン</span>
         </li>
 
         <li className="menu-item"
-          onClick={this.props.onOpenColumn.bind(this, COLUMN_FRIENDS, {subject: account.address})}>
+          onClick={this.props.onOpenColumn.bind(this, COLUMN_FRIENDS, {subject: account.acct})}>
           <IconFont iconName="mail" />
           <span>メッセージ</span>
         </li>

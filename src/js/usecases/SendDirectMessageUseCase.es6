@@ -3,7 +3,7 @@ import {UseCase} from 'almin'
 import * as actions from 'src/actions'
 import {encryptText} from 'src/controllers/PGP'
 import PublicKeyCache from 'src/infra/PublicKeyCache'
-
+import {postStatusManaged} from 'src/infra/TimelineData'
 import {MASTODON_MAX_CONTENT_SIZE} from 'src/constants'
 
 /**
@@ -35,7 +35,7 @@ export default class SendDirectMessageUseCase extends UseCase {
     // 鍵を集める
     for(const target of targets) {
       if(target.hasPublicKey)
-        keyIds.push({keyId: target.publicKeyId, user: target.account})
+        keyIds.push({keyId: target.publicKeyId, user: target.acct})
     }
 
     // TODO: 雑よね
@@ -55,12 +55,12 @@ export default class SendDirectMessageUseCase extends UseCase {
 
   async sendPlainMessage({token, self, message, recipients}) {
     require('assert')(message.length < MASTODON_MAX_CONTENT_SIZE)
-    const status = recipients.map((r) => `@${r.account}`).join(' ') + ' ' + message
+    const status = recipients.map((r) => `@${r.acct}`).join(' ') + ' ' + message
     if(status.length >= MASTODON_MAX_CONTENT_SIZE) {
       // to入れるとサイズオーバーしてしまった...
       throw new Error('__TODO_ERROR_MESSAGE__')
     }
-    const response = await token.requester.postStatus({
+    const response = await postStatusManaged(token, {
       status,
       visibility: 'direct',
     })
@@ -70,16 +70,16 @@ export default class SendDirectMessageUseCase extends UseCase {
     const encryptedBlocks = await encryptText({
       content: message,
       addresses: recipients.reduce((addresses, recipient) => {
-        addresses[recipient.account] = publicKeys[recipient.account]
+        addresses[recipient.acct] = publicKeys[recipient.acct]
         return addresses
       }, {}),
-      senderPublicKey: publicKeys[self.account],
+      senderPublicKey: publicKeys[self.acct],
       maxLength: MASTODON_MAX_CONTENT_SIZE,
     })
 
     const responses = await Promise.all(
       encryptedBlocks.map((block) => {
-        token.requester.postStatus({
+        postStatusManaged(token, {
           status: block,
           visibility: 'direct',
         })

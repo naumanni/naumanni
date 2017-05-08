@@ -36,6 +36,7 @@ class DummyAPIRequester extends APIRequester.APIRequester {
     endpoint = endpoint.replace(/\/:([^/]+)/g, (match, p1, offset) => {
       if(query[p1]) {
         const val = query[p1]
+        require('assert')(val, 'path arguments must not be null/undefined')
         delete query[p1]
         return '/' + val
       }
@@ -46,7 +47,11 @@ class DummyAPIRequester extends APIRequester.APIRequester {
     params.sort()
     const scenarioKey = `${method.toLowerCase()}:${endpoint}?${params.join('&')}`
 
-    return {spec, req: new Promise((resolve, reject) => {
+    const req = {
+      url: `http://dummy${endpoint}`
+    }
+
+    req.then = function(resolve, reject) {
       setTimeout(() => {
         try{
           const response = APIRequester.__scenario[scenarioKey]
@@ -59,7 +64,12 @@ class DummyAPIRequester extends APIRequester.APIRequester {
           reject(e)
         }
       })
-    })}
+    }
+    req.catch = function(cb) {
+      return this.then(undefined, cb);
+    }
+
+    return {spec, req}
   }
 }
 

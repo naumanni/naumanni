@@ -29,32 +29,12 @@ export default class APISpec {
 
   /**
    * レスポンスを整形する
-   * @param {string} method
+   * @param {Request} req
    * @param {object} responseBody
+   * @param {object} options
    * @return {object}
    */
-  normalize(method, responseBody) {
-    const {entity} = this
-    if(!entity)
-      return responseBody
-    // methodがdeleteのときはレスポンスがnullだからconvertできない
-    if (!responseBody) {
-      return null
-    }
-
-    if(Array.isArray(responseBody)) {
-      return responseBody.map(
-        (obj) => {
-          return entity.fromObject
-            ? entity.fromObject(obj)
-            : new entity(obj)  // eslint-disable-line new-cap
-        }
-      )
-    } else {
-      // single object
-      return entity.fromObject
-        ? entity.fromObject(responseBody)
-        : new entity(responseBody)  // eslint-disable-line new-cap
-    }
+  normalize(req, responseBody, options) {
+    return responseBody
   }
 }

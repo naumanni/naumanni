@@ -76,7 +76,35 @@ export function parseQuery(queryString) {
 /**
  * WebsocketのUrlを作る。
  * TODO: どっかに移したい
+ * @param {OAuthToken} token
+ * @param {string} stream
+ * @return {string}
  */
 export function makeWebsocketUrl(token, stream) {
   return `wss://${token.host}/api/v1/streaming/?access_token=${token.accessToken}&stream=${stream}`
+}
+
+
+/**
+ * ２つのObject a, bが同じKey, Valueをもっているか見る(keyの順序は考慮しない)
+ * @param {Object} a
+ * @param {Object} b
+ * @return {bool}
+ */
+export function isObjectSame(a, b) {
+  if(!a || !b)
+    return false
+  if(!a && !b)
+    return true
+
+  const aKeys = Object.keys(a)
+  const bKeys = Object.keys(b)
+
+  if(aKeys.find((k) => bKeys.indexOf(k) < 0))
+    return false
+  if(bKeys.find((k) => aKeys.indexOf(k) < 0))
+    return false
+  if(aKeys.find((k) => a[k] !== b[k]))
+    return false
+  return true
 }

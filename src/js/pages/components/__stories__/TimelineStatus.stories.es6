@@ -58,6 +58,10 @@ storiesOf('TimelineStatus', module)
         onSendReply={(...args) => {
           action('send')(...args)
           return setTimeoutAsync(500)
+        }}
+        onFavourite={(...args) => {
+          action('send')(...args)
+          return setTimeoutAsync(500)
         }} />
     )
   })

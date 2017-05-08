@@ -1,11 +1,11 @@
 import {Record} from 'immutable'
-import {REGEX_PGP_FINGERPRINT} from 'src/constants'
 
+import {REGEX_PGP_FINGERPRINT} from 'src/constants'
+import {isObjectSame} from 'src/utils'
 
 const AccountRecord = Record({  // eslint-disable-line new-cap
-  host: '',
-
-  id: null,
+  // id: null,
+  id_by_host: {},
   username: null,
   acct: null,
   display_name: null,
@@ -27,11 +27,11 @@ const AccountRecord = Record({  // eslint-disable-line new-cap
  * OAuthでのApp登録を表すModel
  */
 export default class Account extends AccountRecord {
-  static storeName = 'accounts'
-  static keyPath = 'address'
-  static indexes = [
-    ['host', 'host', {}],
-  ]
+  // static storeName = 'accounts'
+  // static keyPath = 'address'
+  // static indexes = [
+  //   ['host', 'host', {}],
+  // ]
 
   /**
    * @constructor
@@ -51,21 +51,34 @@ export default class Account extends AccountRecord {
   }
 
   isEqual(other) {
-    return this.account === other.account
+    return this.acct === other.acct
   }
 
   /**
    * 一意な識別子を返す
    */
+  get uri() {
+    return this.url
+  }
+
   get address() {
+    console.warn('deprecated function')
     // acctは@を含んでないことが有る
     return this.account
   }
 
   get account() {
-    if(this.acct.indexOf('@') >= 0)
-      return this.acct
-    return `${this.acct}@${this.host}`
+    console.warn('deprecated function')
+    return this.acct
+  }
+
+  get id() {
+    console.error('deprecated attribute')
+    require('assert')(0)
+  }
+
+  getIdByHost(host) {
+    return this.id_by_host[host]
   }
 
   get hasKeypair() {
@@ -91,7 +104,7 @@ export default class Account extends AccountRecord {
   }
 
   get privateKeyArmored() {
-    const keydata = localStorage.getItem(`pgp::privateKey::${this.account}`)
+    const keydata = localStorage.getItem(`pgp::privateKey::${this.acct}`)
     return keydata
   }
 
@@ -115,4 +128,21 @@ export default class Account extends AccountRecord {
       url = '/' + url
     return `https://${this.instance}${url}`
   }
+
+  merge(newObj) {
+    let changed = false
+    const merged = super.mergeDeepWith((prev, next, key) => {
+      if(typeof prev === 'object') {
+        if(!isObjectSame(prev, next))
+          changed = true
+      }
+      if(prev !== next) {
+        changed = true
+      }
+      return next
+    }, newObj)
+
+    return {changed, merged}
+  }
 }
+

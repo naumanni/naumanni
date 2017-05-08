@@ -80,12 +80,12 @@ export class APIRequester {
    * @param {object} options
    * @return {object}
    */
-  async call(method, apiName, query, options) {
+  async call(method, apiName, query, options={}) {
     const {spec, req} = this._makeRequest(method, apiName, query, options)
     let responseBody = (await req).body
     if(this.hooks.response)
       responseBody = this.hooks.response(method, apiName, responseBody)
-    return spec.normalize(method, responseBody)
+    return spec.normalize(req, responseBody, options)
   }
 
   /**
@@ -112,6 +112,7 @@ export class APIRequester {
     endpoint = endpoint.replace(/\/:([^/]+)/g, (match, p1, offset) => {
       if(query[p1]) {
         const val = query[p1]
+        require('assert')(val !== undefined && val !== null, 'path argument must not be null/undefined')
         delete query[p1]
         return '/' + val
       }
@@ -170,7 +171,7 @@ class OAuthAPIRequester extends APIRequester {
   /**
    * @override
    */
-  async call(method, apiName, query, options) {
+  async call(method, apiName, query, options={}) {
     if(!this.token) {
       throw new InvalidTokenError('token not set')
     }
@@ -207,7 +208,7 @@ class OAuthAPIRequester extends APIRequester {
     let responseBody = response.body
     if(this.hooks.response)
       responseBody = this.hooks.response(method, apiName, responseBody)
-    return spec.normalize(method, responseBody)
+    return spec.normalize(req, responseBody, options)
   }
 
   /**

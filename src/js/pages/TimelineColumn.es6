@@ -8,6 +8,7 @@ import {
 } from 'src/constants'
 import TimelineListener from 'src/controllers/TimelineListener'
 import TimelineStatus from './components/TimelineStatus'
+import {postStatusManaged} from 'src/infra/TimelineData'
 import Column from './Column'
 
 
@@ -101,15 +102,13 @@ export default class TimelineColumn extends Column {
 
     return (
       <ul className="timeline">
-        {timeline.map((status) => {
-          const tokenForThisHost = tokens.find((t) => status.hosts.indexOf(t.host) >= 0)
+        {timeline.map((statusRef) => {
           return (
-            <li key={status.uri}>
+            <li key={statusRef.uri}>
               <TimelineStatus
-                status={status}
+                status={statusRef}
                 tokens={tokens}
-                onSendReply={this.onSendReply.bind(this, status)}
-                initialSendFrom={tokenForThisHost ? [tokenForThisHost.acct] : null}
+                onSendReply={this.onSendReply.bind(this, statusRef)}
               />
             </li>
           )
@@ -153,12 +152,9 @@ export default class TimelineColumn extends Column {
     const responses = await Promise.all(
       sendFrom.map(async (token) => {
         // in_reply_to_id を付加する
-        // 同Hostにしか付加できない
-        if(status.hosts.indexOf(token.host) >= 0) {
-          // TODO: tootpanelの方にwarning出す?
-          message.in_reply_to_id = status.id
-        }
-        return await token.requester.postStatus(message)
+        message.in_reply_to_id = status.getInReplyToIdByHost(token.host)
+        // TODO: tootpanelの方にwarning出す?
+        return await postStatusManaged(token, message)
       })
     )
   }

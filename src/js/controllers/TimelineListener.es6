@@ -6,10 +6,10 @@ import {
   STREAM_HOME, STREAM_LOCAL, STREAM_FEDERATION,
   WEBSOCKET_EVENT_MESSAGE,
 } from 'src/constants'
-import {Status} from 'src/models'
 import {makeWebsocketUrl} from 'src/utils'
+import {Status} from 'src/models'
+import TimelineData from 'src/infra/TimelineData'
 import WebsocketManager from './WebsocketManager'
-
 
 export class TimelineEntry {
   constructor(status) {
@@ -113,8 +113,10 @@ export default class TimelineListener extends EventEmitter {
 
     // とりあえずTimelineをとってくる
     const fetcher = makeFetcherByTimelineType(this.timelineType, token)
-    fetcher().then((statuses) => {
-      this.pushStatuses(token, statuses)
+    // Statusの内部データの管理のために、fetcherのoptionにtokenを渡す必要がある。
+    fetcher({token}).then(({entities, result}) => {
+      const statusRefs = TimelineData.mergeStatuses(entities, result)
+      this.pushStatuses(statusRefs)
     })
   }
 
@@ -143,10 +145,11 @@ export default class TimelineListener extends EventEmitter {
   onWebsocketMessage(token, {type, payload}) {
     if(type === WEBSOCKET_EVENT_MESSAGE) {
       if(payload.event === EVENT_UPDATE) {
-        this.pushStatuses(token, new Status({
-          host: token.host,
-          ...payload.payload,
-        }))
+        const {normalizeStatus} = require('src/api/MastodonAPISpec')
+        const {entities, result} = normalizeStatus(payload.payload, token.account.instance, token.acct)
+
+        const statusRefs = TimelineData.mergeStatuses(entities, [result])
+        this.pushStatuses(statusRefs)
       }
     }
   }
@@ -154,19 +157,17 @@ export default class TimelineListener extends EventEmitter {
   /**
    * StatusをTimelineに追加する
    * @param {OAuthTokeb} token
-   * @param {Status[]} newStatuses
+   * @param {StatusRef[]} statusRefs
    * @private
    */
-  pushStatuses(token, newStatuses) {
-    if(!Array.isArray(newStatuses)) {
-      newStatuses = [newStatuses]
-    }
-    console.log('pushStatuses', token, newStatuses)
+  pushStatuses(newStatusRefs) {
+    require('assert')(Array.isArray(newStatusRefs))
+
     // remove exists
-    newStatuses = newStatuses
+    newStatusRefs = newStatusRefs
       .filter((status) => !this.timeline.find((old) => old.uri === status.uri))
 
-    this.timeline = newStatuses
+    this.timeline = newStatusRefs
       .concat(this.timeline)
       .sort(Status.compareCreatedAt)
     // とりま100件に制限
@@ -210,7 +211,7 @@ function makeFetcherByTimelineType(timelineType, token) {
   let fetcher
   switch(timelineType) {
   case TIMELINE_HOME:
-    fetcher = ::requester.listHomeTimeline
+    fetcher = requester.listHomeTimeline.bind(requester, {})
     break
 
   case TIMELINE_LOCAL:
@@ -218,7 +219,7 @@ function makeFetcherByTimelineType(timelineType, token) {
     break
 
   case TIMELINE_FEDERATION:
-    fetcher = ::requester.listPublicTimeline
+    fetcher = requester.listPublicTimeline.bind(requester, {})
     break
   }
   return fetcher

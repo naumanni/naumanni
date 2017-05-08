@@ -85,11 +85,11 @@ export default class TalkColumn extends Column {
       return 'トーク'
     }
 
-    const memberNames = Object.values(members).map((a) => a.display_name || a.account)
+    const memberNames = Object.values(members).map((a) => a.display_name || a.acct)
 
     return (
       <h1 className="column-headerTitle">
-        <div className="column-headerTitleSub">{me.account}</div>
+        <div className="column-headerTitleSub">{me.acct}</div>
         <div className="column-headerTitleMain">{memberNames}とトーク</div>
       </h1>
     )
@@ -146,7 +146,7 @@ export default class TalkColumn extends Column {
     // memberのtalkgroupは、次のTalkGroupが自分であればアバターを表示しない
     const showAvatar = !isMyTalk && !(nextTalkGroup && nextTalkGroup.account.isEqual(talkGroup.account))
 
-    const key = `speak-${talkGroup.account.account}-${talkGroup.statuses[0].id}`
+    const key = `speak-${talkGroup.account.acct}-${talkGroup.statuses[0].uri}`
 
     return (
       <div className={`talk-talkGroup ${isMyTalk ? 'is-me' : 'is-member'}`} key={key}>
@@ -163,7 +163,7 @@ export default class TalkColumn extends Column {
         <ul className="talk-talkGroupStatuses">
           {talkGroup.statuses.map((status) => {
             return (
-              <li key={status.id}>
+              <li key={status.uri}>
                 <div className="status-content" dangerouslySetInnerHTML={{__html: status.content}} />
                 <div className="status-date">{status.createdAt.format('YYYY-MM-DD HH:mm:ss')}</div>
               </li>

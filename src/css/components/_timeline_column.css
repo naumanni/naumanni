@@ -273,10 +273,6 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
     margin: $marginDefault 0 $marginHalf;
     color: $colorStatusInactiveActionColor;
 
-    button .icon {
-      color: $colorStatusActionColor;
-    }
-
     > * {
       margin: 0 $marginDefault;
 
@@ -293,10 +289,14 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
     }
 
     .icon {
+      color: $colorStatusActionColor;
       font-size: $fontSizeStatusActionIcon;
 
       &::before {
         margin: 0;
+      }
+      &.is-active {
+        color: $colorStatusActiveActionColor;
       }
     }
   }

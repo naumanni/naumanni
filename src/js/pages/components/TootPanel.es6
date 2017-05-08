@@ -37,7 +37,7 @@ export default class TootPanel extends React.Component {
       error: null,
       isSending: false,
       messageTo: '',
-      sendFrom: initialSendFrom != null ? initialSendFrom : tokens[0].acct,
+      sendFrom: initialSendFrom != null ? initialSendFrom : [tokens[0].acct],
       showContentsWarning: false,
       spoilerTextContent: '',
       statusContent: '',
@@ -78,11 +78,11 @@ export default class TootPanel extends React.Component {
         <ul className="tootPanel-sendFrom">
           {tokens.map((token) => {
             const {account} = token
-            const isSelected = sendFrom.indexOf(account.account) >= 0
+            const isSelected = sendFrom.indexOf(account.acct) >= 0
 
             return (
               <li className={isSelected && 'is-selected'}
-                  key={account.account}
+                  key={account.acct}
                   onClick={this.onToggleSendFrom.bind(this, account)}>
                 <UserIconWithHost account={account} size="small" />
               </li>
@@ -200,10 +200,9 @@ export default class TootPanel extends React.Component {
         message,
       })
         .then(() => {
-          console.log('resolved')
+          // TODO: 送信成功した時点で、閉じられちゃうからここで怒られる...
           this.setState({isSending: false})
         }, (error) => {
-          console.log('rejected')
           this.setState({isSending: false, error: '' + error})
         })
     })
@@ -220,15 +219,15 @@ export default class TootPanel extends React.Component {
 
     if(e.shiftKey) {
       sendFrom = [...sendFrom]
-      const idx = sendFrom.indexOf(account.account)
+      const idx = sendFrom.indexOf(account.acct)
 
       if(idx >= 0) {
         sendFrom.splice(idx, 1)
       } else {
-        sendFrom.push(account.account)
+        sendFrom.push(account.acct)
       }
     } else {
-      sendFrom = [account.account]
+      sendFrom = [account.acct]
     }
 
     this.setState({sendFrom})

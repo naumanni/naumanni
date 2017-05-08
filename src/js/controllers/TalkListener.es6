@@ -6,6 +6,7 @@ import {
 } from 'src/constants'
 import {Status} from 'src/models'
 import WebsocketManager from 'src/controllers/WebsocketManager'
+import TimelineData from 'src/infra/TimelineData'
 import {makeWebsocketUrl} from 'src/utils'
 
 
@@ -64,7 +65,7 @@ class TalkBlock {
       require('assert')(0, 'not implemented')
     }
     // 発言者が違えば違うBlock
-    if(!newStatus.account.isEqual(this.account))
+    if(!newStatus.account === this.account)
       return false
 
     // 30分離れていたら違うBlock
@@ -102,8 +103,7 @@ export default class TalkListener extends EventEmitter {
     this.me = null
 
     // 各Timelineをほじくる際のMaxID。ページングで使う
-    this.myStatusesMaxId = undefined
-    this.notificationMaxId = undefined
+    this.statusesMaxId = {}
 
     this.talk = []
     this.statuses = []
@@ -118,7 +118,7 @@ export default class TalkListener extends EventEmitter {
       this.me = token && token.account
 
       if(this.token && this.me)
-        this.loadStatuses()
+        this.start()
     } else {
       require('assert')(this.token)
       require('assert')(this.me)
@@ -151,7 +151,7 @@ export default class TalkListener extends EventEmitter {
   }
 
   // private
-  async loadStatuses() {
+  async start() {
     require('assert')(this.state === _STATE_INITIAL)
     this.state = _STATE_LOADING
 
@@ -160,9 +160,9 @@ export default class TalkListener extends EventEmitter {
 
     // みんなの発言を把握すると同時に、websocketのlistenも開始する
     await Promise.all([
-      this.loadMyStatuses(),
-      this.loadMemberStatuses(),
       this.listenWebsocket(),
+      this.loadStatuses(this.me),
+      ...[Object.values(this.members).map((mem) => this.loadStatuses(mem))],
     ])
 
     // 読み込み終わったのでWatchを開始する
@@ -177,9 +177,9 @@ export default class TalkListener extends EventEmitter {
         .map((acct) => requester.searchAccount({q: acct, limit: 1}))
     )
 
-    responses.forEach((accounts) => {
-      if(accounts.length > 0) {
-        const account = accounts[0]
+    responses.forEach(({entities, result}) => {
+      if(result.length > 0) {
+        const account = entities.accounts[result[0]]
         if(this.members.hasOwnProperty(account.acct))
           this.members[account.acct] = account
       }
@@ -194,49 +194,31 @@ export default class TalkListener extends EventEmitter {
     this.emitChange()
   }
 
-  // 自分の発言を読み込んでいく
-  async loadMyStatuses() {
-    const {requester} = this.token
-
-    for(let loop = 0; loop < 5; ++loop) {
-    // for(;;) {
-      const maxId = this.myStatusesMaxId
-      if(maxId === 0)
-        break
-
-      const statuses = await requester.listStatuses({id: this.me.id, limit: 40, max_id: maxId})
-      if(!statuses.length) {
-        this.myStatusesMaxId = 0
-        break
-      }
-
-      this.pushStatusesIfMatched(statuses)
-      this.myStatusesMaxId = statuses[statuses.length - 1].id
-    }
-  }
-
   // メンバーの発言を読み込んでいく
-  async loadMemberStatuses() {
-    const {requester} = this.token
+  async loadStatuses(member) {
+    const {host, requester} = this.token
 
     for(let loop = 0; loop < 5; ++loop) {
-      const maxId = this.notificationMaxId
+      const maxId = this.statusesMaxId[member.acct]
       if(maxId === 0)
         break
 
-      const notifications = await requester.listNotifications({limit: 30, max_id: maxId})
-      if(!notifications.length) {
-        this.notificationMaxId = 0
+      const {entities, result} = await requester.listStatuses({
+        id: member.getIdByHost(host),
+        limit: 40,
+        max_id: maxId,
+        visibility: VISIBLITY_DIRECT,
+      },
+        {token: this.token})
+
+      if(!result.length) {
+        this.statusesMaxId[member.acct] = 0
         break
       }
 
-      this.pushStatusesIfMatched(
-        notifications
-          .filter((noty) => noty.type === NOTIFICATION_TYPE_MENTION && noty.status.visibility === VISIBLITY_DIRECT)
-          .map((noty) => noty.status)
-
-      )
-      this.notificationMaxId = notifications[notifications.length - 1].id
+      const statusRefs = TimelineData.mergeStatuses(entities, result)
+      this.statusesMaxId[member.acct] = statusRefs[statusRefs.length - 1].getIdByHost(host)
+      this.pushStatusesIfMatched(statusRefs)
     }
   }
 
@@ -249,15 +231,19 @@ export default class TalkListener extends EventEmitter {
 
   /**
    * このTalk向けのStatusesを選んで、更新する。変更があればemitChangeもする
+   * @param {Status[]} statuses
+   * @return {bool} 更新したか?
    */
   pushStatusesIfMatched(statuses) {
-    let targetsAccountIds = [this.me.id, ...Object.values(this.members).map((account) => account.id)]
+    let targetsAccountUris = [
+      this.me.uri,
+      ...Object.values(this.members).map((account) => account.uri),
+    ]
 
     statuses = statuses
-      .filter((status) =>
-        status.visibility === VISIBLITY_DIRECT &&
-        targetsAccountIds.every((id) => status.account.id === id || status.isMentionToId(id)))
-      .filter((status) => !this.statuses.find((s) => s.id === status.id))
+      .filter((status) => status.visibility === VISIBLITY_DIRECT)
+      .filter((status) => targetsAccountUris.every((uri) => status.account.uri === uri || status.isMentionToURI(uri)))
+      .filter((status) => !this.statuses.find((s) => s.uri === status.uri))
     if(!statuses.length)
       return false
 
@@ -338,18 +324,24 @@ export default class TalkListener extends EventEmitter {
 
   onNewMessageReceived({type, payload}) {
     if(type === WEBSOCKET_EVENT_MESSAGE) {
-      let status
+      const {host, acct} = this.token
+      let statusRefs
 
       if(payload.event === EVENT_UPDATE) {
         // 自分の送ったDirect Messageは steam=user に来る
-        status = new Status({host: this.token.host, ...payload.payload})
+        const {normalizeStatus} = require('src/api/MastodonAPISpec')
+        const {entities, result} = normalizeStatus(payload.payload, host, acct)
+        statusRefs = TimelineData.mergeStatuses(entities, [result])
       } else if(payload.event === EVENT_NOTIFICATION) {
         // 送られてきたやつは stream=userに notificationが来る(event=updateももちろん来る)
-        status = new Status({host: this.token.host, ...payload.payload.status})
+        const {normalizeNotification} = require('src/api/MastodonAPISpec')
+        const {entities, result} = normalizeNotification(payload.payload, host, acct)
+        const notification = entities.notifications[result]
+        statusRefs = TimelineData.mergeStatuses(entities, [notification.status])
       }
 
-      if(status) {
-        this.pushStatusesIfMatched([status])
+      if(statusRefs) {
+        this.pushStatusesIfMatched(statusRefs)
       }
     }
   }
