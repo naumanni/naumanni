@@ -237,4 +237,16 @@ export default MastodonAPISpec.make({
     entity: status,
     method: 'post',
   },
+
+  reblogStatus: {
+    endpoint: '/statuses/:id/reblog',
+    entity: status,
+    method: 'post',
+  },
+
+  unreblogStatus: {
+    endpoint: '/statuses/:id/unreblog',
+    entity: status,
+    method: 'post',
+  },
 })

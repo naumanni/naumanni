@@ -108,6 +108,7 @@ export default class TimelineColumn extends Column {
                 {...statusRef.expand()}
                 tokens={tokens}
                 onSendReply={this.onSendReply.bind(this, statusRef)}
+                onReblogStatus={::this.onReblogStatus}
                 onFavouriteStatus={::this.onFavouriteStatus}
               />
             </li>
@@ -153,6 +154,7 @@ export default class TimelineColumn extends Column {
   /**
    * TimelineDataのStatus, Accountが更新されたら呼ばれる。
    * TODO: 関数名どうにかして
+   * @param {object} changes
    */
   onChangeTimelineData(changes) {
     // 表示中のTimelineに関連があるか調べる
@@ -176,6 +178,14 @@ export default class TimelineColumn extends Column {
         return await postStatusManaged(token, message)
       })
     )
+  }
+
+  async onReblogStatus(token, status, toReblog) {
+    const api = toReblog ? 'reblogStatus' : 'unreblogStatus'
+    const {entities, result} = await token.requester[api]({
+      id: status.getIdByHost(token.host),
+    }, {token})
+    return TimelineData.mergeStatuses(entities, [result])[0]
   }
 
   async onFavouriteStatus(token, status, toFav) {

@@ -20,6 +20,8 @@ export default class TimelineStatus extends React.Component {
     onSendReply: TootPanel.propTypes.onSend,
     // Fav/UnfavがClickされた
     onFavouriteStatus: PropTypes.func.isRequired,
+    // Reblog/UnreblogがClickされた
+    onReblogStatus: PropTypes.func.isRequired,
   }
 
   /**
@@ -113,8 +115,9 @@ export default class TimelineStatus extends React.Component {
               </button>
 
               {status.canReblog() ? (
-                <button className={`status-actionReblog ${isReblogged ? 'is-active' : ''}`}>
-                  <IconFont iconName="reblog" />
+                <button className="status-actionReblog"
+                  onClick={::this.onClickToggleReblog}>
+                  <IconFont iconName="reblog" className={isReblogged ? 'is-active' : ''} />
                 </button>
               ) : (
                 <VisibilityIcon visibility={status.visibility} className="is-inactive" />
@@ -241,6 +244,18 @@ export default class TimelineStatus extends React.Component {
     this.showHideReplyPanel(!this.state.isShowReplyPanel)
   }
 
+  onClickToggleReblog(e) {
+    e.preventDefault()
+
+    const {status} = this.props
+    const tokens = this.props.tokens.filter((token) => status.hosts.indexOf(token.host) >= 0)
+
+    if(tokens.length === 1) {
+      this.props.onReblogStatus(tokens[0], status, !status.isRebloggedAt(tokens[0].acct))
+    } else {
+      require('assert')(0, 'not implemented')
+    }
+  }
   onClickToggleFavourite(e) {
     e.preventDefault()
 

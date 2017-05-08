@@ -45,7 +45,6 @@ class TimelineData extends EventEmitter {
       const uri = status.uri
 
       if(this.statuses.has(uri)) {
-        const old = this.statuses.get(uri)
         const {changed, merged} = this.statuses.get(uri).merge(status)
         if(changed) {
           status = merged
@@ -118,6 +117,7 @@ class TimelineData extends EventEmitter {
   }
 
   /**
+   * @param {object} changes 変更のあったデータ
    * @private
    */
   emitChange(changes) {
