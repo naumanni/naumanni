@@ -1,6 +1,5 @@
 import {UseCase} from 'almin'
 
-import * as actions from 'src/actions'
 import {encryptText} from 'src/controllers/PGP'
 import PublicKeyCache from 'src/infra/PublicKeyCache'
 import {postStatusManaged} from 'src/infra/TimelineData'
@@ -28,8 +27,6 @@ export default class SendDirectMessageUseCase extends UseCase {
     }
 
     const targets = [self].concat(recipients)
-    const {requester} = token
-    let spoilerText = null
     const keyIds = []
 
     // 鍵を集める
@@ -60,7 +57,7 @@ export default class SendDirectMessageUseCase extends UseCase {
       // to入れるとサイズオーバーしてしまった...
       throw new Error('__TODO_ERROR_MESSAGE__')
     }
-    const response = await postStatusManaged(token, {
+    await postStatusManaged(token, {
       status,
       visibility: 'direct',
     })
@@ -77,7 +74,7 @@ export default class SendDirectMessageUseCase extends UseCase {
       maxLength: MASTODON_MAX_CONTENT_SIZE,
     })
 
-    const responses = await Promise.all(
+    await Promise.all(
       encryptedBlocks.map((block) => {
         postStatusManaged(token, {
           status: block,

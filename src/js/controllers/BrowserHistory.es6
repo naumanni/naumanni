@@ -8,6 +8,7 @@ import {DIALOG_ADD_ACCOUNT, DIALOG_AUTHORIZE_ACCOUNT} from 'src/constants'
 export default class BrowserHistory {
   /**
    * @constructor
+   * @param {Context} context almin context
    */
   constructor(context) {
     this.context = context

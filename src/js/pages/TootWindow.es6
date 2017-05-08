@@ -1,5 +1,4 @@
 import React from 'react'
-import update from 'immutability-helper'
 import PropTypes from 'prop-types'
 
 import {VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC} from 'src/constants'

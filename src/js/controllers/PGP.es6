@@ -150,9 +150,18 @@ function splitDataWithBase65536(data, preferredBlockSize) {
 }
 
 
-function getCheckSum(data) {
-  const c = CRC32.buf(data)
-  const bytes = new Uint8Array([c >> 24, (c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF])
-  // TODO: Bufferってなんだ?
-  return Buffer.from(bytes).toString('hex')
+export function getCheckSum(data) {
+  let c
+
+  if(typeof data === 'string')
+    c = CRC32.str(data)
+  else
+    c = CRC32.buf(data)
+
+  if(c < 0)
+    c = 0xFFFFFFFF + c + 1
+  c = c.toString(16)
+  if(c.length < 8)
+    c = Array(8 - c.length).fill('0').join('') + c
+  return c
 }

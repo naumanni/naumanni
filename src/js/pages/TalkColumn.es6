@@ -8,7 +8,7 @@ import {
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener from 'src/controllers/TalkListener'
 import Column from './Column'
-import {IconFont, UserIconWithHost} from './parts'
+import {UserIconWithHost} from './parts'
 
 
 /**

@@ -5,7 +5,7 @@ import {makeAPIRequester} from 'src/api/APIRequester'
 import MastodonAPISpec from 'src/api/MastodonAPISpec'
 import OAuthApp from 'src/models/OAuthApp'
 import Database from 'src/infra/Database'
-import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
+// import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
 
 import Dialog from './Dialog'
 
@@ -26,14 +26,14 @@ export default class AddAccountDialog extends Dialog {
   }
 
   /**
-   * override
+   * @override
    */
   renderHeader() {
     return <h1>Mastodonアカウントを追加</h1>
   }
 
   /**
-   * override
+   * @override
    */
   renderBody() {
     return (
@@ -46,7 +46,7 @@ export default class AddAccountDialog extends Dialog {
   }
 
   /**
-   * override
+   * @override
    */
   renderFooter() {
     return (

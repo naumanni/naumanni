@@ -1,8 +1,7 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
 import {NAUMANNI_VERSION} from 'src/constants'
-import {AppPropType, ContextPropType, OAuthTokenArrayPropType} from 'src/propTypes'
+import {AppPropType, ContextPropType} from 'src/propTypes'
 import InitializeApplicationUseCase from 'src/usecases/InitializeApplicationUseCase'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'

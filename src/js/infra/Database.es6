@@ -75,7 +75,7 @@ export class Metadata {
   }
 
   migrate(db, transaction, oldVersion, newVersion) {
-    if(/* oldVersion === 0*/1) {
+    if(oldVersion === 0) {
       // create all
       for(const model of this.models) {
         const {storeName, keyPath, indexes} = model

@@ -1,7 +1,7 @@
 import {key as openpgpKey} from 'openpgp'
 
 import {initOpenPGPTest} from 'src/testUtils'
-import {encryptText, decryptBlocks} from '../PGP'
+import {encryptText, decryptBlocks, getCheckSum} from '../PGP'
 
 const KEYS = require('./PGP.test.fixtures.json')
 
@@ -40,4 +40,13 @@ test('PGP can encrypt/decrypt message', async () => {
 
   let decryptedText = await decryptBlocks(encryptedBlocks, prvkeySender)
   expect(decryptedText).toBe(TEST_TEXT)
+})
+
+
+describe('getCheckSum', () => {
+  it('can calc valid CRC32', () => {
+    const checksum = getCheckSum('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+
+    expect(checksum).toBe('6dcec806')
+  })
 })

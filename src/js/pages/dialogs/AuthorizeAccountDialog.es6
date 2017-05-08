@@ -22,7 +22,7 @@ export default class AuthorizeAccountDialog extends Dialog {
   }
 
   /**
-   * override
+   * @override
    */
   componentDidMount() {
     super.componentDidMount()
@@ -40,14 +40,14 @@ export default class AuthorizeAccountDialog extends Dialog {
   }
 
   /**
-   * override
+   * @override
    */
   renderHeader() {
     return <h1>Mastodonアカウントを認証中...</h1>
   }
 
   /**
-   * override
+   * @override
    */
   renderBody() {
     return (

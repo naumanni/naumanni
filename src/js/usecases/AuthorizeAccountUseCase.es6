@@ -19,6 +19,7 @@ export default class AuthorizeAccountUseCase extends UseCase {
    * @override
    * @param {string} host
    * @param {string} code
+   * @return {object} tokenとaccount
    */
   async execute(host, code) {
     let app

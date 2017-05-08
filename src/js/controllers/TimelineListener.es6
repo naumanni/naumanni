@@ -156,8 +156,7 @@ export default class TimelineListener extends EventEmitter {
 
   /**
    * StatusをTimelineに追加する
-   * @param {OAuthTokeb} token
-   * @param {StatusRef[]} statusRefs
+   * @param {StatusRef[]} newStatusRefs
    * @private
    */
   pushStatuses(newStatusRefs) {

@@ -149,7 +149,7 @@ export default class TimelineColumn extends Column {
 
   async onSendReply(status, {sendFrom, message}) {
     // とりまこっから送る
-    const responses = await Promise.all(
+    await Promise.all(
       sendFrom.map(async (token) => {
         // in_reply_to_id を付加する
         message.in_reply_to_id = status.getInReplyToIdByHost(token.host)
