@@ -93,10 +93,12 @@ class TimelineData extends EventEmitter {
     const resolve = () => this.statuses.get(uri)
     const expand = () => {
       const status = resolve()
+      const reblog = status.reblog && self.makeStatusRef(status.reblog).resolve()
       return {
         status,
         account: self.makeAccountRef(status.account).resolve(),
-        reblog: status.reblog && self.makeStatusRef(status.reblog).resolve(),
+        reblog,
+        reblogAccount: reblog && self.makeAccountRef(reblog.account).resolve(),
       }
     }
 

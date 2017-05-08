@@ -15,6 +15,7 @@ export default class TimelineStatus extends React.Component {
     account: AccountPropType.isRequired,
     status: StatusPropType.isRequired,
     reblog: StatusPropType,
+    reblogAccount: AccountPropType.isRequired,
     tokens: TootPanel.propTypes.tokens,
     // Reply送信ボタンが押された
     onSendReply: TootPanel.propTypes.onSend,
@@ -45,9 +46,11 @@ export default class TimelineStatus extends React.Component {
    * @override
    */
   render() {
-    const {status, reblog, account} = this.props
+    const {status, reblog, account, reblogAccount} = this.props
+    require('assert')(!reblog || (reblog && reblogAccount))
     const {isContentOpen, isShowReplyPanel} = this.state
     const mainStatus = reblog || status
+    const mainAccount = reblogAccount || account
     const statusBodyClass = ['status-body']
     // このstatusに対応可能なtoken
     const tokens = this.props.tokens.filter((token) => status.hosts.indexOf(token.host) >= 0)
@@ -66,11 +69,11 @@ export default class TimelineStatus extends React.Component {
     return (
       <article className="status timeline-status">
 
-        {status.reblog && (
+        {reblog && (
           <div className="status-row status-reblogFrom">
             <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
             <div className="status-rowRight">
-              {status.account.display_name} さんにブーストされました
+              {account.display_name} さんにブーストされました
             </div>
           </div>
         )}
@@ -78,7 +81,7 @@ export default class TimelineStatus extends React.Component {
         <div className="status-row status-content">
           <div className="status-rowLeft">
             <div className="status-avatar">
-              <UserIconWithHost account={account} />
+              <UserIconWithHost account={mainAccount} />
             </div>
             <div className="status-visibility">
               <VisibilityIcon visibility={status.visibility} />
@@ -88,8 +91,8 @@ export default class TimelineStatus extends React.Component {
 
             <div className="status-info">
               <div className="status-author">
-                <span className="user-displayName">{account.display_name || account.username}</span>
-                <span className="user-account">@{account.acct}</span>
+                <span className="user-displayName">{mainAccount.display_name || mainAccount.username}</span>
+                <span className="user-account">@{mainAccount.acct}</span>
               </div>
               <a className="status-createdAt"
                  href={mainStatus.url}
@@ -209,12 +212,12 @@ export default class TimelineStatus extends React.Component {
   }
 
   renderReplyPanel() {
-    const {status, tokens} = this.props
+    const {status, account, tokens} = this.props
     console.log(status.resolve().toJSON())
     const {beginReplyPanelAnimation} = this.state
 
     // デフォルトの返信元。 Statusと同じホストの最初のアカウントから選ぶ
-    let sendFrom = tokens.filter((t) => t.host === status.account.instance).map((a) => a.acct)
+    let sendFrom = tokens.filter((t) => t.host === account.instance).map((a) => a.acct)
 
     return (
       <div className={`status-replyPanel ${beginReplyPanelAnimation ? 'off' : ''}`}>
