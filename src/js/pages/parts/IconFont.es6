@@ -8,12 +8,17 @@ import PropTypes from 'prop-types'
 export default class IconFont extends React.Component {
   static propTypes = {
     iconName: PropTypes.string.isRequired,
+    className: PropTypes.string,
   }
 
   /**
    * @override
    */
   render() {
-    return <span className={`icon icon-${this.props.iconName}`} />
+    let className = `icon icon-${this.props.iconName}`
+    if(this.props.className)
+      className += ' ' + this.props.className
+
+    return <span className={className} />
   }
 }

@@ -1,21 +1,25 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+
 
 import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from '../parts'
 import TootPanel from './TootPanel'
-import {StatusLikePropType} from 'src/propTypes'
+import {AccountPropType, StatusPropType} from 'src/propTypes'
 
 
 export default class TimelineStatus extends React.Component {
   static propTypes = {
-    status: StatusLikePropType.isRequired,
+    account: AccountPropType.isRequired,
+    status: StatusPropType.isRequired,
+    reblog: StatusPropType,
     tokens: TootPanel.propTypes.tokens,
     // Reply送信ボタンが押された
     onSendReply: TootPanel.propTypes.onSend,
     // Fav/UnfavがClickされた
-    // onFavourite: PropTypes.func.isRequired,
+    onFavouriteStatus: PropTypes.func.isRequired,
   }
 
   /**
@@ -24,11 +28,11 @@ export default class TimelineStatus extends React.Component {
   constructor(...args) {
     super(...args)
 
-    const {status} = this.props
-    const mainStatus = status.reblog || status
+    const {status, reblog} = this.props
+    const mainStatus = reblog || status
 
     this.state = {
-      isShowMediaCover: status.sensitive,
+      isShowMediaCover: mainStatus.sensitive,
       isContentOpen: mainStatus.hasSpoilerText ? false : true,
       isShowReplyPanel: false,
       beginReplyPanelAnimation: true,
@@ -39,11 +43,12 @@ export default class TimelineStatus extends React.Component {
    * @override
    */
   render() {
-    const {status} = this.props
+    const {status, reblog, account} = this.props
     const {isContentOpen, isShowReplyPanel} = this.state
-    const mainStatus = status.reblog || status
-    const account = mainStatus.account
+    const mainStatus = reblog || status
     const statusBodyClass = ['status-body']
+    // このstatusに対応可能なtoken
+    const tokens = this.props.tokens.filter((token) => status.hosts.indexOf(token.host) >= 0)
 
     if(mainStatus.spoilerText.length) {
       statusBodyClass.push(
@@ -51,6 +56,10 @@ export default class TimelineStatus extends React.Component {
         isContentOpen ? 'is-contentOpen' : 'is-contentClose'
       )
     }
+
+    // reblog, favの状況, tokenが1つであればそのまま
+    const isReblogged = tokens.find((token) => status.isRebloggedAt(token.acct)) ? true : false
+    const isFavourited = tokens.find((token) => status.isFavouritedAt(token.acct)) ? true : false
 
     return (
       <article className="status timeline-status">
@@ -104,17 +113,17 @@ export default class TimelineStatus extends React.Component {
               </button>
 
               {status.canReblog() ? (
-                <button className={`status-actionReblog ${status.reblogged ? 'is-active' : ''}`}>
+                <button className={`status-actionReblog ${isReblogged ? 'is-active' : ''}`}>
                   <IconFont iconName="reblog" />
                 </button>
               ) : (
-                <VisibilityIcon visibility={status.visibility} />
+                <VisibilityIcon visibility={status.visibility} className="is-inactive" />
               )}
 
               <button
                 className="status-actionFavorite"
                 onClick={::this.onClickToggleFavourite}>
-                <IconFont iconName="star-filled" />
+                <IconFont iconName="star-filled" className={isFavourited ? 'is-active' : ''} />
               </button>
 
               <button className="status-actionMenu">
@@ -153,9 +162,9 @@ export default class TimelineStatus extends React.Component {
   }
 
   renderMedia() {
-    const {status} = this.props
+    const {status, reblog} = this.props
     const {isShowMediaCover} = this.state
-    const mainStatus = status.reblog || status
+    const mainStatus = reblog || status
     const mediaList = mainStatus.media_attachments
     if(!mediaList.length)
       return null
@@ -235,7 +244,14 @@ export default class TimelineStatus extends React.Component {
   onClickToggleFavourite(e) {
     e.preventDefault()
 
-    // this.porp.onFavourite(status.)
+    const {status} = this.props
+    const tokens = this.props.tokens.filter((token) => status.hosts.indexOf(token.host) >= 0)
+
+    if(tokens.length === 1) {
+      this.props.onFavouriteStatus(tokens[0], status, !status.isFavouritedAt(tokens[0].acct))
+    } else {
+      require('assert')(0, 'not implemented')
+    }
   }
 
   showHideReplyPanel(show) {
@@ -268,7 +284,7 @@ export default class TimelineStatus extends React.Component {
 }
 
 
-function VisibilityIcon({visibility}) {
+function VisibilityIcon({visibility, className}) {
   let iconName
   switch(visibility) {
   case VISIBLITY_DIRECT:
@@ -285,5 +301,5 @@ function VisibilityIcon({visibility}) {
     break
   }
 
-  return <IconFont iconName={iconName} />
+  return <IconFont className={className} iconName={iconName} />
 }

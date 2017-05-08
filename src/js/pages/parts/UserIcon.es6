@@ -1,14 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import {AccountLikePropType} from 'src/propTypes'
+import {AccountPropType} from 'src/propTypes'
 
 /**
  * ユーザーの顔アイコン with ホスト
  */
 export class UserIconWithHost extends React.Component {
   static propTypes = {
-    account: AccountLikePropType.isRequired,
+    account: AccountPropType.isRequired,
     size: PropTypes.string,
   }
 

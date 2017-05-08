@@ -91,9 +91,12 @@ export default class Status extends StatusRecord {
       : false
   }
 
-  isMentionToId(accountId) {
-    console.error('deprecated function')
-    require('assert')(0, 'deprecated function')
+  isRebloggedAt(acct) {
+    return this.reblogged_by_acct[acct]
+  }
+
+  isFavouritedAt(acct) {
+    return this.favourited_by_acct[acct]
   }
 
   /**

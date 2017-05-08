@@ -8,7 +8,7 @@ import {
 } from 'src/constants'
 import TimelineListener from 'src/controllers/TimelineListener'
 import TimelineStatus from './components/TimelineStatus'
-import {postStatusManaged} from 'src/infra/TimelineData'
+import TimelineData, {postStatusManaged} from 'src/infra/TimelineData'
 import Column from './Column'
 
 
@@ -43,9 +43,9 @@ export default class TimelineColumn extends Column {
    */
   componentDidMount() {
     super.componentDidMount()
-
     this.listenerRemovers.push(
       this.listener.onChange(::this.onChangeTimeline),
+      TimelineData.onChange(::this.onChangeTimelineData),
     )
 
     // make event listener
@@ -62,7 +62,6 @@ export default class TimelineColumn extends Column {
    */
   componentWillUnmount() {
     super.componentWillUnmount()
-
     clearInterval(this.timer)
   }
 
@@ -106,9 +105,10 @@ export default class TimelineColumn extends Column {
           return (
             <li key={statusRef.uri}>
               <TimelineStatus
-                status={statusRef}
+                {...statusRef.expand()}
                 tokens={tokens}
                 onSendReply={this.onSendReply.bind(this, statusRef)}
+                onFavouriteStatus={::this.onFavouriteStatus}
               />
             </li>
           )
@@ -140,11 +140,30 @@ export default class TimelineColumn extends Column {
   }
 
   // callbacks
+  /**
+   * ListnerのTimelineが更新されたら呼ばれる
+   */
   onChangeTimeline() {
     this.setState({
       loading: false,
       timeline: this.listener.timeline,
     })
+  }
+
+  /**
+   * TimelineDataのStatus, Accountが更新されたら呼ばれる。
+   * TODO: 関数名どうにかして
+   */
+  onChangeTimelineData(changes) {
+    // 表示中のTimelineに関連があるか調べる
+    const changed = (this.state.timeline || []).find((statusRef) => {
+      return changes.statuses[statusRef.uri] || changes.accounts[statusRef.account.uri]
+    }) ? true : false
+
+    // Timelineを更新
+    if(changed) {
+      this.setState({timeline: this.state.timeline})
+    }
   }
 
   async onSendReply(status, {sendFrom, message}) {
@@ -157,5 +176,13 @@ export default class TimelineColumn extends Column {
         return await postStatusManaged(token, message)
       })
     )
+  }
+
+  async onFavouriteStatus(token, status, toFav) {
+    const api = toFav ? 'favouriteStatus' : 'unfavouriteStatus'
+    const {entities, result} = await token.requester[api]({
+      id: status.getIdByHost(token.host),
+    }, {token})
+    return TimelineData.mergeStatuses(entities, [result])[0]
   }
 }

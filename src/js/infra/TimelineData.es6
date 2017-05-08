@@ -1,10 +1,15 @@
 /**
  * Status, Accountの最新情報を保持する。
  */
+import {EventEmitter} from 'events'
 
 
-class TimelineData {
-  constructor() {
+class TimelineData extends EventEmitter {
+  static EVENT_CHANGE = 'change'
+
+  constructor(...args) {
+    super(...args)
+
     this.accounts = new Map()
     this.statuses = new Map()
   }
@@ -40,6 +45,7 @@ class TimelineData {
       const uri = status.uri
 
       if(this.statuses.has(uri)) {
+        const old = this.statuses.get(uri)
         const {changed, merged} = this.statuses.get(uri).merge(status)
         if(changed) {
           status = merged
@@ -50,19 +56,30 @@ class TimelineData {
       this.statuses.set(uri, status)
     })
 
-    // console.log('mergeStatuses', changes, this.statuses.size, this.accounts.size)
+    this.emitChange(changes)
 
     return statusUris.map((uri) => {
       return this.makeStatusRef(uri)
     })
   }
 
+  /**
+   * EVENT_CHANGEのリスナを登録する
+   * @param {func} cb
+   * @return {func} リスナの登録を削除するハンドラ
+   */
+  onChange(cb) {
+    this.on(this.EVENT_CHANGE, cb)
+    return this.removeListener.bind(this, this.EVENT_CHANGE, cb)
+  }
+
+  // private
   makeAccountRef(uri) {
     const resolve = () => this.accounts.get(uri)
 
-    return new Proxy({}, {
+    return new Proxy({uri, resolve}, {
       get(target, key, receiver) {
-        if(key === 'resolve')
+        if(target.hasOwnProperty(key))
           return target[key]
 
         const a = resolve()
@@ -74,23 +91,37 @@ class TimelineData {
   makeStatusRef(uri) {
     const self = this
     const resolve = () => this.statuses.get(uri)
+    const expand = () => {
+      const status = resolve()
+      return {
+        status,
+        account: self.makeAccountRef(status.account).resolve(),
+        reblog: status.reblog && self.makeStatusRef(status.reblog).resolve(),
+      }
+    }
 
-    return new Proxy({resolve}, {
+    return new Proxy({uri, expand, resolve}, {
       get(target, key, receiver) {
-        if(key === 'resolve')
+        if(target.hasOwnProperty(key))
           return target[key]
 
         const s = resolve()
         if(key === 'account') {
           return self.makeAccountRef(s[key])
-        }
-        if(key === 'reblog' && s[key]) {
+        } else if(key === 'reblog' && s[key]) {
           return self.makeStatusRef(s[key])
         }
 
         return s[key]
       },
     })
+  }
+
+  /**
+   * @private
+   */
+  emitChange(changes) {
+    this.emit(this.EVENT_CHANGE, changes)
   }
 }
 

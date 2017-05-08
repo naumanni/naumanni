@@ -225,4 +225,16 @@ export default MastodonAPISpec.make({
     entity: [status],
     method: 'get',
   },
+
+  favouriteStatus: {
+    endpoint: '/statuses/:id/favourite',
+    entity: status,
+    method: 'post',
+  },
+
+  unfavouriteStatus: {
+    endpoint: '/statuses/:id/unfavourite',
+    entity: status,
+    method: 'post',
+  },
 })
