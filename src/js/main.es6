@@ -11,6 +11,15 @@ import Dashboard from 'src/pages/Dashboard'
 import BrowserHistory from 'src/controllers/BrowserHistory'
 
 
+// install Raven @ production
+if(process.env.NODE_ENV === 'production') {
+  const Raven = require('raven-js')
+  Raven
+      .config('https://95c423d821584e798c480087ae77d823@sentry.io/166289')
+      .install()
+}
+
+
 async function main() {
   const dispatcher = new Dispatcher()
   const context = new Context({
