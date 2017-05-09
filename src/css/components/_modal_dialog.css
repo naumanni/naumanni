@@ -80,7 +80,7 @@
   background-size: contain;
   background-position: center center;
   min-width: initial;
-  border-radius: none;
+  border-radius: 0;
 
   video, img {
     max-width: 90vw;

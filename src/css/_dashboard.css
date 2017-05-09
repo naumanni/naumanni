@@ -5,10 +5,6 @@
   width: 100vw;
   height: 100vh;
 
-  &.is-shownDialogs {
-    filter: blur(8px);
-  }
-
   .naumanniDashboard-version {
     position: absolute;
     padding-top: calc(50vh + $sizeBackgroundLogo / 2);
@@ -19,6 +15,31 @@
     z-index: $zIndexBackground;
     pointer-events: none;
   }
+
+  animation: blurOut 500ms ease-out forwards;
+}
+
+@keyframes blurIn {
+  0% {
+    filter: blur(0);
+  }
+  100% {
+    filter: blur(4px);
+  }
+}
+
+@keyframes blurOut {
+  0% {
+    filter: blur(4px);
+  }
+  100% {
+    filter: blur(0);
+  }
+}
+
+
+.is-shownDialogs .naumanniDashboard {
+  animation: blurIn 500ms ease-out forwards;
 }
 
 
