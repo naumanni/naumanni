@@ -1,3 +1,5 @@
 coverage/
 static/*.css
 static/*.js
+static/*.map
+static/*.LICENSE

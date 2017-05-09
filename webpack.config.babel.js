@@ -1,5 +1,6 @@
 /* eslint-disable require-jsdoc */
 import DefinePlugin from 'webpack/lib/DefinePlugin'
+import UglifyJsPlugin from 'webpack/lib/optimize/UglifyJsPlugin'
 
 
 class LoggerPlugin {
@@ -61,7 +62,17 @@ module.exports = {
 }
 
 
-if(process.env.NODE_ENV != 'production') {
+if(process.env.NODE_ENV === 'production') {
+  // production
+  module.exports.plugins.push(
+    new UglifyJsPlugin({
+      extractComments: true,
+    })
+  )
+  const babelRule = module.exports.module.rules.find((x) => x.loader === 'babel-loader')
+} else {
+  // dev
+  module.exports.devtool = 'source-map',
   module.exports.module.rules.push(
     {
       enforce: 'pre',
