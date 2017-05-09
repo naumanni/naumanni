@@ -1,14 +1,12 @@
 $marginFriendInfo: calc($sizeAvatar + $marginDefault);
 
 
-$sizeFriendsFilterHeight: 20px;
-
-
-.friends {
-  height: 100%;
+.column .column-body--friends {
+  display: flex;
+  flex-direction: column;
 
   .friends-filter {
-    height: $sizeFriendsFilterHeight;
+    flex: 0 0 auto;
 
     > input {
       box-sizing: border-box;
@@ -20,7 +18,8 @@ $sizeFriendsFilterHeight: 20px;
     list-style: none;
     padding: 0;
     margin: 0;
-    height: calc(100% - $sizeFriendsFilterHeight);
+
+    flex: 1 1 auto;
     overflow-y: scroll;
 
     li {
@@ -57,6 +56,10 @@ $sizeFriendsFilterHeight: 20px;
     .user-account {
       color: $colorGray3;
     }
+  }
+
+  .friend-note {
+    word-break: break-all;
   }
 
   &::before {  /* ::afterはclearfixが使ってる */

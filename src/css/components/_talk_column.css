@@ -4,8 +4,9 @@ $colorTalkFormBorder: $colorGray3;
 $sizeTalkFormHeight: 96px;
 
 
-.talk {
-  height: 100%;
+.column .column-body--talk {
+  display: flex;
+  flex-direction: column;
 
   .talk-talkGroups {
     height: calc(100% - $sizeTalkFormHeight);
@@ -13,7 +14,7 @@ $sizeTalkFormHeight: 96px;
     padding: 0 $marginDefault;
     margin: 0;
     box-sizing: border-box;
-
+    flex: 1 1 auto;
     overflow-y: scroll;
   }
 
@@ -22,6 +23,8 @@ $sizeTalkFormHeight: 96px;
     box-sizing: border-box;
     height: $sizeTalkFormHeight;
     position: relative;
+
+    flex: 0 0 auto;
 
     textarea {
       border: none;

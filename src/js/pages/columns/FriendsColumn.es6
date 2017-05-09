@@ -72,7 +72,7 @@ export default class FriendsColumn extends Column {
     const friends = this.state.sortedFriends || this.state.friends
 
     return (
-      <div className="friends">
+      <div className={this.columnBodyClassName()}>
         {this.renderFilter()}
         <ul className="friends-list">
           {friends.map((friend) => (
@@ -86,6 +86,10 @@ export default class FriendsColumn extends Column {
         </ul>
       </div>
     )
+  }
+
+  columnBodyClassName() {
+    return super.columnBodyClassName() + ' column-body--friends'
   }
 
   /**

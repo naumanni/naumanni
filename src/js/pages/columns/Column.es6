@@ -55,10 +55,6 @@ export default class Column extends React.Component {
     if(typeof title === 'string')
       title = <h1 className="column-headerTitle">{title}</h1>
 
-    let columnBodyClassName = ['column-body']
-
-    if(loading)
-      columnBodyClassName.push('is-loading')
 
     return (
       <div className="column">
@@ -71,11 +67,24 @@ export default class Column extends React.Component {
           </div>
         </header>
 
-        <div className={columnBodyClassName.join(' ')}>
-          {loading ? <NowLoading /> : this.renderBody()}
-        </div>
+        {loading
+          ? <div className="column-body is-loading"><NowLoading /></div>
+          : this.renderBody()
+        }
       </div>
     )
+  }
+
+  columnBodyClassName() {
+    let columnBodyClassName = ['column-body']
+
+    if(this.constructor.isScrollable)
+      columnBodyClassName.push('is-scrollable')
+
+    if(this.state.loading)
+      columnBodyClassName.push('is-loading')
+
+    return columnBodyClassName.join(' ')
   }
 
   onChangeConext() {

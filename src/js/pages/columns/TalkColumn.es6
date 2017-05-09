@@ -106,7 +106,7 @@ export default class TalkColumn extends Column {
     const {talk} = this.state
 
     return (
-      <div className="talk">
+      <div className={this.columnBodyClassName()}>
         <ul className="talk-talkGroups" ref="talkGroups" onScroll={::this.onScrollTalkGroups}>
           {(talk || []).map((talkGroup, idx, talk) => this.renderTalkGroup(talkGroup, talk[idx - 1], talk[idx + 1]))}
         </ul>
@@ -119,6 +119,13 @@ export default class TalkColumn extends Column {
         </div>
       </div>
     )
+  }
+
+  /**
+   * @override
+   */
+  columnBodyClassName() {
+    return super.columnBodyClassName() + ' column-body--talk'
   }
 
   /**

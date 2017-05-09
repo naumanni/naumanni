@@ -25,6 +25,8 @@ const TYPENAMEMAP = {
  * タイムラインのカラム
  */
 export default class TimelineColumn extends Column {
+  static isScrollable = true
+
   static propTypes = {
     subject: PropTypes.string.isRequired,
     timelineType: PropTypes.string.isRequired,
@@ -93,30 +95,28 @@ export default class TimelineColumn extends Column {
    * @override
    */
   renderBody() {
-    if(this.state.loading) {
-      return <NowLoading />
-    }
-
     const {timeline} = this.state
     const {tokens} = this.state.tokenState
 
     return (
-      <ul className="timeline">
-        {timeline.map((statusRef) => {
-          return (
-            <li key={statusRef.uri}>
-              <TimelineStatus
-                {...statusRef.expand()}
-                tokens={tokens}
-                onSendReply={this.onSendReply.bind(this, statusRef)}
-                onReblogStatus={::this.onReblogStatus}
-                onFavouriteStatus={::this.onFavouriteStatus}
-                onClickMedia={::this.onClickMedia}
-              />
-            </li>
-          )
-        })}
-      </ul>
+      <div className={this.columnBodyClassName()}>
+        <ul className="timeline">
+          {timeline.map((statusRef) => {
+            return (
+              <li key={statusRef.uri}>
+                <TimelineStatus
+                  {...statusRef.expand()}
+                  tokens={tokens}
+                  onSendReply={this.onSendReply.bind(this, statusRef)}
+                  onReblogStatus={::this.onReblogStatus}
+                  onFavouriteStatus={::this.onFavouriteStatus}
+                  onClickMedia={::this.onClickMedia}
+                />
+              </li>
+            )
+          })}
+        </ul>
+      </div>
     )
   }
 

@@ -2,8 +2,6 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  height: 100%;
-  overflow-y: scroll;
 
   > li {
     padding: $marginDefault;

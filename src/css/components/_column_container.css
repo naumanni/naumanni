@@ -19,6 +19,9 @@
 
 
 .column {
+  display: flex;
+  flex-direction: column;
+
   .column-header {
     display: flex;
     align-items: center;
@@ -26,6 +29,8 @@
     height: 48px;
     padding: $marginHalf $marginDefault;
     box-sizing: border-box;
+    flex: 0 0 48px;
+    z-index: 1;  /* つけとかないとSafariで描画がバグる */
 
     .column-headerTitle {
       color: $colorColumnHeaderText;
@@ -67,8 +72,11 @@
   }
 
   .column-body {
-    width: 100%;
-    height: calc(100% - 48px);
+    flex: 1 1 auto;
+
+    &.is-scrollable {
+      overflow-y: scroll;
+    }
   }
 }
 
