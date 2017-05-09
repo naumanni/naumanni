@@ -161,7 +161,7 @@ export default class TimelineColumn extends Column {
   onChangeTimelineData(changes) {
     // 表示中のTimelineに関連があるか調べる
     const changed = (this.state.timeline || []).find((statusRef) => {
-      return changes.statuses[statusRef.uri] || changes.accounts[statusRef.account.uri]
+      return changes.statuses[statusRef.uri] || changes.accounts[statusRef.accountUri]
     }) ? true : false
 
     // Timelineを更新

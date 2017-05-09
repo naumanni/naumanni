@@ -48,10 +48,9 @@ class EncryptedStatus {
 
 
 class TalkBlock {
-  constructor(lastStatus) {
+  constructor(lastStatus, account) {
     this.statuses = [lastStatus]
-
-    this.account = lastStatus.account
+    this.account = account
   }
 
   push(newStatus) {
@@ -217,7 +216,7 @@ export default class TalkListener extends EventEmitter {
       }
 
       const statusRefs = TimelineData.mergeStatuses(entities, result)
-      this.statusesMaxId[member.acct] = statusRefs[statusRefs.length - 1].getIdByHost(host)
+      this.statusesMaxId[member.acct] = statusRefs[statusRefs.length - 1].resolve().getIdByHost(host)
       this.pushStatusesIfMatched(statusRefs)
     }
   }
@@ -241,14 +240,15 @@ export default class TalkListener extends EventEmitter {
     ]
 
     statuses = statuses
-      .filter((status) => status.visibility === VISIBLITY_DIRECT)
-      .filter((status) => targetsAccountUris.every((uri) => status.account.uri === uri || status.isMentionToURI(uri)))
+      .filter((status) => status.resolve().visibility === VISIBLITY_DIRECT)
+      .filter((status) => targetsAccountUris.every(
+        (uri) => status.accountUri === uri || status.resolve().isMentionToURI(uri)))
       .filter((status) => !this.statuses.find((s) => s.uri === status.uri))
     if(!statuses.length)
       return false
 
     this.statuses = this.statuses.concat(statuses)
-    this.statuses.sort((a, b) => -Status.compareCreatedAt(a, b))
+    this.statuses.sort((a, b) => -Status.compareCreatedAt(a.resolve(), b.resolve()))
 
     // rebuild talks
     this.decryptStatuses()
@@ -287,7 +287,8 @@ export default class TalkListener extends EventEmitter {
     let latestTalkBlock = null
     const pushedEncryptedMessages = new Set()
 
-    for(let status of this.statuses) {
+    for(const statusRef of this.statuses) {
+      let status = statusRef.resolve()
       const blockInfo = status.messageBlockInfo
 
       if(blockInfo) {
@@ -303,7 +304,7 @@ export default class TalkListener extends EventEmitter {
       if(latestTalkBlock && latestTalkBlock.isMatch(status)) {
         latestTalkBlock.push(status)
       } else {
-        latestTalkBlock = new TalkBlock(status)
+        latestTalkBlock = new TalkBlock(status, statusRef.accountRef.resolve())
         talk.push(latestTalkBlock)
       }
     }

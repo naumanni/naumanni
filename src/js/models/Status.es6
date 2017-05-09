@@ -118,9 +118,6 @@ export default class Status extends StatusRecord {
     const merged = super.mergeDeepWith((prev, next, key) => {
       let result = next
       if(typeof prev === 'object') {
-        if(key === 'media_attachments') {
-          console.log('merge attachments', prev, next)
-        }
         if((!prev && next) || (prev && !next)) {
           isChanged = true
         } else if(Array.isArray(next)) {

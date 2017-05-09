@@ -73,7 +73,7 @@ export class APIRequester {
   }
 
   /**
-   * Proxyから呼ばれる。 API Callの実態
+   * API Callの実態
    * @param {string} method
    * @param {string} apiName
    * @param {object} query

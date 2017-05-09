@@ -58,9 +58,7 @@ class TimelineData extends EventEmitter {
 
     this.emitChange(changes)
 
-    return statusUris.map((uri) => {
-      return this.makeStatusRef(uri)
-    })
+    return statusUris.map((uri) => new StatusRef(this, uri))
   }
 
   /**
@@ -73,58 +71,77 @@ class TimelineData extends EventEmitter {
     return this.removeListener.bind(this, this.EVENT_CHANGE, cb)
   }
 
-  // private
-  makeAccountRef(uri) {
-    const resolve = () => this.accounts.get(uri)
-
-    return new Proxy({uri, resolve}, {
-      get(target, key, receiver) {
-        if(target.hasOwnProperty(key))
-          return target[key]
-
-        const a = resolve()
-        return a[key]
-      },
-    })
-  }
-
-  makeStatusRef(uri) {
-    const self = this
-    const resolve = () => this.statuses.get(uri)
-    const expand = () => {
-      const status = resolve()
-      const reblog = status.reblog && self.makeStatusRef(status.reblog).resolve()
-      return {
-        status,
-        account: self.makeAccountRef(status.account).resolve(),
-        reblog,
-        reblogAccount: reblog && self.makeAccountRef(reblog.account).resolve(),
-      }
-    }
-
-    return new Proxy({uri, expand, resolve}, {
-      get(target, key, receiver) {
-        if(target.hasOwnProperty(key))
-          return target[key]
-
-        const s = resolve()
-        if(key === 'account') {
-          return self.makeAccountRef(s[key])
-        } else if(key === 'reblog' && s[key]) {
-          return self.makeStatusRef(s[key])
-        }
-
-        return s[key]
-      },
-    })
-  }
-
   /**
    * @param {object} changes 変更のあったデータ
    * @private
    */
   emitChange(changes) {
     this.emit(this.EVENT_CHANGE, changes)
+  }
+}
+
+
+class DBRef {
+  static store = null
+
+  constructor(db, uri) {
+    this._db = db
+    this._uri = uri
+  }
+
+  get uri() {
+    return this._uri
+  }
+
+  resolve() {
+    require('assert')(this.constructor.store)
+    return this._db[this.constructor.store].get(this._uri)
+  }
+
+  expand() {
+    require('assert')(0, 'not implemented')
+  }
+}
+
+
+class AccountRef extends DBRef {
+  static store = 'accounts'
+
+  /**
+   * @override
+   */
+  expand() {
+    const account = this.resolve()
+    return {
+      account,
+    }
+  }
+}
+
+
+class StatusRef extends DBRef {
+  static store = 'statuses'
+
+  /**
+   * @override
+   */
+  expand() {
+    const status = this.resolve()
+    const reblog = status.reblog && (new StatusRef(this._db, status.reblog)).resolve()
+    return {
+      status,
+      account: (new AccountRef(this._db, status.account)).resolve(),
+      reblog,
+      reblogAccount: reblog && (new AccountRef(this._db, reblog.account)).resolve(),
+    }
+  }
+
+  get accountRef() {
+    return new AccountRef(this._db, this.resolve().account)
+  }
+
+  get accountUri() {
+    return this.resolve().account
   }
 }
 
