@@ -249,3 +249,4 @@ export default class TalkColumn extends Column {
     }
   }
 }
+require('./').registerColumn(COLUMN_TALK, TalkColumn)

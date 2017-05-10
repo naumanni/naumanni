@@ -2,8 +2,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-
 import {
+  COLUMN_TIMELINE,
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED, DIALOG_MEDIA_VIEWER,
 } from 'src/constants'
 import TimelineListener from 'src/controllers/TimelineListener'
@@ -215,3 +215,4 @@ export default class TimelineColumn extends Column {
     ).execute(DIALOG_MEDIA_VIEWER, {media})
   }
 }
+require('./').registerColumn(COLUMN_TIMELINE, TimelineColumn)

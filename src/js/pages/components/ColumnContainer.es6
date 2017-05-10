@@ -2,11 +2,9 @@ import React from 'react'
 import {findDOMNode} from 'react-dom'
 import PropTypes from 'prop-types'
 
-import {
-  COLUMN_TIMELINE, COLUMN_FRIENDS, COLUMN_TALK,
-} from 'src/constants'
 import {UIColumn} from 'src/models'
 import {niceScrollLeft} from 'src/utils'
+import {getColumnClassForType} from 'src/pages/columns'
 
 
 /**
@@ -63,21 +61,13 @@ export default class ColumnContainer extends React.Component {
   }
 
   renderColumn(column) {
+    const klass = getColumnClassForType(column.type)
     return React.createElement(
-      this.columnClassByType(column.type), {
+      klass, {
         ref: column.key,
         key: column.key,
         column: column,
         ...column.params,
       })
-  }
-
-  // TODO:しょぼい
-  columnClassByType(type) {
-    switch(type) {
-    case COLUMN_TIMELINE: return require('../columns/TimelineColumn').default
-    case COLUMN_FRIENDS: return require('../columns/FriendsColumn').default
-    case COLUMN_TALK: return require('../columns/TalkColumn').default
-    }
   }
 }

@@ -2,7 +2,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import {SUBJECT_MIXED, COLUMN_TALK} from 'src/constants'
+import {SUBJECT_MIXED, COLUMN_FRIENDS, COLUMN_TALK} from 'src/constants'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import Column from './Column'
 import {IconFont, UserIconWithHost} from '../parts'
@@ -280,3 +280,4 @@ class FriendsListener extends EventEmitter {
     this.emit(this.EVENT_CHANGE, [this])
   }
 }
+require('./').registerColumn(COLUMN_FRIENDS, FriendsColumn)
