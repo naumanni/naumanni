@@ -23,7 +23,7 @@ export class UserIconWithHost extends React.Component {
       className += ` size-${size}`
 
     return (
-      <span className={className}>
+      <span className={className} onClick={this.props.onClick}>
         <img
           className="userIcon-avatar" src={account.safeAvatar || '/images/no-avatar.png'}
           alt={account.acct} title={account.acct} />

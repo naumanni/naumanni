@@ -10,6 +10,7 @@
 @import "components/_talk_column.css";
 @import "components/_toot_window.css";
 @import "components/_toot_panel.css";
+@import "dialogs/_userdetail_dialog.css";
 @import "_dashboard.css";
 
 html {

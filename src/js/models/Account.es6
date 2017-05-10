@@ -1,3 +1,4 @@
+import moment from 'moment'
 import {Record} from 'immutable'
 
 import {REGEX_PGP_FINGERPRINT} from 'src/constants'
@@ -139,5 +140,8 @@ export default class Account extends AccountRecord {
 
     return {isChanged, merged}
   }
-}
 
+  get createdAt() {
+    return moment(this.created_at)
+  }
+}

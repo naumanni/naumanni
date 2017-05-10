@@ -9,6 +9,8 @@
   .dialog {
     display: none;
     min-width: 400px;
+    max-width: 90vw;
+    max-height: 90vh;
 
     position: absolute;
     top: 50%;
@@ -64,12 +66,16 @@
     border: 0;
     background: transparent;
 
-    top: $marginHalf;
-    right: $marginHalf;
+    top: -6px;
+    right: -54px;
 
     font-size: 2rem;
-    color: #000;
-    text-shadow: 0 0 4px #fff;
+    color: #fff;
+    text-shadow: 0 0 4px #444;
+
+    &:hover {
+      color: $colorAccentLighter;
+    }
   }
 }
 

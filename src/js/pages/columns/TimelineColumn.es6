@@ -107,6 +107,7 @@ export default class TimelineColumn extends Column {
                 <TimelineStatus
                   {...statusRef.expand()}
                   tokens={tokens}
+                  onAvatarClicked={this.onAvatarClicked.bind(this, statusRef)}
                   onSendReply={this.onSendReply.bind(this, statusRef)}
                   onReblogStatus={::this.onReblogStatus}
                   onFavouriteStatus={::this.onFavouriteStatus}
@@ -170,12 +171,20 @@ export default class TimelineColumn extends Column {
     }
   }
 
-  async onSendReply(status, sendFrom, messageContent) {
+  onAvatarClicked(statusRef, account) {
+    // // TODO: named routingしたい
+    // const {app} = this.props
+    // app.pushState({}, null, '/account/add')
+    const {app} = this.context
+    app.pushState({}, null, `/user/@${account.acct}`)
+  }
+
+  async onSendReply(statusRef, sendFrom, messageContent) {
     // とりまこっから送る
     await Promise.all(
       sendFrom.map(async (token) => {
         // in_reply_to_id を付加する
-        messageContent.message.in_reply_to_id = status.getInReplyToIdByHost(token.host)
+        messageContent.message.in_reply_to_id = statusRef.resolve().getInReplyToIdByHost(token.host)
         // TODO: tootpanelの方にwarning出す?
         return await postStatusManaged(token, messageContent)
       })

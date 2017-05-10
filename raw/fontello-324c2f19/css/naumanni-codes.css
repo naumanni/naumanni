@@ -21,9 +21,10 @@
 .icon-eye:before { content: '\e813'; } /* '' */
 .icon-eye-off:before { content: '\e814'; } /* '' */
 .icon-cancel:before { content: '\e815'; } /* '' */
-.icon-videocam:before { content: '\e816'; } /* '' */
+.icon-video:before { content: '\e816'; } /* '' */
 .icon-attention:before { content: '\e817'; } /* '' */
 .icon-doc:before { content: '\e818'; } /* '' */
+.icon-talk:before { content: '\e81a'; } /* '' */
 .icon-user-secret:before { content: '\f21b'; } /* '' */
 .icon-user-plus:before { content: '\f234'; } /* '' */
 .icon-user-times:before { content: '\f235'; } /* '' */

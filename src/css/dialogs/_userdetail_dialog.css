@@ -1,0 +1,95 @@
+.modalDialogContainer .dialog.dialog--userDetail {
+  display: flex;
+
+  .userDetail {
+    flex: 1 1 320px;
+    min-width: 320px;
+  }
+
+  .userTimeline {
+    flex: 1 1 320px;
+    min-width: 320px;
+  }
+}
+
+
+.dialog--userDetail .userDetail {
+  border-right: 1px solid $colorGray1;
+  position: relative;
+
+  background-size: cover;
+  background-position: center center;
+
+  .userDetail-header {
+    padding-top: 64px;
+    text-align: center;
+
+    .userIcon {
+      margin: 0 0 32px 0;
+    }
+  }
+
+  .userDetail-actions {
+    position: absolute;
+    top: $marginDefault;
+    right: $marginDefault;
+
+    > * {
+      margin-left: $marginHalf;
+    }
+
+    .dropdownMenuButton {
+      display: inline-block;;
+    }
+
+    .button {
+      font-size: 1rem;
+      line-height: 2rem;
+    }
+  }
+}
+
+
+.dialog--userDetail .userTimeline {
+
+  .userTimeline-counts {
+    display: flex;
+
+    .userTimeline-count {
+      flex: 1 1 calc(100% / 3 - 2px / 3);
+      border-bottom: 3px solid $colorGray2;
+      padding: $marginDefault;
+
+      cursor: pointer;
+
+      &.is-active {
+        border-bottom-color: $colorAccentNormal;
+      }
+    }
+    .userTimeline-count ~ .userTimeline-count {
+      border-left: 1px solid transparent;
+    }
+
+    .userTimeline-countLabel {
+      font-size: 0.8rem;
+      color: $colorGray3;
+      display: block;
+    }
+
+    .userTimeline-countNumber {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #212121;
+      display: block;
+    }
+  }
+}
+
+.menu--talk, .menu--follow {
+  .userIcon {
+    margin: 0 $marginHalf;
+  }
+  .icon {
+    font-size: 1.6rem;
+  }
+}

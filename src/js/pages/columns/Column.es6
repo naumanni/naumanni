@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import {UIColumn} from 'src/models'
 import {DropdownMenuButton, IconFont, NowLoading} from 'src/pages/parts'
+import {AppPropType, ContextPropType} from 'src/propTypes'
 import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 
 
@@ -11,7 +12,8 @@ import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
  */
 export default class Column extends React.Component {
   static contextTypes = {
-    context: PropTypes.any,
+    app: AppPropType,
+    context: ContextPropType,
   }
 
   static propTypes = {

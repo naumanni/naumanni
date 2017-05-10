@@ -17,6 +17,8 @@ export default class TimelineStatus extends React.Component {
     reblog: StatusPropType,
     reblogAccount: AccountPropType,
     tokens: TootPanel.propTypes.tokens,
+    // Accountがなんか押された
+    onAvatarClicked: PropTypes.func.isRequired,
     // Reply送信ボタンが押された
     onSendReply: TootPanel.propTypes.onSend,
     // Fav/UnfavがClickされた
@@ -73,7 +75,7 @@ export default class TimelineStatus extends React.Component {
           <div className="status-row status-reblogFrom">
             <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
             <div className="status-rowRight">
-              {account.display_name} さんにブーストされました
+              <a onClick={this.onClickAvatar.bind(this, account)}>{account.display_name}</a>さんにブーストされました
             </div>
           </div>
         )}
@@ -81,7 +83,7 @@ export default class TimelineStatus extends React.Component {
         <div className="status-row status-content">
           <div className="status-rowLeft">
             <div className="status-avatar">
-              <UserIconWithHost account={mainAccount} />
+              <UserIconWithHost account={mainAccount} onClick={this.onClickAvatar.bind(this, mainAccount)} />
             </div>
             <div className="status-visibility">
               <VisibilityIcon visibility={status.visibility} />
@@ -91,8 +93,10 @@ export default class TimelineStatus extends React.Component {
 
             <div className="status-info">
               <div className="status-author">
-                <span className="user-displayName">{mainAccount.display_name || mainAccount.username}</span>
-                <span className="user-account">@{mainAccount.acct}</span>
+                <a onClick={this.onClickAvatar.bind(this, mainAccount)}>
+                  <span className="user-displayName">{mainAccount.display_name || mainAccount.username}</span>
+                  <span className="user-account">@{mainAccount.acct}</span>
+                </a>
               </div>
               <a className="status-createdAt"
                  href={mainStatus.url}
@@ -233,6 +237,12 @@ export default class TimelineStatus extends React.Component {
   }
 
   // callbacks
+  onClickAvatar(account, e) {
+    e.preventDefault()
+
+    this.props.onAvatarClicked(account)
+  }
+
   onRenderStatusMenu(entry) {
     return (
       <div>hogehoge</div>

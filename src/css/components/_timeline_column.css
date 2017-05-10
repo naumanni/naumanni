@@ -31,6 +31,7 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
   }
 
   .status-avatar {
+    cursor: pointer;
   }
 
   .status-visibility {
@@ -49,7 +50,11 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      color: $colorGray3;
+
+      > a {
+        cursor: pointer;
+        color: $colorGray3;
+      }
 
       .user-displayName {
         margin-right: 0.2em;

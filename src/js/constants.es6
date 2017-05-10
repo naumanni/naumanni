@@ -16,6 +16,7 @@ export const TIMELINE_HOME = 'home'
 export const DIALOG_ADD_ACCOUNT = 'addAccount'
 export const DIALOG_AUTHORIZE_ACCOUNT = 'authorizeAccount'
 export const DIALOG_MEDIA_VIEWER = 'mediaViewer'
+export const DIALOG_USER_DETAIL = 'userDetail'
 
 export const SUBJECT_MIXED = '!!__SUBJECT_MIXED__!!'   // Symbolだとjsonizeできないのでダメ
 

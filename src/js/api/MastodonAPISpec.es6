@@ -255,4 +255,9 @@ export default MastodonAPISpec.make({
     method: 'post',
     fields: ['file'],
   },
+
+  getRelationships: {
+    endpoint: '/accounts/relationships',
+    method: 'get',
+  },
 })

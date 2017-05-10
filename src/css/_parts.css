@@ -20,9 +20,19 @@
     }
   }
 
+  &.size-mini .userIcon-avatar {
+    width: calc($sizeAvatar / 2);
+    height: calc($sizeAvatar / 2);
+  }
+
   &.size-small .userIcon-avatar {
     width: calc($sizeAvatar / 4 * 3);
     height: calc($sizeAvatar / 4 * 3);
+  }
+
+  &.size-large .userIcon-avatar {
+    width: calc($sizeAvatar / 2 * 3);
+    height: calc($sizeAvatar / 2 * 3);
   }
 }
 
