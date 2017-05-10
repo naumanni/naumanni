@@ -45,7 +45,7 @@ export default class TimelineActions {
     await Promise.all(
       sendFrom.map(async (token) => {
         // in_reply_to_id を付加する
-        messageContent.message.in_reply_to_id = status.getInReplyToIdByHost(token.host)
+        messageContent.message.in_reply_to_id = status.getIdByHost(token.host)
         // TODO: tootpanelの方にwarning出す?
         return await postStatusManaged(token, messageContent)
       })
