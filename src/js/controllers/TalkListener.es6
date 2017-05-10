@@ -173,15 +173,16 @@ export default class TalkListener extends EventEmitter {
     const {requester} = this.token
     const responses = await Promise.all(
       Object.keys(this.members)
-        .map((acct) => requester.searchAccount({q: acct, limit: 1}))
+        .map((acct) => requester.searchAccount({q: acct}))
     )
 
     responses.forEach(({entities, result}) => {
-      if(result.length > 0) {
-        const account = entities.accounts[result[0]]
-        if(this.members.hasOwnProperty(account.acct))
-          this.members[account.acct] = account
-      }
+      result
+        .map((uri) => entities.accounts[uri])
+        .forEach((account) => {
+          if(this.members.hasOwnProperty(account.acct))
+            this.members[account.acct] = account
+        })
     })
 
     // アカウント取得できていないやつが入ればエラー
@@ -241,6 +242,7 @@ export default class TalkListener extends EventEmitter {
 
     statuses = statuses
       .filter((status) => status.resolve().visibility === VISIBLITY_DIRECT)
+      // TODO: これだと、独り言DIRECTも含まれてしまっている
       .filter((status) => targetsAccountUris.every(
         (uri) => status.accountUri === uri || status.resolve().isMentionToURI(uri)))
       .filter((status) => !this.statuses.find((s) => s.uri === status.uri))
