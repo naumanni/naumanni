@@ -138,11 +138,11 @@ export default class Status extends StatusRecord {
   }
 
   static compareCreatedAt(a, b) {
-    const aAt = a.created_at
-    const bAt = b.created_at
-    if(aAt < bAt)
+    const aAt = a.createdAt
+    const bAt = b.createdAt
+    if(aAt.isBefore(bAt))
       return 1
-    else if(aAt > bAt)
+    else if(aAt.isAfter(bAt))
       return -1
     return 0
   }

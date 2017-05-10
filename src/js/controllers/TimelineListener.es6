@@ -11,26 +11,6 @@ import {Status} from 'src/models'
 import TimelineData from 'src/infra/TimelineData'
 import WebsocketManager from './WebsocketManager'
 
-export class TimelineEntry {
-  constructor(status) {
-    this.status = status
-  }
-
-  static compare(a, b) {
-    const aAt = a.status.created_at
-    const bAt = b.status.created_at
-    if(aAt < bAt)
-      return 1
-    else if(aAt > bAt)
-      return -1
-    return 0
-  }
-
-  static compareReversed(a, b) {
-    return -TimelineEntry.compare(a, b)
-  }
-}
-
 
 export default class TimelineListener extends EventEmitter {
   static EVENT_CHANGE = 'EVENT_CHANGE'
@@ -167,7 +147,7 @@ export default class TimelineListener extends EventEmitter {
 
     this.timeline = newStatusRefs
       .concat(this.timeline)
-      .sort(Status.compareCreatedAt)
+      .sort((a, b) => Status.compareCreatedAt(a.resolve(), b.resolve()))
     // とりま100件に制限
     this.timeline.splice(100)
 

@@ -4,6 +4,7 @@ import {
   COLUMN_USER, EVENT_NOTIFICATION, STREAM_HOME, SUBJECT_MIXED, WEBSOCKET_EVENT_MESSAGE,
 } from 'src/constants'
 import {makeWebsocketUrl} from 'src/utils'
+import {Notification} from 'src/models'
 import TimelineData from 'src/infra/TimelineData'
 import WebsocketManager from './WebsocketManager'
 
