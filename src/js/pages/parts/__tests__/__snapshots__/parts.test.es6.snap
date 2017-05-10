@@ -141,6 +141,7 @@ exports[`NowLoading 1`] = `
 exports[`UserIconWithHost can show default icon if not avatar was present 1`] = `
 <span
   className="userIcon with-host"
+  onClick={undefined}
 >
   <img
     alt="shn@oppai.tokyo"
@@ -158,6 +159,7 @@ exports[`UserIconWithHost can show default icon if not avatar was present 1`] = 
 exports[`UserIconWithHost can show user icon 1`] = `
 <span
   className="userIcon with-host"
+  onClick={undefined}
 >
   <img
     alt="shn@oppai.tokyo"

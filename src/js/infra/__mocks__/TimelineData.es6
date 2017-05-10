@@ -1,6 +1,6 @@
 const mockPostStatusManaged = jest.fn((token, message) => {
-  message.id = 19191
-  return Promise.resolve(message)
+  const response = {...message, id: 19191}
+  return Promise.resolve(response)
 })
 
 

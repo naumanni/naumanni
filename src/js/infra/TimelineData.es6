@@ -190,7 +190,7 @@ const _TimelineData = new TimelineData()
 export default _TimelineData
 
 
-// とりえあず...
+// TODO TimelineActionsに移す
 export async function postStatusManaged(token, {mediaFiles, message}) {
   const {requester} = token
 

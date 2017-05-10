@@ -121,8 +121,9 @@ export default class Status extends StatusRecord {
         if((!prev && next) || (prev && !next)) {
           isChanged = true
         } else if(Array.isArray(next)) {
-          // TODO:めんどくさい...
-          isChanged = true
+          // media_attachmentの中身はサーバによって必ず違うので、長さだけチェック
+          if(prev.length != next.length)
+            isChanged = true
         } else if(!isObjectSame(prev, next)) {
           isChanged = true
           result = {...(prev || {}), ...(next || {})}
