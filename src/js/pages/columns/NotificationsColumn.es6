@@ -85,6 +85,7 @@ export default class NotificationColumn extends Column {
    * @override
    */
   renderBody() {
+    const {subject} = this.props
     const {timeline} = this.state
     const {tokens} = this.state.tokenState
 
@@ -95,6 +96,7 @@ export default class NotificationColumn extends Column {
             return (
               <li key={notificationRef.uri}>
                 <TimelineNotification
+                  subject={subject !== SUBJECT_MIXED ? subject : null}
                   notificationRef={notificationRef}
                   tokens={tokens}
                   {...this.actionDelegate.props}

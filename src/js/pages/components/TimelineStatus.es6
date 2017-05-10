@@ -216,11 +216,10 @@ export default class TimelineStatus extends React.Component {
     const {account, tokens, subject} = this.props
     const {beginReplyPanelAnimation} = this.state
 
+    // デフォルトの返信元。 親Timelineの主題か、Statusと同じホストの最初のアカウントから選ぶ
     let sendFrom = subject
-    // デフォルトの返信元。 Statusと同じホストの最初のアカウントから選ぶ
-    if(!sendFrom)
-      sendFrom = tokens.filter((t) => t.host === account.instance).map((t) => t.acct)
-    console.log(tokens, account.instance, sendFrom)
+      ? [subject]
+      : tokens.filter((t) => t.host === account.instance).map((t) => t.acct)
 
     return (
       <div className={`status-replyPanel ${beginReplyPanelAnimation ? 'off' : ''}`}>
@@ -228,6 +227,7 @@ export default class TimelineStatus extends React.Component {
           <TootPanel {...this.props}
             onSend={::this.onSendReply}
             initialSendFrom={sendFrom}
+            initialContent={`@${account.acct} `}
             />
         </div>
       </div>

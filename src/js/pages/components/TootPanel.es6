@@ -22,6 +22,7 @@ export default class TootPanel extends React.Component {
     tokens: OAuthTokenArrayPropType.isRequired,
     onSend: PropTypes.func.isRequired,
     initialSendFrom: PropTypes.arrayOf(PropTypes.string),
+    initialContent: PropTypes.string,
   }
 
   static defaultProps = {
@@ -45,7 +46,7 @@ export default class TootPanel extends React.Component {
       sendFrom: initialSendFrom != null ? initialSendFrom : [tokens[0].acct],
       showContentsWarning: false,
       spoilerTextContent: '',
-      statusContent: '',
+      statusContent: this.props.initialContent || '',
       visibility: VISIBLITY_PUBLIC,
     }
     this.mediaFileKeys = new WeakMap()

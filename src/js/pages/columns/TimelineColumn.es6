@@ -96,6 +96,7 @@ export default class TimelineColumn extends Column {
    * @override
    */
   renderBody() {
+    const {subject} = this.props
     const {timeline} = this.state
     const {tokens} = this.state.tokenState
 
@@ -106,8 +107,9 @@ export default class TimelineColumn extends Column {
             return (
               <li key={statusRef.uri}>
                 <TimelineStatus
-                  {...statusRef.expand()}
+                  subject={subject !== SUBJECT_MIXED ? subject : null}
                   tokens={tokens}
+                  {...statusRef.expand()}
                   {...this.actionDelegate.props}
                 />
               </li>
