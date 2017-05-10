@@ -5,10 +5,10 @@ import PropTypes from 'prop-types'
 import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
-import {DropdownMenuButton, IconFont, UserIconWithHost} from '../parts'
 import TootPanel from './TootPanel'
 import {AcctPropType, AccountPropType, StatusPropType} from 'src/propTypes'
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
+import {DropdownMenuButton, IconFont, UserIconWithHost} from '../parts'
 
 
 export default class TimelineStatus extends React.Component {
@@ -132,7 +132,7 @@ export default class TimelineStatus extends React.Component {
                 <IconFont iconName="star-filled" className={isFavourited ? 'is-active' : ''} />
               </button>
 
-              <button className="status-actionMenu">
+              <button className="status-actionMenu" style={{display: 'none'}}>
                 <DropdownMenuButton onRenderMenu={::this.onRenderStatusMenu}>
                   <IconFont iconName="dot-3" />
                 </DropdownMenuButton>

@@ -26,14 +26,22 @@ export default class Dialog extends React.Component {
     super(...args)
 
     this.state = {}
+    this.listenerRemovers = []
   }
 
   /**
    * @override
    */
   componentDidMount() {
-
   }
+
+  /**
+   * @override
+   */
+  componentWillUnmount() {
+    this.listenerRemovers.forEach((remover) => remover())
+  }
+
 
   /**
    * @override

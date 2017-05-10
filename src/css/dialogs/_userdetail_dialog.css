@@ -20,9 +20,12 @@
 
 
 .dialog--userDetail .userTimeline {
+  display: flex;
+  flex-direction: column;
 
   .userTimeline-counts {
     display: flex;
+    flex: 0 0 4.3rem;
 
     .userTimeline-count {
       flex: 1 1 calc(100% / 3 - 2px / 3);
@@ -51,6 +54,10 @@
       color: #212121;
       display: block;
     }
+  }
+
+  .timeline {
+    overflow-y: scroll;
   }
 }
 

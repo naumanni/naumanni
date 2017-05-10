@@ -9,7 +9,7 @@
     "build": "run-s clean build:*",
     "build:js": "webpack",
     "build:css": "postcss src/css/main.css -d static",
-    "clean": "rm -f static/main.bundle.js static/main.css static/main.bundle.js.map static/*.LICENSE",
+    "clean": "rm -f static/main.bundle.js static/main.css static/main.bundle.js.map static/*.LICENSE node_modules/.cache/babel-loader/*",
     "lint": "eslint --config .eslintrc.yml --cache ./src/js/**/*.es6",
     "lint:fix": "eslint --fix --ext=es6 --config .eslintrc.yml src/",
     "test": "run-s build test:js",

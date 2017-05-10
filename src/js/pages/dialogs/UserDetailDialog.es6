@@ -5,6 +5,9 @@ import TimelineData from 'src/infra/TimelineData'
 import {IconFont, NowLoading, UserIconWithHost} from 'src/pages/parts'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import UserDetail from 'src/pages/components/UserDetail'
+import {AccountTimelineLoader} from 'src/controllers/TimelineLoader'
+import TimelineActions from 'src/controllers/TimelineActions'
+import TimelineStatus from 'src/pages/components/TimelineStatus'
 import Dialog from './Dialog'
 
 export const LIST_STATUSES = 'statuses'
@@ -27,7 +30,12 @@ export default class UserDetailDialog extends Dialog {
       account: null,
       list: LIST_STATUSES,
       relationships: {},
+      statuses: null,
+      // TODO: Contextの更新をチェックする
+      tokens: this.context.context.getState().tokenState.tokens,
     }
+
+    this.actionDelegate = new TimelineActions(this.context.context)
   }
 
   /**
@@ -36,7 +44,24 @@ export default class UserDetailDialog extends Dialog {
   componentDidMount() {
     super.componentDidMount()
 
-    this.start()
+    this.listenerRemovers.push(
+      TimelineData.onChange(::this.onChangeTimelineData),
+    )
+
+    // set timer for update dates
+    this.timer = setInterval(
+      () => this.setState({tick: (new Date())}),
+      30 * 1000)
+
+    this.loadingAccount = this.start()
+  }
+
+  /**
+   * @override
+   */
+  componentWillUnmount() {
+    super.componentWillUnmount()
+    clearInterval(this.timer)
   }
 
   /**
@@ -44,8 +69,7 @@ export default class UserDetailDialog extends Dialog {
    */
   render() {
     // TODO: stateにする
-    const {tokens} = this.context.context.getState().tokenState
-    const {account, relationships} = this.state
+    const {account, relationships, tokens} = this.state
     const closeButton = (
       <button className="dialog-closeButton" onClick={::this.onClickClose}><IconFont iconName="cancel" /></button>
     )
@@ -106,7 +130,27 @@ export default class UserDetailDialog extends Dialog {
   }
 
   renderStatuses() {
-    return <NowLoading />
+    const {statuses, tokens} = this.state
+
+    if(!statuses)
+      return <NowLoading />
+
+    return (
+      <ul className="timeline">
+        {statuses.map((statusRef) => {
+          return (
+            <li key={statusRef.uri}>
+              <TimelineStatus
+                subject={null}
+                tokens={tokens}
+                {...statusRef.expand()}
+                {...this.actionDelegate.props}
+              />
+            </li>
+          )
+        })}
+      </ul>
+    )
   }
 
   renderFollowings() {
@@ -131,8 +175,7 @@ export default class UserDetailDialog extends Dialog {
   async start() {
     // 全Tokenからとってみる
     const {acct} = this.props
-    // TODO: tokensをstate（かprops)にする
-    const tokens = this.context.context.getState().tokenState.tokens
+    const {tokens} = this.state
     let account = null
 
     // idが欲しい
@@ -152,7 +195,11 @@ export default class UserDetailDialog extends Dialog {
         account = fetched
       else
         account = account.checkMerge(fetched).merged
-      this.setState({account})
+
+      // めっちゃキモいけど手っ取り早い...
+      const setStateWaiter = new Promise((resolve, reject) => {
+        this.setState({account}, () => resolve())
+      })
 
       // get relationships
       const relationships = await token.requester.getRelationships({id: account.getIdByHost(token.host)})
@@ -160,11 +207,26 @@ export default class UserDetailDialog extends Dialog {
         const rel = relationships[0]
         this.setState({relationships: {...this.state.relationships, [token.account.acct]: rel}})
       }
+
+      await setStateWaiter
     }))
+
+    this.startLoadList(this.state.list)
+  }
+
+  async startLoadList(list) {
+    const {account, tokens} = this.state
+
+    if(list === LIST_STATUSES) {
+      const loader = new AccountTimelineLoader(account, tokens)
+      const statuses = await loader.loadHead()
+
+      this.setState({statuses})
+    }
   }
 
   close() {
-    this.app.history.goTop()
+    this.app.history.back()
   }
 
   onClickClose(e) {
@@ -174,6 +236,7 @@ export default class UserDetailDialog extends Dialog {
 
   onClickListTab(newList) {
     this.setState({list: newList})
+    this.loadingAccount.then(() => this.startLoadList(newList))
   }
 
   onOpenTalkClicked(token, account, e) {
@@ -190,13 +253,13 @@ export default class UserDetailDialog extends Dialog {
     const {requester} = token
     const id = account.getIdByHost(token.host)
     let newRelationship
-    let newAccount
 
     if(doFollow) {
       if(id) {
         newRelationship = await requester.followAccount({id: account.getIdByHost(token.host)})
       } else {
-        newAccount = await requester.followRemoteAccount({uri: account.acct}, {token})
+        // Detail表示している時点でAccountはもってるのだから、ここには来ないのでは?
+        await requester.followRemoteAccount({uri: account.acct}, {token})
       }
     } else {
       require('assert')(id, 'account id required')
@@ -208,6 +271,23 @@ export default class UserDetailDialog extends Dialog {
         ...this.state.relationships,
         [token.acct]: newRelationship},
       })
+    }
+  }
+
+  /**
+   * TimelineDataのStatus, Accountが更新されたら呼ばれる。
+   * TODO: 関数名どうにかして
+   * @param {object} changes
+   */
+  onChangeTimelineData(changes) {
+    // 表示中のTimelineに関連があるか調べる
+    const changed = (this.state.statuses || []).find((statusRef) => {
+      return changes.statuses[statusRef.uri] || changes.accounts[statusRef.accountUri]
+    }) ? true : false
+
+    // Timelineを更新
+    if(changed) {
+      this.setState({statuses: this.state.statuses})
     }
   }
 }
