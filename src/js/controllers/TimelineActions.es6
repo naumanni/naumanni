@@ -20,7 +20,8 @@ export const TimelineActionPropTypes = {
 
 
 export default class TimelineActions {
-  constructor(context) {
+  constructor({app, context}) {
+    this.app = app
     this.context = context
   }
 
@@ -36,8 +37,7 @@ export default class TimelineActions {
 
   onAvatarClicked(account) {
     // TODO: named routingしたい
-    const {app} = this.context
-    app.pushState({}, null, `/user/@${account.acct}`)
+    this.app.pushState({}, null, `/user/@${account.acct}`)
   }
 
   async onSendReply(status, sendFrom, messageContent) {

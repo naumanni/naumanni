@@ -5,7 +5,7 @@ import React from 'react'
 import {SUBJECT_MIXED, COLUMN_FRIENDS, COLUMN_TALK} from 'src/constants'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import Column from './Column'
-import {IconFont, UserIconWithHost} from '../parts'
+import AccountRow from '../components/AccountRow'
 
 
 /**
@@ -77,10 +77,7 @@ export default class FriendsColumn extends Column {
         <ul className="friends-list">
           {friends.map((friend) => (
             <li key={friend.key}>
-              <FriendRow
-                friend={friend}
-                onClickFriend={::this.onClickFriend}
-                />
+              <AccountRow account={friend.account} onClick={::this.onClickFriend} />
             </li>
           ))}
         </ul>
@@ -127,11 +124,11 @@ export default class FriendsColumn extends Column {
     })
   }
 
-  onClickFriend(friend) {
+  onClickFriend(account) {
     const {context} = this.context
 
     context.useCase(new AddColumnUseCase()).execute(COLUMN_TALK, {
-      to: friend.account.acct,
+      to: account.acct,
       from: this.props.subject,
     })
   }
@@ -173,35 +170,6 @@ export default class FriendsColumn extends Column {
     }
 
     this.setState({filter, sortedFriends})
-  }
-}
-
-
-class FriendRow extends React.Component {
-  /**
-   * @override
-   */
-  render() {
-    const {account} = this.props.friend
-
-    return (
-      <article className="friend" onClick={() => this.props.onClickFriend(this.props.friend)}>
-        <div className="friend-avatar">
-          <UserIconWithHost account={account} />
-        </div>
-        <div className="friend-info">
-          <div className="friend-author">
-            {account.hasPublicKey && <span className="user-hasPulbickey"><IconFont iconName="key" /></span>}
-
-            <span className="user-displayName">{account.display_name || account.username}</span>
-            <span className="user-account">@{account.acct}</span>
-          </div>
-
-          <div className="friend-note" dangerouslySetInnerHTML={{__html: account.note}} />
-
-        </div>
-      </article>
-    )
   }
 }
 

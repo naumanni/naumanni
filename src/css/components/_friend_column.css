@@ -1,6 +1,3 @@
-$marginFriendInfo: calc($sizeAvatar + $marginDefault);
-
-
 .column .column-body--friends {
   display: flex;
   flex-direction: column;
@@ -27,66 +24,35 @@ $marginFriendInfo: calc($sizeAvatar + $marginDefault);
       border-bottom: 1px solid $colorFriendBorder;
     }
   }
+
+  .accountRow {
+    &::before {  /* ::afterはclearfixが使ってる */
+      font-family: "naumanni";
+      font-style: normal;
+      font-weight: normal;
+      speak: none;
+
+      display: inline-block;
+      text-decoration: inherit;
+      width: 1em;
+      margin-right: .2em;
+      text-align: center;
+
+      font-variant: normal;
+      text-transform: none;
+
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+
+      content: '\e811';
+      display: block;
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+
+      color: $colorFriendArrow;
+    }
+  }
 }
 
-
-.friend {
-  @mixin clearfix;
-  position: relative;
-  cursor: pointer;
-
-  .friend-avatar {
-    float: left;
-    width: $sizeAvatar;
-    text-align: right;
-  }
-
-  .friend-info {
-    margin: 0 24px 0 $marginFriendInfo;
-  }
-
-  .friend-author {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    .user-displayName {
-      margin-right: 0.2em;
-    }
-    .user-account {
-      color: $colorGray3;
-    }
-  }
-
-  .friend-note {
-    word-break: break-all;
-  }
-
-  &::before {  /* ::afterはclearfixが使ってる */
-    font-family: "naumanni";
-    font-style: normal;
-    font-weight: normal;
-    speak: none;
-
-    display: inline-block;
-    text-decoration: inherit;
-    width: 1em;
-    margin-right: .2em;
-    text-align: center;
-
-    font-variant: normal;
-    text-transform: none;
-
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-
-    content: '\e811';
-    display: block;
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-
-    color: $colorFriendArrow;
-  }
-}

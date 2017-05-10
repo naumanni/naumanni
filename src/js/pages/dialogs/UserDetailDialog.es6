@@ -2,12 +2,13 @@ import React from 'react'
 
 import {COLUMN_TALK} from 'src/constants'
 import TimelineData from 'src/infra/TimelineData'
-import {IconFont, NowLoading, UserIconWithHost} from 'src/pages/parts'
+import {IconFont, NowLoading} from 'src/pages/parts'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import UserDetail from 'src/pages/components/UserDetail'
 import {AccountTimelineLoader} from 'src/controllers/TimelineLoader'
 import TimelineActions from 'src/controllers/TimelineActions'
 import TimelineStatus from 'src/pages/components/TimelineStatus'
+import AccountRow from 'src/pages/components/AccountRow'
 import Dialog from './Dialog'
 
 export const LIST_STATUSES = 'statuses'
@@ -35,7 +36,7 @@ export default class UserDetailDialog extends Dialog {
       tokens: this.context.context.getState().tokenState.tokens,
     }
 
-    this.actionDelegate = new TimelineActions(this.context.context)
+    this.actionDelegate = new TimelineActions(this.context)
   }
 
   /**
@@ -96,6 +97,15 @@ export default class UserDetailDialog extends Dialog {
     )
   }
 
+  /**
+   * @override
+   * @private
+   * @return {string}
+   */
+  get dialogClassName() {
+    return super.dialogClassName + ' dialog--userDetail'
+  }
+
   renderTimeline() {
     const {account} = this.state
     const {list} = this.state
@@ -154,19 +164,35 @@ export default class UserDetailDialog extends Dialog {
   }
 
   renderFollowings() {
-    return <NowLoading />
+    const {followings} = this.state
+
+    if(!followings)
+      return <NowLoading />
+
+    return this.renderAccounts(followings)
   }
 
   renderFollowers() {
-    return <NowLoading />
+    const {followers} = this.state
+
+    if(!followers)
+      return <NowLoading />
+
+    return this.renderAccounts(followers)
   }
 
-  /**
-   * @private
-   * @return {string}
-   */
-  get dialogClassName() {
-    return super.dialogClassName + ' dialog--userDetail'
+  renderAccounts(accounts) {
+    // TODO: 絞込付きFriendListを使ったほうが良いのでは
+    return (
+      <ul className="accountList">
+        {accounts.map((account) => (
+          <li key={account.acct}>
+            <AccountRow account={account} onClick={(...args) => this.actionDelegate.onAvatarClicked(...args)}
+              />
+          </li>
+        ))}
+      </ul>
+    )
   }
 
   /**
@@ -222,6 +248,23 @@ export default class UserDetailDialog extends Dialog {
       const statuses = await loader.loadHead()
 
       this.setState({statuses})
+    } else {
+      const endpoint = list === LIST_FOLLOWERS ? 'listFollowers' : 'listFollowings'
+      const accounts = new Map()
+
+      const responses = await Promise.all(
+        tokens.map((token) => token.requester[endpoint]({id: account.getIdByHost(token.host), limit: 80}))
+      )
+
+      responses
+        .map(({entities, result}) => result.map((uri) => entities.accounts[uri]))
+        .reduce((a, accounts) => a.concat(accounts), [])
+        .forEach((acc) => accounts.set(acc.uri, acc))
+
+      if(list === LIST_FOLLOWERS)
+        this.setState({followers: Array.from(accounts.values())})
+      else
+        this.setState({followings: Array.from(accounts.values())})
     }
   }
 

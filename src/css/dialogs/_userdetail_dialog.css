@@ -22,10 +22,13 @@
 .dialog--userDetail .userTimeline {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 
   .userTimeline-counts {
     display: flex;
     flex: 0 0 4.3rem;
+    box-shadow: 0 0 8px 4px #fff;
+    z-index: 1;
 
     .userTimeline-count {
       flex: 1 1 calc(100% / 3 - 2px / 3);
@@ -56,7 +59,7 @@
     }
   }
 
-  .timeline {
+  .timeline, .accountList {
     overflow-y: scroll;
   }
 }
