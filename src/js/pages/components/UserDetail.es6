@@ -47,7 +47,7 @@ url(${account.header}) center center`
   renderActionsSingleToken() {
     const {account} = this.props
     const token = this.props.tokens[0]
-    const {icon, text, doFollow} = this.getVisualForRelationship(token.acct)
+    const {disable, icon, text, doFollow} = this.getVisualForRelationship(token.acct)
 
     return (
       <div className="userDetail-actions">
@@ -58,6 +58,7 @@ url(${account.header}) center center`
           <IconFont iconName="talk" /> トーク
         </button>
         <button
+          disabled={disable}
           className="button button--primary"
           onClick={() => this.props.onToggleFollowClicked(token, account, doFollow)}
         >
@@ -90,7 +91,7 @@ url(${account.header}) center center`
           return (
             <li className="menu-item"
               key={account.acct}
-              onClick={() => this.props.onOpenTalkClicked(token, account)}
+              onClick={() => this.props.onOpenTalkClicked(token, this.props.account)}
             >
               <UserIconWithHost account={account} size="mini" /> {account.acct}
             </li>
@@ -107,12 +108,12 @@ url(${account.header}) center center`
       <ul className="menu menu--follow">
         {tokens.map((token) => {
           const {account} = token
-          const {icon, text, doFollow} = this.getVisualForRelationship(account)
+          const {disable, icon, text, doFollow} = this.getVisualForRelationship(account.acct)
 
           return (
-            <li className="menu-item"
+            <li className={`menu-item ${disable ? 'is-disabled' : ''}`}
               key={account.acct}
-              onClick={() => this.props.onToggleFollowClicked(token, account, doFollow)}
+              onClick={() => !disable && this.props.onToggleFollowClicked(token, this.props.account, doFollow)}
             >
               <IconFont iconName={icon} />
               <UserIconWithHost account={account} size="mini" />
@@ -126,11 +127,13 @@ url(${account.header}) center center`
     )
   }
 
-  getVisualForRelationship(acct) {
-    const relationship = this.props.relationships[acct]
+  getVisualForRelationship(me) {
+    const {account} = this.props
+    const relationship = this.props.relationships[me]
     const isFollowing = relationship ? relationship.following : false
     const isRequested = relationship ? relationship.requested : false
 
+    let disable = false
     let icon
     let text
     let doFollow
@@ -139,20 +142,20 @@ url(${account.header}) center center`
       if(isFollowing) {
         console.warn('relationshipがrequestedなのにfollowing!!', relationship)
       }
+      disable = true
       icon = 'hourglass-o'
-      text = 'リクエストをやめる'
-      doFollow = false
+      text = 'リクエスト中...'
     } else if(isFollowing) {
       icon = 'user-times'
       text = 'フォローを解除する'
       doFollow = false
     } else {
       icon = 'user-plus'
-      text = 'フォローする'
+      text = account.locked ? 'フローを申請する' : 'フォローする'
       doFollow = true
     }
 
-    return {icon, text, doFollow}
+    return {disable, icon, text, doFollow}
   }
 }
 

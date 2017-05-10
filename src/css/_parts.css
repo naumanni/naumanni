@@ -82,6 +82,11 @@
       background: $colorHoverBackground;
       color: $colorHoverText;
     }
+
+    &.is-disabled, &.is-disabled:hover {
+      background: $colorMenuBackground;
+      color: $colorGray3;
+    }
   }
 }
 

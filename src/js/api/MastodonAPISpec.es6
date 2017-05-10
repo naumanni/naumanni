@@ -261,4 +261,20 @@ export default MastodonAPISpec.make({
     endpoint: '/accounts/relationships',
     method: 'get',
   },
+
+  followAccount: {
+    endpoint: '/accounts/:id/follow',
+    method: 'post',
+  },
+
+  unfollowAccount: {
+    endpoint: '/accounts/:id/unfollow',
+    method: 'post',
+  },
+
+  followRemoteAccount: {
+    endpoint: '/follows',
+    entity: Account,
+    method: 'post',
+  },
 })
