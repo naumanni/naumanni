@@ -202,3 +202,22 @@ $loaderVMargin: 2rem;
     width: 100%;
   }
 }
+
+.user-displayName, .user-acct {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+.user-acct {
+  color: $colorAccentNormal;
+}
+
+
+.cushionString {
+  white-space: nowrap;
+  word-break: normal;
+  word-spacing: 0.23em;
+}

@@ -156,6 +156,7 @@ class MastodonAPISpec extends APISpec {
   }
 }
 
+// TODO: abc順にする
 export default MastodonAPISpec.make({
   postApp: {
     endpoint: '/apps',

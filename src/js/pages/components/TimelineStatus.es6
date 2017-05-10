@@ -7,24 +7,20 @@ import {
 } from 'src/constants'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from '../parts'
 import TootPanel from './TootPanel'
-import {AccountPropType, StatusPropType} from 'src/propTypes'
+import {AcctPropType, AccountPropType, StatusPropType} from 'src/propTypes'
+import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
 
 
 export default class TimelineStatus extends React.Component {
   static propTypes = {
+    subject: AcctPropType,
     account: AccountPropType.isRequired,
     status: StatusPropType.isRequired,
     reblog: StatusPropType,
     reblogAccount: AccountPropType,
+    modifier: PropTypes.string,
     tokens: TootPanel.propTypes.tokens,
-    // Accountがなんか押された
-    onAvatarClicked: PropTypes.func.isRequired,
-    // Reply送信ボタンが押された
-    onSendReply: TootPanel.propTypes.onSend,
-    // Fav/UnfavがClickされた
-    onFavouriteStatus: PropTypes.func.isRequired,
-    // Reblog/UnreblogがClickされた
-    onReblogStatus: PropTypes.func.isRequired,
+    ...TimelineActionPropTypes,
   }
 
   /**
@@ -48,7 +44,7 @@ export default class TimelineStatus extends React.Component {
    * @override
    */
   render() {
-    const {status, reblog, account, reblogAccount} = this.props
+    const {status, reblog, account, reblogAccount, modifier} = this.props
     require('assert')(!reblog || (reblog && reblogAccount))
     const {isContentOpen, isShowReplyPanel} = this.state
     const mainStatus = reblog || status
@@ -69,7 +65,7 @@ export default class TimelineStatus extends React.Component {
     const isFavourited = tokens.find((token) => status.isFavouritedAt(token.acct)) ? true : false
 
     return (
-      <article className="status timeline-status">
+      <article className={`status ${modifier ? 'status--modifier' : ''}`}>
 
         {reblog && (
           <div className="status-row status-reblogFrom">
@@ -217,12 +213,14 @@ export default class TimelineStatus extends React.Component {
   }
 
   renderReplyPanel() {
-    const {status, account, tokens} = this.props
-    console.log(status.resolve().toJSON())
+    const {account, tokens, subject} = this.props
     const {beginReplyPanelAnimation} = this.state
 
+    let sendFrom = subject
     // デフォルトの返信元。 Statusと同じホストの最初のアカウントから選ぶ
-    let sendFrom = tokens.filter((t) => t.host === account.instance).map((a) => a.acct)
+    if(!sendFrom)
+      sendFrom = tokens.filter((t) => t.host === account.instance).map((t) => t.acct)
+    console.log(tokens, account.instance, sendFrom)
 
     return (
       <div className={`status-replyPanel ${beginReplyPanelAnimation ? 'off' : ''}`}>
@@ -309,8 +307,7 @@ export default class TimelineStatus extends React.Component {
    * @return {Promise}
    */
   onSendReply(...args) {
-    // TODO: 突然閉じるのでアニメーションしたい...
-    return this.props.onSendReply(...args)
+    return this.props.onSendReply(this.props.status, ...args)
       .then(() => {
         this.showHideReplyPanel(false)
       })

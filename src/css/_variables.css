@@ -18,6 +18,10 @@ $colorGray3: #9E9E9E;
 $colorBlack: #000000;
 
 
+$colorStarred: #ca8f04;
+$colorText: #212121;
+
+
 $fontSizeNormal: 1rem;
 $fontSizeSmall: 0.85rem;
 $fontSizeLarger: 1.1rem;
@@ -37,7 +41,6 @@ $marginHalf: calc($marginDefault / 2);
 
 
 /* 色 for App */
-$colorText: #212121;
 
 $fontSizeButton: $fontSizeLarger;
 $sizeButtonHeight: 36px;
@@ -94,6 +97,8 @@ $fontSizeStatusActionIcon: 1.5rem;
 $fontSizeStatusVisibilityIcon: 1rem;
 $fontSizeStatusInfo: 0.8rem;
 $sizeStatusAvatar: calc($sizeAvatar / 2);
+
+$colorNotificationWhat: #707c84;  /* 通知の説明部分 */
 
 $colorFriendBorder: $colorGray1;
 $colorFriendArrow: $colorMainNormal;

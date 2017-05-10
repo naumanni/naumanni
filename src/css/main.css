@@ -10,14 +10,23 @@
 @import "components/_talk_column.css";
 @import "components/_toot_window.css";
 @import "components/_toot_panel.css";
+@import "components/_status_notifications.css";
 @import "dialogs/_userdetail_dialog.css";
 @import "_dashboard.css";
+
+.icon {
+  &::before {
+    margin: 0;
+    width: auto;
+  }
+}
 
 html {
   background: $colorBackground;
   font-size: 14px;
   font-family: 'Roboto', sans-serif;
   color: $colorText;
+  line-height: 1.3;
 }
 
 body {

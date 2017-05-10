@@ -333,12 +333,13 @@ export default class TalkListener extends EventEmitter {
         const {normalizeStatus} = require('src/api/MastodonAPISpec')
         const {entities, result} = normalizeStatus(payload.payload, host, acct)
         statusRefs = TimelineData.mergeStatuses(entities, [result])
-      } else if(payload.event === EVENT_NOTIFICATION) {
-        // 送られてきたやつは stream=userに notificationが来る(event=updateももちろん来る)
-        const {normalizeNotification} = require('src/api/MastodonAPISpec')
-        const {entities, result} = normalizeNotification(payload.payload, host, acct)
-        const notification = entities.notifications[result]
-        statusRefs = TimelineData.mergeStatuses(entities, [notification.status])
+      // これいらんかも
+      // } else if(payload.event === EVENT_NOTIFICATION) {
+      //   // 送られてきたやつは stream=userに notificationが来る(event=updateももちろん来る)
+      //   const {normalizeNotification} = require('src/api/MastodonAPISpec')
+      //   const {entities, result} = normalizeNotification(payload.payload, host, acct)
+      //   const notification = entities.notifications[result]
+      //   statusRefs = TimelineData.mergeStatuses(entities, [notification.status])
       }
 
       if(statusRefs) {

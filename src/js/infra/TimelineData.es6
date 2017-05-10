@@ -20,7 +20,17 @@ class TimelineData extends EventEmitter {
    * @param {string[]} statusUris
    * @return {StatusRef[]}
    */
-  mergeStatuses({statuses, accounts}, statusUris) {
+  mergeStatuses(entities, statusUris=[]) {
+    this.mergeEntities(entities)
+    return statusUris.map((uri) => new StatusRef(this, uri))
+  }
+
+  mergeNotifications(entities, notificationUris) {
+    this.mergeEntities(entities)
+    return notificationUris.map((uri) => new NotificationRef(this, entities.notifications[uri]))
+  }
+
+  mergeEntities({statuses, accounts}) {
     const changes = {
       statuses: {},
       accounts: {},
@@ -57,8 +67,6 @@ class TimelineData extends EventEmitter {
     })
 
     this.emitChange(changes)
-
-    return statusUris.map((uri) => new StatusRef(this, uri))
   }
 
   /**
@@ -85,6 +93,7 @@ class DBRef {
   static store = null
 
   constructor(db, uri) {
+    require('assert')(uri)
     this._db = db
     this._uri = uri
   }
@@ -104,7 +113,7 @@ class DBRef {
 }
 
 
-class AccountRef extends DBRef {
+export class AccountRef extends DBRef {
   static store = 'accounts'
 
   /**
@@ -119,7 +128,7 @@ class AccountRef extends DBRef {
 }
 
 
-class StatusRef extends DBRef {
+export class StatusRef extends DBRef {
   static store = 'statuses'
 
   /**
@@ -142,6 +151,37 @@ class StatusRef extends DBRef {
 
   get accountUri() {
     return this.resolve().account
+  }
+}
+
+/**
+ * Notificationの実体は無価値なので、こいつは実はDBRefではない。
+ * だけど、Status, AccountのRefを保持する
+ */
+export class NotificationRef {
+  constructor(db, notification) {
+    this._db = db
+    this._notification = notification
+  }
+
+  get uri() {
+    return this._notification.uri
+  }
+
+  get type() {
+    return this._notification.type
+  }
+
+  get createdAt() {
+    return this._notification.createdAt
+  }
+
+  get accountRef() {
+    return new AccountRef(this._db, this._notification.account)
+  }
+
+  get statusRef() {
+    return this._notification.status && new StatusRef(this._db, this._notification.status)
   }
 }
 

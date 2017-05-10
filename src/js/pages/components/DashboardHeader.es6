@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import {OAuthTokenArrayPropType} from 'src/propTypes'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
 import {
-  COLUMN_TIMELINE, COLUMN_FRIENDS,
+  COLUMN_TIMELINE, COLUMN_FRIENDS, COLUMN_NOTIFICATIONS,
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
 } from 'src/constants'
 import TootWindow from '../TootWindow'
@@ -122,6 +122,13 @@ export default class DashboardHeader extends React.Component {
           <span className="menu-itemLabel">統合連合タイムライン</span>
         </li>
 
+        <li className="menu-item"
+          onClick={this.props.onOpenColumn.bind(
+            this, COLUMN_NOTIFICATIONS, {subject: SUBJECT_MIXED})}>
+          <IconFont iconName="bell" />
+          <span className="menu-itemLabel">統合通知</span>
+        </li>
+
       </ul>
     )
   }
@@ -165,6 +172,13 @@ export default class DashboardHeader extends React.Component {
             this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_FEDERATION})}>
           <IconFont iconName="globe" />
           <span>連合タイムライン</span>
+        </li>
+
+        <li className="menu-item"
+          onClick={this.props.onOpenColumn.bind(
+            this, COLUMN_NOTIFICATIONS, {subject: account.acct})}>
+          <IconFont iconName="bell" />
+          <span>通知</span>
         </li>
 
         <li className="menu-item"

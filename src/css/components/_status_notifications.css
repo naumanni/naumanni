@@ -1,0 +1,399 @@
+$statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
+
+.status {
+  .status-row {
+    @mixin clearfix;
+
+    .status-rowLeft {
+      float: left;
+      width: $sizeAvatar;
+      text-align: right;
+    }
+
+    .status-rowRight {
+      margin-left: $statusBodyMarginLeft;
+    }
+  }
+
+  .status-reblogFrom {
+    color: $colorStatusStatusMeta
+  }
+
+  .status-avatar {
+    cursor: pointer;
+  }
+
+  .status-visibility {
+    color: $colorStatusVisiblityColor;
+    font-size: $fontSizeStatusVisibilityIcon;
+
+    .icon::before {
+      margin: 0;
+    }
+  }
+
+  .status-info {
+    display: flex;
+
+    .status-author {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      > a {
+        cursor: pointer;
+        color: $colorGray3;
+      }
+
+      .user-displayName {
+        margin-right: 0.2em;
+      }
+    }
+
+    .status-createdAt {
+      flex-grow: 1;
+      margin-left: 4px;
+      white-space: nowrap;
+    }
+  }
+
+  .status-displayName {
+    font-weight: bold;
+    margin-right: 0.5em;
+    font-family: sans-serif;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .status-createdAt {
+    text-align: right;
+    color: $colorStatusDate;
+    text-decoration: none;
+  }
+
+  .status-body {
+    margin-top: $marginHalf;
+    word-break: break-all;
+
+    .status-isDecrypted {
+      background: #888;
+      padding: 4px;
+      border-radius: 4px;
+      font-size: $fontSizeSmall;
+      color: yellow;
+      margin: 0 0 8px;
+    }
+
+    .status-contentOpener {
+      background: $colorStatusSpoilerOpenerBackground;
+      color: $colorStatusSpoilerOpenerText;
+      border-radius: $radiusDefault;
+      margin: 0 0 0 1em;
+      padding: 2px 4px;
+      cursor: pointer;
+      white-space: nowrap;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+
+    .status-content {
+      color: $colorStatusText;
+      line-height: 1.3;
+
+      > p {
+        margin: 0;
+      }
+
+      /** なんかリンクにスタイル入ってる... */
+      a {
+        color: $colorStatusLink;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+
+        .invisible {
+          display: none;
+        }
+
+        .ellipsis::after {
+          content: "…";
+        }
+      }
+    }
+
+    &.has-spoilerText.is-contentOpen {
+      .status-spoilerText {
+        margin-bottom: calc($marginDefault * 2);
+      }
+    }
+  }
+
+  .status-mediaList {
+    height: 120px;
+    position: relative;
+    border-radius: $radiusDefault;
+    margin: $marginDefault 0 0 0;
+    overflow: hidden;
+
+    .status-media {
+      display: block;
+      height: 100%;
+      background-size: cover;
+      background-position: center center;
+      text-decoration: none;
+      cursor: zoom-in;
+
+      img {
+        display: block;
+        width: 100%;
+      }
+    }
+
+    .status-mediaListCover {
+      position: absolute;
+      text-align: center;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: $colorBlack;
+      color: $colorWhite;
+      border-radius: $radiusDefault;
+      cursor: pointer;
+
+      p {
+        margin: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        position: relative;
+      }
+
+      .sub {
+        font-size: smaller;
+      }
+    }
+
+    .status-buttonShowMediaListCover {
+      border: none;
+      background: rgba(0, 0, 0, 0.5);
+      color: $colorWhite;
+      position: absolute;
+      top: $marginHalf;
+      left: $marginHalf;
+      font-size: $fontSizeNormal;
+      border-radius: $radiusDefault;
+      width: 2rem;
+      height: 2rem;
+      text-align: center;
+      padding: 0;
+      opacity: 0.6;
+      cursor: pointer;
+
+      .icon&::before {
+        margin: 0;
+      }
+    }
+
+    &.is-sensitive.is-opem {
+      .status-mediaListCover {
+        display: none;
+      }
+    }
+
+    &.status-mediaList1 {
+    }
+
+    &.status-mediaList2 {
+      .status-media:nth-child(1) {
+        float: left;
+        width: calc(50% - $marginHalf / 2);
+      }
+
+      .status-media:nth-child(2) {
+        margin-left: calc(50% + $marginHalf / 2);
+      }
+    }
+
+    &.status-mediaList3 {
+      .status-media:nth-child(1) {
+        float: left;
+        width: calc(50% - $marginHalf / 2);
+      }
+
+      .status-media:nth-child(2) {
+        margin-bottom: $marginHalf;
+      }
+      .status-media:nth-child(2),
+      .status-media:nth-child(3) {
+        margin-left: calc(50% + $marginHalf / 2);
+        height: calc(50% - $marginHalf / 2)
+      }
+    }
+
+    &.status-mediaList4 {
+      .status-media {
+        height: calc(50% - $marginHalf / 2)
+      }
+
+      .status-media:nth-child(1) {
+        float: left;
+        width: calc(50% - $marginHalf / 2);
+        margin-bottom: $marginHalf;
+      }
+      .status-media:nth-child(2) {
+        margin-left: calc(50% + $marginHalf / 2);
+        margin-bottom: $marginHalf;
+      }
+
+      .status-media:nth-child(3) {
+        float: left;
+        width: calc(50% - $marginHalf / 2);
+      }
+      .status-media:nth-child(4) {
+        margin-left: calc(50% + $marginHalf / 2);
+      }
+    }
+  }
+
+  .status-actions {
+    margin: $marginDefault 0 $marginHalf;
+    color: $colorStatusInactiveActionColor;
+
+    > * {
+      margin: 0 $marginDefault;
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+
+    button {
+      background: transparent;
+      color: inherit;
+      border: none;
+      padding: 0;
+    }
+
+    .icon {
+      color: $colorStatusActionColor;
+      font-size: $fontSizeStatusActionIcon;
+
+      &::before {
+        margin: 0;
+      }
+      &.is-active {
+        color: $colorStatusActiveActionColor;
+      }
+      &.is-inactive {
+        color: $colorStatusInactiveActionColor;
+      }
+    }
+  }
+
+  .status-replyPanel {
+    &::before {
+      content: "";
+      display: block;
+      position: relative;
+      width: 0;
+      height: 0;
+      border: solid $marginDefault;
+      border-color: transparent transparent $colorTootPanelBackground transparent;
+      left: calc($statusBodyMarginLeft + 0.75rem - $marginDefault);
+      margin-top: calc(-$marginDefault / 2);
+    }
+
+    > div {
+      overflow: hidden;
+    }
+
+    .tootPanel {
+      transition: margin-top 0.3s ease-in-out;
+      margin-top: 0;
+    }
+    &.off .tootPanel {
+      margin-top: -120%;  /* 100%だとなんでかはみ出る。なんで? */
+    }
+  }
+}
+
+
+.notification {
+  .notification-about {
+    margin-bottom: $marginDefault;
+    @mixin clearfix;
+
+    .notification-icon {
+      display: block;
+      width: $sizeAvatar;
+      float: left;
+      text-align: right;
+    }
+
+    .notification-what {
+      display: block;
+      margin-left: $statusBodyMarginLeft;
+      color: $colorNotificationWhat;
+      position: relative;
+
+      .account-displayName {
+        font-weight: bold;
+      }
+
+      .notification-createdAt {
+        float: right;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+      }
+    }
+  }
+
+  .notification-account {
+    @mixin clearfix;
+
+    .notification-accountAvatar {
+      display: block;
+      width: $sizeAvatar;
+      float: left;
+      text-align: right;
+    }
+
+    .notification-accountInfo {
+      margin-left: $statusBodyMarginLeft;
+      line-height: 1.3;
+
+      > * {
+        display: block;
+      }
+    }
+  }
+
+
+  &.notification--follow {
+    .notification-icon {
+      color: $colorAccentNormal;
+    }
+  }
+
+  &.notification--mention {
+  }
+
+  &.notification--reblog {
+    .notification-icon {
+      color: $colorAccentNormal;
+    }
+  }
+
+  &.notification--favourite {
+    .notification-icon {
+      color: $colorStarred;
+    }
+  }
+}

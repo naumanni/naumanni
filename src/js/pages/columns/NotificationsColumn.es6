@@ -3,42 +3,33 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import {
-  COLUMN_TIMELINE,
-  TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
+  COLUMN_NOTIFICATIONS,
+  SUBJECT_MIXED,
 } from 'src/constants'
-import TimelineListener from 'src/controllers/TimelineListener'
+import NotificationListener from 'src/controllers/NotificationListener'
 import TimelineData from 'src/infra/TimelineData'
-import Column from './Column'
-import TimelineStatus from '../components/TimelineStatus'
+import TimelineNotification from 'src/pages/components/TimelineNotification'
 import TimelineActions from 'src/controllers/TimelineActions'
-
-
-// TODO: i10n
-const TYPENAMEMAP = {
-  [TIMELINE_FEDERATION]: '連合タイムライン',
-  [TIMELINE_LOCAL]: 'ローカルタイムライン',
-  [TIMELINE_HOME]: 'ホームタイムライン',
-}
+import Column from './Column'
 
 
 /**
- * タイムラインのカラム
+ * 通知カラム
  */
-export default class TimelineColumn extends Column {
+export default class NotificationColumn extends Column {
   static isScrollable = true
 
   static propTypes = {
     subject: PropTypes.string.isRequired,
-    timelineType: PropTypes.string.isRequired,
   }
 
   constructor(...args) {
     super(...args)
 
-    const {subject, timelineType} = this.props
+    const {subject} = this.props
 
-    this.listener = new TimelineListener(subject, timelineType)
-    this.state.loading = true
+    this.listener = new NotificationListener(subject)
+    this.state.timeline = null
     this.actionDelegate = new TimelineActions(this.context)
   }
 
@@ -73,20 +64,18 @@ export default class TimelineColumn extends Column {
    * @override
    */
   renderTitle() {
-    const typeName = TYPENAMEMAP[this.props.timelineType]
-
     if(this.isMixedTimeline()) {
-      return `統合${typeName}`
+      return '統合通知'
     } else {
       const {token} = this.state
 
       if(!token)
-        return typeName
+        return '通知'
 
       return (
         <h1 className="column-headerTitle">
           <div className="column-headerTitleSub">{token.acct}</div>
-          <div className="column-headerTitleMain">{typeName}</div>
+          <div className="column-headerTitleMain">通知</div>
         </h1>
       )
     }
@@ -102,11 +91,11 @@ export default class TimelineColumn extends Column {
     return (
       <div className={this.columnBodyClassName()}>
         <ul className="timeline">
-          {timeline.map((statusRef) => {
+          {(timeline || []).map((notificationRef) => {
             return (
-              <li key={statusRef.uri}>
-                <TimelineStatus
-                  {...statusRef.expand()}
+              <li key={notificationRef.uri}>
+                <TimelineNotification
+                  notificationRef={notificationRef}
                   tokens={tokens}
                   {...this.actionDelegate.props}
                 />
@@ -168,4 +157,4 @@ export default class TimelineColumn extends Column {
     }
   }
 }
-require('./').registerColumn(COLUMN_TIMELINE, TimelineColumn)
+require('./').registerColumn(COLUMN_NOTIFICATIONS, NotificationColumn)
