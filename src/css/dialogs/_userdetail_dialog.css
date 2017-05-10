@@ -15,38 +15,7 @@
 
 .dialog--userDetail .userDetail {
   border-right: 1px solid $colorGray1;
-  position: relative;
-
-  background-size: cover;
-  background-position: center center;
-
-  .userDetail-header {
-    padding-top: 64px;
-    text-align: center;
-
-    .userIcon {
-      margin: 0 0 32px 0;
-    }
-  }
-
-  .userDetail-actions {
-    position: absolute;
-    top: $marginDefault;
-    right: $marginDefault;
-
-    > * {
-      margin-left: $marginHalf;
-    }
-
-    .dropdownMenuButton {
-      display: inline-block;;
-    }
-
-    .button {
-      font-size: 1rem;
-      line-height: 2rem;
-    }
-  }
+  border-radius: $radiusDialog 0 0 $radiusDialog;
 }
 
 
@@ -91,5 +60,6 @@
   }
   .icon {
     font-size: 1.6rem;
+    width: 26px;
   }
 }

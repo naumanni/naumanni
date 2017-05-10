@@ -1,0 +1,43 @@
+.userDetail {
+  position: relative;
+
+  background-size: cover;
+  background-position: center center;
+
+  .userDetail-header {
+    padding: 64px 8px 8px;
+    text-align: center;
+    color: $colorText;
+
+    .userIcon {
+      margin: 0 0 32px 0;
+    }
+
+    .user-acct {
+      color: $colorText;
+
+      .icon {
+        margin-left: 0.2em;
+      }
+    }
+  }
+
+  .userDetail-actions {
+    position: absolute;
+    top: $marginDefault;
+    right: $marginDefault;
+
+    > * {
+      margin-left: $marginHalf;
+    }
+
+    .dropdownMenuButton {
+      display: inline-block;;
+    }
+
+    .button {
+      font-size: 1rem;
+      line-height: 2rem;
+    }
+  }
+}

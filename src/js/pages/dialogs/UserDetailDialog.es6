@@ -2,8 +2,9 @@ import React from 'react'
 
 import {COLUMN_TALK} from 'src/constants'
 import TimelineData from 'src/infra/TimelineData'
-import {DropdownMenuButton, IconFont, NowLoading, UserIconWithHost} from 'src/pages/parts'
+import {IconFont, NowLoading, UserIconWithHost} from 'src/pages/parts'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
+import UserDetail from 'src/pages/components/UserDetail'
 import Dialog from './Dialog'
 
 export const LIST_STATUSES = 'statuses'
@@ -42,7 +43,9 @@ export default class UserDetailDialog extends Dialog {
    * @override
    */
   render() {
-    const {account} = this.state
+    // TODO: stateにする
+    const {tokens} = this.context.context.getState().tokenState
+    const {account, relationships} = this.state
     const closeButton = (
       <button className="dialog-closeButton" onClick={::this.onClickClose}><IconFont iconName="cancel" /></button>
     )
@@ -59,37 +62,12 @@ export default class UserDetailDialog extends Dialog {
     return (
       <div className={this.dialogClassName}>
         {closeButton}
-        {this.renderAccountDetail()}
+        <UserDetail
+          account={account} tokens={tokens} relationships={relationships}
+          onOpenTalkClicked={::this.onOpenTalkClicked}
+          onToggleFollowClicked={::this.onToggleFollowClicked}
+          />
         {this.renderTimeline()}
-      </div>
-    )
-  }
-
-  renderAccountDetail() {
-    const {account} = this.state
-    const headerStyle = {}
-
-    if(account.header && account.header.startsWith('http'))
-      headerStyle.background = `url(${account.header}) center center, rgba(255, 255, 255, 0.5)`
-
-    return (
-      <div className="userDetail" style={headerStyle}>
-        <div className="userDetail-actions">
-          <DropdownMenuButton onRenderMenu={::this.onRenderTalkMenu}>
-            <button className="button"><IconFont iconName="talk" /> トーク</button>
-          </DropdownMenuButton>
-          <DropdownMenuButton onRenderMenu={::this.onRenderFollowMenu}>
-            <button className="button button--primary"><IconFont iconName="user-plus" /> フォロー</button>
-          </DropdownMenuButton>
-        </div>
-
-        <div className="userDetail-header">
-          <UserIconWithHost account={account} size="large" />
-          <div>{account.user_name}</div>
-          <div>{account.acct}</div>
-          <div><SafeLink href={account.url} target="_blank">{account.url}</SafeLink></div>
-          <div><SafeNote note={account.note} /></div>
-        </div>
       </div>
     )
   }
@@ -190,61 +168,6 @@ export default class UserDetailDialog extends Dialog {
     this.app.history.goTop()
   }
 
-  onRenderTalkMenu() {
-    const tokens = this.context.context.getState().tokenState.tokens
-
-    return (
-      <ul className="menu menu--talk">
-        {tokens.map((token) => {
-          const {account} = token
-          return (
-            <li className="menu-item"
-              key={account.acct}
-              onClick={this.onClickOpenTalk.bind(this, token, account)}
-            >
-              <UserIconWithHost account={account} size="mini" /> {account.acct}
-            </li>
-          )
-        })}
-      </ul>
-    )
-  }
-
-  onRenderFollowMenu() {
-    const tokens = this.context.context.getState().tokenState.tokens
-
-    return (
-      <ul className="menu menu--follow">
-        {tokens.map((token) => {
-          const {account} = token
-          const relationship = this.state.relationships[account.acct]
-          const isFollowing = relationship ? relationship.following : false
-          const isRequested = relationship ? relationship.requested : false
-
-          let text
-
-          if(isFollowing)
-            text = 'フォローを解除'
-          else
-            text = 'フォローする'
-
-          return (
-            <li className="menu-item"
-              key={account.acct}
-              onClick={this.onClickToggleFollow.bind(this, token, account)}
-            >
-              <IconFont iconName={isFollowing ? 'user-times' : 'user-plus'} />
-              <UserIconWithHost account={account} size="mini" />
-              <span className="menu-itemLabel">
-                {account.acct}<br />{text}
-              </span>
-            </li>
-          )
-        })}
-      </ul>
-    )
-  }
-
   onClickClose(e) {
     e.preventDefault()
     this.close()
@@ -254,7 +177,7 @@ export default class UserDetailDialog extends Dialog {
     this.setState({list: newList})
   }
 
-  onClickOpenTalk(token, account, e) {
+  onOpenTalkClicked(token, account, e) {
     const {context} = this.context
 
     context.useCase(new AddColumnUseCase()).execute(COLUMN_TALK, {
@@ -264,27 +187,6 @@ export default class UserDetailDialog extends Dialog {
       .then(() => this.close())
   }
 
-  onClickToggleFollow(token, account, e) {
-    const relationship = this.state.relationships[account.acct]
-    const isFollowing = relationship ? relationship.following : false
-    const isRequested = relationship ? relationship.requested : false
+  onToggleFollowClicked(token, account, doFollow) {
   }
-}
-
-
-export function SafeLink({children, href, ...props}) {
-  if(!(href.startsWith('http://') || href.startsWith('https://')))
-    href = 'javascript:void(0)'
-
-  return (
-    <a href={href} {...props}>{children}</a>
-  )
-}
-
-
-export function SafeNote({note}) {
-  const sanitizeHtml = require('sanitize-html')
-
-  note = sanitizeHtml(note, {allowedTags: []})
-  return <p>{note}</p>
 }

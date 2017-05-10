@@ -3,6 +3,7 @@
 @import "_mixins.css";
 @import "_font.css";
 @import "_parts.css";
+@import "parts/_user_detail.css";
 @import "components/_column_container.css";
 @import "components/_modal_dialog.css";
 @import "components/_timeline_column.css";
@@ -32,6 +33,15 @@ html {
 body {
   margin: 0;
   padding: 0;
+}
+
+a {
+  color: $colorAccentNormal;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 /** multi column **/
