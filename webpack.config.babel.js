@@ -3,6 +3,9 @@ import DefinePlugin from 'webpack/lib/DefinePlugin'
 import UglifyJsPlugin from 'webpack/lib/optimize/UglifyJsPlugin'
 
 
+const SOURCE_DIR = `${__dirname}/src/js`
+const DEST_DIR = `${__dirname}/static`
+
 class LoggerPlugin {
   apply(compiler) {
     const timestamp = () => `[${(new Date()).toLocaleString()}]`
@@ -18,11 +21,6 @@ class LoggerPlugin {
   }
 }
 
-
-const SOURCE_DIR = `${__dirname}/src/js`
-const DEST_DIR = `${__dirname}/static`
-
-console.log(SOURCE_DIR)
 
 module.exports = {
   entry: {

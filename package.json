@@ -13,7 +13,7 @@
     "lint": "eslint --config .eslintrc.yml --cache ./src/js/**/*.es6",
     "lint:fix": "eslint --fix --ext=es6 --config .eslintrc.yml src/",
     "test": "run-s build test:js",
-    "test:js": "jest",
+    "test:js": "jest --coverage",
     "watch": "npm-run-all -p watch:*",
     "watch:js": "webpack --progress --colors --watch",
     "watch:css": "postcss src/css/main.css -d static -w",
@@ -83,7 +83,6 @@
     "react-test-renderer": "^15.5.4"
   },
   "jest": {
-    "collectCoverage": true,
     "collectCoverageFrom": [
       "**/*.es6",
       "!**/__stories__/*.js"
