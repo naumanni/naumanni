@@ -188,6 +188,15 @@ export default class TalkColumn extends Column {
       return
     }
 
+    // get latest status id
+    let lastStatusId = null
+
+    if(this.state.talk) {
+      const lastTalkGroup = this.state.talk[this.state.talk.length - 1]
+      const lastStatus = lastTalkGroup.statuses[lastTalkGroup.statuses.length - 1]
+      lastStatusId = lastStatus.getIdByHost(this.state.token.host)
+    }
+
     this.setState({sendingMessage: true}, async () => {
       const {context} = this.context
       const {token, me, members} = this.state
@@ -197,6 +206,7 @@ export default class TalkColumn extends Column {
           token,
           self: me,
           message: message,
+          in_reply_to_id: lastStatusId,
           recipients: Object.values(members),
         })
 

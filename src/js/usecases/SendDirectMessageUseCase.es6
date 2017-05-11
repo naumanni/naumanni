@@ -20,7 +20,7 @@ export default class SendDirectMessageUseCase extends UseCase {
    * @param {string} message
    * @param {Account[]} recipients
    */
-  async execute({token, self, message, recipients}) {
+  async execute({token, self, message, in_reply_to_id, recipients}) {
     if(message.length >= MASTODON_MAX_CONTENT_SIZE) {
       // encryptedの場合分割して送るから、ContentSizeはもはや関係ないはずなんだけど...
       throw new Error('__TODO_ERROR_MESSAGE__')
@@ -43,14 +43,14 @@ export default class SendDirectMessageUseCase extends UseCase {
           publicKeys[storedKey.user] = storedKey.readArmored()[0]
           return publicKeys
         }, {})
-      await this.sendEncryptedMessage({token, self, message, recipients, publicKeys})
+      await this.sendEncryptedMessage({token, self, message, in_reply_to_id, recipients, publicKeys})
     } else {
       // 鍵もってないのがいるので、plainに送る
-      await this.sendPlainMessage({token, self, message, recipients})
+      await this.sendPlainMessage({token, self, message, in_reply_to_id, recipients})
     }
   }
 
-  async sendPlainMessage({token, self, message, recipients}) {
+  async sendPlainMessage({token, self, message, in_reply_to_id, recipients}) {
     require('assert')(message.length < MASTODON_MAX_CONTENT_SIZE)
     const status = recipients.map((r) => `@${r.acct}`).join(' ') + ' ' + message
     if(status.length >= MASTODON_MAX_CONTENT_SIZE) {
@@ -59,11 +59,12 @@ export default class SendDirectMessageUseCase extends UseCase {
     }
     await postStatusManaged(token, {message: {
       status,
+      in_reply_to_id,
       visibility: 'direct',
     }})
   }
 
-  async sendEncryptedMessage({token, self, message, recipients, publicKeys}) {
+  async sendEncryptedMessage({token, self, message, in_reply_to_id, recipients, publicKeys}) {
     const encryptedBlocks = await encryptText({
       content: message,
       addresses: recipients.reduce((addresses, recipient) => {
@@ -78,6 +79,7 @@ export default class SendDirectMessageUseCase extends UseCase {
       encryptedBlocks.map((block) => {
         postStatusManaged(token, {message: {
           status: block,
+          in_reply_to_id,
           visibility: 'direct',
         }})
       })
