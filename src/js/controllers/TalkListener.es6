@@ -66,7 +66,7 @@ class TalkBlock {
       require('assert')(0, 'not implemented')
     }
     // 発言者が違えば違うBlock
-    if(!newStatus.account === this.account)
+    if(newStatus.account !== this.account.uri)
       return false
 
     // 30分離れていたら違うBlock
