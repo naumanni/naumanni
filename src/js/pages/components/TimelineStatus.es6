@@ -8,7 +8,7 @@ import {
 import TootPanel from './TootPanel'
 import {AcctPropType, AccountPropType, StatusPropType} from 'src/propTypes'
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
-import {DropdownMenuButton, IconFont, UserIconWithHost} from '../parts'
+import {DropdownMenuButton, IconFont, UserIconWithHost, SafeContent} from '../parts'
 
 
 export default class TimelineStatus extends React.Component {
@@ -104,7 +104,9 @@ export default class TimelineStatus extends React.Component {
             <div className={statusBodyClass.join(' ')}>
               {this.renderSpoilerText()}
               {isContentOpen && (
-                <div className="status-content" dangerouslySetInnerHTML={{__html: mainStatus.content}} />
+                <div className="status-content">
+                  <SafeContent parsedContent={mainStatus.parsedContent} {...this.props} />
+                </div>
               )}
             </div>
 

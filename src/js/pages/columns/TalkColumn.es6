@@ -8,7 +8,7 @@ import {
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener from 'src/controllers/TalkListener'
 import Column from './Column'
-import {UserIconWithHost} from '../parts'
+import {UserIconWithHost, SafeContent} from '../parts'
 
 
 /**
@@ -168,11 +168,11 @@ export default class TalkColumn extends Column {
           </div>
         )}
         <ul className="talk-talkGroupStatuses">
-          {talkGroup.statuses.map((status) => {
+          {talkGroup.contents.map(({key, parsedContent, createdAt}) => {
             return (
-              <li key={status.uri}>
-                <div className="status-content" dangerouslySetInnerHTML={{__html: status.content}} />
-                <div className="status-date">{status.createdAt.format('YYYY-MM-DD HH:mm:ss')}</div>
+              <li key={key}>
+                <div className="status-content"><SafeContent parsedContent={parsedContent} /></div>
+                <div className="status-date">{createdAt.format('YYYY-MM-DD HH:mm:ss')}</div>
               </li>
             )
           })}
@@ -183,7 +183,10 @@ export default class TalkColumn extends Column {
 
   sendMessage() {
     const message = this.state.newMessage.trim()
-    console.log('send message', message)
+    if(!message) {
+      // cannot send message
+      return
+    }
 
     this.setState({sendingMessage: true}, async () => {
       const {context} = this.context

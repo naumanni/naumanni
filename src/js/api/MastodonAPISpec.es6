@@ -71,8 +71,12 @@ export function normalizeResponse(entity, responseBody, host, acct=null) {
         data.favourited_by_acct = {[acct]: data.favourited}
         delete data.favourited
 
-        data.mentions_by_host = {[host]: data.mentions}
-        delete data.mentions
+        // 自ホストのmentionのacctにinstance名が足りてないので細くする
+        data.mentions = data.mentions.map((mention) => {
+          if(mention.acct.indexOf('@') >= 0)
+            return mention
+          return {...mention, acct: `${mention.acct}@${host}`}
+        })
 
         map[key] = new Status(data)
         return map

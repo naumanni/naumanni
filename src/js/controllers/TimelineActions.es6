@@ -35,9 +35,10 @@ export default class TimelineActions {
     }
   }
 
-  onAvatarClicked(account) {
+  onAvatarClicked(accountOrAcct) {
+    const acct = typeof accountOrAcct === 'string' ? accountOrAcct : accountOrAcct.acct
     // TODO: named routingしたい
-    this.app.pushState({}, null, `/user/@${account.acct}`)
+    this.app.pushState({}, null, `/user/@${acct}`)
   }
 
   async onSendReply(status, sendFrom, messageContent) {

@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import {AccountPropType} from 'src/propTypes'
-import {IconFont, UserIconWithHost} from '../parts'
+import {IconFont, UserIconWithHost, SafeNote} from '../parts'
 
 
 export default class AccountRow extends React.Component {
@@ -29,7 +29,7 @@ export default class AccountRow extends React.Component {
             <span className="user-account">@{account.acct}</span>
           </div>
 
-          <div className="accountRow-note" dangerouslySetInnerHTML={{__html: account.note}} />
+          <div className="accountRow-note"><SafeNote parsedNote={account.parsedNote} /></div>
 
         </div>
       </article>

@@ -48,3 +48,10 @@ export const WEBSOCKET_EVENT_ERROR = 'error'
 export const WEBSOCKET_EVENT_OPEN = 'open'
 export const WEBSOCKET_EVENT_MESSAGE = 'message'
 export const WEBSOCKET_EVENT_CLOSE = 'close'
+
+// statusをparseしたあとのToken
+export const TOKEN_TEXT = 'text'
+export const TOKEN_BREAK = 'break'
+export const TOKEN_URL = 'url'
+export const TOKEN_MENTION = 'mention'
+export const TOKEN_HASHTAG = 'hashtag'

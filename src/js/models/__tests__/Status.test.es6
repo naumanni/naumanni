@@ -33,7 +33,7 @@ describe('Status', () => {
       media_attachments: [{
         id: 666
       }],
-      content: 'aaa<a>hogehoge</a>',
+      content: '<p>aaa <a href="http://www.google.com/">http://www.google.com/</a></p>',
       created_at: '2017-05-08T14:02:55.000Z',
       spoiler_text: 'spoiler_text',
       visibility: 'direct',
@@ -43,16 +43,14 @@ describe('Status', () => {
       favourited_by_acct: {
         [acct2]: true,
       },
-      mentions_by_host: {
-        'dummy': [
-          {
-            acct: acct2,
-            id: 1,
-            url: 'https://mummy/@bob',
-            username: 'bob',
-          },
-        ],
-      },
+      mentions: [
+        {
+          acct: acct2,
+          id: 1,
+          url: 'https://mummy/@bob',
+          username: 'bob',
+        },
+      ],
     })
 
     expect(obj.getIdByHost('aaa')).toBe(111)
@@ -60,7 +58,10 @@ describe('Status', () => {
     expect(obj.hosts).toEqual(expect.arrayContaining(['aaa', 'bbb']))
     expect(obj.getInReplyToIdByHost('aaa')).toBe(1919)
     expect(obj.getInReplyToIdByHost('bbb')).toBe(4545)
-    expect(obj.rawContent).toBe('aaa<a>hogehoge</a>')
+    expect(obj.content).toBe('<p>aaa <a href="http://www.google.com/">http://www.google.com/</a></p>')
+    expect(obj.parsedContent.size).toBe(2)
+    expect(obj.parsedContent.get(0)).toMatchObject({type: 'text', text: 'aaa '})
+    expect(obj.parsedContent.get(1)).toMatchObject({type: 'url'})
     expect.assertions(obj.createdAt.isSame(moment('2017-05-08T14:02:55.000Z')))
     expect.assertions(obj.hasSpoilerText)
     expect(obj.spoilerText).toBe('spoiler_text')

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
 import {AccountPropType, OAuthTokenArrayPropType} from 'src/propTypes'
+import {SafeNote, SafeLink} from 'src/pages/parts'
 
 
 export default class UserDetail extends React.Component {
@@ -25,7 +26,6 @@ export default class UserDetail extends React.Component {
       headerStyle.background = `\
 linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%),
 url(${account.header}) center center`
-
     return (
       <div className="userDetail" style={headerStyle}>
         {tokens.length == 1
@@ -38,7 +38,7 @@ url(${account.header}) center center`
           <div className="user-displayName">{account.display_name}</div>
           <div className="user-acct">{account.acct}{account.locked && <IconFont iconName="lock" />}</div>
           <div><SafeLink href={account.url} target="_blank">{account.url}</SafeLink></div>
-          <div><SafeNote note={account.note} /></div>
+          <div><SafeNote parsedNote={account.parsedNote} /></div>
         </div>
       </div>
     )
@@ -157,22 +157,4 @@ url(${account.header}) center center`
 
     return {disable, icon, text, doFollow}
   }
-}
-
-
-export function SafeLink({children, href, ...props}) {
-  if(!(href.startsWith('http://') || href.startsWith('https://')))
-    href = 'javascript:void(0)'
-
-  return (
-    <a href={href} {...props}>{children}</a>
-  )
-}
-
-
-export function SafeNote({note}) {
-  const sanitizeHtml = require('sanitize-html')
-
-  note = sanitizeHtml(note, {allowedTags: []})
-  return <p>{note}</p>
 }

@@ -1,8 +1,9 @@
 import moment from 'moment'
-import {Record} from 'immutable'
+import {List, Record} from 'immutable'
 
 import {REGEX_PGP_FINGERPRINT} from 'src/constants'
-import {isObjectSame} from 'src/utils'
+import {isObjectSame, parseMastodonHtml} from 'src/utils'
+
 
 const AccountRecord = Record({  // eslint-disable-line new-cap
   // id: null,
@@ -143,5 +144,12 @@ export default class Account extends AccountRecord {
 
   get createdAt() {
     return moment(this.created_at)
+  }
+
+  get parsedNote() {
+    if(!this._parsedNote) {
+      this._parsedNote = new List(parseMastodonHtml(this.note))
+    }
+    return this._parsedNote
   }
 }

@@ -1,11 +1,11 @@
 import moment from 'moment'
-import {Record} from 'immutable'
+import {List, Record} from 'immutable'
 
 import {
   MESSAGE_TAG_REX,
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
-import {isObjectSame} from 'src/utils'
+import {isObjectSame, parseMastodonHtml} from 'src/utils'
 
 
 const StatusRecord = Record({  // eslint-disable-line new-cap
@@ -21,7 +21,7 @@ const StatusRecord = Record({  // eslint-disable-line new-cap
   spoiler_text: '',
   visibility: '',
   media_attachments: [],
-  mentions_by_host: {},
+  mentions: [],
   tags: [],
   application: '',
   reblog: null,
@@ -67,10 +67,12 @@ export default class Status extends StatusRecord {
     return this.in_reply_to_id_by_host[host]
   }
 
-  get rawContent() {
-    // TODO:sanitize
-    // import {sanitizeHtml} from 'sanitize-html'
-    return this.content
+  get parsedContent() {
+    if(!this._parsedContent) {
+      const mentions = this.mentions
+      this._parsedContent = new List(parseMastodonHtml(this.content, mentions))
+    }
+    return this._parsedContent
   }
 
   get createdAt() {
@@ -105,10 +107,8 @@ export default class Status extends StatusRecord {
    * @return {bool}
    */
   isMentionToURI(uri) {
-    for(const mentions of Object.values(this.mentions_by_host)) {
-      if(mentions.find((m) => m.url === uri))
-        return true
-    }
+    if(this.mentions.find((m) => m.url === uri))
+      return true
     return false
   }
 

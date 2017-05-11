@@ -3,6 +3,7 @@ import {EventEmitter} from 'events'
 import {
   EVENT_UPDATE, EVENT_NOTIFICATION, NOTIFICATION_TYPE_MENTION,
   STREAM_HOME, VISIBLITY_DIRECT, WEBSOCKET_EVENT_MESSAGE,
+  TOKEN_MENTION, TOKEN_TEXT,
 } from 'src/constants'
 import {Status} from 'src/models'
 import WebsocketManager from 'src/controllers/WebsocketManager'
@@ -51,6 +52,7 @@ class TalkBlock {
   constructor(lastStatus, account) {
     this.statuses = [lastStatus]
     this.account = account
+    this.contents = null
   }
 
   push(newStatus) {
@@ -235,16 +237,23 @@ export default class TalkListener extends EventEmitter {
    * @return {bool} 更新したか?
    */
   pushStatusesIfMatched(statuses) {
-    let targetsAccountUris = [
+    let memberUris = new Set([
       this.me.uri,
       ...Object.values(this.members).map((account) => account.uri),
-    ]
+    ])
 
     statuses = statuses
       .filter((status) => status.resolve().visibility === VISIBLITY_DIRECT)
-      // TODO: これだと、独り言DIRECTも含まれてしまっている
-      .filter((status) => targetsAccountUris.every(
-        (uri) => status.accountUri === uri || status.resolve().isMentionToURI(uri)))
+      .filter((status) => {
+        const targets = new Set([status.accountUri, ...status.resolve().mentions.map((m) => m.url)])
+
+        if(targets.size !== memberUris.size)
+          return false
+        for(const x of targets)
+          if(!memberUris.has(x))
+            return false
+        return true
+      })
       .filter((status) => !this.statuses.find((s) => s.uri === status.uri))
     if(!statuses.length)
       return false
@@ -309,6 +318,41 @@ export default class TalkListener extends EventEmitter {
         latestTalkBlock = new TalkBlock(status, statusRef.accountRef.resolve())
         talk.push(latestTalkBlock)
       }
+    }
+
+    // make contents
+    const targetsAccts = new Set([
+      this.me.acct,
+      ...Object.values(this.members).map((account) => account.acct),
+    ])
+
+    for(const talkBlock of talk) {
+      talkBlock.contents = talkBlock.statuses.map((status) => {
+        if(status instanceof EncryptedStatus) {
+          require('assert')(0, 'not implemented')
+        } else {
+          // 冒頭のmentionだけ省く
+          let isHead = true
+          let parsedContent = status.parsedContent
+            .filter((token) => {
+              if(isHead) {
+                if(token.type === TOKEN_MENTION && targetsAccts.has(token.acct))
+                  return false
+                else if(token.type === TOKEN_TEXT && !token.text.trim())
+                  return false
+                else
+                  isHead = false
+              }
+              return true
+            })
+
+          return {
+            key: status.uri,
+            parsedContent: parsedContent,
+            createdAt: status.createdAt,
+          }
+        }
+      })
     }
 
     // replace
