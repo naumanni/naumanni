@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import {UIDialog} from 'src/models'
 import CloseDialogUseCase from 'src/usecases/CloseDialogUseCase'
+import {IconFont} from 'src/pages/parts'
 
 
 /**
@@ -62,6 +63,13 @@ export default class Dialog extends React.Component {
     )
   }
 
+
+  renderCloseButton() {
+    return (
+       <button className="dialog-closeButton" onClick={::this.onClickClose}><IconFont iconName="cancel" /></button>
+    )
+  }
+
   /**
    * @private
    * @return {string}
@@ -96,5 +104,27 @@ export default class Dialog extends React.Component {
   get app() {
     console.log(this.context)
     return this.context.app
+  }
+
+  // event handlers
+  onClickBackground(e) {
+    e.preventDefault()
+    this.close()
+  }
+
+  onClickClose(e) {
+    e.preventDefault()
+    this.close()
+  }
+}
+
+
+/**
+ * closeするときにhistory.back()するdialog
+ * もっと良い名前を... 誰か...
+ */
+export class HistoryRelatedDialog extends Dialog {
+  close() {
+    this.app.history.back()
   }
 }

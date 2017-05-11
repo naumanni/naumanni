@@ -59,7 +59,7 @@ export default class AuthorizeAccountDialog extends Dialog {
   }
 
   /**
-   * override
+   * @override
    */
   renderFooter() {
     if(this.state.error) {
@@ -69,8 +69,10 @@ export default class AuthorizeAccountDialog extends Dialog {
     }
   }
 
-  onClickClose(e) {
-    e.preventDefault()
+  /**
+   * @override
+   */
+  close() {
     this.app.history.pushState({}, null, '/')
   }
 }

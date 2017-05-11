@@ -69,9 +69,7 @@ export default class TimelineActions {
   }
 
   onClickMedia(media) {
-    const {context} = this.context
-
-    context.useCase(
+    this.context.useCase(
       new PushDialogUseCase()
     ).execute(DIALOG_MEDIA_VIEWER, {media})
   }

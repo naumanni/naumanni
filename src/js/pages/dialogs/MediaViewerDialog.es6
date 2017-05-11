@@ -1,6 +1,5 @@
 import React from 'react'
 
-import {IconFont} from 'src/pages/parts'
 import Dialog from './Dialog'
 
 
@@ -16,7 +15,7 @@ export default class MediaViewerDialog extends Dialog {
 
     return (
       <div className={`${this.dialogClassName} dialog--mediaViewer--${media.type}`}>
-        <button className="dialog-closeButton" onClick={::this.onClickClose}><IconFont iconName="cancel" /></button>
+        {this.renderCloseButton()}
         {media.type === 'image'
           ? this.renderImage(media)
           : this.renderVideo(media)
@@ -46,23 +45,11 @@ export default class MediaViewerDialog extends Dialog {
   }
 
   /**
+   * @override
    * @private
    * @return {string}
    */
   get dialogClassName() {
     return super.dialogClassName + ' dialog--mediaViewer'
-  }
-
-  /**
-   * @override
-   */
-  onClickBackground(e) {
-    e.preventDefault()
-    this.close()
-  }
-
-  onClickClose(e) {
-    e.preventDefault()
-    this.close()
   }
 }

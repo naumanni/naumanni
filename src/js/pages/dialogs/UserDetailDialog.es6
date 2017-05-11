@@ -9,7 +9,7 @@ import {AccountTimelineLoader} from 'src/controllers/TimelineLoader'
 import TimelineActions from 'src/controllers/TimelineActions'
 import TimelineStatus from 'src/pages/components/TimelineStatus'
 import AccountRow from 'src/pages/components/AccountRow'
-import Dialog from './Dialog'
+import {HistoryRelatedDialog} from './Dialog'
 
 export const LIST_STATUSES = 'statuses'
 export const LIST_FOLLOWINGS = 'followings'
@@ -19,7 +19,7 @@ export const LIST_FOLLOWERS = 'followers'
 /**
  * ユーザー詳細表示
  */
-export default class UserDetailDialog extends Dialog {
+export default class UserDetailDialog extends HistoryRelatedDialog {
   /**
    * @constructor
    */
@@ -266,15 +266,6 @@ export default class UserDetailDialog extends Dialog {
       else
         this.setState({followings: Array.from(accounts.values())})
     }
-  }
-
-  close() {
-    this.app.history.back()
-  }
-
-  onClickClose(e) {
-    e.preventDefault()
-    this.close()
   }
 
   onClickListTab(newList) {
