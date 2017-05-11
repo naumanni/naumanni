@@ -6,7 +6,6 @@ import {isObjectSame, parseMastodonHtml} from 'src/utils'
 
 
 const AccountRecord = Record({  // eslint-disable-line new-cap
-  // id: null,
   id_by_host: {},
   username: null,
   acct: null,
@@ -71,6 +70,14 @@ export default class Account extends AccountRecord {
   get id() {
     console.error('deprecated attribute')
     require('assert')(0)
+  }
+
+  /**
+   * display_name || acct
+   * 関数名紛らわしいぞ!!
+   */
+  get displayName() {
+    return this.display_name || this.acct
   }
 
   getIdByHost(host) {

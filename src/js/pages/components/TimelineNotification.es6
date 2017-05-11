@@ -139,7 +139,7 @@ function UserLink({account, className, children}) {
 }
 
 function UserDisplayName({account}) {
-  return <UserLink account={account} className="user-displayName">{account.display_name}</UserLink>
+  return <UserLink account={account} className="user-displayName">{account.displayName}</UserLink>
 }
 
 function UserAcct({account}) {
