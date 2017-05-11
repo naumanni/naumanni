@@ -5,6 +5,7 @@
   width: 100vw;
   height: 100vh;
   background: $colorModalDialogContainerBackground;
+  z-index: $zIndexModalDialogContainer;
 
   .dialog {
     display: none;

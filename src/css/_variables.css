@@ -41,7 +41,6 @@ $marginHalf: calc($marginDefault / 2);
 
 
 /* 色 for App */
-
 $fontSizeButton: $fontSizeLarger;
 $sizeButtonHeight: 36px;
 $sizeButtonMinWidth: 120px;
@@ -111,4 +110,5 @@ $radiusDialog: calc($radiusDefault * 2);
 
 $zIndexBackground: 0;
 $zIndexHeader: 10;
-$zIndexDropDownMenu: 1000;
+$zIndexModalDialogContainer: 1000;
+$zIndexDropDownMenu: 2000;
