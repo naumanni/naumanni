@@ -49,6 +49,7 @@ export default class TimelineNotification extends React.Component {
     const account = notificationRef.accountRef.resolve()
     const {createdAt} = notificationRef
     const relativeTime = createdAt.fromNow()
+    const onClickHandler = this.onClickAccount.bind(this, account)
 
     return (
       <article className="notification notification--follow">
@@ -57,7 +58,7 @@ export default class TimelineNotification extends React.Component {
             <IconFont iconName="user-plus" />
           </span>
           <span className="notification-what">
-            <UserDisplayName account={account} /> {'さんにフォローされました '}
+            <UserDisplayName account={account} onClick={onClickHandler} /> {'さんにフォローされました '}
             <CushionString length={relativeTime.length} />
             <span
               className="notification-createdAt"
@@ -69,11 +70,11 @@ export default class TimelineNotification extends React.Component {
 
         <div className="notification-account">
           <div className="notification-accountAvatar">
-            <UserIconWithHost account={account} />
+            <UserIconWithHost account={account} onClick={onClickHandler} />
           </div>
           <div className="notification-accountInfo">
-            <UserDisplayName account={account} />
-            <UserAcct account={account} />
+            <UserDisplayName account={account} onClick={onClickHandler} />
+            <UserAcct account={account} onClick={onClickHandler} />
           </div>
         </div>
       </article>
@@ -125,6 +126,10 @@ export default class TimelineNotification extends React.Component {
         />
       </article>
     )
+  }
+
+  onClickAccount(account) {
+    this.props.onAvatarClicked(account)
   }
 }
 
