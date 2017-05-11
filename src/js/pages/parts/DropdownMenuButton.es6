@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
  */
 export default class DropdownMenuButton extends React.Component {
   static propTypes = {
+    modifier: PropTypes.string,
     // children
     onRenderMenu: PropTypes.func.isRequired,
   }
@@ -19,8 +20,14 @@ export default class DropdownMenuButton extends React.Component {
    * @override
    */
   render() {
+    const {modifier} = this.props
+    let className = 'dropdownMenuButton'
+
+    if(modifier) {
+      className += ` dropdownMenuButton--${modifier}`
+    }
     return (
-      <div className="dropdownMenuButton" onMouseLeave={::this.onMouseLeave}>
+      <div className={className} onMouseLeave={::this.onMouseLeave}>
         <div className="dropdownMenuButton-button" onClick={::this.onClickButton}>
           {this.props.children}
         </div>

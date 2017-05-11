@@ -159,6 +159,13 @@
   .naumanniDashboard-header-addAccountButton {
     border-style: dashed;
   }
+
+  .dropdownMenuButton--mixedColumMenu {
+    .dropdownMenuButton-menu {
+      left: 0;
+      right: auto;
+    }
+  }
 }
 
 
