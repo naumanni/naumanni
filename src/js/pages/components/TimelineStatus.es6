@@ -65,7 +65,7 @@ export default class TimelineStatus extends React.Component {
     const isFavourited = tokens.find((token) => status.isFavouritedAt(token.acct)) ? true : false
 
     return (
-      <article className={`status ${modifier ? 'status--modifier' : ''}`}>
+      <article className={`status ${modifier ? `status--${modifier}` : ''}`}>
 
         {reblog && (
           <div className="status-row status-reblogFrom">

@@ -324,10 +324,22 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
   }
 }
 
+.status.status--favourite {
+  .status-body .status-content {
+    color: $colorFavouritedStatusText;
+  }
+}
+
+.status.status--reblog {
+  .status-body .status-content {
+    color: $colorReblogedStatusText;
+  }
+}
 
 .notification {
   .notification-about {
     margin-bottom: $marginDefault;
+    padding: 0 12px;
     @mixin clearfix;
 
     .notification-icon {

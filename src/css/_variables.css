@@ -92,6 +92,8 @@ $colorStatusActionColor: $colorMainLighter;
 $colorStatusInactiveActionColor: $colorGray1;
 $colorStatusActiveActionColor: $colorAccentNormal;
 $colorStatusVisiblityColor: $colorGray1;
+$colorFavouritedStatusText: $colorGray3;
+$colorReblogedStatusText: $colorGray3;
 $fontSizeStatusActionIcon: 1.5rem;
 $fontSizeStatusVisibilityIcon: 1rem;
 $fontSizeStatusInfo: 0.8rem;
