@@ -10,6 +10,8 @@ import {postStatusManaged} from 'src/infra/TimelineData'
 const MODE_TOOT = 'toot'
 const MODE_DIRECT = 'direct'
 
+const STORAGE_KEY_LAST_SEND_FROM = 'naumanni::last_send_from'
+
 
 /**
  * Status作成画面
@@ -61,6 +63,7 @@ export default class TootWindow extends React.Component {
         </div>
 
         <TootPanel
+          initialSendFrom={this.loadSendForm()}
           tokens={tokens}
           onSend={::this.onSend}
         />
@@ -84,8 +87,24 @@ export default class TootWindow extends React.Component {
     await Promise.all(
       sendFrom.map(async (token) => await postStatusManaged(token, messageContent))
     )
+
+    this.saveSendFrom(sendFrom)
+
     // close tootwindow
     this.props.onClose()
+  }
+
+  saveSendFrom(sendFrom) {
+    const accts = sendFrom.map((t) => t.acct)
+    localStorage.setItem(STORAGE_KEY_LAST_SEND_FROM, JSON.stringify(accts))
+  }
+
+  loadSendForm() {
+    try {
+      // TODO: 値のValidation
+      return JSON.parse(localStorage.getItem(STORAGE_KEY_LAST_SEND_FROM))
+    } catch(e) {
+    }
   }
 }
 

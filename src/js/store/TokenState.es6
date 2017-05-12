@@ -7,6 +7,13 @@ export default class TokenState {
    */
   constructor(tokens=[]) {
     this.tokens = tokens
+    this.tokens.sort((a, b) => {
+      if(a.acct > b.acct)
+        return 1
+      else if(a.acct < b.acct)
+        return -1
+      return 0
+    })
   }
 
   reduce(payload) {
