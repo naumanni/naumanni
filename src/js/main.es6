@@ -32,7 +32,7 @@ async function main() {
     store: AppStore.create(),
   })
   Application.context = context
-  Application.history = new BrowserHistory(context)
+  Application.history = new BrowserHistory(context, false /* useHash */)
 
   installRoutes(Application.history)
 

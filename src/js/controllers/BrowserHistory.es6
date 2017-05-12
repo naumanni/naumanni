@@ -1,9 +1,6 @@
 import pathToRegexp from 'path-to-regexp'
 
 
-const USE_HASH_HISTORY = true
-
-
 /**
  * Historyのうまい使い方がわからず混乱気味
  */
@@ -11,11 +8,13 @@ export default class BrowserHistory {
   /**
    * @constructor
    * @param {Context} context almin context
+   * @param {bool} useHash
    */
-  constructor(context) {
+  constructor(context, useHash=false) {
     this.context = context
-    this.history = USE_HASH_HISTORY
-      ? require('history/createHashHistory').default({hashType: 'hashbang'})
+    this.useHash = useHash
+    this.history = useHash
+      ? require('history/createHashHistory').default({basename: '/', hashType: 'hashbang'})
       : require('history/createBrowserHistory').default()
     this.history.listen(::this.onChangeLocation)
     this.routes = {}
@@ -51,10 +50,18 @@ export default class BrowserHistory {
     this.routes[name] = route
   }
 
-  makeUrl(name, params) {
+  makeUrl(name, params, options={}) {
     const route = this.routes[name]
     const compiled = pathToRegexp.compile(route.path)
-    return compiled(params, {pretty: true})
+    const pathname = compiled(params, {pretty: true})
+
+    if(!options.external)
+      return pathname
+
+    let href = this.history.createHref({pathname})
+    if(!href.startsWith('/'))
+      href = '/' + href
+    return `${window.location.origin}${href}`
   }
 
   // private
@@ -80,7 +87,7 @@ export default class BrowserHistory {
         }
       }
 
-      if(route.callback(this.context, location, params, action) === false)
+      if(route.callback(this, location, params, action) === false)
         break
 
       return

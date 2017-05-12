@@ -78,6 +78,7 @@ export default class AddAccountDialog extends Dialog {
 
   async startAuthorize(username, host) {
     const scopes = ['read', 'write', 'follow']
+    const {history} = this.app
 
     // get or create OAuthApp
     let app
@@ -89,8 +90,11 @@ export default class AddAccountDialog extends Dialog {
         MastodonAPISpec, {
           endpoint: `https://${host}/api/v1`,
         })
-      const redirectUri = `${location.origin}/authorize`
-
+      // const redirectUri = history.makeUrl('top', null, {external: true})
+      const redirectUri =
+        history.useHash
+          ? `${window.location.origin}/`
+          : history.makeUrl('authorize', null, {external: true})
       const rawAppData = await requester.postApp({
         client_name: 'naumanni',
         scopes: scopes.join(' '),
@@ -107,10 +111,15 @@ export default class AddAccountDialog extends Dialog {
     require('assert')(app)
 
     // make auth link
+    // mastodonのredirectUriにはhashを含めることが出来ない
+    const redirectUri =
+      history.useHash
+        ? `${window.location.origin}/?action=authorize&host=${host}`
+        : history.makeUrl('authorize', null, {external: true}) + `?&host=${host}`
     const authLink = [
       'https://', host, '/oauth/authorize',
       '?client_id=', encodeURIComponent(app.client_id),
-      '&redirect_uri=', encodeURIComponent(`${location.origin}/authorize?host=${host}`),
+      '&redirect_uri=', encodeURIComponent(redirectUri),
       '&response_type=code',
       '&scope=', scopes.join('+')].join('')
 

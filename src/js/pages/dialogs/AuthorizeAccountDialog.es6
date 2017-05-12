@@ -3,7 +3,6 @@ import React from 'react'
 
 
 import AuthorizeAccountUseCase from 'src/usecases/AuthorizeAccountUseCase'
-import {parseQuery} from 'src/utils'
 import Dialog from './Dialog'
 
 
@@ -28,10 +27,15 @@ export default class AuthorizeAccountDialog extends Dialog {
     super.componentDidMount()
 
     const {context} = this.context
-    const {code, host} = parseQuery(location.search)
+    const {history} = this.app
+    const {code, host} = this.props.dialog.params
 
     // TODO:check code, host
-    context.useCase(new AuthorizeAccountUseCase).execute(host, code)
+    const redirectUri =
+      history.useHash
+        ? `${window.location.origin}/?action=authorize&host=${host}`
+        : history.makeUrl('authorize', null, {external: true}) + `?&host=${host}`
+    context.useCase(new AuthorizeAccountUseCase).execute(host, code, redirectUri)
       .then(() => {
         this.app.history.replace('/')
       }, (error) => {

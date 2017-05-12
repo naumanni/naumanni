@@ -3,6 +3,7 @@ import {
   ACCT_PATTERN,
   DIALOG_ADD_ACCOUNT, DIALOG_AUTHORIZE_ACCOUNT, DIALOG_USER_DETAIL,
 } from 'src/constants'
+import {parseQuery} from 'src/utils'
 
 
 export default function installRoutes(history) {
@@ -13,25 +14,43 @@ export default function installRoutes(history) {
 }
 
 
-function routeTop(context, location, params, action) {
-  context.useCase(new ReplaceDialogsUseCase())
+function routeTop(history, location, params, action) {
+  history.context.useCase(new ReplaceDialogsUseCase())
     .execute([])
+
+  if(history.useHash) {
+    // authorizeのredirect backで何かクエリがあるかも
+    const realUrl = new URL(window.location)
+    if(realUrl.searchParams.get('action') === 'authorize') {
+      const host = realUrl.searchParams.get('host')
+      const code = realUrl.searchParams.get('code')
+      const encoder = encodeURIComponent
+      realUrl.hash = ''
+      window.history.replaceState({}, '', '/')
+      setTimeout(() => {
+        const authorizeUrl = history.makeUrl('authorize') + `?host=${encoder(host)}&code=${encoder(code)}`
+        history.replace(authorizeUrl)
+      })
+    }
+  }
 }
 
-function routeAccountAdd(context, location, params, action) {
-  context.useCase(new ReplaceDialogsUseCase())
+function routeAccountAdd(history, location, params, action) {
+  history.context.useCase(new ReplaceDialogsUseCase())
     .execute([{type: DIALOG_ADD_ACCOUNT}])
 }
 
-function routeAuthorize(context, location, params, action) {
-  context.useCase(new ReplaceDialogsUseCase())
-    .execute([{type: DIALOG_AUTHORIZE_ACCOUNT}])
+function routeAuthorize(history, location, params, action) {
+  let {code, host} = parseQuery(location.search)
+
+  history.context.useCase(new ReplaceDialogsUseCase())
+    .execute([{type: DIALOG_AUTHORIZE_ACCOUNT, params: {code, host}}])
 }
 
-function routeUserDetail(context, location, params, action) {
+function routeUserDetail(history, location, params, action) {
   console.log('routeUserDetail')
   let {acct} = params
 
-  context.useCase(new ReplaceDialogsUseCase())
+  history.context.useCase(new ReplaceDialogsUseCase())
     .execute([{type: DIALOG_USER_DETAIL, params: {acct: acct}}])
 }

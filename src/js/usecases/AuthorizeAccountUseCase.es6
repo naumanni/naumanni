@@ -19,9 +19,10 @@ export default class AuthorizeAccountUseCase extends UseCase {
    * @override
    * @param {string} host
    * @param {string} code
+   * @param {string} redirectUri
    * @return {object} tokenとaccount
    */
-  async execute(host, code) {
+  async execute(host, code, redirectUri) {
     let app
     try {
       app = await OAuthApp.query.getByIndex('host', host)
@@ -30,7 +31,6 @@ export default class AuthorizeAccountUseCase extends UseCase {
     }
 
     // code -> tokenにする
-    const redirectUri = `${location.origin}/authorize`
     const tokenData = (await new Request('POST', `https://${host}/oauth/token`)
       .set('Accept', 'application/json')
       .query({
@@ -38,7 +38,7 @@ export default class AuthorizeAccountUseCase extends UseCase {
         client_secret: app.client_secret,
         code: code,
         grant_type: 'authorization_code',
-        redirect_uri: `${redirectUri}?host=${host}`,
+        redirect_uri: redirectUri,
       })).body
 
     const token = new OAuthToken({
