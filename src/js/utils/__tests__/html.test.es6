@@ -109,5 +109,9 @@ describe('parseMastodonHtml', () => {
     tokens = parseMastodonHtml(`<p>タスクの消化スピード &lt; タスクの追加スピード である</p>`)
     expect(tokens).toHaveLength(1)
     expect(tokens[0]).toMatchObject({type: TOKEN_TEXT, text: 'タスクの消化スピード < タスクの追加スピード である'})
+
+    tokens = parseMastodonHtml(`<p>映画でもTogetterが登場するのか楽しみ↵<br><a href="https://t.co/fMgmqDtY65"><span class="invisible">https://</span><span class="">t.co/fMgmqDtY65</span><span class="invisible"></span></a></p>`)
+    expect(tokens).toHaveLength(3)
+    expect(tokens[2]).toMatchObject({type: TOKEN_URL, url: 'https://t.co/fMgmqDtY65'})
   })
 })

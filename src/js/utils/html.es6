@@ -106,7 +106,7 @@ function* _expandMastodonStatus(content) {
       break
 
     const tag = match[1].toLowerCase()
-    const attrs = match[2] ? match[2].toLowerCase().trim() : ''
+    const attrs = match[2] ? match[2].trim() : ''
     endpos = TAG_REX.lastIndex
 
     if(startpos !== match.index)
