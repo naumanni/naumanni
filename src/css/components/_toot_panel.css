@@ -54,7 +54,8 @@
 
   .tootPanel-content {
     background: $colorTootContentBackground;
-    border-radius: $marginHalf $marginHalf $marginHalf 0;
+    border-radius: $marginHalf;
+    margin-bottom: $marginHalf;
 
     .tootPanel-spoilerText {
       display: block;
@@ -82,7 +83,7 @@
     }
 
     .tootPanel-contentActions {
-      text-align: right;
+      padding-left: 6px;  /* 微妙にその下とずれる */
 
       > * {
         display: inline-block;
@@ -123,12 +124,14 @@
     margin: 0;
     padding: 0;
     display: flex;
+    flex-wrap: wrap;
 
-    li {
+    > li {
       padding: $marginHalf 0 0 0;
       flex: 1 1 25%;
       color: $colorTootTextInactive;
       cursor: pointer;
+      flex-basis: 50%;
 
       .icon::before {
         margin-left: 0;
@@ -147,7 +150,7 @@
       &.is-active {
         background: #fff;
         color: #000;
-        border-radius: 0 0 $marginHalf $marginHalf;
+        border-radius: $marginHalf;
       }
     }
   }

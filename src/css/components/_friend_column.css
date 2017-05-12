@@ -4,10 +4,32 @@
 
   .friends-filter {
     flex: 0 0 auto;
+    border-bottom: 1px solid $colorGray1;
+    background: $colorGray1;
+    font-size: 1rem;
+    position: relative;
+
+    &::before {
+      @mixin iconfontnize '\e800';
+      line-height: 2rem;
+      position: absolute;
+      color: $colorGray3;
+      left: 12px;
+    }
 
     > input {
       box-sizing: border-box;
       width: 100%;
+      border: none;
+      font-size: 1rem;
+      line-height: 2rem;
+      flex: 1 1 auto;
+      padding: 0 $marginDefault 0 2em;
+      border-radius: $marginHalf;
+
+      &:placeholder-shown {
+        color: $colorGray3;
+      }
     }
   }
 
@@ -16,11 +38,11 @@
     padding: 0;
     margin: 0;
 
-    flex: 1 1 auto;
+    flex: 1 1 100px;
     overflow-y: scroll;
 
     li {
-      padding: $marginDefault;
+      padding: $marginDefault 12px;
       border-bottom: 1px solid $colorFriendBorder;
     }
   }

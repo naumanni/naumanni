@@ -4,7 +4,7 @@
   padding: 0;
 
   > li {
-    padding: $marginDefault;
+    padding: $marginDefault 0;
     border-bottom: 1px solid $colorStatusBorder;
   }
 }

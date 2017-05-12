@@ -68,8 +68,9 @@
     padding: $marginDefault;
     border-top: 1px dotted $colorMenuBorder;
 
-    > .icon {
+    > .menu-itemIcon {
       display: inline-block;
+      width: 1.5em;
     }
 
     > .menu-itemLabel {

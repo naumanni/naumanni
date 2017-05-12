@@ -16,7 +16,7 @@
     pointer-events: none;
   }
 
-  animation: blurOut 500ms ease-out forwards;
+  animation: blurOut 300ms ease-out forwards;
 }
 
 @keyframes blurIn {
@@ -39,7 +39,7 @@
 
 
 .is-shownDialogs .naumanniDashboard {
-  animation: blurIn 500ms ease-out forwards;
+  animation: blurIn 300ms ease-out forwards;
 }
 
 

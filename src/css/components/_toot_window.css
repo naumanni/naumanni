@@ -34,22 +34,5 @@
 
   .tootPanel {
     background: transparent;
-
-    .tootPanel-content {
-      border-radius: $marginHalf;
-      margin-bottom: $marginHalf;
-    }
-
-    .tootPanel-messageTo {
-      flex-wrap: wrap;
-
-      > li {
-        flex-basis: 50%;
-
-        &.is-active {
-          border-radius: $marginHalf;
-        }
-      }
-    }
   }
 }

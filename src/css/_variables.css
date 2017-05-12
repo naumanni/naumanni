@@ -72,7 +72,7 @@ $colorMenuText: $colorText;
 $colorMenuBackground: $colorWhite;
 $colorMenuBorder: $colorMainLighter;
 $colorHoverText: $colorMainNormal;
-$colorHoverBackground: $colorAccentLighter;
+$colorHoverBackground: $colorGray1;
 
 $colorColumnHeaderBackground: $colorMainDarker;
 $colorColumnHeaderText: $colorWhite;

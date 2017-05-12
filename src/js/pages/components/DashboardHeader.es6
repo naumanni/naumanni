@@ -104,28 +104,28 @@ export default class DashboardHeader extends React.Component {
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_HOME})}
           >
-          <IconFont iconName="home" />
+          <IconFont className="menu-itemIcon" iconName="home" />
           <span className="menu-itemLabel">統合ホームタイムライン</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_LOCAL})}>
-          <IconFont iconName="users" />
+          <IconFont className="menu-itemIcon" iconName="users" />
           <span className="menu-itemLabel">統合ローカルタイムライン</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_FEDERATION})}>
-          <IconFont iconName="globe" />
+          <IconFont className="menu-itemIcon" iconName="globe" />
           <span className="menu-itemLabel">統合連合タイムライン</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_NOTIFICATIONS, {subject: SUBJECT_MIXED})}>
-          <IconFont iconName="bell" />
+          <IconFont className="menu-itemIcon" iconName="bell" />
           <span className="menu-itemLabel">統合通知</span>
         </li>
 
@@ -156,34 +156,34 @@ export default class DashboardHeader extends React.Component {
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_HOME})}>
-          <IconFont iconName="home" />
+          <IconFont className="menu-itemIcon" iconName="home" />
           <span>ホームタイムライン</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_LOCAL})}>
-          <IconFont iconName="users" />
+          <IconFont className="menu-itemIcon" iconName="users" />
           <span>ローカルタイムライン</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_FEDERATION})}>
-          <IconFont iconName="globe" />
+          <IconFont className="menu-itemIcon" iconName="globe" />
           <span>連合タイムライン</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_NOTIFICATIONS, {subject: account.acct})}>
-          <IconFont iconName="bell" />
+          <IconFont className="menu-itemIcon" iconName="bell" />
           <span>通知</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(this, COLUMN_FRIENDS, {subject: account.acct})}>
-          <IconFont iconName="mail" />
+          <IconFont className="menu-itemIcon" iconName="mail" />
           <span>メッセージ</span>
         </li>
       </ul>

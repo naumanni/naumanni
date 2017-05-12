@@ -3,6 +3,7 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
 .status {
   .status-row {
     @mixin clearfix;
+    padding: 0 12px;
 
     .status-rowLeft {
       float: left;

@@ -9,12 +9,11 @@ $sizeTalkFormHeight: 96px;
   flex-direction: column;
 
   .talk-talkGroups {
-    height: calc(100% - $sizeTalkFormHeight);
     list-style: none;
-    padding: 0 $marginDefault;
+    padding: 0 12px;
     margin: 0;
     box-sizing: border-box;
-    flex: 1 1 auto;
+    flex: 1 1 100px;
     overflow-y: scroll;
   }
 
