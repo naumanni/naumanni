@@ -2,13 +2,17 @@ import {Context, Dispatcher} from 'almin'
 import React from 'react'
 import openpgp, {config as openPGPConfig} from 'openpgp'
 import ReactDOM from 'react-dom'
-// import PropTypes from 'prop-types'
+import moment from 'moment'
 
 import Application from './Application'
 import AppStore from './store/AppStore'
 
 import Dashboard from 'src/pages/Dashboard'
 import BrowserHistory from 'src/controllers/BrowserHistory'
+
+
+// moment.locale(window.navigator.language)
+moment.locale('ja')
 
 
 // install Raven @ production
