@@ -4,10 +4,11 @@ import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
   NOTIFICATION_TYPE_MENTION, NOTIFICATION_TYPE_REBLOG, NOTIFICATION_TYPE_FAVOURITE, NOTIFICATION_TYPE_FOLLOW,
 } from 'src/constants'
-import {IconFont, UserIconWithHost} from '../parts'
+import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
+import {NotificationRefPropType} from 'src/propTypes'
+import {IconFont, UserIconWithHost, UserDisplayName, UserAcct, CushionString} from '../parts'
 import TimelineStatus from './TimelineStatus'
 import TootPanel from './TootPanel'
-import {NotificationRefPropType} from 'src/propTypes'
 
 
 // TODO: notificationRefと切り離してPureComponentにする
@@ -15,6 +16,7 @@ export default class TimelineNotification extends React.Component {
   static propTypes = {
     notificationRef: NotificationRefPropType.isRequired,
     tokens: TootPanel.propTypes.tokens,
+    onAvatarClicked: TimelineActionPropTypes.onAvatarClicked,
   }
 
   /**
@@ -131,22 +133,4 @@ export default class TimelineNotification extends React.Component {
   onClickAccount(account) {
     this.props.onAvatarClicked(account)
   }
-}
-
-
-function UserLink({account, className, children}) {
-  return <a className={className} href={account.url} target="_blank">{children}</a>
-}
-
-function UserDisplayName({account}) {
-  return <UserLink account={account} className="user-displayName">{account.displayName}</UserLink>
-}
-
-function UserAcct({account}) {
-  return <UserLink account={account} className="user-acct">@{account.acct}</UserLink>
-}
-
-function CushionString({length}) {
-  const nbsp = String.fromCharCode(0xA0)
-  return <span className="cushionString">{new Array(length).fill(nbsp).join('')}</span>
 }

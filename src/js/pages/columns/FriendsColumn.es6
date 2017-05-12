@@ -4,6 +4,7 @@ import React from 'react'
 
 import {SUBJECT_MIXED, COLUMN_FRIENDS, COLUMN_TALK} from 'src/constants'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
+import TimelineActions from 'src/controllers/TimelineActions'
 import Column from './Column'
 import AccountRow from '../components/AccountRow'
 
@@ -26,6 +27,7 @@ export default class FriendsColumn extends Column {
     this.listener = new FriendsListener(subject)
     this.state.loading = true
     this.state.filter = ''
+    this.actionDelegate = new TimelineActions(this.context)
   }
 
   /**
@@ -77,7 +79,11 @@ export default class FriendsColumn extends Column {
         <ul className="friends-list">
           {friends.map((friend) => (
             <li key={friend.key}>
-              <AccountRow account={friend.account} onClick={::this.onClickFriend} />
+              <AccountRow
+                account={friend.account}
+                onClick={::this.onClickFriend}
+                {...this.actionDelegate.props}
+              />
             </li>
           ))}
         </ul>

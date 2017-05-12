@@ -37,6 +37,7 @@ export default class TimelineActions {
 
   onAvatarClicked(accountOrAcct, e) {
     e && e.preventDefault()
+    e && e.stopPropagation()
 
     const acct = typeof accountOrAcct === 'string' ? accountOrAcct : accountOrAcct.acct
     const {history} = this.app
