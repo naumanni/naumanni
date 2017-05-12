@@ -96,13 +96,11 @@ export default class Dialog extends React.Component {
   }
 
   close() {
-    console.log(this.context)
     const {context} = this.context
     context.useCase(new CloseDialogUseCase()).execute(this.props.dialog)
   }
 
   get app() {
-    console.log(this.context)
     return this.context.app
   }
 

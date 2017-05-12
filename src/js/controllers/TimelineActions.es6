@@ -39,8 +39,8 @@ export default class TimelineActions {
     e && e.preventDefault()
 
     const acct = typeof accountOrAcct === 'string' ? accountOrAcct : accountOrAcct.acct
-    // TODO: named routingしたい
-    this.app.pushState({}, null, `/user/@${acct}`)
+    const {history} = this.app
+    history.push(history.makeUrl('userDetail', {acct: `${acct}`}))
   }
 
   async onSendReply(status, sendFrom, messageContent) {

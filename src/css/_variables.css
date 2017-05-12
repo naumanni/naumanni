@@ -74,7 +74,7 @@ $colorMenuBorder: $colorMainLighter;
 $colorHoverText: $colorMainNormal;
 $colorHoverBackground: $colorAccentLighter;
 
-$colorColumnHeaderBackground: $colorMainNormal;
+$colorColumnHeaderBackground: $colorMainDarker;
 $colorColumnHeaderText: $colorWhite;
 $colorColumnHeaderMenuButton: $colorMainLighter;
 $fontColumnHeaderText: bold $fontSizeLarger/1.2 sans-serif;

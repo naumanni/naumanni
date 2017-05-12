@@ -33,7 +33,7 @@ export default class AuthorizeAccountDialog extends Dialog {
     // TODO:check code, host
     context.useCase(new AuthorizeAccountUseCase).execute(host, code)
       .then(() => {
-        this.app.history.pushState({}, null, '/')
+        this.app.history.replace('/')
       }, (error) => {
         this.setState({error: '' + error})
       })
@@ -67,12 +67,5 @@ export default class AuthorizeAccountDialog extends Dialog {
         <button className="button-danger" onClick={::this.onClickClose}>閉じる</button>
       </div>
     }
-  }
-
-  /**
-   * @override
-   */
-  close() {
-    this.app.history.pushState({}, null, '/')
   }
 }

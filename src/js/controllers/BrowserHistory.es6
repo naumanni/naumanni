@@ -1,5 +1,7 @@
-import ReplaceDialogsUseCase from 'src/usecases/ReplaceDialogsUseCase'
-import {DIALOG_ADD_ACCOUNT, DIALOG_AUTHORIZE_ACCOUNT, DIALOG_USER_DETAIL} from 'src/constants'
+import pathToRegexp from 'path-to-regexp'
+
+
+const USE_HASH_HISTORY = true
 
 
 /**
@@ -12,59 +14,79 @@ export default class BrowserHistory {
    */
   constructor(context) {
     this.context = context
-    window.onpopstate = ::this.onPopState
+    this.history = USE_HASH_HISTORY
+      ? require('history/createHashHistory').default({hashType: 'hashbang'})
+      : require('history/createBrowserHistory').default()
+    this.history.listen(::this.onChangeLocation)
+    this.routes = {}
   }
 
-  start() {
-    this.onChangeState(document.location.pathname, null)
+  // manipulate history
+  push(path) {
+    this.history.push(path)
   }
 
-  pushState(state, title, pathname) {
-    history.pushState(state, title, pathname)
-    this.onChangeState(pathname, state)
-  }
-
-  saveState(newState) {
-    history.replaceState(newState, null, document.location.pathname)
+  replace(path) {
+    this.history.replace(path)
   }
 
   back() {
-    history.back()
+    this.history.goBack()
   }
 
-  goTop() {
-    history.pushState({}, null, '/')
-    this.onChangeState('/', {})
+  // routing
+  start() {
+    // dispatch current location'
+    const {pathname, search, hash} = this.history.location
+    this.replace(`${pathname}${search}${hash}`)
+  }
+
+  route(name, path, callback) {
+    const route = {
+      path,
+      name,
+      callback,
+    }
+    route.re = pathToRegexp(path, route.keys = [], {sensitive: true, strict: true})
+    this.routes[name] = route
+  }
+
+  makeUrl(name, params) {
+    const route = this.routes[name]
+    const compiled = pathToRegexp.compile(route.path)
+    return compiled(params, {pretty: true})
   }
 
   // private
-  onPopState(e) {
-    console.log('onPopState: ' + document.location.pathname + ', state: ' + JSON.stringify(event.state))
-    this.onChangeState(document.location.pathname, event.state)
+  onChangeLocation(location, action) {
+    this.onChangeState(location, action)
   }
 
-  onChangeState(pathname, state) {
-    // TODO: routerを分離する
-    const {context} = this
-    const PATH_USER = /user\/@([^/]+)/
+  onChangeState(location, action) {
+    // find route
+    for(const route of Object.values(this.routes)) {
+      const m = route.re.exec(location.pathname)
+      if(!m)
+        continue
 
-    if(pathname === '/') {
-      context.useCase(new ReplaceDialogsUseCase())
-        .execute([])
-    } else if(pathname === '/account/add') {
-      context.useCase(new ReplaceDialogsUseCase())
-        .execute([{type: DIALOG_ADD_ACCOUNT}])
-    } else if(pathname === '/authorize') {
-      context.useCase(new ReplaceDialogsUseCase())
-        .execute([{type: DIALOG_AUTHORIZE_ACCOUNT}])
-    } else if(PATH_USER.test(pathname)) {
-      const match = pathname.match(PATH_USER)
-      context.useCase(new ReplaceDialogsUseCase())
-        .execute([{type: DIALOG_USER_DETAIL, params: {acct: match[1]}}])
-    } else {
-      // 404
-      console.error('invalid url', pathname)
-      history.replaceState(null, null, '/')
+      const {keys} = route
+      const params = {}
+
+      for(let i = 1, len = m.length; i < len; ++i) {
+        let key = keys[i - 1]
+        let val = decodeURIComponent(m[i].replace(/\+/g, ' '))
+        if(val !== undefined || !(hasOwnProperty.call(params, key.name))) {
+          params[key.name] = val
+        }
+      }
+
+      if(route.callback(this.context, location, params, action) === false)
+        break
+
+      return
     }
+
+    console.error('invalid location', location)
+    setTimeout(() => this.replace('/'), 1000)
   }
 }

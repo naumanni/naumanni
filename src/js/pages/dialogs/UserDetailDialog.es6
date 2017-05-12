@@ -278,9 +278,11 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
 
     context.useCase(new AddColumnUseCase()).execute(COLUMN_TALK, {
       to: this.state.account.acct,
-      from: account.acct,
+      from: token.acct,
     })
-      .then(() => this.close())
+      .then(() => {
+        this.close()
+      })
   }
 
   async onToggleFollowClicked(token, account, doFollow) {

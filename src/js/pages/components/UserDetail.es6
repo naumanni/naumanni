@@ -23,9 +23,9 @@ export default class UserDetail extends React.Component {
     const headerStyle = {}
 
     if(account.header && account.header.startsWith('http'))
-      headerStyle.background = `\
+      headerStyle.backgroundImage = `\
 linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%),
-url(${account.header}) center center`
+url(${account.header})`
     return (
       <div className="userDetail" style={headerStyle}>
         {tokens.length == 1

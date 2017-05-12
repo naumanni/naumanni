@@ -120,7 +120,6 @@ export default class Dashboard extends React.Component {
   }
 
   onContextDispatch(payload) {
-    console.log(payload)
     switch(payload.type) {
     case actions.COLUMN_ADD_REQUESTED: {
         // カラムが追加されたらそこにFocusする
@@ -132,9 +131,9 @@ export default class Dashboard extends React.Component {
   }
 
   onStartAddAccount() {
+    const {history} = this.props.app
     // TODO: named routingしたい
-    const {app} = this.props
-    app.pushState({}, null, '/account/add')
+    history.push(history.makeUrl('accountAdd'))
   }
 
   onOpenColumn(columnType, columnParams) {

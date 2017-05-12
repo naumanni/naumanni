@@ -23,7 +23,7 @@ export default class ModalDialogContainer extends React.Component {
       return null
 
     return (
-      <div className="modalDialogContainer" onClick={::this.onClickBackground}>
+      <div className="modalDialogContainer" onClick={::this.onClickBackground} ref="background">
         {dialogs.map((dialog, idx) => {
           const dialogClass = this.dialogClassByType(dialog.type)
 
@@ -52,9 +52,13 @@ export default class ModalDialogContainer extends React.Component {
   }
 
   onClickBackground(e) {
-    const dialog = this.refs.top
+    if(e.target === this.refs.background) {
+      e.stopPropagation()
 
-    if(dialog.onClickBackground)
-      dialog.onClickBackground(e)
+      const dialog = this.refs.top
+
+      if(dialog.onClickBackground)
+        dialog.onClickBackground(e)
+    }
   }
 }

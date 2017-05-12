@@ -3,11 +3,13 @@
 
   background-size: cover;
   background-position: center center;
+  background-repeat: no-repeat;
 
   .userDetail-header {
     padding: 64px 8px 8px;
     text-align: center;
     color: $colorText;
+    text-shadow: 0 0 4px #fff;
 
     .userIcon {
       margin: 0 0 32px 0;

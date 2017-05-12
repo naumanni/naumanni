@@ -9,6 +9,7 @@ import AppStore from './store/AppStore'
 
 import Dashboard from 'src/pages/Dashboard'
 import BrowserHistory from 'src/controllers/BrowserHistory'
+import installRoutes from './routes'
 
 
 // moment.locale(window.navigator.language)
@@ -32,6 +33,8 @@ async function main() {
   })
   Application.context = context
   Application.history = new BrowserHistory(context)
+
+  installRoutes(Application.history)
 
   if(process.env.NODE_ENV !== 'production') {
     const AlminLogger = require('almin-logger')
