@@ -3,8 +3,8 @@ module.exports = {
     require('postcss-import'),
     require('postcss-mixins'),
     require('postcss-nested'),
-    require('postcss-color-function'),
     require('postcss-simple-vars'),
+    require('postcss-color-function'),
     require('postcss-cssnext'),
   ],
   'autoprefixer': {

@@ -36,7 +36,11 @@ export default class TimelineStatus extends React.Component {
       isShowMediaCover: mainStatus.sensitive,
       isContentOpen: mainStatus.hasSpoilerText ? false : true,
       isShowReplyPanel: false,
-      beginReplyPanelAnimation: true,
+      isAnimatedReplyPanel: true,
+      isShowFavouritePanel: false,
+      isAnimatedFavouritePanel: true,
+      isShowReblogPanel: false,
+      isAnimatedReblogPanel: true,
     }
   }
 
@@ -50,8 +54,6 @@ export default class TimelineStatus extends React.Component {
     const mainStatus = reblog || status
     const mainAccount = reblogAccount || account
     const statusBodyClass = ['status-body']
-    // このstatusに対応可能なtoken
-    const tokens = this.props.tokens.filter((token) => status.hosts.indexOf(token.host) >= 0)
     const onClickAvatar = this.onClickAvatar.bind(this, account)
 
     if(mainStatus.spoilerText.length) {
@@ -60,10 +62,6 @@ export default class TimelineStatus extends React.Component {
         isContentOpen ? 'is-contentOpen' : 'is-contentClose'
       )
     }
-
-    // reblog, favの状況, tokenが1つであればそのまま
-    const isReblogged = tokens.find((token) => status.isRebloggedAt(token.acct)) ? true : false
-    const isFavourited = tokens.find((token) => status.isFavouritedAt(token.acct)) ? true : false
 
     return (
       <article className={`status ${modifier ? `status--${modifier}` : ''}`}>
@@ -118,20 +116,12 @@ export default class TimelineStatus extends React.Component {
                 <IconFont iconName="reply" />
               </button>
 
-              {status.canReblog() ? (
-                <button className="status-actionReblog"
-                  onClick={::this.onClickToggleReblog}>
-                  <IconFont iconName="reblog" className={isReblogged ? 'is-active' : ''} />
-                </button>
-              ) : (
-                <VisibilityIcon visibility={status.visibility} className="is-inactive" />
-              )}
+              {status.canReblog()
+                ? this.renderReblogButton()
+                : <VisibilityIcon visibility={status.visibility} className="is-inactive" />
+              }
 
-              <button
-                className="status-actionFavorite"
-                onClick={::this.onClickToggleFavourite}>
-                <IconFont iconName="star-filled" className={isFavourited ? 'is-active' : ''} />
-              </button>
+              {this.renderFavButton()}
 
               <button className="status-actionMenu" style={{display: 'none'}}>
                 <DropdownMenuButton onRenderMenu={::this.onRenderStatusMenu}>
@@ -144,6 +134,8 @@ export default class TimelineStatus extends React.Component {
         </div>
 
         {isShowReplyPanel && this.renderReplyPanel()}
+        {this.state.isShowReblogPanel && this.renderReblogPanel()}
+        {this.state.isShowFavouritePanel && this.renderFavPanel()}
 
       </article>
     )
@@ -213,9 +205,41 @@ export default class TimelineStatus extends React.Component {
     )
   }
 
+  renderReblogButton() {
+    const {status, tokens} = this.props
+    const on = tokens.find((token) => status.isRebloggedAt(token.acct)) ? true : false
+
+    const onClickHandler =
+      tokens.length === 1
+        ? this.props.onReblogStatus.bind(this, tokens[0], status, !on)
+        : ::this.onClickToggleReblogPanel
+
+    return (
+      <button className="status-actionReblog" onClick={onClickHandler}>
+        <IconFont iconName="reblog" className={on ? 'is-active' : ''} />
+      </button>
+    )
+  }
+
+  renderFavButton() {
+    const {status, tokens} = this.props
+    const on = tokens.find((token) => status.isFavouritedAt(token.acct)) ? true : false
+
+    const onClickHandler =
+      tokens.length === 1
+        ? this.props.onFavouriteStatus.bind(this, tokens[0], status, !on)
+        : ::this.onClickToggleFavouritePanel
+
+    return (
+      <button className="status-actionFavorite" onClick={onClickHandler}>
+        <IconFont iconName="star-filled" className={on ? 'is-active' : ''} />
+      </button>
+    )
+  }
+
   renderReplyPanel() {
     const {account, tokens, subject} = this.props
-    const {beginReplyPanelAnimation} = this.state
+    const {isAnimatedReplyPanel} = this.state
 
     // デフォルトの返信元。 親Timelineの主題か、Statusと同じホストの最初のアカウントから選ぶ
     let sendFrom = subject
@@ -223,13 +247,73 @@ export default class TimelineStatus extends React.Component {
       : tokens.filter((t) => t.host === account.instance).map((t) => t.acct)
 
     return (
-      <div className={`status-replyPanel ${beginReplyPanelAnimation ? 'off' : ''}`}>
+      <div className={`status-replyPanel ${isAnimatedReplyPanel ? 'off' : ''}`}>
         <div>
           <TootPanel {...this.props}
             onSend={::this.onSendReply}
             initialSendFrom={sendFrom}
             initialContent={`@${account.acct} `}
             />
+        </div>
+      </div>
+    )
+  }
+
+  renderReblogPanel() {
+    const {tokens, status} = this.props
+    const {isAnimatedReblogPanel} = this.state
+
+    return (
+      <div className={`status-reblogPanel ${isAnimatedReblogPanel ? 'off' : ''}`}>
+        <div>
+          <ul>
+            {tokens.map((token) => {
+              const {account} = token
+              const disabled = status.getIdByHost(token.host) ? false : true
+              const on = status.isRebloggedAt(token.acct) ? true : false
+
+              return (
+                <li className={`${disabled ? 'is-disabled' : ''} ${on ? 'on' : ''}`}
+                  key={token.acct}
+                  onClick={(e) => !disabled && this.props.onReblogStatus(token, status, !on)}
+                >
+                  <IconFont iconName="reblog" className={on ? 'is-active' : ''} />
+                  <UserIconWithHost account={account} size="mini" />
+                  <span className="acct">{account.acct}</span>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      </div>
+    )
+  }
+
+  renderFavPanel() {
+    const {tokens, status} = this.props
+    const {isAnimatedFavouritePanel} = this.state
+
+    return (
+      <div className={`status-favPanel ${isAnimatedFavouritePanel ? 'off' : ''}`}>
+        <div>
+          <ul>
+            {tokens.map((token) => {
+              const {account} = token
+              const disabled = status.getIdByHost(token.host) ? false : true
+              const on = status.isFavouritedAt(token.acct) ? true : false
+
+              return (
+                <li className={`${disabled ? 'is-disabled' : ''} ${on ? 'on' : ''}`}
+                  key={token.acct}
+                  onClick={(e) => !disabled && this.props.onFavouriteStatus(token, status, !on)}
+                >
+                  <IconFont iconName="star-filled" className={on ? 'is-active' : ''} />
+                  <UserIconWithHost account={account} size="mini" />
+                  <span className="acct">{account.acct}</span>
+                </li>
+              )
+            })}
+          </ul>
         </div>
       </div>
     )
@@ -254,46 +338,59 @@ export default class TimelineStatus extends React.Component {
 
   onClickToggleReply(e) {
     e.preventDefault()
-    this.showHideReplyPanel(!this.state.isShowReplyPanel)
+    this.togglePanel('ReplyPanel')
   }
 
-  onClickToggleReblog(e) {
+  onClickToggleReblogPanel(e) {
     e.preventDefault()
-
-    const {status} = this.props
-    const tokens = this.props.tokens.filter((token) => status.hosts.indexOf(token.host) >= 0)
-
-    if(tokens.length === 1) {
-      this.props.onReblogStatus(tokens[0], status, !status.isRebloggedAt(tokens[0].acct))
-    } else {
-      require('assert')(0, 'not implemented')
-    }
+    this.togglePanel('ReblogPanel')
   }
-  onClickToggleFavourite(e) {
+
+  onClickToggleFavouritePanel(e) {
     e.preventDefault()
+    this.togglePanel('FavouritePanel')
+  }
 
-    const {status} = this.props
-    const tokens = this.props.tokens.filter((token) => status.hosts.indexOf(token.host) >= 0)
+  togglePanel(panel) {
+    const isShowKey = `isShow${panel}`
 
-    if(tokens.length === 1) {
-      this.props.onFavouriteStatus(tokens[0], status, !status.isFavouritedAt(tokens[0].acct))
+    if(this.state[isShowKey]) {
+      // hide panel
+      this.showHidePanel(false, panel)
     } else {
-      require('assert')(0, 'not implemented')
+      // show panel
+      this.hideAllPanel()
+        .then(() => this.showHidePanel(true, panel))
     }
   }
 
-  showHideReplyPanel(show) {
-    if(show) {
-      this.setState(
-        {isShowReplyPanel: true, beginReplyPanelAnimation: true},
-        () => this.setState({beginReplyPanelAnimation: false})
-      )
-    } else {
-      this.setState(
-        {isShowReplyPanel: true, beginReplyPanelAnimation: true},
-        () => setTimeout(() => this.setState({isShowReplyPanel: false}), 300)
-      )
-    }
+  hideAllPanel() {
+    return Promise.all([
+      this.showHidePanel(false, 'ReplyPanel'),
+      this.showHidePanel(false, 'ReblogPanel'),
+      this.showHidePanel(false, 'FavouritePanel'),
+    ])
+  }
+
+  showHidePanel(show, panel) {
+    const isShowKey = `isShow${panel}`
+
+    if(this.state[isShowKey] === show)
+      return Promise.resolve()
+
+    return new Promise((resolve) => {
+      if(show) {
+        this.setState(
+          {[`isShow${panel}`]: true, [`isAnimated${panel}`]: true},
+          () => this.setState({[`isAnimated${panel}`]: false}, () => resolve())
+        )
+      } else {
+        this.setState(
+          {[`isShow${panel}`]: true, [`isAnimated${panel}`]: true},
+          () => setTimeout(() => this.setState({[`isShow${panel}`]: false}, () => resolve()), 100)
+        )
+      }
+    })
   }
 
   onClickMedia(media, e) {

@@ -104,6 +104,7 @@ export default class TootWindow extends React.Component {
       // TODO: 値のValidation
       return JSON.parse(localStorage.getItem(STORAGE_KEY_LAST_SEND_FROM))
     } catch(e) {
+      // pass
     }
   }
 }

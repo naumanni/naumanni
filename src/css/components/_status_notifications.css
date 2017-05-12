@@ -1,5 +1,21 @@
 $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
 
+
+@define-mixin panelArrow $position {
+  &::before {
+    content: "";
+    display: block;
+    position: relative;
+    width: 0;
+    height: 0;
+    border: solid $marginDefault;
+    border-color: transparent transparent $colorTootPanelBackground transparent;
+    left: $position;
+    margin-top: calc(-$marginDefault / 2);
+  }
+}
+
+
 .status {
   .status-row {
     @mixin clearfix;
@@ -268,6 +284,7 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
 
     > * {
       margin: 0 $marginDefault;
+      display: inline-block;
 
       &:first-child {
         margin-left: 0;
@@ -298,17 +315,7 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
   }
 
   .status-replyPanel {
-    &::before {
-      content: "";
-      display: block;
-      position: relative;
-      width: 0;
-      height: 0;
-      border: solid $marginDefault;
-      border-color: transparent transparent $colorTootPanelBackground transparent;
-      left: calc($statusBodyMarginLeft + 0.75rem - $marginDefault);
-      margin-top: calc(-$marginDefault / 2);
-    }
+    @mixin panelArrow calc($statusBodyMarginLeft + 0.75rem + 4px);
 
     > div {
       overflow: hidden;
@@ -320,6 +327,84 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
     }
     &.off .tootPanel {
       margin-top: -120%;  /* 100%だとなんでかはみ出る。なんで? */
+    }
+  }
+
+  .status-reblogPanel {
+    @mixin panelArrow calc($statusBodyMarginLeft + 3.3rem + 4px);
+  }
+  .status-favPanel {
+    @mixin panelArrow calc($statusBodyMarginLeft + 5.8rem + 4px);
+  }
+
+  .status-reblogPanel, .status-favPanel {
+    > div {
+      overflow: hidden;
+      position: relative;
+    }
+
+    > div > ul {
+      transition: margin-top 30s ease-in-out;
+
+      overflow: hidden;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      @mixin clearfix;
+
+      background: $colorTootPanelBackground;
+      position: relative;
+      color: #fff;
+
+      > li {
+        float: left;
+        width: 50%;
+        font-size: 1rem;
+        box-sizing: border-box;
+
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        padding: $marginDefault;
+        box-sizing: border-box;
+
+        color: $colorMainLighter;
+        .icon {
+          font-size: 1.5rem;
+        }
+        .userIcon {
+          margin: 0 $marginHalf;
+        }
+        .acct {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+
+        &:hover {
+          .acct {
+            text-decoration: underline;
+          }
+        }
+
+        &.is-disabled {
+          color: color($colorTootPanelBackground blend($colorGray1 20%));
+
+          &:hover {
+            .acct {
+              text-decoration: none;
+            }
+          }
+        }
+
+        &.on {
+          color: $colorStatusActiveActionColor;
+        }
+      }
+    }
+
+    &.off > div > ul {
+      margin-top: -100%;
     }
   }
 }
