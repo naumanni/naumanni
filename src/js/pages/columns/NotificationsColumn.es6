@@ -149,8 +149,11 @@ export default class NotificationColumn extends Column {
    */
   onChangeTimelineData(changes) {
     // 表示中のTimelineに関連があるか調べる
-    const changed = (this.state.timeline || []).find((statusRef) => {
-      return changes.statuses[statusRef.uri] || changes.accounts[statusRef.accountUri]
+    const changed = (this.state.timeline || []).find((notificationRef) => {
+      if(notificationRef.statusRef && changes.statuses[notificationRef.statusRef.uri])
+        return true
+      if(notificationRef.accountRef && changes.accounts[notificationRef.accountRef.uri])
+        return true
     }) ? true : false
 
     // Timelineを更新
