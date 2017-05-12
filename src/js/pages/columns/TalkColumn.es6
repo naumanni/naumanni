@@ -115,7 +115,7 @@ export default class TalkColumn extends Column {
             value={this.state.newMessage}
             onChange={::this.onChangeMessage}
             onKeyDown={::this.onKeyDownMessage}
-            placeholder="なんか入力してShift+Enter" />
+            placeholder="何か入力してControl+Enter" />
         </div>
       </div>
     )
@@ -256,7 +256,7 @@ export default class TalkColumn extends Column {
   onKeyDownMessage(e) {
     require('assert')(!this.state.loading)
 
-    if(e.shiftKey && e.keyCode == KEY_ENTER) {
+    if(e.ctrlKey && e.keyCode == KEY_ENTER) {
       e.preventDefault()
       this.sendMessage()
     }

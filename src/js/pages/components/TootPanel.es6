@@ -5,6 +5,7 @@ import update from 'immutability-helper'
 import {
   MASTODON_MAX_CONTENT_SIZE,
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
+  KEY_ENTER,
 } from 'src/constants'
 import {OAuthTokenArrayPropType} from 'src/propTypes'
 import {IconFont, UserIconWithHost} from 'src/pages/parts'
@@ -65,15 +66,12 @@ export default class TootPanel extends React.Component {
    * @override
    */
   render() {
-    const {maxContentLength, tokens} = this.props
+    const {tokens} = this.props
     let {error} = this.state
-    const {isSending, showContentsWarning, sendFrom, statusContent, spoilerTextContent, visibility} = this.state
+    const {showContentsWarning, sendFrom, statusContent, spoilerTextContent, visibility} = this.state
 
     const trimmedStatusLength = statusContent.trim().length
     const textLength = trimmedStatusLength + (showContentsWarning ? spoilerTextContent.trim().length : 0)
-    const canSend = !isSending && sendFrom.length &&
-      trimmedStatusLength > 0 && textLength < maxContentLength &&
-      this.state.mediaFiles.length <= MAX_MEDIA_FILES
 
     if(this.state.mediaFiles.length > MAX_MEDIA_FILES)
       error = `添付できるメディアは${MAX_MEDIA_FILES}つまでです`
@@ -111,6 +109,7 @@ export default class TootPanel extends React.Component {
               className="tootPanel-spoilerText"
               value={spoilerTextContent}
               placeholder="内容の警告"
+              onKeyDown={::this.onKeyDown}
               onChange={::this.onChangeSpoilerText}></textarea>
           )}
 
@@ -118,6 +117,7 @@ export default class TootPanel extends React.Component {
             ref="textareaStatus"
             className="tootPanel-status" value={statusContent}
             placeholder="何してますか？忙しいですか？手伝ってもらってもいいですか？"
+            onKeyDown={::this.onKeyDown}
             onChange={::this.onChangeStatus}></textarea>
 
           {this.renderMediaFiles()}
@@ -173,7 +173,7 @@ export default class TootPanel extends React.Component {
           <span className="tootPanel-charCount">{500 - textLength}</span>
           <button
             className="button button--primary"
-            disabled={!canSend} type="button"
+            disabled={!this.canSend()} type="button"
             onClick={::this.onClickSend}>送信</button>
         </div>
       </div>
@@ -196,6 +196,18 @@ export default class TootPanel extends React.Component {
         })}
       </div>
     )
+  }
+
+  canSend() {
+    const {maxContentLength} = this.props
+    const {isSending, showContentsWarning, sendFrom, statusContent, spoilerTextContent} = this.state
+
+    const trimmedStatusLength = statusContent.trim().length
+    const textLength = trimmedStatusLength + (showContentsWarning ? spoilerTextContent.trim().length : 0)
+
+    return !isSending && sendFrom.length &&
+      trimmedStatusLength > 0 && textLength < maxContentLength &&
+      this.state.mediaFiles.length <= MAX_MEDIA_FILES
   }
 
   // cb
@@ -287,5 +299,16 @@ export default class TootPanel extends React.Component {
     }
 
     this.setState({sendFrom})
+  }
+
+  /**
+   * CW, ContentのKeydownで呼ばれる
+   * Ctrl+Returnで送信する
+   * @param {Event} e
+   */
+  onKeyDown(e) {
+    if(e.ctrlKey && e.keyCode == KEY_ENTER && this.canSend()) {
+      this.onClickSend(e)
+    }
   }
 }
