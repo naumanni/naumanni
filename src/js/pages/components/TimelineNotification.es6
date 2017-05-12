@@ -51,7 +51,7 @@ export default class TimelineNotification extends React.Component {
     const account = notificationRef.accountRef.resolve()
     const {createdAt} = notificationRef
     const relativeTime = createdAt.fromNow()
-    const onClickHandler = this.onClickAccount.bind(this, account)
+    const onClickAvatar = (e) => this.props.onAvatarClicked(account, e)
 
     return (
       <article className="notification notification--follow">
@@ -60,7 +60,7 @@ export default class TimelineNotification extends React.Component {
             <IconFont iconName="user-plus" />
           </span>
           <span className="notification-what">
-            <UserDisplayName account={account} onClick={onClickHandler} /> {'さんにフォローされました '}
+            <UserDisplayName account={account} onClick={onClickAvatar} /> {'さんにフォローされました '}
             <CushionString length={relativeTime.length} />
             <span
               className="notification-createdAt"
@@ -72,11 +72,11 @@ export default class TimelineNotification extends React.Component {
 
         <div className="notification-account">
           <div className="notification-accountAvatar">
-            <UserIconWithHost account={account} onClick={onClickHandler} />
+            <UserIconWithHost account={account} onClick={onClickAvatar} />
           </div>
           <div className="notification-accountInfo">
-            <UserDisplayName account={account} onClick={onClickHandler} />
-            <UserAcct account={account} onClick={onClickHandler} />
+            <UserDisplayName account={account} onClick={onClickAvatar} />
+            <UserAcct account={account} onClick={onClickAvatar} />
           </div>
         </div>
       </article>
@@ -90,6 +90,7 @@ export default class TimelineNotification extends React.Component {
     let iconName = 'bell'
     let what = notificationRef.type
     const relativeTime = createdAt.fromNow()
+    const onClickAvatar = (e) => this.props.onAvatarClicked(account, e)
 
     switch(notificationRef.type) {
     case NOTIFICATION_TYPE_FAVOURITE:
@@ -111,7 +112,7 @@ export default class TimelineNotification extends React.Component {
             <IconFont iconName={iconName} />
           </span>
           <span className="notification-what">
-            <UserDisplayName account={account} /> {what.replace('%username%', '')}
+            <UserDisplayName account={account} onClick={onClickAvatar} /> {what.replace('%username%', '')}
             <CushionString length={relativeTime.length} />
             <span
               className="notification-createdAt"
@@ -128,9 +129,5 @@ export default class TimelineNotification extends React.Component {
         />
       </article>
     )
-  }
-
-  onClickAccount(account) {
-    this.props.onAvatarClicked(account)
   }
 }

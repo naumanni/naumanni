@@ -8,7 +8,7 @@ import {
 import TootPanel from './TootPanel'
 import {AcctPropType, AccountPropType, StatusPropType} from 'src/propTypes'
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
-import {DropdownMenuButton, IconFont, UserIconWithHost, SafeContent} from '../parts'
+import {DropdownMenuButton, IconFont, UserIconWithHost, SafeContent, UserDisplayName, UserAcct} from '../parts'
 
 
 export default class TimelineStatus extends React.Component {
@@ -52,6 +52,7 @@ export default class TimelineStatus extends React.Component {
     const statusBodyClass = ['status-body']
     // このstatusに対応可能なtoken
     const tokens = this.props.tokens.filter((token) => status.hosts.indexOf(token.host) >= 0)
+    const onClickAvatar = this.onClickAvatar.bind(this, account)
 
     if(mainStatus.spoilerText.length) {
       statusBodyClass.push(
@@ -71,7 +72,7 @@ export default class TimelineStatus extends React.Component {
           <div className="status-row status-reblogFrom">
             <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
             <div className="status-rowRight">
-              <a onClick={this.onClickAvatar.bind(this, account)}>{account.display_name}</a>さんにブーストされました
+              <a onClick={onClickAvatar}>{account.display_name}</a>さんにブーストされました
             </div>
           </div>
         )}
@@ -79,7 +80,7 @@ export default class TimelineStatus extends React.Component {
         <div className="status-row status-content">
           <div className="status-rowLeft">
             <div className="status-avatar">
-              <UserIconWithHost account={mainAccount} onClick={this.onClickAvatar.bind(this, mainAccount)} />
+              <UserIconWithHost account={mainAccount} onClick={onClickAvatar} />
             </div>
             <div className="status-visibility">
               <VisibilityIcon visibility={status.visibility} />
@@ -89,10 +90,8 @@ export default class TimelineStatus extends React.Component {
 
             <div className="status-info">
               <div className="status-author">
-                <a onClick={this.onClickAvatar.bind(this, mainAccount)}>
-                  <span className="user-displayName">{mainAccount.display_name || mainAccount.username}</span>
-                  <span className="user-account">@{mainAccount.acct}</span>
-                </a>
+                <UserDisplayName account={account} onClick={onClickAvatar} />
+                <UserAcct account={account} onClick={onClickAvatar} />
               </div>
               <a className="status-createdAt"
                  href={mainStatus.url}
