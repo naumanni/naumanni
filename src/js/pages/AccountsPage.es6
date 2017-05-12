@@ -151,7 +151,7 @@ class AddMastodonAccountWizard extends React.Component {
   }
 
   async onClickSubmit() {
-    // TODO: usecareにする
+    // TODO: usecaseにする
     const account = this.refs.account.value
     const match = account.match(ACCOUNT_REX)
 
@@ -175,7 +175,7 @@ class AddMastodonAccountWizard extends React.Component {
       const redirectUri = `${location.origin}/authorize`
 
       const rawAppData = await requester.postApp({
-        client_name: 'naumanniskine',
+        client_name: 'naumanni',
         scopes: scopes.join(' '),
         redirect_uris: redirectUri,
       })

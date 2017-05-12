@@ -1,8 +1,8 @@
 {
-  "name": "naumanniskine",
+  "name": "naumanni",
   "version": "0.1.0",
   "main": "index.js",
-  "repository": "git@github.com:glucoseinc/naumanniskine.git",
+  "repository": "git@github.com:naumanni/naumanni.git",
   "author": "Shin ADACHI <shn@glucose.jp>",
   "license": "MIT",
   "scripts": {

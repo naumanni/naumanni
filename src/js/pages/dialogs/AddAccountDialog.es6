@@ -92,7 +92,7 @@ export default class AddAccountDialog extends Dialog {
       const redirectUri = `${location.origin}/authorize`
 
       const rawAppData = await requester.postApp({
-        client_name: 'naumanniskine',
+        client_name: 'naumanni',
         scopes: scopes.join(' '),
         redirect_uris: redirectUri,
       })
