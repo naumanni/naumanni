@@ -97,7 +97,7 @@ describe('parseMastodonHtml', () => {
     expect(tokens[4]).toMatchObject({type: TOKEN_TEXT, text: 'はなげ'})
   })
 
-  it('can parse sample 1', () => {
+  it('can parse samples', () => {
     let tokens
 
     tokens = parseMastodonHtml('あぶらあげがすきです．あとジャクリン．JavaScriptとかC++書いてるかも．二回データ飛ばすことになったけど一応インスタンス運用してます: <a href="https://mstdn.jp/"><span class="invisible">https://</span><span class="">mstdn.jp/</span><span class="invisible"></span></a> Twitter: <a href="https://twitter.com/nullkal"><span class="invisible">https://</span><span class="">twitter.com/nullkal</span><span class="invisible"></span></a> 支援はこちら: <a href="https://enty.jp/nullkal"><span class="invisible">https://</span><span class="">enty.jp/nullkal</span><span class="invisible"></span></a>', [])
@@ -105,5 +105,9 @@ describe('parseMastodonHtml', () => {
 
     tokens = parseMastodonHtml(`<p>若い世代の読書術　<br><a href="http://aikoumasanobu.com/"><span class="invisible">http://</span><span class="">aikoumasanobu.com/</span><span class="invisible"></span></a><br>Faceboo　<a href="https://www.facebook.com/masanobuaiko/"><span class="invisible">https://www.</span><span class="">facebook.com/masanobuaiko/</span><span class="invisible"></span></a><br>pawoo.netアカ：<a href="https://pawoo.net/@masanobu"><span class="invisible">https://</span><span class="">pawoo.net/@masanobu</span><span class="invisible"></span></a></p>`)
     expect(tokens).toHaveLength(9)
+
+    tokens = parseMastodonHtml(`<p>タスクの消化スピード &lt; タスクの追加スピード である</p>`)
+    expect(tokens).toHaveLength(1)
+    expect(tokens[0]).toMatchObject({type: TOKEN_TEXT, text: 'タスクの消化スピード < タスクの追加スピード である'})
   })
 })

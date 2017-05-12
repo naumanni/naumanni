@@ -1,4 +1,5 @@
 import twitter from 'twitter-text'
+import {AllHtmlEntities} from 'html-entities'
 
 import {
   TOKEN_TEXT, TOKEN_BREAK, TOKEN_URL, TOKEN_MENTION, TOKEN_HASHTAG,
@@ -70,6 +71,14 @@ export function parseMastodonHtml(content, mentions=[]) {
     }
     tokens.push(token)
   }
+
+  // decode all text entities
+  for(let token of tokens) {
+    if(token.type === TOKEN_TEXT) {
+      token.text = AllHtmlEntities.decode(token.text)
+    }
+  }
+
 
   return tokens
 }
