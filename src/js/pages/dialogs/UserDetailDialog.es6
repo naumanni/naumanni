@@ -281,7 +281,7 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
       from: token.acct,
     })
       .then(() => {
-        this.close()
+        this.app.history.replace(this.app.history.makeUrl('top'))
       })
   }
 
