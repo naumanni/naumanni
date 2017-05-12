@@ -35,7 +35,9 @@ export default class TimelineActions {
     }
   }
 
-  onAvatarClicked(accountOrAcct) {
+  onAvatarClicked(accountOrAcct, e) {
+    e && e.preventDefault()
+
     const acct = typeof accountOrAcct === 'string' ? accountOrAcct : accountOrAcct.acct
     // TODO: named routingしたい
     this.app.pushState({}, null, `/user/@${acct}`)

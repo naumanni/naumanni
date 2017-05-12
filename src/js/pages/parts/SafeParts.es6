@@ -71,7 +71,7 @@ export function SafeContent({parsedContent, ...props}) {
         )
       } else if(type === TOKEN_MENTION) {
         const {acct} = token
-        return <a href={_urlFromAcct(acct)} onClick={() => props.onAvatarClicked(acct)}>@{acct}</a>
+        return <a href={_urlFromAcct(acct)} onClick={(e) => props.onAvatarClicked(acct, e)}>@{acct}</a>
       } else if(type === TOKEN_HASHTAG) {
         console.log(token)
         return <span>#{token.tag}</span>
