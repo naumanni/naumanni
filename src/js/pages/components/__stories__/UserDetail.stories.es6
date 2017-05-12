@@ -42,6 +42,10 @@ const tokenC = new OAuthToken({})
 tokenC.attachAccount(new Account({
   acct: 'testC@mstdn.onosendai.jp',
 }))
+const tokenSelf = new OAuthToken({})
+tokenSelf.attachAccount(new Account({
+  acct: 'shn@mstdn.onosendai.jp',
+}))
 
 
 storiesOf('UserDetailDialog', module)
@@ -51,16 +55,17 @@ storiesOf('UserDetailDialog', module)
     </div>
   ))
 
-  .add('normal w/ 3 tokens', () => {
+  .add('normal w/ multi tokens', () => {
     const params = {acct: 'shn@mstdn.onosendai.jp'}
     return (
       <UserDetail
         account={accountNormal}
-        tokens={[tokenA, tokenB, tokenC]}
+        tokens={[tokenA, tokenB, tokenC, tokenSelf]}
         relationships={{
           [tokenA.acct]: {following: false, requested: false},
           [tokenB.acct]: {following: true, requested: false},
           [tokenC.acct]: {following: false, requested: true},
+          [tokenSelf.acct]: {following: false, requested: false},
         }}
         onOpenTalkClicked={action('onOpenTalkClicked')}
         onToggleFollowClicked={action('onToggleFollowClicked')}
@@ -112,6 +117,21 @@ storiesOf('UserDetailDialog', module)
           [tokenA.acct]: {following: false, requested: false},
           [tokenB.acct]: {following: true, requested: false},
           [tokenC.acct]: {following: false, requested: true},
+        }}
+        onOpenTalkClicked={action('onOpenTalkClicked')}
+        onToggleFollowClicked={action('onToggleFollowClicked')}
+      />
+    )
+  })
+
+  .add('normal w/ himself', () => {
+    const params = {acct: 'shn@mstdn.onosendai.jp'}
+    return (
+      <UserDetail
+        account={accountNormal}
+        tokens={[tokenSelf]}
+        relationships={{
+          [tokenSelf.acct]: {following: false, requested: false},
         }}
         onOpenTalkClicked={action('onOpenTalkClicked')}
         onToggleFollowClicked={action('onToggleFollowClicked')}

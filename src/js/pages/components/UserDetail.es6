@@ -47,6 +47,12 @@ url(${account.header})`
   renderActionsSingleToken() {
     const {account} = this.props
     const token = this.props.tokens[0]
+
+    // 自分では?
+    if(account.acct === token.acct) {
+      return
+    }
+
     const {disable, icon, text, doFollow} = this.getVisualForRelationship(token.acct)
 
     return (
@@ -88,14 +94,17 @@ url(${account.header})`
       <ul className="menu menu--talk">
         {tokens.map((token) => {
           const {account} = token
-          return (
-            <li className="menu-item"
-              key={account.acct}
-              onClick={() => this.props.onOpenTalkClicked(token, this.props.account)}
-            >
-              <UserIconWithHost account={account} size="mini" /> {account.acct}
-            </li>
-          )
+
+          if(account.acct !== this.props.account.acct) {
+            return (
+              <li className="menu-item"
+                key={account.acct}
+                onClick={() => this.props.onOpenTalkClicked(token, this.props.account)}
+              >
+                <UserIconWithHost account={account} size="mini" /> {account.acct}
+              </li>
+            )
+          }
         })}
       </ul>
     )
@@ -138,7 +147,11 @@ url(${account.header})`
     let text
     let doFollow
 
-    if(isRequested) {
+    if(account.acct === me) {
+      disable = true
+      icon = 'meh'
+      text = 'あなたです!'
+    } else if(isRequested) {
       if(isFollowing) {
         console.warn('relationshipがrequestedなのにfollowing!!', relationship)
       }
