@@ -8,7 +8,7 @@ import {
 
 const BR_REX = /<br(\s+\/)?>/ig
 const TAG_REX = /<\s*(\/?\w+)(?:\s+(.*?))?>/g
-const ATTR_REX = /(\S+)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/g
+const ATTR_REX = /([^=]+)(?:=("[^"]*"|'[^']*'|\S+))\s*/g
 const HTML_MENTION_REX = /^<a (?:.*?)href="([^"]+)(?:.*?)">@(?:<span>)?([a-zA-Z0-9_]{1,20})(?:<\/span>)?<\/a><\/span>/i
 const END_A_TAG_REX = /<\s*\/a\s*>/g
 
@@ -143,8 +143,18 @@ function* _expandMastodonStatus(content) {
       const parsed = []
       let attrMatch
       while(attrMatch = ATTR_REX.exec(attrs)) {
-        parsed.push([attrMatch[1].toLowerCase(), attrMatch[2]])
+        const key = attrMatch[1].toLowerCase()
+        let val = attrMatch[2]
+        if(val.startsWith('"')) {
+          require('assert')(val.endsWith('"'))
+          val = val.substring(1, val.length - 1)
+        } else if(val.startsWith('\'')) {
+          require('assert')(val.endsWith('\''))
+          val = val.substring(1, val.length - 1)
+        }
+        parsed.push([key, AllHtmlEntities.decode(val)])
       }
+
       const href = parsed.find(([key, val]) => key === 'href')
 
       if(href) {

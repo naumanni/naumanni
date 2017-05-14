@@ -113,5 +113,21 @@ describe('parseMastodonHtml', () => {
     tokens = parseMastodonHtml(`<p>映画でもTogetterが登場するのか楽しみ↵<br><a href="https://t.co/fMgmqDtY65"><span class="invisible">https://</span><span class="">t.co/fMgmqDtY65</span><span class="invisible"></span></a></p>`)
     expect(tokens).toHaveLength(3)
     expect(tokens[2]).toMatchObject({type: TOKEN_URL, url: 'https://t.co/fMgmqDtY65'})
+
+    tokens = parseMastodonHtml(`<p>【ポケモンGO】ズリ「使える」パイル「まあ使える」ナナ「ポケモンよりゴミ箱に投げるwww」<br><a href="http://matome-alpha.com/?eid=299173&amp;m=pawoo_megumin"><span class="invisible">http://</span><span class="ellipsis">matome-alpha.com/?eid=299173&amp;m</span><span class="invisible">=pawoo_megumin</span></a></p>`)
+    expect(tokens).toHaveLength(3)
+    expect(tokens[2]).toMatchObject({type: TOKEN_URL, url: 'http://matome-alpha.com/?eid=299173&m=pawoo_megumin'})
+
+    tokens = parseMastodonHtml(`<p>【BABY!!BABY!!/海の家はまなす】<a href="http://nekora.main.jp/comic/thumb/tohou/all/?ID=RJ100527#RJ100527"><span class="invisible">http://</span><span class="ellipsis">nekora.main.jp/comic/thumb/toh</span><span class="invisible">ou/all/?ID=RJ100527#RJ100527</span></a> 東方Project、古明地こいしメインのサイレント漫画です <a href="https://pawoo.net/tags/5%E6%9C%8814%E6%97%A5%E3%81%AF%E3%81%93%E3%81%84%E3%81%97%E3%81%AE%E6%97%A5">#<span>5月14日はこいしの日</span></a></p>`)
+    expect(tokens).toHaveLength(4)
+    expect(tokens[1]).toMatchObject({type: TOKEN_URL, url: 'http://nekora.main.jp/comic/thumb/tohou/all/?ID=RJ100527#RJ100527'})
+
+    tokens = parseMastodonHtml(`<p>「「マタ・ハリ」なでなでパイズリ」をブックマークに追加しました。<br><a href="https://www.pixiv.net/member_illust.php?illust_id=62903357&amp;mode=medium"><span class="invisible">https://www.</span><span class="ellipsis">pixiv.net/member_illust.php?il</span><span class="invisible">lust_id=62903357&amp;mode=medium</span></a><br>マタハリお姉ちゃんスコ～</p>`)
+    expect(tokens).toHaveLength(5)
+    expect(tokens[2]).toMatchObject({type: TOKEN_URL, url: 'https://www.pixiv.net/member_illust.php?illust_id=62903357&mode=medium'})
+
+    tokens = parseMastodonHtml(`<p><a href="https://www.youtube.com/watch?v=4qh6UPp6m4I"><span class="invisible">https://www.</span><span class="ellipsis">youtube.com/watch?v=4qh6UPp6m4</span><span class="invisible">I</span></a></p>`)
+    expect(tokens).toHaveLength(1)
+    expect(tokens[0]).toMatchObject({type: TOKEN_URL, url: 'https://www.youtube.com/watch?v=4qh6UPp6m4I'})
   })
 })
