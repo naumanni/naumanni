@@ -59,6 +59,7 @@ export default class PagignColumn extends Column {
     super.componentDidMount()
     this.listenerRemovers.push(
       this.timeline.onChange(::this.onTimelineChanged),
+      this.db.registerTimeline(this.timeline),
     )
 
     // make event listener
@@ -170,6 +171,7 @@ export default class PagignColumn extends Column {
     this.subtimeline = this.timeline.clone()
     this.subtimeline.max = undefined
     this.subtimlineChangedRemover = this.subtimeline.onChange(::this.onSubtimelineChanged)
+    this.db.registerTimeline(this.subtimeline)
 
     this.setState({
       isScrollLocked: true,
@@ -178,6 +180,7 @@ export default class PagignColumn extends Column {
   }
 
   onUnlocked() {
+    this.db.unregisterTimeline(this.subtimeline)
     this.subtimeline = null
     this.timelineLoaders = null
     this.subtimlineChangedRemover()

@@ -49,7 +49,8 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
     super.componentDidMount()
 
     this.listenerRemovers.push(
-      this.timeline.onChange(::this.onTimelineChanged)
+      this.timeline.onChange(::this.onTimelineChanged),
+      this.db.registerTimeline(this.timeline),
     )
 
     // set timer for update dates

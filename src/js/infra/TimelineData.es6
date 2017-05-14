@@ -2,7 +2,7 @@
  * Status, Accountの最新情報を保持する。
  */
 import {EventEmitter} from 'events'
-import {List} from 'immutable'
+import {List, Set} from 'immutable'
 
 
 class TimelineData extends EventEmitter {
@@ -13,6 +13,8 @@ class TimelineData extends EventEmitter {
 
     this.accounts = new Map()
     this.statuses = new Map()
+
+    this.timelines = new Set()
   }
 
   /**
@@ -68,6 +70,18 @@ class TimelineData extends EventEmitter {
     })
 
     this.emitChange(changes)
+    this.timelines
+      .filter((timeline) => timeline.hasChanges(changes))
+      .forEach((timeline) => timeline.emitChange())
+  }
+
+  registerTimeline(timeline) {
+    this.timelines = this.timelines.add(timeline)
+    return this.unregisterTimeline.bind(this, timeline)
+  }
+
+  unregisterTimeline(timeline) {
+    this.timelines = this.timelines.delete(timeline)
   }
 
   dispose(refs) {
@@ -151,6 +165,11 @@ export class StatusRef extends DBRef {
       reblog,
       reblogAccount: reblog && (new AccountRef(this._db, reblog.account)).resolve(),
     }
+  }
+
+  get reblogRef() {
+    const status = this.resolve()
+    return status.reblog ? new StatusRef(this._db, status.reblog) : null
   }
 
   get accountRef() {

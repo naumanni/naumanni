@@ -61,7 +61,7 @@ class Timeline extends ChangeEventEmitter {
    * @return {Timeline}
    */
   clone() {
-    const newTL = new Timeline(this._max)
+    const newTL = new this.constructor(this._max)
 
     newTL._timeline = this._timeline
     return newTL
@@ -69,6 +69,10 @@ class Timeline extends ChangeEventEmitter {
 
   set max(newMax) {
     this._max = newMax
+  }
+
+  hasChanges({accounts, statuses}) {
+    return true
   }
 
   // private
@@ -79,6 +83,17 @@ class Timeline extends ChangeEventEmitter {
 
 
 export class StatusTimeline extends Timeline {
+  hasChanges({accounts, statuses}) {
+    return this._timeline.find((ref) => {
+      if(statuses[ref.uri] || accounts[ref.accountUri])
+        return true
+      const {reblogRef} = ref
+      if(reblogRef && (statuses[reblogRef.uri] || accounts[reblogRef.accountUri]))
+        return true
+      return false
+    }) ? true : false
+  }
+
   compare(a, b) {
     return Status.compareCreatedAt(a.resolve(), b.resolve())
   }
@@ -86,6 +101,21 @@ export class StatusTimeline extends Timeline {
 
 
 export class NotificationTimeline extends Timeline {
+  hasChanges({accounts, statuses}) {
+    return this._timeline.find((ref) => {
+      const accountRef = ref.accountRef
+      if(accountRef && (accounts[accountRef.uri]))
+        return true
+      const statusRef = ref.statusRef
+      if(statusRef && (statuses[statusRef.uri] || accounts[statusRef.accountUri]))
+        return true
+      const reblogRef = statusRef && statusRef.reblogRef
+      if(reblogRef && (statuses[reblogRef.uri] || accounts[reblogRef.accountUri]))
+        return true
+      return false
+    }) ? true : false
+  }
+
   compare(a, b) {
     return Notification.compareCreatedAt(a, b)
   }
