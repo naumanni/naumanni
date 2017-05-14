@@ -19,7 +19,7 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
 .status {
   .status-row {
     @mixin clearfix;
-    padding: 0 12px;
+    padding: 0 $marginTimeline;
 
     .status-rowLeft {
       float: left;
@@ -424,7 +424,7 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
 .notification {
   .notification-about {
     margin-bottom: $marginDefault;
-    padding: 0 12px;
+    padding: 0 $marginTimeline;
     @mixin clearfix;
 
     .notification-icon {
@@ -455,6 +455,7 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
 
   .notification-account {
     @mixin clearfix;
+    margin: 0 $marginTimeline;
 
     .notification-accountAvatar {
       display: block;

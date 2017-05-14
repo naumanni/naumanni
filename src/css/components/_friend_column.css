@@ -14,7 +14,7 @@
       line-height: 2rem;
       position: absolute;
       color: $colorGray3;
-      left: 12px;
+      left: $marginTimeline;
     }
 
     > input {
@@ -42,7 +42,7 @@
     overflow-y: scroll;
 
     li {
-      padding: $marginDefault 12px;
+      padding: $marginDefault $marginTimeline;
       border-bottom: 1px solid $colorFriendBorder;
     }
   }

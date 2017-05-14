@@ -80,9 +80,6 @@ export default class Column extends React.Component {
   columnBodyClassName() {
     let columnBodyClassName = ['column-body']
 
-    if(this.constructor.isScrollable)
-      columnBodyClassName.push('is-scrollable')
-
     if(this.state.loading)
       columnBodyClassName.push('is-loading')
 

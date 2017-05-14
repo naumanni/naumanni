@@ -38,6 +38,7 @@ $radiusDefault: 4px;
 
 $marginDefault: 8px;
 $marginHalf: calc($marginDefault / 2);
+$marginTimeline: 12px;
 
 
 /* 色 for App */

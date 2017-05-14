@@ -17,8 +17,6 @@ import Column from './Column'
  * 通知カラム
  */
 export default class NotificationColumn extends Column {
-  static isScrollable = true
-
   static propTypes = {
     subject: PropTypes.string.isRequired,
   }

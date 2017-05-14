@@ -3,6 +3,8 @@
   margin: 0;
   padding: 0;
 
+  overflow-y: scroll;
+
   > li {
     padding: $marginDefault 0;
     border-bottom: 1px solid $colorStatusBorder;

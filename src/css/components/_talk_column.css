@@ -10,7 +10,7 @@ $sizeTalkFormHeight: 96px;
 
   .talk-talkGroups {
     list-style: none;
-    padding: 0 12px;
+    padding: 0 $marginTimeline;
     margin: 0;
     box-sizing: border-box;
     flex: 1 1 100px;
