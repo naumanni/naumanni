@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
@@ -17,6 +18,7 @@ export default class TimelineNotification extends React.Component {
     notificationRef: NotificationRefPropType.isRequired,
     tokens: TootPanel.propTypes.tokens,
     onAvatarClicked: TimelineActionPropTypes.onAvatarClicked,
+    onLockStatus: PropTypes.func,
   }
 
   /**
@@ -124,6 +126,7 @@ export default class TimelineNotification extends React.Component {
 
         <TimelineStatus
           modifier={notificationRef.type}
+          onLockStatus={this.props.onLockStatus}
           {...notificationRef.statusRef.expand()}
           {...this.props}
         />
