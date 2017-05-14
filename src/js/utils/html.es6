@@ -163,14 +163,14 @@ function* _expandMastodonStatus(content) {
               source: content.substring(match.index, endpos),
             }
           } else {
-            console.log('not http url', url.protocol, href[1])
+            console.error(`not http url: ${url.protocol} ${href[1]} \`${content}\``)
           }
         } catch(e) {
           // invalid URL, ignore error
           console.error(e, href)
         }
       } else {
-        console.error('no href found')
+        console.error(`No href found: ${attrs} \`${content}\``)
       }
     } else {
       // ignore unknown tag
