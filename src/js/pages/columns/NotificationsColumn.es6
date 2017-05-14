@@ -3,18 +3,22 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import {
-  COLUMN_NOTIFICATIONS,
-  SUBJECT_MIXED,
+  COLUMN_NOTIFICATIONS, SUBJECT_MIXED, MAX_STATUSES, AUTO_PAGING_MARGIN,
 } from 'src/constants'
+import {NotificationTimeline} from 'src/models/Timeline'
 import NotificationListener from 'src/controllers/NotificationListener'
 import TimelineData from 'src/infra/TimelineData'
 import TimelineNotification from 'src/pages/components/TimelineNotification'
 import TimelineActions from 'src/controllers/TimelineActions'
+import TokenListener from 'src/controllers/TokenListener'
+import {NotificationTimelineLoader} from 'src/controllers/TimelineLoader'
+import {RefCounter} from 'src/utils'
 import Column from './Column'
-
+import {NowLoading} from 'src/pages/parts'
 
 /**
  * 通知カラム
+ * TODO: TimelineColumnとのコピペなのを何とかする
  */
 export default class NotificationColumn extends Column {
   static propTypes = {
@@ -26,8 +30,18 @@ export default class NotificationColumn extends Column {
 
     const {subject} = this.props
 
-    this.listener = new NotificationListener(subject)
-    this.state.timeline = null
+    this.db = TimelineData
+    this.timeline = new NotificationTimeline(MAX_STATUSES)
+    this.scrollLockCounter = new RefCounter({
+      onLocked: ::this.onLocked,
+      onUnlocked: ::this.onUnlocked,
+    })
+    this.tokenListener = new TokenListener(subject, {
+      onTokenAdded: ::this.onTokenAdded,
+      onTokenRemoved: ::this.onTokenRemoved,
+      onTokenUpdated: ::this.onTokenUpdated,
+    })
+    this.timelineListener = new NotificationListener(this.timeline, this.db)
     this.actionDelegate = new TimelineActions(this.context)
   }
 
@@ -37,12 +51,11 @@ export default class NotificationColumn extends Column {
   componentDidMount() {
     super.componentDidMount()
     this.listenerRemovers.push(
-      this.listener.onChange(::this.onChangeTimeline),
-      TimelineData.onChange(::this.onChangeTimelineData),
+      this.timeline.onChange(::this.onTimelineChanged),
     )
 
     // make event listener
-    this.listener.updateTokens(this.state.tokenState.tokens)
+    this.tokenListener.updateTokens(this.state.tokenState.tokens)
 
     // set timer for update dates
     this.timer = setInterval(
@@ -55,6 +68,8 @@ export default class NotificationColumn extends Column {
    */
   componentWillUnmount() {
     super.componentWillUnmount()
+    this.subtimlineChangedRemover && this.subtimlineChangedRemover()
+    this.timelineListener.clean()
     clearInterval(this.timer)
   }
 
@@ -84,12 +99,12 @@ export default class NotificationColumn extends Column {
    */
   renderBody() {
     const {subject} = this.props
-    const {timeline} = this.state
+    const {timeline, tailLoading} = this.state
     const {tokens} = this.state.tokenState
 
     return (
       <div className={this.columnBodyClassName()}>
-        <ul className="timeline">
+        <ul className="timeline" onScroll={::this.onTimelineScrolled}>
           {(timeline || []).map((notificationRef) => {
             return (
               <li key={notificationRef.uri}>
@@ -102,6 +117,7 @@ export default class NotificationColumn extends Column {
               </li>
             )
           })}
+          {tailLoading && <li className="timeline-loading"><NowLoading /></li>}
         </ul>
       </div>
     )
@@ -110,54 +126,171 @@ export default class NotificationColumn extends Column {
   /**
    * @override
    */
-  getStateFromContext() {
-    const state = super.getStateFromContext()
-    if(!this.isMixedTimeline()) {
-      // ヘッダに表示するために自分のTokenを保存している
-      state.token = state.tokenState.getTokenByAcct(this.props.subject)
-    }
-    return state
-  }
+  onChangeConext() {
+    super.onChangeConext()
 
+    // なんだかなあ
+    this.tokenListener.updateTokens(this.context.context.getState().tokenState.tokens)
+  }
 
   isMixedTimeline() {
     return this.props.subject === SUBJECT_MIXED
   }
 
-  onChangeConext() {
-    super.onChangeConext()
-    this.listener.updateTokens(this.state.tokenState.tokens)
+  loadMoreStatuses() {
+    require('assert')(this.subtimeline)
+
+    if(!this.timelineLoaders) {
+      this.timelineLoaders = {}
+      for(const token of this.tokenListener.getTokens()) {
+        this.timelineLoaders[token.address] = {
+          loader: new NotificationTimelineLoader(this.subtimeline, token, this.db),
+          loading: false,
+        }
+      }
+    }
+
+    for(const loaderInfo of Object.values(this.timelineLoaders)) {
+      if(!loaderInfo.loading && !loaderInfo.loader.isTailReached()) {
+        loaderInfo.loading = true
+        loaderInfo.loader.loadNext()
+          .then(() => {
+            loaderInfo.loading = false
+            this.updateLoadingStatus()
+          }, () => {
+            loaderInfo.loading = false
+            this.updateLoadingStatus()
+          })
+      }
+    }
+    this.updateLoadingStatus()
   }
 
   // callbacks
-  /**
-   * ListnerのTimelineが更新されたら呼ばれる
-   */
-  onChangeTimeline() {
+  // scrollLockCounter callbacks
+  onLocked() {
+    this.subtimeline = this.timeline.clone()
+    this.subtimeline.max = undefined
+    this.subtimlineChangedRemover = this.subtimeline.onChange(::this.onSubtimelineChanged)
+
     this.setState({
-      loading: false,
-      timeline: this.listener.timeline,
+      isScrollLocked: true,
+      timeline: this.subtimeline.timeline,
+    })
+  }
+
+  onUnlocked() {
+    this.subtimeline = null
+    this.timelineLoaders = null
+    this.subtimlineChangedRemover()
+    this.subtimlineChangedRemover = null
+
+    this.setState({
+      isScrollLocked: false,
+      timeline: this.timeline.timeline,
     })
   }
 
   /**
-   * TimelineDataのStatus, Accountが更新されたら呼ばれる。
-   * TODO: 関数名どうにかして
-   * @param {object} changes
+   * Timelineが更新されたら呼ばれる
    */
-  onChangeTimelineData(changes) {
-    // 表示中のTimelineに関連があるか調べる
-    const changed = (this.state.timeline || []).find((notificationRef) => {
-      if(notificationRef.statusRef && changes.statuses[notificationRef.statusRef.uri])
-        return true
-      if(notificationRef.accountRef && changes.accounts[notificationRef.accountRef.uri])
-        return true
-    }) ? true : false
-
-    // Timelineを更新
-    if(changed) {
-      this.setState({timeline: this.state.timeline})
+  onTimelineChanged() {
+    if(this.state.isScrollLocked) {
+      // スクロールがLockされていたらメインTimelineは更新しない
+      // this.setState({
+      //   loading: false,
+      //   newTimeline: this.timeline,
+      // })
+    } else {
+      // スクロールは自由なのでメインTimelineを直接更新する
+      this.setState({
+        loading: false,
+        timeline: this.timeline.timeline,
+      })
     }
+  }
+
+  onSubtimelineChanged() {
+    // load中にlock解除されたら、ここはnull
+    if(!this.subtimeline)
+      return
+    this.setState({
+      loading: false,
+      timeline: this.subtimeline.timeline,
+    })
+  }
+
+
+  // TokenListener callbacks
+  onTokenAdded(newToken) {
+    // install listener
+    this.timelineListener.addListener(newToken.acct, newToken)
+
+    // load timeline
+    const loader = new NotificationTimelineLoader(this.timeline, newToken, this.db)
+    loader.loadInitial()
+
+    // TODO: なんだかなぁ
+    if(this.isMixedTimeline())
+      this.setState({token: this.tokenListener.getSubjectToken()})
+  }
+
+  onTokenRemoved(oldToken) {
+    // remove listener
+    this.timelineListener.removeListener(oldToken.acct)
+
+    // TODO: remove statuses
+
+    // TODO: なんだかなぁ
+    if(this.isMixedTimeline())
+      this.setState({token: this.tokenListener.getSubjectToken()})
+  }
+
+  onTokenUpdated(newToken, oldToken) {
+    // update listener
+    const {acct} = newToken
+
+    this.timelineListener.removeListener(acct)
+    this.timelineListener.addListener(acct, newToken)
+
+    // TODO: なんだかなぁ
+    if(this.isMixedTimeline())
+      this.setState({token: this.tokenListener.getSubjectToken()})
+  }
+
+  // dom events
+  /**
+   * Timelineがスクロールしたら呼ばれる。Lockとかを管理
+   * @param {Event} e
+   */
+  onTimelineScrolled(e) {
+    const node = e.target
+    const scrollTop = node.scrollTop
+
+    // Scroll位置がちょっとでもTopから動いたらLockしちゃう
+    if(!this.unlockScrollLock && scrollTop > 0) {
+      // Scrollが上部以外になったのでScrollをLockする
+      require('assert')(!this.unlockScrollLock)
+      this.unlockScrollLock = this.scrollLockCounter.increment()
+    } else if(this.unlockScrollLock && scrollTop <= 0) {
+      // Scrollが上部になったのでScrollをUnlockする
+      this.unlockScrollLock()
+      this.unlockScrollLock = undefined
+    }
+
+    // Scroll位置がBottomまであとちょっとになれば、次を読み込む
+    if(scrollTop + node.clientHeight > node.scrollHeight - AUTO_PAGING_MARGIN) {
+      //
+      if(!this.state.tailLoading) {
+        this.loadMoreStatuses()
+      }
+    }
+  }
+
+  updateLoadingStatus() {
+    this.setState({
+      isTailLoading: !Object.values(this.timelineLoaders).every((loaderInfo) => !loaderInfo.loading),
+    })
   }
 }
 require('./').registerColumn(COLUMN_NOTIFICATIONS, NotificationColumn)

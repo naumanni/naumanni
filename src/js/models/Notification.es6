@@ -17,6 +17,10 @@ const NotificationRecord = Record({  // eslint-disable-line new-cap
  * Mastodon's Notification
  */
 export default class Notification extends NotificationRecord {
+  getIdByHost(host) {
+    return this.host === host ? this.id : null
+  }
+
   get uri() {
     return `notification:${this.host}:${this.id}`
   }

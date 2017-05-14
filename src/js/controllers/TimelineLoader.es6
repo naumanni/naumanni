@@ -23,7 +23,7 @@ class TimelineLoader {
     if(this._tailReached)
       return Promise.resolve()
 
-    const minStatusId = this._timeline.getMinStatusIdForHost(this._token.host)
+    const minStatusId = this._timeline.getMinIdForHost(this._token.host)
     if(!minStatusId)
       return Promise.resolve()
 
@@ -42,6 +42,10 @@ class TimelineLoader {
       this._tailReached = true
     }
 
+    this._push(entities, result)
+  }
+
+  _push(entities, result) {
     const statusRefs = this._db.mergeStatuses(entities, result)
     const removes = this._timeline.push(statusRefs)
     this._db.dispose(removes)
@@ -69,6 +73,7 @@ export class FederationTimelineLoader extends TimelineLoader {
   }
 }
 
+
 export class AccountTimelineLoader extends TimelineLoader {
   constructor(account, ...args) {
     super(...args)
@@ -81,6 +86,19 @@ export class AccountTimelineLoader extends TimelineLoader {
       return Promise.resolve({entities: {}, result: []})
 
     return this._token.requester.listAccountStatuses({...query, id}, {token: this._token})
+  }
+}
+
+
+export class NotificationTimelineLoader extends TimelineLoader {
+  fetch(query) {
+    return this._token.requester.listNotifications(query, {token: this._token})
+  }
+
+  _push(entities, result) {
+    const notificationRefs = this._db.mergeNotifications(entities, result)
+    const removes = this._timeline.push(notificationRefs)
+    this._db.dispose(removes)
   }
 }
 

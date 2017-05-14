@@ -367,8 +367,10 @@ export default class TimelineStatus extends React.Component {
     if(this.state[isShowKey]) {
       // hide panel
       this.showHidePanel(false, panel)
-      this.unlockTimelineHandler()
-      delete this.unlockTimelineHandler
+      if(this.unlockTimelineHandler) {
+        this.unlockTimelineHandler()
+        delete this.unlockTimelineHandler
+      }
     } else {
       // show panel
       if(!this.unlockTimelineHandler) {

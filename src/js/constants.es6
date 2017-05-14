@@ -60,3 +60,6 @@ export const TOKEN_HASHTAG = 'hashtag'
 
 // 最下部からこの位置に来たら、AutoPagingを開始する
 export const AUTO_PAGING_MARGIN = 300
+
+// Timelineで普段保持するStatus数
+export const MAX_STATUSES = 40

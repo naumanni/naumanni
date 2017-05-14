@@ -72,8 +72,9 @@ class TimelineData extends EventEmitter {
 
   dispose(refs) {
     refs = new List(refs)
-    if(!refs.isEmpty())
-      console.log('dispose', refs.size)
+    if(!refs.isEmpty()) {
+      // console.log('dispose', refs.size)
+    }
   }
 
   /**
@@ -169,6 +170,10 @@ export class NotificationRef {
   constructor(db, notification) {
     this._db = db
     this._notification = notification
+  }
+
+  resolve() {
+    return this._notification
   }
 
   get uri() {

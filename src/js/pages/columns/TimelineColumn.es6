@@ -7,18 +7,18 @@ import {
   COLUMN_TIMELINE,
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
   STREAM_HOME, STREAM_LOCAL, STREAM_FEDERATION,
-  AUTO_PAGING_MARGIN,
+  AUTO_PAGING_MARGIN, MAX_STATUSES,
 } from 'src/constants'
-
 import TimelineListener from 'src/controllers/TimelineListener'
 import TimelineData from 'src/infra/TimelineData'
-import Column from './Column'
 import TimelineStatus from '../components/TimelineStatus'
 import TimelineActions from 'src/controllers/TimelineActions'
 import {makeTimelineLoader} from 'src/controllers/TimelineLoader'
 import {StatusTimeline} from 'src/models/Timeline'
-import ChangeEventEmitter from 'src/utils/EventEmitter'
 import {NowLoading} from 'src/pages/parts'
+import TokenListener from 'src/controllers/TokenListener'
+import {RefCounter} from 'src/utils'
+import Column from './Column'
 
 
 // TODO: i10n
@@ -27,7 +27,6 @@ const TYPENAMEMAP = {
   [TIMELINE_LOCAL]: 'ローカルタイムライン',
   [TIMELINE_HOME]: 'ホームタイムライン',
 }
-const MAX_STATUSES = 20
 
 /**
  * タイムラインのカラム
@@ -134,7 +133,7 @@ export default class TimelineColumn extends Column {
 
     return (
       <div className={this.columnBodyClassName()}>
-        <ul className="timeline" ref="timeline" onScroll={::this.onScrollTimeline}>
+        <ul className="timeline" onScroll={::this.onTimelineScrolled}>
           {timeline.map((statusRef) => {
             return (
               <li key={statusRef.uri}>
@@ -240,7 +239,7 @@ export default class TimelineColumn extends Column {
         loading: false,
         timeline: this.timeline.timeline,
       })
-      console.log('main', this.timeline.timeline.size)
+      // console.log('main', this.timeline.timeline.size)
     }
   }
 
@@ -300,9 +299,8 @@ export default class TimelineColumn extends Column {
    * Timelineがスクロールしたら呼ばれる。Lockとかを管理
    * @param {Event} e
    */
-  onScrollTimeline(e) {
-    // const node = e.target
-    const node = ReactDOM.findDOMNode(this.refs.timeline)
+  onTimelineScrolled(e) {
+    const node = e.target
     const scrollTop = node.scrollTop
 
     // Scroll位置がちょっとでもTopから動いたらLockしちゃう
@@ -328,79 +326,6 @@ export default class TimelineColumn extends Column {
 require('./').registerColumn(COLUMN_TIMELINE, TimelineColumn)
 
 
-// TODO: どっかに移す
-class TokenListener extends ChangeEventEmitter {
-  constructor(subject, options={}) {
-    super()
-
-    this.subject = subject
-    this._tokens = {}
-    this.options = options
-  }
-
-  updateTokens(tokens) {
-    if(this.subject !== SUBJECT_MIXED) {
-      // Accountタイムラインなので、一致するアカウントのみ
-      tokens = tokens.filter((token) => token.acct === this.subject)
-    }
-    tokens = tokens.reduce((map, token) => {
-      map[token.acct] = token
-      return map
-    }, {})
-
-    // new tokens
-    Object.values(tokens)
-      .filter((newToken) => !this._tokens[newToken.acct] || !this._tokens[newToken.acct].isEqual(newToken))
-      .forEach((token) => {
-        const oldToken = this._tokens[token.acct]
-        if(oldToken) {
-          // token updated
-          if(oldToken.accessToken != token.accessToken)
-            this.onTokenUpdated(token, oldToken)
-        } else {
-          // token added
-          this.onTokenAdded(token)
-        }
-      })
-
-    // disposed tokens
-    Object.values(this._tokens)
-      .filter((oldToken) => !tokens[oldToken.acct] || !tokens[oldToken.acct].isEqual(oldToken))
-      .forEach((token) => {
-        if(!tokens[token.acct]) {
-          // token removed
-          console.log(`token removed ${token.toString()}`)
-          this.onTokenRemoved(token)
-        }
-      })
-
-    this._tokens = tokens
-  }
-
-  getSubjectToken() {
-    if(this.subject === SUBJECT_MIXED)
-      return null
-    return this._tokens[this.subject]
-  }
-
-  getTokens() {
-    return Array.from(Object.values(this._tokens))
-  }
-
-  onTokenAdded(newToken) {
-    this.options.onTokenAdded && this.options.onTokenAdded(newToken)
-  }
-
-  onTokenRemoved(oldToken) {
-    this.options.onTokenAdded && this.options.onTokenRemoved(oldToken)
-  }
-
-  onTokenUpdated(newToken, oldToken) {
-    this.options.onTokenAdded && this.options.onTokenUpdated(newToken, oldToken)
-  }
-}
-
-
 //
 import {makeWebsocketUrl} from 'src/utils'
 
@@ -421,39 +346,4 @@ function makeWebsocketUrlByTimelineType(timelineType, token) {
     break
   }
   return url
-}
-
-
-// TODO: あとでうつす
-class RefCounter {
-  constructor(options={}) {
-    this._counter = 0
-    this._options = options
-    if(WeakSet)
-      this.decrementers = new WeakSet()
-  }
-
-  get counter() {
-    return this._counter
-  }
-
-  increment() {
-    this._counter += 1
-    if(this._counter === 1 && this._options.onLocked)
-      this._options.onLocked()
-
-    const decrementer = () => {
-      if(this.decrementers && !this.decrementers.has(decrementer)) {
-        return false
-      }
-      this.decrementers && this.decrementers.delete(decrementer)
-      this._counter -= 1
-      if(this._counter === 0 && this._options.onUnlocked)
-        this._options.onUnlocked()
-
-      return true
-    }
-    this.decrementers && this.decrementers.add(decrementer)
-    return decrementer
-  }
 }

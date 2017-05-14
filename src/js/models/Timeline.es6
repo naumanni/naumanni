@@ -1,5 +1,6 @@
 import {List} from 'immutable'
 
+import Notification from './Notification'
 import Status from './Status'
 import ChangeEventEmitter from 'src/utils/EventEmitter'
 
@@ -42,17 +43,17 @@ class Timeline extends ChangeEventEmitter {
     return this._timeline
   }
 
-  getMinStatusIdForHost(host) {
-    let lastStatusId = null
+  getMinIdForHost(host) {
+    let minId = null
 
-    for(const status of this._timeline) {
-      const statusId = status.resolve().getIdByHost(host)
-      if(statusId && (!lastStatusId || statusId < lastStatusId)) {
-        lastStatusId = statusId
+    for(const ref of this._timeline) {
+      const id = ref.resolve().getIdByHost(host)
+      if(id && (!minId || id < minId)) {
+        minId = id
       }
     }
 
-    return lastStatusId
+    return minId
   }
 
   /**
@@ -80,6 +81,13 @@ class Timeline extends ChangeEventEmitter {
 export class StatusTimeline extends Timeline {
   compare(a, b) {
     return Status.compareCreatedAt(a.resolve(), b.resolve())
+  }
+}
+
+
+export class NotificationTimeline extends Timeline {
+  compare(a, b) {
+    return Notification.compareCreatedAt(a, b)
   }
 }
 
