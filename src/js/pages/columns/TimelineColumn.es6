@@ -7,6 +7,7 @@ import {
   COLUMN_TIMELINE,
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
   STREAM_HOME, STREAM_LOCAL, STREAM_FEDERATION,
+  AUTO_PAGING_MARGIN,
 } from 'src/constants'
 
 import TimelineListener from 'src/controllers/TimelineListener'
@@ -128,7 +129,7 @@ export default class TimelineColumn extends Column {
    */
   renderBody() {
     const {subject} = this.props
-    const {timeline} = this.state
+    const {timeline, tailLoading} = this.state
     const {tokens} = this.state.tokenState
 
     return (
@@ -147,7 +148,7 @@ export default class TimelineColumn extends Column {
               </li>
             )
           })}
-          <li className="timeline-loading"><NowLoading /></li>
+          {tailLoading && <li className="timeline-loading"><NowLoading /></li>}
         </ul>
       </div>
     )
@@ -316,7 +317,7 @@ export default class TimelineColumn extends Column {
     }
 
     // Scroll位置がBottomまであとちょっとになれば、次を読み込む
-    if(scrollTop + node.clientHeight > node.scrollHeight - 200) {
+    if(scrollTop + node.clientHeight > node.scrollHeight - AUTO_PAGING_MARGIN) {
       //
       if(!this.state.tailLoading) {
         this.loadMoreStatuses()

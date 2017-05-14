@@ -57,3 +57,6 @@ export const TOKEN_BREAK = 'break'
 export const TOKEN_URL = 'url'
 export const TOKEN_MENTION = 'mention'
 export const TOKEN_HASHTAG = 'hashtag'
+
+// 最下部からこの位置に来たら、AutoPagingを開始する
+export const AUTO_PAGING_MARGIN = 300

@@ -1,64 +1,9 @@
 import {
-  EVENT_UPDATE, EVENT_NOTIFICATION,
-  TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
-  STREAM_HOME, STREAM_LOCAL, STREAM_FEDERATION,
-  WEBSOCKET_EVENT_MESSAGE,
+  TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME,
 } from 'src/constants'
 
 
-import {Status} from 'src/models'
-import TimelineData from 'src/infra/TimelineData'
-
-
-/**
- * そのうち大きく羽ばたくはず...
- */
 class TimelineLoader {
-  constructor(tokens, db=null) {
-    this.tokens = tokens
-    this.db = db || TimelineData
-  }
-
-  async loadHead() {
-    const timeline = (await Promise.all(
-      this.tokens.map((token) => this.loadRequest(token, {limit: 40})
-    )))
-      .map(({entities, result}) => this.db.mergeStatuses(entities, result))
-      .reduce((timeline, statusRefs) => {
-        return statusRefs
-          .filter((s) => !timeline.find((old) => old.uri === s.uri))
-          .concat(timeline)
-      }, [])
-
-    timeline.sort((a, b) => Status.compareCreatedAt(a.resolve(), b.resolve()))
-
-    return timeline
-  }
-
-  loadRequest(token, query) {
-    require('assert')(0, 'must implement at subclass')
-  }
-}
-
-
-// TODO: 対象アカウントのインスタンスのTokenもってれば、そのTokenだけ使えばいい
-export class AccountTimelineLoader extends TimelineLoader {
-  constructor(account, ...args) {
-    super(...args)
-    this.account = account
-  }
-
-  loadRequest(token, query) {
-    const id = this.account.getIdByHost(token.host)
-    if(!id)
-      return Promise.resolve({})
-
-    return token.requester.listAccountStatuses({...query, id}, {token})
-  }
-}
-
-// -----------------------------------------------------
-class TimelineLoader2 {
   constructor(timeline, token, db) {
     this._timeline = timeline
     this._token = token
@@ -89,6 +34,7 @@ class TimelineLoader2 {
     require('assert')(0, 'not implemented')
   }
 
+  // private
   async _load(query) {
     const {entities, result} = await this.fetch(query)
 
@@ -103,23 +49,38 @@ class TimelineLoader2 {
 }
 
 
-class HomeTimelineLoader extends TimelineLoader2 {
+export class HomeTimelineLoader extends TimelineLoader {
   fetch(query) {
     return this._token.requester.listHomeTimeline(query, {token: this._token})
   }
 }
 
 
-class LocalTimelineLoader extends TimelineLoader2 {
+export class LocalTimelineLoader extends TimelineLoader {
   fetch(query) {
     return this._token.requester.listPublicTimeline({...query, 'local': 'true'}, {token: this._token})
   }
 }
 
 
-class FederationTimelineLoader extends TimelineLoader2 {
+export class FederationTimelineLoader extends TimelineLoader {
   fetch(query) {
     return this._token.requester.listPublicTimeline(query, {token: this._token})
+  }
+}
+
+export class AccountTimelineLoader extends TimelineLoader {
+  constructor(account, ...args) {
+    super(...args)
+    this.account = account
+  }
+
+  fetch(query) {
+    const id = this.account.getIdByHost(this._token.host)
+    if(!id)
+      return Promise.resolve({entities: {}, result: []})
+
+    return this._token.requester.listAccountStatuses({...query, id}, {token: this._token})
   }
 }
 

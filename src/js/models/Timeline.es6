@@ -110,7 +110,7 @@ function mergeTimeline(list, iter, comparator, max) {
   let {t: removes, f: appends} = filterSplit(iter, (ref) => list.find((a) => a.uri === ref.uri) ? true : false)
 
   if(appends.isEmpty())
-    return list
+    return {merged: list, appends, removes}
 
   let merged = list.concat(appends).sort(comparator)
   if(max && merged.size > max) {

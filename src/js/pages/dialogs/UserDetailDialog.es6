@@ -1,6 +1,6 @@
 import React from 'react'
 
-import {COLUMN_TALK} from 'src/constants'
+import {COLUMN_TALK, AUTO_PAGING_MARGIN} from 'src/constants'
 import TimelineData from 'src/infra/TimelineData'
 import {IconFont, NowLoading} from 'src/pages/parts'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
@@ -10,6 +10,7 @@ import TimelineActions from 'src/controllers/TimelineActions'
 import TimelineStatus from 'src/pages/components/TimelineStatus'
 import AccountRow from 'src/pages/components/AccountRow'
 import {HistoryRelatedDialog} from './Dialog'
+import {StatusTimeline} from 'src/models/Timeline'
 
 export const LIST_STATUSES = 'statuses'
 export const LIST_FOLLOWINGS = 'followings'
@@ -31,12 +32,14 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
       account: null,
       list: LIST_STATUSES,
       relationships: {},
-      statuses: null,
+      timeline: null,
       // TODO: Contextの更新をチェックする
       tokens: this.context.context.getState().tokenState.tokens,
     }
 
     this.actionDelegate = new TimelineActions(this.context)
+    this.db = TimelineData
+    this.timeline = new StatusTimeline()
   }
 
   /**
@@ -46,7 +49,7 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
     super.componentDidMount()
 
     this.listenerRemovers.push(
-      TimelineData.onChange(::this.onChangeTimelineData),
+      this.timeline.onChange(::this.onTimelineChanged)
     )
 
     // set timer for update dates
@@ -140,14 +143,14 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
   }
 
   renderStatuses() {
-    const {statuses, tokens} = this.state
+    const {timeline, tokens, timelineIsLoading} = this.state
 
-    if(!statuses)
+    if(!timeline)
       return <NowLoading />
 
     return (
-      <ul className="timeline">
-        {statuses.map((statusRef) => {
+      <ul className="timeline" onScroll={::this.onScrollTimeline}>
+        {timeline.map((statusRef) => {
           return (
             <li key={statusRef.uri}>
               <TimelineStatus
@@ -159,6 +162,7 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
             </li>
           )
         })}
+        {timelineIsLoading && <li className="timeline-loading"><NowLoading /></li>}
       </ul>
     )
   }
@@ -244,10 +248,26 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
     const {account, tokens} = this.state
 
     if(list === LIST_STATUSES) {
-      const loader = new AccountTimelineLoader(account, tokens)
-      const statuses = await loader.loadHead()
+      if(!this.timelineLoaders) {
+        this.timelineLoaders = tokens
+          .map((token) => new AccountTimelineLoader(account, this.timeline, token, this.db))
+          .map((loader) => {
+            return {loader, loading: false}
+          })
+      }
 
-      this.setState({statuses})
+      for(const loaderInfo of this.timelineLoaders) {
+        loaderInfo.loading = true
+        loaderInfo.loader.loadInitial()
+          .then(() => {
+            loaderInfo.loading = false
+            this.setState({timelineIsLoading: this._isListLoading()})
+          }, () => {
+            loaderInfo.loading = false
+            this.setState({timelineIsLoading: this._isListLoading()})
+          })
+      }
+      this.setState({timelineIsLoading: this._isListLoading()})
     } else {
       const endpoint = list === LIST_FOLLOWERS ? 'listFollowers' : 'listFollowings'
       const accounts = new Map()
@@ -266,6 +286,23 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
       else
         this.setState({followings: Array.from(accounts.values())})
     }
+  }
+
+  loadMoreStatuses() {
+    for(const loaderInfo of Object.values(this.timelineLoaders)) {
+      if(!loaderInfo.loading && !loaderInfo.loader.isTailReached()) {
+        loaderInfo.loading = true
+        loaderInfo.loader.loadNext()
+          .then(() => {
+            loaderInfo.loading = false
+            this.setState({timelineIsLoading: this._isListLoading()})
+          }, () => {
+            loaderInfo.loading = false
+            this.setState({timelineIsLoading: this._isListLoading()})
+          })
+      }
+    }
+    this.setState({tailLoading: this._isListLoading()})
   }
 
   onClickListTab(newList) {
@@ -310,20 +347,26 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
     }
   }
 
-  /**
-   * TimelineDataのStatus, Accountが更新されたら呼ばれる。
-   * TODO: 関数名どうにかして
-   * @param {object} changes
-   */
-  onChangeTimelineData(changes) {
-    // 表示中のTimelineに関連があるか調べる
-    const changed = (this.state.statuses || []).find((statusRef) => {
-      return changes.statuses[statusRef.uri] || changes.accounts[statusRef.accountUri]
-    }) ? true : false
+  onTimelineChanged() {
+    this.setState({
+      loading: false,
+      timeline: this.timeline.timeline,
+    })
+  }
 
-    // Timelineを更新
-    if(changed) {
-      this.setState({statuses: this.state.statuses})
+  onScrollTimeline(e) {
+    const node = e.target
+
+    // Scroll位置がBottomまであとちょっとになれば、次を読み込む
+    if(node.scrollTop + node.clientHeight > node.scrollHeight - AUTO_PAGING_MARGIN) {
+      //
+      if(!this.state.timelineIsLoading) {
+        this.loadMoreStatuses()
+      }
     }
+  }
+
+  _isListLoading() {
+    return !Object.values(this.timelineLoaders).every((loaderInfo) => !loaderInfo.loading)
   }
 }
