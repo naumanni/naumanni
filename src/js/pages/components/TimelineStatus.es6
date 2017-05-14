@@ -20,6 +20,7 @@ export default class TimelineStatus extends React.Component {
     reblogAccount: AccountPropType,
     modifier: PropTypes.string,
     tokens: TootPanel.propTypes.tokens,
+    onLockStatus: PropTypes.func,
     ...TimelineActionPropTypes,
   }
 
@@ -44,6 +45,15 @@ export default class TimelineStatus extends React.Component {
     }
   }
 
+  /**
+   * @override
+   */
+  componentWillUnmount() {
+    if(this.unlockTimelineHandler) {
+      this.unlockTimelineHandler()
+      delete this.unlockTimelineHandler
+    }
+  }
   /**
    * @override
    */
@@ -357,8 +367,13 @@ export default class TimelineStatus extends React.Component {
     if(this.state[isShowKey]) {
       // hide panel
       this.showHidePanel(false, panel)
+      this.unlockTimelineHandler()
+      delete this.unlockTimelineHandler
     } else {
       // show panel
+      if(!this.unlockTimelineHandler) {
+        this.unlockTimelineHandler = this.props.onLockStatus && this.props.onLockStatus()
+      }
       this.hideAllPanel()
         .then(() => this.showHidePanel(true, panel))
     }

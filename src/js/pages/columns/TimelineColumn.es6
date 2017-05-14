@@ -140,6 +140,7 @@ export default class TimelineColumn extends Column {
                 <TimelineStatus
                   subject={subject !== SUBJECT_MIXED ? subject : null}
                   tokens={tokens}
+                  onLockStatus={() => this.scrollLockCounter.increment()}
                   {...statusRef.expand()}
                   {...this.actionDelegate.props}
                 />
