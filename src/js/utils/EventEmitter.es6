@@ -5,13 +5,23 @@ export default class ChangeEventEmitter extends EventEmitter {
   static EVENT_CHANGE = 'EVENT_CHANGE'
 
   /**
+   * EVENTのリスナを登録する
+   * @param {string} event
+   * @param {func} cb
+   * @return {func} リスナの登録を削除するハンドラ
+   */
+  on(event, cb) {
+    super.on(event, cb)
+    return this.removeListener.bind(this, this.event, cb)
+  }
+
+  /**
    * EVENT_CHANGEのリスナを登録する
    * @param {func} cb
    * @return {func} リスナの登録を削除するハンドラ
    */
   onChange(cb) {
-    this.on(this.EVENT_CHANGE, cb)
-    return this.removeListener.bind(this, this.EVENT_CHANGE, cb)
+    return this.on(this.EVENT_CHANGE, cb)
   }
 
   /**

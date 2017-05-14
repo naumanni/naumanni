@@ -2,6 +2,7 @@
  * Status, Accountの最新情報を保持する。
  */
 import {EventEmitter} from 'events'
+import {List} from 'immutable'
 
 
 class TimelineData extends EventEmitter {
@@ -67,6 +68,12 @@ class TimelineData extends EventEmitter {
     })
 
     this.emitChange(changes)
+  }
+
+  dispose(refs) {
+    refs = new List(refs)
+    if(!refs.isEmpty())
+      console.log('dispose', refs.size)
   }
 
   /**
