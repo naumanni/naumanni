@@ -20,8 +20,10 @@ moment.locale('ja')
 if(process.env.NODE_ENV === 'production') {
   const Raven = require('raven-js')
   Raven
-      .config('https://95c423d821584e798c480087ae77d823@sentry.io/166289')
-      .install()
+    .config('https://95c423d821584e798c480087ae77d823@sentry.io/166289', {
+      release: process.env.NAUMANNI_VERSION || 'dev',
+    })
+    .install()
 }
 
 
