@@ -6,8 +6,8 @@ export default class TokenState {
    * @param {OAuthToken[]} tokens
    */
   constructor(tokens=[]) {
-    this.tokens = tokens
-    this.tokens.sort((a, b) => {
+    this._tokens = tokens
+    this._tokens.sort((a, b) => {
       if(a.acct > b.acct)
         return 1
       else if(a.acct < b.acct)
@@ -32,10 +32,24 @@ export default class TokenState {
   }
 
   onTokenAdded({token}) {
-    return new TokenState([...this.tokens, token])
+    return new TokenState([...this._tokens, token])
   }
 
   getTokenByAcct(acct) {
     return this.tokens.find((token) => token.acct === acct)
+  }
+
+  /**
+   * 生きている、読み込みが完了しているTokenのみリストする
+   */
+  get tokens() {
+    return this._tokens.filter((token) => token.isAlive())
+  }
+
+  /**
+   * 全てのTokenを返す。
+   */
+  get allTokens() {
+    return this._tokens
   }
 }

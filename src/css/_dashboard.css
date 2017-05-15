@@ -120,6 +120,22 @@
       font-weight: bold;
       text-align: center;
     }
+
+    /**
+     * アカウント読み込みエラー
+     */
+    .naumanniDashboard-header-badToken {
+      border-radius: $radiusDefault;
+      background: #d32f2f;
+      color: #6b0909;
+      width: $sizeHeaderIcon;
+      height: $sizeHeaderIcon;
+      line-height: $sizeHeaderIcon;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+    }
   }
 
   .naumanniDashboard-header-spacer {
@@ -194,5 +210,19 @@
   .menu-item--message {
     border-top-width: 2px;
     border-top-style: solid;
+  }
+}
+
+
+.naumanniDashboard-header .naumanniDashboard-header-accounts .menu--badAccount {
+/*  border-radius: 6px; */
+  background-color: #fdf4f4;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+  border: solid 1px #d32f2f;
+  color: #d32f2f;
+  font-size: 14px;
+
+  strong {
+    font-weight: bold;
   }
 }

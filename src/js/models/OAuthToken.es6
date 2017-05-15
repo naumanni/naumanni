@@ -43,6 +43,17 @@ export default class OAuthToken extends OAuthTokenRecord {
       this.token_type === other.token_type
   }
 
+  isAlive() {
+    return !this._failed && this._account
+  }
+
+  /**
+   * tokenの初期化に失敗した事を設定する
+   */
+  markFailed() {
+    this._failed = true
+  }
+
   get accessToken() {
     return this.access_token
   }

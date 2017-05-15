@@ -18,7 +18,8 @@ export default class LoadTokensUseCase extends UseCase {
           const {entities, result} = await token.requester.verifyCredentials()
           token.attachAccount(entities.accounts[result])
         } catch(e) {
-          console.error(e)
+          token.markFailed(true)
+          console.error(`verifyTokenFailed Token(${token.accessToken}@${token.host}): ${e}`)
         }
         return token
       })

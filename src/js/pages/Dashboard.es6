@@ -104,7 +104,7 @@ export default class Dashboard extends React.Component {
     return {
       columns: state.columnState.columns,
       dialogs: state.dialogsState.dialogs,
-      tokens: state.tokenState.tokens,
+      tokens: state.tokenState.allTokens,
     }
   }
 

@@ -79,21 +79,25 @@ export default class DashboardHeader extends React.Component {
    * @return {React.Component}
    */
   renderAccount(token) {
-    if(!token.account) {
+    if(token.isAlive()) {
+      // 正常Token
       return (
         <li key={token.address}>
-          <div className="naumanniDashboard-header-noAccount">?</div>
+          <DropdownMenuButton onRenderMenu={this.onRenderAccountMenu.bind(this, token)}>
+            <UserIconWithHost account={token.account} />
+          </DropdownMenuButton>
+        </li>
+      )
+    } else {
+      // 読み込みに失敗したToken
+      return (
+        <li key={token.address}>
+          <DropdownMenuButton onRenderMenu={this.onRenderBadAccountMenu.bind(this, token)}>
+            <div className="naumanniDashboard-header-badToken">×</div>
+          </DropdownMenuButton>
         </li>
       )
     }
-
-    return (
-      <li key={token.address}>
-        <DropdownMenuButton onRenderMenu={this.onRenderAccountMenu.bind(this, token)}>
-          <UserIconWithHost account={token.account} />
-        </DropdownMenuButton>
-      </li>
-    )
   }
 
   // callbacks
@@ -185,6 +189,25 @@ export default class DashboardHeader extends React.Component {
           onClick={this.props.onOpenColumn.bind(this, COLUMN_FRIENDS, {subject: account.acct})}>
           <IconFont className="menu-itemIcon" iconName="mail" />
           <span>メッセージ</span>
+        </li>
+      </ul>
+    )
+  }
+
+  /**
+   * 読み込みエラーになったTokenに関するMenu
+   * @param {OAuthToken} token
+   * @return {React.Component}
+   */
+  onRenderBadAccountMenu(token) {
+    return (
+      <ul className="menu menu--header menu--badAccount">
+        <li className="menu-description">
+          <strong>ホスト: {token.host}</strong>
+          <p>
+            通信エラーです。
+            相手先サーバーが不調か、このマシンがネットワークにつながっていない可能性があります。
+          </p>
         </li>
       </ul>
     )
