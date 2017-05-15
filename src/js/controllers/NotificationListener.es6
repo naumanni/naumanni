@@ -35,7 +35,7 @@ export default class NotificationListener extends TimelineListener {
 
         const notificationRefs = this.db.mergeNotifications(entities, [result])
         const removes = this.timeline.push(notificationRefs)
-        this.db.dispose(removes)
+        this.db.decrement(removes.map((ref) => ref.uri))
       }
     }
   }

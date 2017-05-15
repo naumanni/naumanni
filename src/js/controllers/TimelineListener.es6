@@ -48,7 +48,7 @@ export default class TimelineListener {
 
         const statusRefs = this.db.mergeStatuses(entities, [result])
         const removes = this.timeline.push(statusRefs)
-        this.db.dispose(removes)
+        this.db.decrement(removes.map((ref) => ref.uri))
       }
     }
   }

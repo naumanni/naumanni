@@ -2,17 +2,24 @@
  * Status, Accountの最新情報を保持する。
  */
 import {EventEmitter} from 'events'
-import {List, Set} from 'immutable'
+import {Set} from 'immutable'
 
 
-class TimelineData extends EventEmitter {
+/**
+ * Status, Accountを保持する
+ * 参照カウントの管理とか面倒すぎて完全に設計が間違ってる
+ */
+export class TimelineData extends EventEmitter {
   static EVENT_CHANGE = 'change'
 
   constructor(...args) {
     super(...args)
 
+    // uriがkeyつってんだから、accounts/statusesの区別要らないはずだよね...
     this.accounts = new Map()
     this.statuses = new Map()
+
+    this.referenceCounts = new Map()
 
     this.timelines = new Set()
   }
@@ -25,12 +32,28 @@ class TimelineData extends EventEmitter {
    */
   mergeStatuses(entities, statusUris=[]) {
     this.mergeEntities(entities)
+    this.increment(statusUris)
     return statusUris.map((uri) => new StatusRef(this, uri))
   }
 
   mergeNotifications(entities, notificationUris) {
     this.mergeEntities(entities)
-    return notificationUris.map((uri) => new NotificationRef(this, entities.notifications[uri]))
+    const notificatonRefs = notificationUris.map((uri) => new NotificationRef(this, entities.notifications[uri]))
+
+    // TODO: NotificationTimelineと重複している
+    const iter = (function* () {
+      for(const ref of notificatonRefs) {
+        const accountRef = ref.accountRef
+        if(accountRef)
+          yield accountRef.uri
+        const statusRef = ref.statusRef
+        if(statusRef)
+          yield statusRef.uri
+      }
+    })()
+    this.increment(iter)
+
+    return notificatonRefs
   }
 
   mergeEntities({statuses, accounts}) {
@@ -69,6 +92,8 @@ class TimelineData extends EventEmitter {
       this.statuses.set(uri, status)
     })
 
+    // console.log(`+: ${this.accounts.size} accounts, ${this.statuses.size} statuses`)
+
     this.emitChange(changes)
     this.timelines
       .filter((timeline) => timeline.hasChanges(changes))
@@ -84,11 +109,75 @@ class TimelineData extends EventEmitter {
     this.timelines = this.timelines.delete(timeline)
   }
 
-  dispose(refs) {
-    refs = new List(refs)
-    if(!refs.isEmpty()) {
-      // console.log('dispose', refs.size)
+  /**
+   * 与えられたUriの参照カウントを+1する
+   * @param {String[]} uris
+   */
+  increment(uris) {
+    this.changeRefCounts(uris, +1)
+  }
+
+  /**
+   * 与えられたUriの参照カウントを-1する
+   * @param {String[]} uris
+   */
+  decrement(uris) {
+    this.changeRefCounts(uris, -1)
+    this.collectGarbage()
+  }
+
+  /**
+   * 参照カウンタを変える
+   * @private
+   * @param {String[]} uris
+   * @param {number} delta
+   */
+  changeRefCounts(uris, delta) {
+    let moreUris = []
+
+    for(const uri of uris) {
+      const status = this.statuses.get(uri)
+      const account = this.accounts.get(uri)
+
+      if(!status && !account) {
+        console.warn(`incrementStatuses: '${uri}' not found`)
+        continue
+      }
+
+      if(status) {
+        moreUris.push(status.account)
+        if(status.reblog) {
+          moreUris.push(status.reblog)
+        }
+      } else if(account) {
+        // pass
+      }
+
+      // inc
+      this.referenceCounts.set(
+        uri,
+        (this.referenceCounts.get(uri) || 0) + delta
+      )
     }
+
+    moreUris.length && this.changeRefCounts(moreUris, delta)
+  }
+
+  collectGarbage() {
+    // TODO immutablejs使いたい
+    const newRefCounts = new Map()
+    for(const [uri, count] of this.referenceCounts.entries()) {
+      if(count === 0) {
+        if(this.statuses.has(uri))
+          this.statuses.delete(uri)
+        if(this.accounts.has(uri))
+          this.accounts.delete(uri)
+      } else {
+        newRefCounts.set(uri, count)
+      }
+    }
+    this.referenceCounts = newRefCounts
+    // console.log(`-: ${this.accounts.size} accounts, ${this.statuses.size} statuses`)
   }
 
   /**

@@ -76,6 +76,12 @@ export default class PagignColumn extends Column {
    */
   componentWillUnmount() {
     super.componentWillUnmount()
+
+    if(this.subtimeline)
+      this.db.decrement(this.subtimeline.uris)
+    if(this.timeline)
+      this.db.decrement(this.timeline.uris)
+
     this.subtimlineChangedRemover && this.subtimlineChangedRemover()
     this.timelineListener.clean()
     clearInterval(this.timer)
@@ -177,6 +183,7 @@ export default class PagignColumn extends Column {
     this.subtimeline.max = undefined
     this.subtimlineChangedRemover = this.subtimeline.onChange(::this.onSubtimelineChanged)
     this.db.registerTimeline(this.subtimeline)
+    this.db.increment(this.subtimeline.uris)
 
     this.setState({
       isScrollLocked: true,
@@ -185,6 +192,7 @@ export default class PagignColumn extends Column {
   }
 
   onUnlocked() {
+    this.db.decrement(this.subtimeline.uris)
     this.db.unregisterTimeline(this.subtimeline)
     this.subtimeline = null
     this.timelineLoaders = null

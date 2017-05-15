@@ -48,7 +48,7 @@ class TimelineLoader {
   _push(entities, result) {
     const statusRefs = this._db.mergeStatuses(entities, result)
     const removes = this._timeline.push(statusRefs)
-    this._db.dispose(removes)
+    this._db.decrement(removes.map((ref) => ref.uri))
   }
 }
 
@@ -98,7 +98,7 @@ export class NotificationTimelineLoader extends TimelineLoader {
   _push(entities, result) {
     const notificationRefs = this._db.mergeNotifications(entities, result)
     const removes = this._timeline.push(notificationRefs)
-    this._db.dispose(removes)
+    this._db.decrement(removes.map((ref) => ref.uri))
   }
 }
 

@@ -43,6 +43,11 @@ class Timeline extends ChangeEventEmitter {
     return this._timeline
   }
 
+  // timelineの中に含まれるuriのリストを返す
+  get uris() {
+    require('assert')(0, 'not implemented')
+  }
+
   getMinIdForHost(host) {
     let minId = null
 
@@ -83,6 +88,10 @@ class Timeline extends ChangeEventEmitter {
 
 
 export class StatusTimeline extends Timeline {
+  get uris() {
+    return this._timeline.map((ref) => ref.uri)
+  }
+
   hasChanges({accounts, statuses}) {
     return this._timeline.find((ref) => {
       if(statuses[ref.uri] || accounts[ref.accountUri])
@@ -101,6 +110,20 @@ export class StatusTimeline extends Timeline {
 
 
 export class NotificationTimeline extends Timeline {
+  get uris() {
+    const self = this
+    return Array.from((function* () {
+      for(const ref of self._timeline) {
+        const accountRef = ref.accountRef
+        if(accountRef)
+          yield accountRef.uri
+        const statusRef = ref.statusRef
+        if(statusRef)
+          yield statusRef.uri
+      }
+    })())
+  }
+
   hasChanges({accounts, statuses}) {
     return this._timeline.find((ref) => {
       const accountRef = ref.accountRef
