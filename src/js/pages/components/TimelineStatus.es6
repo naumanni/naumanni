@@ -424,7 +424,7 @@ export default class TimelineStatus extends React.Component {
   onSendReply(...args) {
     return this.props.onSendReply(this.props.status, ...args)
       .then(() => {
-        this.showHideReplyPanel(false)
+        this.showHidePanel(false, 'ReplyPanel')
       })
   }
 }
