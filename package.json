@@ -95,9 +95,7 @@
       "es6",
       "js"
     ],
-    "testMatch": [
-      "**/__tests__/**/*.es6"
-    ],
+    "testRegex": ".*\\.test\\.es6$",
     "roots": [
       "<rootDir>/src/js/"
     ],
