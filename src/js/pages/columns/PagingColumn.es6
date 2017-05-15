@@ -105,7 +105,12 @@ export default class PagignColumn extends Column {
     super.onChangeConext()
 
     // なんだかなあ
-    this.tokenListener.updateTokens(this.context.context.getState().tokenState.tokens)
+    const {tokenState} = this.context.context.getState()
+    this.tokenListener.updateTokens(tokenState.tokens)
+
+    if(!this.isMixedTimeline()) {
+      this.setState({token: tokenState.getTokenByAcct(this.props.subject)})
+    }
   }
 
   loadMoreStatuses() {
