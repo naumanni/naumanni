@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import update from 'immutability-helper'
+import Textarea from 'react-textarea-autosize'
 
 import {
   MASTODON_MAX_CONTENT_SIZE,
@@ -113,12 +114,14 @@ export default class TootPanel extends React.Component {
               onChange={::this.onChangeSpoilerText}></textarea>
           )}
 
-          <textarea
+          <Textarea
             ref="textareaStatus"
             className="tootPanel-status" value={statusContent}
             placeholder="何してますか？忙しいですか？手伝ってもらってもいいですか？"
             onKeyDown={::this.onKeyDown}
-            onChange={::this.onChangeStatus}></textarea>
+            onChange={::this.onChangeStatus}
+            minRows={3}
+            maxRows={TootPanel.maxTootRows()}></Textarea>
 
           {this.renderMediaFiles()}
 
@@ -178,6 +181,12 @@ export default class TootPanel extends React.Component {
         </div>
       </div>
     )
+  }
+
+  static maxTootRows() {
+    const staticHeightExceptTootTextArea = 400  // really rongh estimate...
+    const lineHeight = 20
+    return Math.floor((document.body.clientHeight - staticHeightExceptTootTextArea) / lineHeight)
   }
 
   renderMediaFiles() {
