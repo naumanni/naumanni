@@ -299,3 +299,9 @@ $ open http://naumanniskine.localdev:7654
 ```
 
 </details>
+
+### Test
+
+```
+$ yarn test
+```
