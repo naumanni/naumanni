@@ -7,6 +7,7 @@ import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import TimelineActions from 'src/controllers/TimelineActions'
 import Column from './Column'
 import AccountRow from '../components/AccountRow'
+import {fuzzy_match as fuzzyMatch} from 'src/libs/fts_fuzzy_match'
 
 
 /**
@@ -148,31 +149,34 @@ export default class FriendsColumn extends Column {
     let sortedFriends
 
     if(filter.length) {
-      const levenshtein = require('fast-levenshtein')
-      const distanceCache = {}
+      sortedFriends =
+        this.state.friends
+          .map((friend) => {
+            const {account} = friend
+            const [matchedAcct, scoreAcct, formattedAcct] = fuzzyMatch(filter, account.acct)
+            const [matchedDisplayName, scoreDisplayName, formattedDisplayName] =
+              fuzzyMatch(filter, account.display_name || '')
 
-      const _getDistance = (account) => {
-        if(distanceCache[account.acct] === undefined) {
-          distanceCache[account.acct] = levenshtein.get(filter, account.username)
-        }
-        return distanceCache[account.acct]
-      }
+            return {
+              friend,
+              matched: matchedAcct || matchedDisplayName,
+              score: Math.max(scoreAcct, scoreDisplayName),
+              formated: {
+                acct: formattedAcct,
+                displayName: formattedDisplayName,
+              },
+            }
+          })
+          .filter(({matched}) => matched)
 
-      const _compare = (a, b) => {
-        if(a > b)
+      sortedFriends.sort(({score: scoreA}, {score: scoreB}) => {
+        if(scoreA < scoreB)
           return 1
-        else if(a < b)
+        else if(scoreA > scoreB)
           return -1
         return 0
-      }
-
-      sortedFriends = [].concat(this.state.friends)
-      sortedFriends.sort((a, b) => {
-        let r = _compare(_getDistance(a.account), _getDistance(b.account))
-        if(r === 0)
-          r = _compare(a.id, b.id)
-        return r
       })
+      sortedFriends = sortedFriends.map(({friend}) => friend)
     }
 
     this.setState({filter, sortedFriends})
