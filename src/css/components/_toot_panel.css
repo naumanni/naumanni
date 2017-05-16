@@ -78,7 +78,6 @@
       padding: 8px;
       margin: 0;
       box-sizing: border-box;
-      min-height: 20ex;
       font-size: $fontSizeNormal;
     }
 
