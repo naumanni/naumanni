@@ -20,6 +20,10 @@ export default class Column extends React.Component {
     column: PropTypes.instanceOf(UIColumn).isRequired,
   }
 
+  isPrivate() {
+    return false
+  }
+
   constructor(...args) {
     super(...args)
 

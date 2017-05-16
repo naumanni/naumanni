@@ -34,6 +34,13 @@ export default class FriendsColumn extends Column {
   /**
    * @override
    */
+  isPrivate() {
+    return true
+  }
+
+  /**
+   * @override
+   */
   componentDidMount() {
     super.componentDidMount()
 
