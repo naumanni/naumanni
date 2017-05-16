@@ -305,3 +305,14 @@ $ open http://naumanniskine.localdev:7654
 ```
 $ yarn test
 ```
+
+### React Storybook
+
+```
+$ yarn run storybook
+```
+
+```
+(another session)
+$ open http://localhost:6006
+```
