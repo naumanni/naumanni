@@ -76,6 +76,7 @@ $colorHoverText: $colorMainNormal;
 $colorHoverBackground: $colorGray1;
 
 $colorColumnHeaderBackground: $colorMainDarker;
+$colorPrivateColumnHeaderBackground: #30C213;
 $colorColumnHeaderText: $colorWhite;
 $colorColumnHeaderMenuButton: $colorMainLighter;
 $fontColumnHeaderText: bold $fontSizeLarger/1.2 sans-serif;

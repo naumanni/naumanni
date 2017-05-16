@@ -72,6 +72,10 @@
     }
   }
 
+  .column-header-private {
+    background: $colorPrivateColumnHeaderBackground;
+  }
+
   .column-body {
     flex: 1 1 auto;
 
