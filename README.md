@@ -41,7 +41,7 @@ docker >=  17.03
 
 ```
 $ ./build_docker.sh
-$ docker run -it -p 8080:80 naumanni.com/naumanni
+$ docker run -it -p 8080:80 naumanni.com/naumanni-standalone
 ```
 
 Now you can access to http://localhost:8080/ via web browser.
@@ -70,7 +70,7 @@ $ yarn run build
 ### Serve project
 
 <details>
-<summary> Exapmle (serve app with nginx) </summary>
+<summary> Example (serve app with nginx) </summary>
 
 ### Install nginx
 
@@ -344,9 +344,11 @@ $ yarn test
 $ yarn run storybook
 ```
 
+</details>
+
 # Contribution
 
-Please write bugs and feature requests to the problem or tag with # tags # naumanni.
+Please write bugs and feature requests to the problem or tag with `#naumanni`.
 Pull requests are also welcome!
 
-ToDo management uses [Pivotal Tracker] (https://www.pivotaltracker.com/n/projects/2018707).
+ToDo management uses [Pivotal Tracker](https://www.pivotaltracker.com/n/projects/2018707).

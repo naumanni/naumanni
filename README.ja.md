@@ -32,8 +32,8 @@ Naumanniはα版です。現在判明している問題点は以下の通り
 
 Naummanniは(株)UEIと(株)glucoseの共同開発プロジェクトです
 
-* Concept and AI: shi3z@mstdn.onosendai.jp
-* Code : shn@oppai.tokyo
+* Concept and AI: [shi3z@mstdn.onosendai.jp](https://mstdn.onosendai.jp/@shi3z)
+* Code : [shn@oppai.tokyo](https://oppai.tokyo/@shn)
 
 # Setup
 
@@ -46,7 +46,7 @@ docker >=  17.03
 
 ```
 $ ./build_docker.sh
-$ docker run -it -p 8080:80 naumanni.com/naumanni
+$ docker run -it -p 8080:80 naumanni.com/naumanni-standalone
 ```
 
 ブラウザから http://localhost:8080/ にアクセスすると使えます
@@ -68,7 +68,7 @@ $ yarn run build
 ### Serve project
 
 <details>
-<summary> Exapmle (serve app with nginx) </summary>
+<summary> Example (serve app with nginx) </summary>
 
 ### Install nginx
 
@@ -341,6 +341,8 @@ $ yarn test
 ```
 $ yarn run storybook
 ```
+
+</details>
 
 # Contribution / 開発に参加するなら
 
