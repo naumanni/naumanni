@@ -40,6 +40,13 @@ export default class TalkColumn extends Column {
   /**
    * @override
    */
+  isPrivate() {
+    return true
+  }
+
+  /**
+   * @override
+   */
   componentDidMount() {
     super.componentDidMount()
 

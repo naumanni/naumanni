@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 
 import {UIColumn} from 'src/models'
 import {DropdownMenuButton, IconFont, NowLoading} from 'src/pages/parts'
@@ -18,6 +19,10 @@ export default class Column extends React.Component {
 
   static propTypes = {
     column: PropTypes.instanceOf(UIColumn).isRequired,
+  }
+
+  isPrivate() {
+    return false
   }
 
   constructor(...args) {
@@ -57,10 +62,14 @@ export default class Column extends React.Component {
     if(typeof title === 'string')
       title = <h1 className="column-headerTitle">{title}</h1>
 
+    const headerClass = classNames(
+      'column-header',
+      {'column-header-private': this.isPrivate()}
+    )
 
     return (
       <div className="column">
-        <header className="column-header">
+          <header className={headerClass}>
           {title}
           <div className="column-headerMenu">
             <DropdownMenuButton onRenderMenu={::this.onRenderColumnMenu}>
