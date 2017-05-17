@@ -28,12 +28,12 @@ export default class NotificationColumn extends PagingColumn {
    */
   renderTitle() {
     if(this.isMixedTimeline()) {
-      return '統合通知'
+      return 'United Notification'
     } else {
       const {token} = this.state
 
       if(!token)
-        return '通知'
+        return 'Notification'
 
       return (
         <h1 className="column-headerTitle">
