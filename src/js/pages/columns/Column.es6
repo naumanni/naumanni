@@ -110,7 +110,7 @@ export default class Column extends React.Component {
         <li className="menu-item"
           onClick={::this.onClickCloseColumn}
           >
-          <span className="menu-itemLabel">閉じる</span>
+          <span className="menu-itemLabel">Close</span>
         </li>
 
       </ul>
