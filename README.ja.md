@@ -35,7 +35,9 @@ Naummanniは(株)UEIと(株)glucoseの共同開発プロジェクトです
 * Concept and AI: shi3z@mstdn.onosendai.jp
 * Code : shn@oppai.tokyo
 
-# Dependency
+# Setup
+
+## Dependency
 
 yarn
 docker >=  17.03
