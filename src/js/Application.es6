@@ -1,3 +1,8 @@
+import BrowserHistory from 'src/controllers/BrowserHistory'
+import NotificationCenter from 'src/controllers/NotificationCenter'
+import installRoutes from './routes'
+
+
 /**
  * Application配下のSingletonを管理するゾイ
  */
@@ -14,22 +19,26 @@ export class Application {
     this._initialized = false
   }
 
-  /**
-   * @return {Context}
-   */
-  get context() {
-    return this._context
-  }
-
-  /**
-   * @param {Context} newContext
-   */
-  set context(newContext) {
+  setup(newContext) {
     if(process.env.NODE_ENV !== 'production') {
       require('assert')(!this._context, 'do not initialize twice')
     }
 
     this._context = newContext
+
+    // history
+    this.history = new BrowserHistory(this.context, false /* useHash */)
+    installRoutes(this.history)
+
+    // notification center
+    this.notificationCenter = new NotificationCenter(this.context)
+  }
+
+  /**
+   * @return {Context}
+   */
+  get context() {
+    return this._context
   }
 }
 

@@ -31,6 +31,13 @@ const StatusRecord = Record({  // eslint-disable-line new-cap
   favourited_by_acct: {},
 })
 
+/*
+mention
+url URL of user's profile (can be remote) no
+username  The username of the account no
+acct  Equals username for local users, includes @domain for remote ones no
+id  Account ID  no
+*/
 
 /**
  * MastodonのStatus

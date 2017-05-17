@@ -12,13 +12,6 @@ export default class NotificationListener extends TimelineListener {
     super.addListener(key, token, websocketUrl)
   }
 
-  removeListener(key) {
-    if(this.websocketRemovers[key]) {
-      this.websocketRemovers[key]()
-      delete this.websocketRemovers[key]
-    }
-  }
-
   /**
    * Websocketに何かあったら呼ばれる
    * @param {OAuthToken} token
