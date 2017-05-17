@@ -32,8 +32,8 @@ Naumanniはα版です。現在判明している問題点は以下の通り
 
 Naummanniは(株)UEIと(株)glucoseの共同開発プロジェクトです
 
-* Concept and AI: shi3z@mstdn.onosendai.jp
-* Code : shn@oppai.tokyo
+* Concept and AI: [shi3z@mstdn.onosendai.jp](https://mstdn.onosendai.jp/@shi3z)
+* Code : [shn@oppai.tokyo](https://oppai.tokyo/@shn)
 
 # Setup
 
