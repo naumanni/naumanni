@@ -67,7 +67,7 @@ export default class FriendsColumn extends Column {
     return (
       <h1 className="column-headerTitle">
         <div className="column-headerTitleSub">{token.acct}</div>
-        <div className="column-headerTitleMain">メッセージ</div>
+        <div className="column-headerTitleMain">Message</div>
       </h1>
     )
   }
