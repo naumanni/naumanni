@@ -27,8 +27,8 @@ Naumanni’s features include the following:
 
 Naumanni is a collaborative project between UEI Corporation. and glucose inc.
 
-* Concept and AI: shi3z@mstdn.onosendai.jp
-* Code : shn@oppai.tokyo
+* Concept and AI: [shi3z@mstdn.onosendai.jp](https://mstdn.onosendai.jp/@shi3z)
+* Code : [shn@oppai.tokyo](https://oppai.tokyo/@shn)
 
 # Setup
 
