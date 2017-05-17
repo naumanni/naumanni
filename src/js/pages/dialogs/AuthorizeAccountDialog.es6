@@ -68,7 +68,7 @@ export default class AuthorizeAccountDialog extends Dialog {
   renderFooter() {
     if(this.state.error) {
       <div className="dialog-footerButtons">
-        <button className="button-danger" onClick={::this.onClickClose}>閉じる</button>
+        <button className="button-danger" onClick={::this.onClickClose}>Close</button>
       </div>
     }
   }
