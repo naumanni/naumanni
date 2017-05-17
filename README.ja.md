@@ -8,7 +8,7 @@ Naumanni(ナウマン)は、マストドン専用のWebユーザーインタフ�
 
 # Demo
 
- http://naumanni.com/ (現在準備中です)
+ http://naumanni.com/ 
 
 # Feature
 
