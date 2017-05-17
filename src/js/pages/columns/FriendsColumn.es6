@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import {SUBJECT_MIXED, COLUMN_FRIENDS, COLUMN_TALK} from 'src/constants'
+import {TalkRecord} from 'src/models'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import TimelineActions from 'src/controllers/TimelineActions'
 import Column from './Column'
@@ -198,6 +199,7 @@ import {EventEmitter} from 'events'
 class UIFriend {
   constructor(account) {
     this.account = account
+    this.record = null
   }
 
   get key() {
@@ -245,14 +247,53 @@ class FriendsListener extends EventEmitter {
     response.forEach(({entities, result}) => {
       const {accounts} = entities
       Object.values(accounts).forEach((account) => {
-        if(!friends.has(account.uri))
-          friends.set(account.uri, new UIFriend(account))
+        if(!friends.has(account.acct))
+          friends.set(account.acct, new UIFriend(account))
       })
     })
 
-    // TODO: 最近お話した順でソートしたいね
+    // TODO: すげー雑
+    const records = await TalkRecord.query.listByKey('subject', this.subject)
+    for(const record of records) {
+      // いまのところrecordのtargetは1人
+      require('assert')(record.targets.size === 1)
+      const friend = friends.get(record.targets.get(0))
+      friend.record = record
+    }
 
-    this.state.friends = Array.from(friends.values())
+    // friend list
+    const friendList = Array.from(friends.values())
+
+    friendList.sort((a, b) => {
+      if(a.record && !b.record) {
+        return -1
+      } else if(!a.record && b.record) {
+        return 1
+      } else if(a.record && b.record) {
+        const dateA = a.record.lastSeenAtMoment
+        const dateB = b.record.lastSeenAtMoment
+
+        if(dateA.isBefore(dateB))
+          return 1
+        else if(dateA.isAfter(dateB))
+          return -1
+        else
+          return 0
+      } else if(!a.record && !b.record) {
+        const acctA = a.account.acct.toLowerCase()
+        const acctB = b.account.acct.toLowerCase()
+
+        if(acctA > acctB)
+          return 1
+        else if(acctA < acctB)
+          return -1
+        else
+          return 0
+      }
+    })
+
+
+    this.state.friends = friendList
     this.emitChange()
   }
 

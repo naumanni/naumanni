@@ -1,9 +1,13 @@
 import {UseCase} from 'almin'
+import moment from 'moment'
 
+import {TalkRecord} from 'src/models'
 import {encryptText} from 'src/controllers/PGP'
 import PublicKeyCache from 'src/infra/PublicKeyCache'
 import {postStatusManaged} from 'src/infra/TimelineData'
 import {MASTODON_MAX_CONTENT_SIZE} from 'src/constants'
+import Database from 'src/infra/Database'
+
 
 /**
  * DirectMessageを送る
@@ -36,6 +40,8 @@ export default class SendDirectMessageUseCase extends UseCase {
     }
 
     // TODO: 雑よね
+    let postedStatuses
+
     if(keyIds.length == targets.length) {
       // 全員鍵をもっているので、暗号化して送る
       const publicKeys = (await PublicKeyCache.fetchKeys(keyIds))
@@ -43,11 +49,16 @@ export default class SendDirectMessageUseCase extends UseCase {
           publicKeys[storedKey.user] = storedKey.readArmored()[0]
           return publicKeys
         }, {})
-      await this.sendEncryptedMessage({token, self, message, in_reply_to_id, recipients, publicKeys})
+      postedStatuses = await this.sendEncryptedMessage({token, self, message, in_reply_to_id, recipients, publicKeys})
     } else {
       // 鍵もってないのがいるので、plainに送る
-      await this.sendPlainMessage({token, self, message, in_reply_to_id, recipients})
+      postedStatuses = [(await this.sendPlainMessage({token, self, message, in_reply_to_id, recipients}))]
     }
+
+    await this.updateTalkRecord(token, self, recipients, postedStatuses, {
+      from: self.acct,
+      message,
+    })
   }
 
   async sendPlainMessage({token, self, message, in_reply_to_id, recipients}) {
@@ -57,7 +68,7 @@ export default class SendDirectMessageUseCase extends UseCase {
       // to入れるとサイズオーバーしてしまった...
       throw new Error('__TODO_ERROR_MESSAGE__')
     }
-    await postStatusManaged(token, {message: {
+    return await postStatusManaged(token, {message: {
       status,
       in_reply_to_id,
       visibility: 'direct',
@@ -75,7 +86,7 @@ export default class SendDirectMessageUseCase extends UseCase {
       maxLength: MASTODON_MAX_CONTENT_SIZE,
     })
 
-    await Promise.all(
+    return await Promise.all(
       encryptedBlocks.map((block) => {
         postStatusManaged(token, {message: {
           status: block,
@@ -85,4 +96,39 @@ export default class SendDirectMessageUseCase extends UseCase {
       })
     )
   }
+
+  async updateTalkRecord(token, self, recipients, postedStatuses, lastTalk) {
+    // find
+    let record
+    const now = moment().format()
+    const latestId = postedStatuses
+      .map((s) => s.resolve().getIdByHost(token.host))
+      .reduce((maxId, id) => Math.max(maxId, id), 0)
+    require('assert')(latestId)
+
+    try {
+      record = await TalkRecord.query.getBy(
+        'address',
+        TalkRecord.makeAddress(self.acct, recipients.map((r) => r.acct)))
+      record = record.update({
+        latestStatusId: latestId,
+        latestStatusReceivedAt: now,
+        lastSeenStatusId: latestId,
+        lastSeenAt: now,
+        lastTalk,
+      })
+    } catch(e) {
+      record = new TalkRecord({
+        subject: self.acct,
+        targets: recipients.map((r) => r.acct),
+        latestStatusId: latestId,
+        latestStatusReceivedAt: now,
+        lastSeenStatusId: latestId,
+        lastSeenAt: now,
+        lastTalk,
+      })
+    }
+    Database.save(record)
+  }
+
 }

@@ -209,6 +209,7 @@ export default class TalkColumn extends Column {
       const {token, me, members} = this.state
 
       try {
+        // TODO: SendDirectMessageUseCase SendTalkUseCaseに名前を変える?
         await context.useCase(new SendDirectMessageUseCase()).execute({
           token,
           self: me,
