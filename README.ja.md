@@ -23,7 +23,7 @@ Naumanniの特徴は以下の通り
 
 # Version
 
-現在のバージョン0.15です
+0.1.1
 
 # Who made this?
 
