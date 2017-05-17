@@ -139,7 +139,8 @@ export default class PagignColumn extends Column {
           .then(() => {
             loaderInfo.loading = false
             this.updateLoadingStatus()
-          }, () => {
+          }, (...args) => {
+            console.log('loadNext failed: ', args)
             loaderInfo.loading = false
             this.updateLoadingStatus()
           })

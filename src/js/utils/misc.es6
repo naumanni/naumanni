@@ -67,6 +67,10 @@ export function parseQuery(queryString) {
 }
 
 
+const WEBSOCKET_HOST_MAP = {
+  'mstdn.jp': 'streaming.mstdn.jp',
+}
+
 /**
  * WebsocketのUrlを作る。
  * TODO: どっかに移したい
@@ -75,7 +79,11 @@ export function parseQuery(queryString) {
  * @return {string}
  */
 export function makeWebsocketUrl(token, stream) {
-  return `wss://${token.host}/api/v1/streaming/?access_token=${token.accessToken}&stream=${stream}`
+  // 暫定: websocketのhostが違うことがあるのでハードコーディング
+  // browserのwebsocketは301ハンドリングできないよ > @nullkal
+  const host = WEBSOCKET_HOST_MAP[token.host] || token.host
+
+  return `wss://${host}/api/v1/streaming/?access_token=${token.accessToken}&stream=${stream}`
 }
 
 

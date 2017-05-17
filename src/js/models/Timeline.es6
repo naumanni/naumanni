@@ -14,7 +14,9 @@ class Timeline extends ChangeEventEmitter {
     super()
 
     this._max = max
-    this._timeline = new List()
+    // this._timeline = new List()
+    // null means non loaded timeline, empty List means empty timeline
+    this._timeline = null
   }
 
   /**
@@ -28,7 +30,7 @@ class Timeline extends ChangeEventEmitter {
     let result
 
     // lockされてないので、primary timelineにmergeする
-    const {merged, removes} = mergeTimeline(this._timeline, newRefs, this.compare, this._max)
+    const {merged, removes} = mergeTimeline(this.timeline, newRefs, this.compare, this._max)
 
     result = removes
     if(!merged.equals(this._timeline)) {
@@ -40,7 +42,7 @@ class Timeline extends ChangeEventEmitter {
   }
 
   get timeline() {
-    return this._timeline
+    return this._timeline || new List()
   }
 
   // timelineの中に含まれるuriのリストを返す
@@ -89,11 +91,11 @@ class Timeline extends ChangeEventEmitter {
 
 export class StatusTimeline extends Timeline {
   get uris() {
-    return this._timeline.map((ref) => ref.uri)
+    return this.timeline.map((ref) => ref.uri)
   }
 
   hasChanges({accounts, statuses}) {
-    return this._timeline.find((ref) => {
+    return this.timeline.find((ref) => {
       if(statuses[ref.uri] || accounts[ref.accountUri])
         return true
       const {reblogRef} = ref
@@ -113,7 +115,7 @@ export class NotificationTimeline extends Timeline {
   get uris() {
     const self = this
     return Array.from((function* () {
-      for(const ref of self._timeline) {
+      for(const ref of self.timeline) {
         const accountRef = ref.accountRef
         if(accountRef)
           yield accountRef.uri
@@ -125,7 +127,7 @@ export class NotificationTimeline extends Timeline {
   }
 
   hasChanges({accounts, statuses}) {
-    return this._timeline.find((ref) => {
+    return this.timeline.find((ref) => {
       const accountRef = ref.accountRef
       if(accountRef && (accounts[accountRef.uri]))
         return true

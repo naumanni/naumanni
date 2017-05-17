@@ -47,7 +47,7 @@ export default class TimelineColumn extends PagingColumn {
     const typeName = TYPENAMEMAP[this.props.timelineType]
 
     if(this.isMixedTimeline()) {
-      return `統合${typeName}`
+      return `United ${typeName}`
     } else {
       const {token} = this.state
 

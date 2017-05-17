@@ -54,7 +54,7 @@ export default class AuthorizeAccountUseCase extends UseCase {
         endpoint: `https://${host}/api/v1`,
         hooks: {
           response: (method, apiName, responseBody) => {
-            return {host, ...responseBody}
+            return {result: {host, ...responseBody}}
           },
         },
       })
