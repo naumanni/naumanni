@@ -27,13 +27,23 @@ Naummanniは(株)UEIと(株)glucoseの共同開発プロジェクトです
 
 # Setup
 
-Use docker.
 
-__TODO_DOC_HERE__
+`yarn` が必要です。
+
+## Dockerを使った手順
+
+```
+$ ./build_docker.sh
+$ docker run -it -p 8080:80 naumanni.com/naumanni
+```
+
+で、 http://localhost:8080/ にアクセスできます。
+
 
 # Setup for Developer
 
 ## Install Prerequisites
+
 
 ```
 $ brew install yarn
@@ -327,10 +337,9 @@ $ yarn test
 $ yarn run storybook
 ```
 
-# TODO / 開発に参加するなら
+# ToDo / 開発に参加するなら
 
-バグや機能要望はIssuesに書き込むか、Pull Requestを送って下さい。
+バグや機能要望はIssuesに書き込むか、#naumanniのタグをつけてトゥートしてください。
+Pull Requestも歓迎します!
 
-* Pivotal Tracker: https://www.pivotaltracker.com/n/projects/2018707
-
-__TODO_DOC_HERE__
+ToDo管理は[Pivotal Tracker](https://www.pivotaltracker.com/n/projects/2018707)を使っています。
