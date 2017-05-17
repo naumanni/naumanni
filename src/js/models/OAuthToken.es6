@@ -80,17 +80,27 @@ export default class OAuthToken extends OAuthTokenRecord {
         MastodonAPISpec, {
           token: this,
           endpoint: `https://${this.host}/api/v1`,
-          // hooks: {
-          //   response: (method, apiName, responseBody) => {
-          //     if(Array.isArray(responseBody)) {
-          //       return responseBody.map((obj) => {
-          //         return {host: this.host, ...obj}
-          //       })
-          //     } else {
-          //       return {host: this.host, ...responseBody}
-          //     }
-          //   },
-          // },
+          hooks: {
+            response: (method, apiName, responseBody, response, spec) => {
+              // とりあえずspec.entityがあるときだけ,linkをparseする
+              if(!spec.entity)
+                responseBody
+              const result = {result: responseBody}
+
+              const rawLink = response.header['link']
+              if(rawLink) {
+                result.link = rawLink.split(',')
+                  .map((linktxt) => linktxt.match(/<([^>]*)>; rel="([^"]*)"/))
+                  .reduce((link, match) => {
+                    if(match) {
+                      link[match[2]] = match[1]
+                    }
+                    return link
+                  }, {})
+              }
+              return result
+            },
+          },
         })
     }
     return this._requester

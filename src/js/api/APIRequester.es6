@@ -119,6 +119,9 @@ export class APIRequester {
       return match
     })
 
+    if(options.endpoint)
+      endpoint = options.endpoint
+
     const fields = (spec.fields || []).reduce((fields, field) => {
       fields[field] = query[field]
       delete query[field]
@@ -226,7 +229,7 @@ class OAuthAPIRequester extends APIRequester {
 
     let responseBody = response.body
     if(this.hooks.response)
-      responseBody = this.hooks.response(method, apiName, responseBody)
+      responseBody = this.hooks.response(method, apiName, responseBody, response, spec)
     return spec.normalize(req, responseBody, options)
   }
 

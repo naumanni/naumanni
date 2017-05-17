@@ -238,19 +238,33 @@ class FriendsListener extends EventEmitter {
       return
 
     const {requester, account} = this.token
-    const response = await Promise.all([
-      requester.listFollowings({id: account.getIdByHost(this.token.host), limit: 80}),
-      requester.listFollowers({id: account.getIdByHost(this.token.host), limit: 80}),
-    ])
+    const myId = account.getIdByHost(this.token.host)
     const friends = new Map()
 
-    response.forEach(({entities, result}) => {
-      const {accounts} = entities
-      Object.values(accounts).forEach((account) => {
-        if(!friends.has(account.acct))
-          friends.set(account.acct, new UIFriend(account))
-      })
-    })
+    const diggFollowxxxs = async (id, fetcher) => {
+      let nextUrl
+
+      for(;;) {
+        const {entities, link} = await fetcher({id, limit: 80}, {endpoint: nextUrl})
+        const {accounts} = entities
+        if(!accounts)
+          break
+
+
+        Object.values(accounts).forEach((account) => {
+          if(!friends.has(account.acct))
+            friends.set(account.acct, new UIFriend(account))
+        })
+        nextUrl = link.next
+        if(!nextUrl)
+          break
+      }
+    }
+
+    await Promise.all([
+      diggFollowxxxs(myId, ::requester.listFollowings),
+      diggFollowxxxs(myId, ::requester.listFollowers),
+    ])
 
     // TODO: すげー雑
     const records = await TalkRecord.query.listByKey('subject', this.subject)
