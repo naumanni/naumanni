@@ -13,7 +13,7 @@ Demo will available http://naumanni.com/ (now under construction)
 
 # Version
 
-0.15
+0.1.1
 
 # Features
 
