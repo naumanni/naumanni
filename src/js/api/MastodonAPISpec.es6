@@ -140,23 +140,36 @@ class MastodonAPISpec extends APISpec {
   /**
    * @override
    */
-  normalize(req, responseBody, options) {
+  normalize(req, response, result, options) {
+    // linkヘッダに前後のURLが書いてある
+    const rawLink = response.header['link']
+    if(rawLink) {
+      result.link = rawLink.split(',')
+        .map((linktxt) => linktxt.match(/<([^>]*)>; rel="([^"]*)"/))
+        .reduce((link, match) => {
+          if(match) {
+            link[match[2]] = match[1]
+          }
+          return link
+        }, {})
+    }
+
     const {entity} = this
     if(!entity)
-      return responseBody
+      return result
     // methodがdeleteのときはレスポンスがnullだからconvertできない
-    if (!responseBody) {
+    if (!result.result) {
       return null
     }
 
-    if(((Array.isArray(entity) && entity[0]) || entity).key === 'statuses') {
-      require('assert')(options.token, 'statusの整形にはoptions.tokenが必要')
+    if(['statuses'].indexOf(((Array.isArray(entity) && entity[0]) || entity).key) >= 0) {
+      require('assert')(options.token, 'status.tokenが必要')
     }
 
     // reqからhostを得る
     const host = (new URL(req.url)).hostname
     const acct = options.token && options.token.acct
-    return normalizeResponse(entity, responseBody, host, acct)
+    return {...result, ...normalizeResponse(entity, result, host, acct)}
   }
 }
 

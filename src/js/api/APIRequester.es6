@@ -83,10 +83,10 @@ export class APIRequester {
   async call(method, apiName, query, options={}) {
     const {spec, req} = this._makeRequest(method, apiName, query, options)
     const response = await req
-    let responseBody = response.body
+    let result = {result: response.body}
     if(this.hooks.response)
-      responseBody = this.hooks.response(method, apiName, responseBody, response, spec)
-    return spec.normalize(req, responseBody, options)
+      result = this.hooks.response(method, apiName, spec, result, response)
+    return spec.normalize(req, response, result, options)
   }
 
   /**
@@ -228,10 +228,10 @@ class OAuthAPIRequester extends APIRequester {
       }
     }
 
-    let responseBody = response.body
+    let result = {result: response.body}
     if(this.hooks.response)
-      responseBody = this.hooks.response(method, apiName, responseBody, response, spec)
-    return spec.normalize(req, responseBody, options)
+      result = this.hooks.response(method, apiName, spec, result, response)
+    return spec.normalize(req, response, result, options)
   }
 
   /**
