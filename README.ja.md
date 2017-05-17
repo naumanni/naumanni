@@ -24,30 +24,22 @@ Naummanniは(株)UEIと(株)glucoseの共同開発プロジェクトです
 * Concept and AI: shi3z@mstdn.onosendai.jp
 * Code : shn@oppai.tokyo
 
+# Dependency
 
-# Setup
+yarn
+docker >=  17.03
 
-
-`yarn` が必要です。
-
-## Dockerを使った手順
+## Docker
 
 ```
 $ ./build_docker.sh
 $ docker run -it -p 8080:80 naumanni.com/naumanni
 ```
 
-で、 http://localhost:8080/ にアクセスできます。
+ブラウザから http://localhost:8080/ にアクセスすると使えます
 
 
 # Setup for Developer
-
-## Install Prerequisites
-
-
-```
-$ brew install yarn
-```
 
 ## Development
 
@@ -337,7 +329,7 @@ $ yarn test
 $ yarn run storybook
 ```
 
-# ToDo / 開発に参加するなら
+# Contribution / 開発に参加するなら
 
 バグや機能要望はIssuesに書き込むか、#naumanniのタグをつけてトゥートしてください。
 Pull Requestも歓迎します!
