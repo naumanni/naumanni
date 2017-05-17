@@ -61,7 +61,7 @@ export default class FriendsColumn extends Column {
     const {token} = this.state
 
     if(!token) {
-      return 'メッセージ'
+      return 'Message'
     }
 
     return (
