@@ -15,7 +15,7 @@ export default class LoadTokensUseCase extends UseCase {
     tokens = await Promise.all(
       tokens.map(async (token) => {
         try {
-          const {entities, result} = await token.requester.verifyCredentials()
+          const {entities, result} = await token.requester.verifyCredentials({})
           token.attachAccount(entities.accounts[result])
         } catch(e) {
           token.markFailed(true)

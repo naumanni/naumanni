@@ -93,7 +93,7 @@ export default class AddAccountDialog extends Dialog {
         history.useHash
           ? `${window.location.origin}/`
           : history.makeUrl('authorize', null, {external: true})
-      const rawAppData = await requester.postApp({
+      const {result: rawAppData} = await requester.postApp({
         client_name: 'naumanni',
         scopes: scopes.join(' '),
         redirect_uris: redirectUri,

@@ -233,7 +233,7 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
       })
 
       // get relationships
-      const relationships = await token.requester.getRelationships({id: account.getIdByHost(token.host)})
+      const {result: relationships} = await token.requester.getRelationships({id: account.getIdByHost(token.host)})
       if(relationships.length > 0) {
         const rel = relationships[0]
         this.setState({relationships: {...this.state.relationships, [token.account.acct]: rel}})
@@ -330,14 +330,14 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
 
     if(doFollow) {
       if(id) {
-        newRelationship = await requester.followAccount({id: account.getIdByHost(token.host)})
+        newRelationship = (await requester.followAccount({id: account.getIdByHost(token.host)})).result
       } else {
         // Detail表示している時点でAccountはもってるのだから、ここには来ないのでは?
         await requester.followRemoteAccount({uri: account.acct}, {token})
       }
     } else {
       require('assert')(id, 'account id required')
-      newRelationship = await requester.unfollowAccount({id: account.getIdByHost(token.host)})
+      newRelationship = (await requester.unfollowAccount({id: account.getIdByHost(token.host)})).result
     }
 
     if(newRelationship) {

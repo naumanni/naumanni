@@ -322,8 +322,7 @@ export async function postStatusManaged(token, {mediaFiles, message}) {
         }})
       })
     )
-
-    message.media_ids = mediaFileResponses.map((a) => a.id)
+    message.media_ids = mediaFileResponses.map((a) => a.result.id)
   }
 
   const {entities, result} = await requester.postStatus(message, {token})

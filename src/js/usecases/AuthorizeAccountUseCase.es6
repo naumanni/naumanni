@@ -52,11 +52,6 @@ export default class AuthorizeAccountUseCase extends UseCase {
       MastodonAPISpec, {
         token,
         endpoint: `https://${host}/api/v1`,
-        hooks: {
-          response: (method, apiName, responseBody) => {
-            return {result: {host, ...responseBody}}
-          },
-        },
       })
     const {entities, result} = await requester.verifyCredentials()
     token.attachAccount(entities.accounts[result])
