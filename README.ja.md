@@ -6,10 +6,6 @@ Naumanni(ナウマン)は、マストドン専用のWebユーザーインタフ�
 
 ![Screenshot](screenshot.png)
 
-# Demo
-
- http://naumanni.com/ (現在準備中です)
-
 # Feature
 
 Naumanniの特徴は以下の通り
@@ -28,6 +24,7 @@ Naumanniはα版です。現在判明している問題点は以下の通り
 * メッセージに全フォロワーが表示されない
 * メッセージのフォロワーが適切な順番でソートされていない
 
+
 # Who made this?
 
 Naummanniは(株)UEIと(株)glucoseの共同開発プロジェクトです
@@ -35,7 +32,9 @@ Naummanniは(株)UEIと(株)glucoseの共同開発プロジェクトです
 * Concept and AI: shi3z@mstdn.onosendai.jp
 * Code : shn@oppai.tokyo
 
-# Dependency
+# Setup
+
+## Dependency
 
 yarn
 docker >=  17.03
