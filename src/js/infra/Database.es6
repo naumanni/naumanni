@@ -1,5 +1,5 @@
 const DB_NAME = 'naummanni_database'
-const LATEST_VERSION = 1
+const LATEST_VERSION = 2
 
 
 class NaummanniDatabase {
@@ -75,7 +75,8 @@ export class Metadata {
   }
 
   migrate(db, transaction, oldVersion, newVersion) {
-    if(oldVersion === 0) {
+    // とりあえず今のところTable増やすだけので雑
+    if(/* oldVersion === 0*/1) {  // eslint-disable-line no-constant-condition
       // create all
       for(const model of this.models) {
         const {storeName, keyPath, indexes} = model
