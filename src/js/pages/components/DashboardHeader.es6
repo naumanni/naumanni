@@ -203,10 +203,9 @@ export default class DashboardHeader extends React.Component {
     return (
       <ul className="menu menu--header menu--badAccount">
         <li className="menu-description">
-          <strong>ホスト: {token.host}</strong>
+          <strong>Host: {token.host}</strong>
           <p>
-            通信エラーです。
-            相手先サーバーが不調か、このマシンがネットワークにつながっていない可能性があります。
+            Network communication error
           </p>
         </li>
       </ul>
