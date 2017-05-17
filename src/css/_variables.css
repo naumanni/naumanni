@@ -76,7 +76,7 @@ $colorHoverText: $colorMainNormal;
 $colorHoverBackground: $colorGray1;
 
 $colorColumnHeaderBackground: $colorMainDarker;
-$colorPrivateColumnHeaderBackground: #30C213;
+$colorPrivateColumnHeaderBackground: #30276e;
 $colorColumnHeaderText: $colorWhite;
 $colorColumnHeaderMenuButton: $colorMainLighter;
 $fontColumnHeaderText: bold $fontSizeLarger/1.2 sans-serif;
@@ -105,6 +105,11 @@ $colorNotificationWhat: #707c84;  /* 通知の説明部分 */
 
 $colorFriendBorder: $colorGray1;
 $colorFriendArrow: $colorMainNormal;
+
+$colorTalkSenderStatus: $colorGray1;
+$colorTalkReceiverStatus: #d3cff1;
+$colorTalkFormBorder: $colorGray3;
+$sizeTalkFormHeight: 96px;
 
 $colorUserAccount: colorGray3;
 

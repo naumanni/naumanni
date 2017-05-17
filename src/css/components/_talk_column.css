@@ -1,9 +1,3 @@
-$colorTalkSenderStatus: $colorGray1;
-$colorTalkReceiverStatus: #6BD67D;
-$colorTalkFormBorder: $colorGray3;
-$sizeTalkFormHeight: 96px;
-
-
 .column .column-body--talk {
   display: flex;
   flex-direction: column;
