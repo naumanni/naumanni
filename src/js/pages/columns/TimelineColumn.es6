@@ -17,9 +17,9 @@ import PagingColumn from './PagingColumn'
 
 // TODO: i10n
 const TYPENAMEMAP = {
-  [TIMELINE_FEDERATION]: '連合タイムライン',
-  [TIMELINE_LOCAL]: 'ローカルタイムライン',
-  [TIMELINE_HOME]: 'ホームタイムライン',
+  [TIMELINE_FEDERATION]: 'Federated timeline',
+  [TIMELINE_LOCAL]: 'Local timeline',
+  [TIMELINE_HOME]: 'Home timeline',
 }
 
 /**

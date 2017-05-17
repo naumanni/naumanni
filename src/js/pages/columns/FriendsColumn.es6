@@ -132,7 +132,7 @@ export default class FriendsColumn extends Column {
 
     return (
       <div className="friends-filter">
-        <input type="text" value={filter} onChange={::this.onChangeFilter} placeholder="絞り込む" />
+        <input type="text" value={filter} onChange={::this.onChangeFilter} placeholder="Filter" />
       </div>
     )
   }

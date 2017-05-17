@@ -38,7 +38,7 @@ export default class NotificationColumn extends PagingColumn {
       return (
         <h1 className="column-headerTitle">
           <div className="column-headerTitleSub">{token.acct}</div>
-          <div className="column-headerTitleMain">通知</div>
+          <div className="column-headerTitleMain">Notifications</div>
         </h1>
       )
     }

@@ -97,7 +97,7 @@ export default class TalkColumn extends Column {
     return (
       <h1 className="column-headerTitle">
         <div className="column-headerTitleSub">{me.acct}</div>
-        <div className="column-headerTitleMain">{memberNames}とトーク</div>
+        <div className="column-headerTitleMain">Talk with {memberNames}</div>
       </h1>
     )
   }
