@@ -82,9 +82,10 @@ export class APIRequester {
    */
   async call(method, apiName, query, options={}) {
     const {spec, req} = this._makeRequest(method, apiName, query, options)
-    let responseBody = (await req).body
+    const response = await req
+    let responseBody = response.body
     if(this.hooks.response)
-      responseBody = this.hooks.response(method, apiName, responseBody)
+      responseBody = this.hooks.response(method, apiName, responseBody, response, spec)
     return spec.normalize(req, responseBody, options)
   }
 

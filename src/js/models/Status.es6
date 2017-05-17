@@ -48,7 +48,7 @@ export default class Status extends StatusRecord {
    * @param {object} raw
    */
   constructor(raw) {
-    if(raw.media_attachments.length) {
+    if(raw.media_attachments && raw.media_attachments.length) {
       const Attachment = require('./Attachment').default
       raw.media_attachments = raw.media_attachments.map((rawmedia) => new Attachment(rawmedia))
     }

@@ -30,6 +30,8 @@ beforeAll(() => {
 })
 
 
+// TODO: UpdateLastTalkRecordUseCase's parent UseCase(SendDirectMessageUseCase) is already released のwarnを対処する
+
 describe('SendDirectMessageUseCase', () => {
   it('can send encrypted messge', async () => {
     const mockToken = new OAuthToken({})

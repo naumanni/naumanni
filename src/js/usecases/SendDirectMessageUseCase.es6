@@ -99,7 +99,7 @@ export default class SendDirectMessageUseCase extends UseCase {
 
     return await Promise.all(
       encryptedBlocks.map((block) => {
-        postStatusManaged(token, {message: {
+        return postStatusManaged(token, {message: {
           status: block,
           in_reply_to_id,
           visibility: 'direct',
