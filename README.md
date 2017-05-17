@@ -11,6 +11,9 @@ Naumanni is a Web user interface specially designed for Mastodon. Just like Mast
 
 Demo will available http://naumanni.com/ (now under construction)
 
+# Version
+
+0.15
 
 # Features
 
