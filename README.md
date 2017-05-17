@@ -9,7 +9,7 @@ Naumanni is a Web user interface specially designed for Mastodon. Just like Mast
 
 # Demo
 
-Demo will available http://naumanni.com/ (now under construction)
+Demo will available http://naumanni.com/ 
 
 # Version
 
