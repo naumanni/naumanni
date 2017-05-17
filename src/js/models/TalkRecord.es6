@@ -1,4 +1,5 @@
 import {List, Record} from 'immutable'
+import moment from 'moment'
 
 
 const TalkRecordBase = Record({  // eslint-disable-line new-cap
@@ -7,7 +8,8 @@ const TalkRecordBase = Record({  // eslint-disable-line new-cap
   latestStatusId: '',
   latestStatusReceivedAt: '',
   lastSeenStatusId: '',
-  lastSeendAt: '',
+  lastSeenAt: '',
+  lastTalk: {},
 })
 
 
@@ -18,8 +20,17 @@ export default class TalkRecord extends TalkRecordBase {
   static storeName = 'talk_records'
   static keyPath = 'address'
   static indexes = [
-    ['subject', ['subject', 'targetsJoiend'], {unique: true}],
+    ['subject', 'subject', {}],
+    ['recipients', ['subject', 'targetsJoiend'], {unique: true}],
   ]
+
+  static makeAddress(subject, targets) {
+    require('assert')(subject)
+    require('assert')(Array.isArray(targets))
+    targets = [...targets]
+    targets.sort()
+    return `${subject}::${targets.join(',')}`
+  }
 
   /**
    * @constructor
@@ -27,8 +38,10 @@ export default class TalkRecord extends TalkRecordBase {
   constructor({subject, targets, ...others}) {
     require('assert')(subject)
     require('assert')(Array.isArray(targets))
+    targets = [...targets]
+    targets.sort()
     targets = new List(targets)
-    super({targets, ...others})
+    super({subject, targets, ...others})
   }
 
   /**
@@ -51,5 +64,9 @@ export default class TalkRecord extends TalkRecordBase {
 
   get targetsJoiend() {
     return this.targets.join(',')
+  }
+
+  get lastSeenAtMoment() {
+    return moment(this.lastSeenAt)
   }
 }
