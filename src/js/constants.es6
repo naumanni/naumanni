@@ -63,3 +63,5 @@ export const AUTO_PAGING_MARGIN = 300
 
 // Timelineで普段保持するStatus数
 export const MAX_STATUSES = 40
+
+export const TOOTFORM_PLACEHOLDER = 'What\'s up?'
