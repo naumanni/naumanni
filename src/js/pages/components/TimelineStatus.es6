@@ -98,8 +98,8 @@ export default class TimelineStatus extends React.Component {
 
             <div className="status-info">
               <div className="status-author">
-                <UserDisplayName account={account} onClick={onClickAvatar} />
-                <UserAcct account={account} onClick={onClickAvatar} />
+                <UserDisplayName account={mainAccount} onClick={onClickAvatar} />
+                <UserAcct account={mainAccount} onClick={onClickAvatar} />
               </div>
               <a className="status-createdAt"
                  href={mainStatus.url}
