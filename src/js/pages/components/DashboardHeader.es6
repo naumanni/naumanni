@@ -6,6 +6,7 @@ import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
 import {
   COLUMN_TIMELINE, COLUMN_FRIENDS, COLUMN_NOTIFICATIONS,
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
+  TOOTFORM_PLACEHOLDER,
 } from 'src/constants'
 import TootWindow from '../TootWindow'
 
@@ -48,7 +49,7 @@ export default class DashboardHeader extends React.Component {
         <div className="naumanniDashboard-header-toot">
           <input
             className={`${isShowTootWindow ? 'is-hidden' : ''}`}
-            type="text" placeholder="What's up?"
+            type="text" placeholder={TOOTFORM_PLACEHOLDER}
             onFocus={::this.onTootFocus} />
           {isShowTootWindow && <TootWindow onClose={::this.onTootWindowClose} />}
         </div>

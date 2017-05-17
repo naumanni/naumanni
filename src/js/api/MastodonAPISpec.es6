@@ -17,7 +17,7 @@ const notification = new schema.Entity('notifications', {
 })
 
 
-export function normalizeResponse(entity, responseBody, host, acct=null) {
+export function normalizeResponse(entity, {result: responseBody, ...response}, host, acct=null) {
   let {entities, result} = normalize(responseBody, entity)
   let entitiesByUrl = {}
 
@@ -124,7 +124,7 @@ export function normalizeResponse(entity, responseBody, host, acct=null) {
   else
     result = entities[entity.key][result].uri
 
-  return {entities: entitiesByUrl, result}
+  return {entities: entitiesByUrl, result, ...response}
 }
 
 export function normalizeStatus(...args) {

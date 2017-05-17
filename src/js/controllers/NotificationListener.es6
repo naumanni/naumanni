@@ -12,13 +12,6 @@ export default class NotificationListener extends TimelineListener {
     super.addListener(key, token, websocketUrl)
   }
 
-  removeListener(key) {
-    if(this.websocketRemovers[key]) {
-      this.websocketRemovers[key]()
-      delete this.websocketRemovers[key]
-    }
-  }
-
   /**
    * Websocketに何かあったら呼ばれる
    * @param {OAuthToken} token
@@ -31,7 +24,7 @@ export default class NotificationListener extends TimelineListener {
       if(payload.event === EVENT_NOTIFICATION) {
         const {host, acct} = token
         const {normalizeNotification} = require('src/api/MastodonAPISpec')
-        const {entities, result} = normalizeNotification(payload.payload, host, acct)
+        const {entities, result} = normalizeNotification({result: payload.payload}, host, acct)
 
         const notificationRefs = this.db.mergeNotifications(entities, [result])
         const removes = this.timeline.push(notificationRefs)

@@ -6,7 +6,7 @@ import Textarea from 'react-textarea-autosize'
 import {
   MASTODON_MAX_CONTENT_SIZE,
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
-  KEY_ENTER,
+  KEY_ENTER, TOOTFORM_PLACEHOLDER,
 } from 'src/constants'
 import {OAuthTokenArrayPropType} from 'src/propTypes'
 import {IconFont, UserIconWithHost} from 'src/pages/parts'
@@ -117,7 +117,7 @@ export default class TootPanel extends React.Component {
           <Textarea
             ref="textareaStatus"
             className="tootPanel-status" value={statusContent}
-            placeholder="何してますか？忙しいですか？手伝ってもらってもいいですか？"
+            placeholder={TOOTFORM_PLACEHOLDER}
             onKeyDown={::this.onKeyDown}
             onChange={::this.onChangeStatus}
             minRows={3}

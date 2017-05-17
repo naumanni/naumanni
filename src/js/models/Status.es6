@@ -31,6 +31,13 @@ const StatusRecord = Record({  // eslint-disable-line new-cap
   favourited_by_acct: {},
 })
 
+/*
+mention
+url URL of user's profile (can be remote) no
+username  The username of the account no
+acct  Equals username for local users, includes @domain for remote ones no
+id  Account ID  no
+*/
 
 /**
  * MastodonのStatus
@@ -41,7 +48,7 @@ export default class Status extends StatusRecord {
    * @param {object} raw
    */
   constructor(raw) {
-    if(raw.media_attachments.length) {
+    if(raw.media_attachments && raw.media_attachments.length) {
       const Attachment = require('./Attachment').default
       raw.media_attachments = raw.media_attachments.map((rawmedia) => new Attachment(rawmedia))
     }

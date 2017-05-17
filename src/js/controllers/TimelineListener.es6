@@ -44,7 +44,7 @@ export default class TimelineListener {
   onWebsocketMessage(token, {type, payload}) {
     if(type === WEBSOCKET_EVENT_MESSAGE) {
       if(payload.event === EVENT_UPDATE) {
-        const {entities, result} = normalizeStatus(payload.payload, token.account.instance, token.acct)
+        const {entities, result} = normalizeStatus({result: payload.payload}, token.account.instance, token.acct)
 
         const statusRefs = this.db.mergeStatuses(entities, [result])
         const removes = this.timeline.push(statusRefs)

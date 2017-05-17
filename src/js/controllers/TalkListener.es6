@@ -377,7 +377,7 @@ export default class TalkListener extends EventEmitter {
       if(payload.event === EVENT_UPDATE) {
         // 自分の送ったDirect Messageは steam=user に来る
         const {normalizeStatus} = require('src/api/MastodonAPISpec')
-        const {entities, result} = normalizeStatus(payload.payload, host, acct)
+        const {entities, result} = normalizeStatus({result: payload.payload}, host, acct)
         statusRefs = TimelineData.mergeStatuses(entities, [result])
       // これいらんかも
       // } else if(payload.event === EVENT_NOTIFICATION) {

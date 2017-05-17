@@ -59,7 +59,7 @@ class DummyAPIRequester extends APIRequester.APIRequester {
             console.error(`${scenarioKey} not found`)
             reject(new Error(`${scenarioKey} not found`))
           }
-          resolve({body: JSON.parse(response)})
+          resolve({header: {}, body: JSON.parse(response)})
         } catch(e) {
           reject(e)
         }

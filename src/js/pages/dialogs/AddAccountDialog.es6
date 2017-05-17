@@ -29,7 +29,7 @@ export default class AddAccountDialog extends Dialog {
    * @override
    */
   renderHeader() {
-    return <h1>Mastodonアカウントを追加</h1>
+    return <h1>Add your account</h1>
   }
 
   /**
@@ -38,9 +38,7 @@ export default class AddAccountDialog extends Dialog {
   renderBody() {
     return (
       <div className="addAccountDialogBody">
-        <p>Mastodonアカウントを入力して、追加ボタンを押して下さい。</p>
-
-        <input type="text" ref="account" placeholder="@shn@mstdn.onosendai.jp" />
+        <input type="text" ref="account" placeholder="@shn@mstdn.onosendai.jp" style={{width: '100%'}} />
       </div>
     )
   }
@@ -51,8 +49,8 @@ export default class AddAccountDialog extends Dialog {
   renderFooter() {
     return (
       <div className="dialog-footerButtons">
-        <button className="button-danger" onClick={::this.onClickClose}>キャンセル</button>
-        <button className="button-primary" onClick={::this.onClickAdd}>追加</button>
+        <button className="button-danger" onClick={::this.onClickClose}>Cancel</button>
+        <button className="button-primary" onClick={::this.onClickAdd}>Add</button>
       </div>
     )
   }
