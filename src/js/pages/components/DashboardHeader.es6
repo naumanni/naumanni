@@ -155,7 +155,6 @@ export default class DashboardHeader extends React.Component {
             <div>
               {account.hasPrivateKey && <span className="user-hasPrivatekey"><IconFont iconName="key" />prv</span>}
             </div>
-            <button onClick={this.props.onGenKey.bind(this, token, account)}>Create key</button>
           </div>
         </li>
         <li className="menu-item"
