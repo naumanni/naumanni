@@ -48,7 +48,7 @@ export default class DashboardHeader extends React.Component {
         <div className="naumanniDashboard-header-toot">
           <input
             className={`${isShowTootWindow ? 'is-hidden' : ''}`}
-            type="text" placeholder="何してますか？忙しいですか？手伝ってもらってもいいですか？"
+            type="text" placeholder="What's up?"
             onFocus={::this.onTootFocus} />
           {isShowTootWindow && <TootWindow onClose={::this.onTootWindowClose} />}
         </div>
@@ -109,28 +109,28 @@ export default class DashboardHeader extends React.Component {
             this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_HOME})}
           >
           <IconFont className="menu-itemIcon" iconName="home" />
-          <span className="menu-itemLabel">統合ホームタイムライン</span>
+          <span className="menu-itemLabel">United Home timeline</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_LOCAL})}>
           <IconFont className="menu-itemIcon" iconName="users" />
-          <span className="menu-itemLabel">統合ローカルタイムライン</span>
+          <span className="menu-itemLabel">United Local timeline</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_FEDERATION})}>
           <IconFont className="menu-itemIcon" iconName="globe" />
-          <span className="menu-itemLabel">統合連合タイムライン</span>
+          <span className="menu-itemLabel">United Federated timeline</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_NOTIFICATIONS, {subject: SUBJECT_MIXED})}>
           <IconFont className="menu-itemIcon" iconName="bell" />
-          <span className="menu-itemLabel">統合通知</span>
+          <span className="menu-itemLabel">United Notification</span>
         </li>
 
       </ul>
@@ -154,41 +154,41 @@ export default class DashboardHeader extends React.Component {
             <div>
               {account.hasPrivateKey && <span className="user-hasPrivatekey"><IconFont iconName="key" />prv</span>}
             </div>
-            <button onClick={this.props.onGenKey.bind(this, token, account)}>鍵生成</button>
+            <button onClick={this.props.onGenKey.bind(this, token, account)}>Create key</button>
           </div>
         </li>
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_HOME})}>
           <IconFont className="menu-itemIcon" iconName="home" />
-          <span>ホームタイムライン</span>
+          <span>Home timeline</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_LOCAL})}>
           <IconFont className="menu-itemIcon" iconName="users" />
-          <span>ローカルタイムライン</span>
+          <span>Local timeline</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_FEDERATION})}>
           <IconFont className="menu-itemIcon" iconName="globe" />
-          <span>連合タイムライン</span>
+          <span>Federated timeline</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_NOTIFICATIONS, {subject: account.acct})}>
           <IconFont className="menu-itemIcon" iconName="bell" />
-          <span>通知</span>
+          <span>Notifications</span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(this, COLUMN_FRIENDS, {subject: account.acct})}>
           <IconFont className="menu-itemIcon" iconName="mail" />
-          <span>メッセージ</span>
+          <span>Message</span>
         </li>
       </ul>
     )
@@ -203,10 +203,9 @@ export default class DashboardHeader extends React.Component {
     return (
       <ul className="menu menu--header menu--badAccount">
         <li className="menu-description">
-          <strong>ホスト: {token.host}</strong>
+          <strong>Host: {token.host}</strong>
           <p>
-            通信エラーです。
-            相手先サーバーが不調か、このマシンがネットワークにつながっていない可能性があります。
+            Network communication error
           </p>
         </li>
       </ul>

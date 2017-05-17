@@ -80,7 +80,7 @@ export default class TimelineStatus extends React.Component {
           <div className="status-row status-reblogFrom">
             <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
             <div className="status-rowRight">
-              <a onClick={onClickAvatar}>{account.display_name}</a>さんにブーストされました
+              <a onClick={onClickAvatar}>{account.display_name}</a> boosted
             </div>
           </div>
         )}
@@ -164,7 +164,7 @@ export default class TimelineStatus extends React.Component {
         {mainStatus.spoilerText}
         <a className="status-contentOpener"
           onClick={() => this.setState({isContentOpen: !isContentOpen})}>
-          {isContentOpen ? '閉じる' : 'もっと見る...'}
+          {isContentOpen ? 'Close' : 'More...'}
         </a>
       </div>
     )
@@ -201,8 +201,8 @@ export default class TimelineStatus extends React.Component {
         {isShowMediaCover && (
           <div className="status-mediaListCover" onClick={::this.onClickMediaCover}>
             <p>
-              不適切なコンテンツ<br />
-              <span className="sub">クリックして表示</span>
+              NSFW<br />
+              <span className="sub">Browse</span>
             </p>
           </div>
         )}
