@@ -6,6 +6,14 @@ Naumanni(ナウマン)は、マストドン専用のWebユーザーインタフ�
 
 ![Screenshot](screenshot.png)
 
+
+# Version
+
+0.1.1 (αリリース)
+
+現在 Naumanniはα版です。不具合、足りない機能などいろいろあります
+バグや機能要望はIssuesに書き込むか、#naumanniのタグをつけてトゥートしてください。
+
 # Demo
 
  http://naumanni.com/ 
@@ -20,10 +28,6 @@ Naumanniの特徴は以下の通り
 * エンドツーエンドの暗号化メッセージング機能(6/10実装予定)
 * AIを利用した攻撃的なTootの自動CW機能(6/10実装予定/日本語のみ)
 * AIを利用したNSFW自動判定機能(今夏実装予定)
-
-# Version
-
-0.1.1
 
 # Who made this?
 
