@@ -30,6 +30,7 @@ export default class FriendsColumn extends Column {
     this.state.loading = true
     this.state.filter = ''
     this.actionDelegate = new TimelineActions(this.context)
+    this.lastTalkRecordUpdated = null
   }
 
   /**
@@ -109,7 +110,12 @@ export default class FriendsColumn extends Column {
    */
   getStateFromContext() {
     const state = super.getStateFromContext()
+
     state.token = state.tokenState.getTokenByAcct(this.props.subject)
+    if(this.lastTalkRecordUpdated !== state.talkState[this.props.subject]) {
+      this.lastTalkRecordUpdated = state.talkState[this.props.subject]
+      this.listener.sortFriends()
+    }
     return state
   }
 
@@ -205,6 +211,34 @@ class UIFriend {
   get key() {
     return this.account.uri
   }
+
+  static compare(a, b) {
+    if(a.record && !b.record) {
+      return -1
+    } else if(!a.record && b.record) {
+      return 1
+    } else if(a.record && b.record) {
+      const dateA = a.record.latestStatusReceivedAtMoment
+      const dateB = b.record.latestStatusReceivedAtMoment
+
+      if(dateA.isBefore(dateB))
+        return 1
+      else if(dateA.isAfter(dateB))
+        return -1
+      else
+        return 0
+    } else if(!a.record && !b.record) {
+      const acctA = a.account.acct.toLowerCase()
+      const acctB = b.account.acct.toLowerCase()
+
+      if(acctA > acctB)
+        return 1
+      else if(acctA < acctB)
+        return -1
+      else
+        return 0
+    }
+  }
 }
 
 
@@ -250,7 +284,6 @@ class FriendsListener extends EventEmitter {
         if(!accounts)
           break
 
-
         Object.values(accounts).forEach((account) => {
           if(!friends.has(account.acct))
             friends.set(account.acct, new UIFriend(account))
@@ -266,8 +299,21 @@ class FriendsListener extends EventEmitter {
       diggFollowxxxs(myId, ::requester.listFollowers),
     ])
 
+    this.sortFriends(friends)
+  }
+
+  async sortFriends(friends=null) {
+    if(!friends) {
+      friends = new Map()
+      for(const friend of this.state.friends) {
+        friends.set(friend.account.acct, friend)
+      }
+    }
+
+
     // TODO: すげー雑
     const records = await TalkRecord.query.listByKey('subject', this.subject)
+    console.log('sortFriends', records)
     for(const record of records) {
       // いまのところrecordのtargetは1人
       require('assert')(record.targets.size === 1)
@@ -278,35 +324,7 @@ class FriendsListener extends EventEmitter {
     // friend list
     const friendList = Array.from(friends.values())
 
-    friendList.sort((a, b) => {
-      if(a.record && !b.record) {
-        return -1
-      } else if(!a.record && b.record) {
-        return 1
-      } else if(a.record && b.record) {
-        const dateA = a.record.lastSeenAtMoment
-        const dateB = b.record.lastSeenAtMoment
-
-        if(dateA.isBefore(dateB))
-          return 1
-        else if(dateA.isAfter(dateB))
-          return -1
-        else
-          return 0
-      } else if(!a.record && !b.record) {
-        const acctA = a.account.acct.toLowerCase()
-        const acctB = b.account.acct.toLowerCase()
-
-        if(acctA > acctB)
-          return 1
-        else if(acctA < acctB)
-          return -1
-        else
-          return 0
-      }
-    })
-
-
+    friendList.sort(UIFriend.compare)
     this.state.friends = friendList
     this.emitChange()
   }

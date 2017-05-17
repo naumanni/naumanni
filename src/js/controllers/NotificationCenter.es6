@@ -72,7 +72,7 @@ export default class NotificationCenter {
         // TODO: notification listenerと被ってる -> NotificationListnerをここにつなげるべき
         const {host, acct} = token
         const {normalizeNotification} = require('src/api/MastodonAPISpec')
-        const {entities, result} = normalizeNotification(payload.payload, host, acct)
+        const {entities, result} = normalizeNotification({result: payload.payload}, host, acct)
 
         const notification = entities.notifications[result]
         const status = notification.status && entities.statuses[notification.status]

@@ -1,6 +1,7 @@
 import {UseCase} from 'almin'
 import moment from 'moment'
 
+import * as actions from 'src/actions'
 import {TalkRecord} from 'src/models'
 import Database from 'src/infra/Database'
 
@@ -45,5 +46,10 @@ export default class UpdateLastTalkRecordUseCase extends UseCase {
       })
     }
     Database.save(record)
+
+    this.dispatch({
+      type: actions.TALK_RECORD_UPDATED,
+      record,
+    })
   }
 }

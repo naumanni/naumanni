@@ -66,6 +66,10 @@ export default class TalkRecord extends TalkRecordBase {
     return this.targets.join(',')
   }
 
+  get latestStatusReceivedAtMoment() {
+    return moment(this.latestStatusReceivedAt)
+  }
+
   get lastSeenAtMoment() {
     return moment(this.lastSeenAt)
   }

@@ -24,7 +24,7 @@ export default class NotificationListener extends TimelineListener {
       if(payload.event === EVENT_NOTIFICATION) {
         const {host, acct} = token
         const {normalizeNotification} = require('src/api/MastodonAPISpec')
-        const {entities, result} = normalizeNotification(payload.payload, host, acct)
+        const {entities, result} = normalizeNotification({result: payload.payload}, host, acct)
 
         const notificationRefs = this.db.mergeNotifications(entities, [result])
         const removes = this.timeline.push(notificationRefs)
