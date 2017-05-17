@@ -6,10 +6,6 @@ Naumanni(ナウマン)は、マストドン専用のWebユーザーインタフ�
 
 ![Screenshot](screenshot.png)
 
-# Demo
-
- http://naumanni.com/ (現在準備中です)
-
 # Feature
 
 Naumanniの特徴は以下の通り
@@ -27,6 +23,7 @@ Naumanniはα版です。現在判明している問題点は以下の通り
 
 * メッセージに全フォロワーが表示されない
 * メッセージのフォロワーが適切な順番でソートされていない
+
 
 # Who made this?
 
