@@ -1,5 +1,17 @@
 import bezierEasing from 'bezier-easing'
 
+
+// host -> wss urlのマップ  JSで取る方法が面倒なので、増えるまでハードコーディングで
+const WEBSOCKET_HOST_MAP = {
+  'mstdn.jp': 'streaming.mstdn.jp',
+}
+
+// host -> favicon urlのマップ  JSで取る方法が無いのでハードコーディング
+const FAVICON_HOST_MAP = {
+  'pawoo.net': 'favicon.png',
+}
+
+
 export const easeIn = bezierEasing(0.42, 0, 1, 1)
 export const easeOut = bezierEasing(0, 0, 0.58, 1)
 export const easeInOut = bezierEasing(0.42, 0, 0.58, 1)
@@ -67,10 +79,6 @@ export function parseQuery(queryString) {
 }
 
 
-const WEBSOCKET_HOST_MAP = {
-  'mstdn.jp': 'streaming.mstdn.jp',
-}
-
 /**
  * WebsocketのUrlを作る。
  * TODO: どっかに移したい
@@ -84,6 +92,18 @@ export function makeWebsocketUrl(token, stream) {
   const host = WEBSOCKET_HOST_MAP[token.host] || token.host
 
   return `wss://${host}/api/v1/streaming/?access_token=${token.accessToken}&stream=${stream}`
+}
+
+
+/**
+ * faviconのURLを生成する
+ * pawoo.netが.icoじゃないので...
+ * @param {string} host
+ * @return {string}
+ */
+export function makeFaviconUrl(host) {
+  const icon = FAVICON_HOST_MAP[host] || 'favicon.ico'
+  return `https://${host}/${icon}`
 }
 
 

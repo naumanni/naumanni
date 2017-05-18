@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import {AccountPropType} from 'src/propTypes'
+import {makeFaviconUrl} from 'src/utils'
 
 /**
  * ユーザーの顔アイコン with ホスト
@@ -27,7 +28,7 @@ export class UserIconWithHost extends React.Component {
         <img
           className="userIcon-avatar" src={account.safeAvatar || '/images/no-avatar.png'}
           alt={account.acct} title={account.acct} />
-        <img className="userIcon-host" src={`https://${account.instance}/favicon.ico`} />
+        <img className="userIcon-host" src={makeFaviconUrl(account.instance)} />
       </span>
     )
   }
