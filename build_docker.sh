@@ -5,4 +5,4 @@ set -ex
 yarn
 yarn build
 
-docker build -t naumanni.com/naumanni-standalone -f ./Dockerfile .
+docker build -t naumanni/naumanni-standalone -f ./Dockerfile .

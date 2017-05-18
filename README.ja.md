@@ -16,7 +16,7 @@ Naumanni(ナウマン)は、マストドン専用のWebユーザーインタフ�
 
 # Demo
 
- http://naumanni.com/ 
+https://naumanni.com/
 
 # Feature
 
@@ -38,16 +38,17 @@ Naummanniは(株)UEIと(株)glucoseの共同開発プロジェクトです
 
 # Setup
 
-## Dependency
+## Build Dependency
 
-yarn
-docker >=  17.03
+* yarn >= 0.23.4
+* node >= v7.5.0
+* docker >= 17.03
 
 ## Docker
 
 ```
-$ ./build_docker.sh
-$ docker run -it -p 8080:80 naumanni.com/naumanni-standalone
+$ docker pull naumanni/naumanni-standalone
+$ docker run -it -p 8080:80 naumanni/naumanni-standalone
 ```
 
 ブラウザから http://localhost:8080/ にアクセスすると使えます
