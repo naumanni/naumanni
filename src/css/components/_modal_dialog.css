@@ -61,14 +61,11 @@
     }
   }
 
-  .dialog-closeButton {
+  .dialog-button {
     position: absolute;
     z-index: 1;
     border: 0;
     background: transparent;
-
-    top: -12px;
-    right: -32px;
 
     font-size: 2rem;
     color: #fff;
@@ -76,6 +73,21 @@
 
     &:hover {
       color: $colorAccentLighter;
+    }
+
+    &--close {
+      top: -12px;
+      right: -32px;
+    }
+
+    &--prev {
+      top: 50%;
+      left: -64px;
+    }
+
+    &--next {
+      top: 50%;
+      right: -64px;
     }
   }
 }

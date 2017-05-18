@@ -213,6 +213,18 @@
       "src": "fontawesome"
     },
     {
+      "uid": "399ef63b1e23ab1b761dfbb5591fa4da",
+      "css": "right-open",
+      "code": 59419,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "d870630ff8f81e6de3958ecaeac532f2",
+      "css": "left-open",
+      "code": 59420,
+      "src": "fontawesome"
+    },
+    {
       "uid": "a70b0a7ad233888d003444ad6c75f30e",
       "css": "logo",
       "code": 59392,

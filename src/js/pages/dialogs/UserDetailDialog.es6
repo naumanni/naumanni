@@ -76,7 +76,9 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
     // TODO: stateにする
     const {account, relationships, tokens} = this.state
     const closeButton = (
-      <button className="dialog-closeButton" onClick={::this.onClickClose}><IconFont iconName="cancel" /></button>
+      <button className="dialog-button dialog-button--close" onClick={::this.onClickClose}>
+        <IconFont iconName="cancel" />
+      </button>
     )
 
     if(!account) {

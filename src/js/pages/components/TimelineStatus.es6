@@ -188,13 +188,13 @@ export default class TimelineStatus extends React.Component {
 
     return (
       <div className={className.join(' ')}>
-        {mediaList.map((media) => (
+        {mediaList.map((media, idx) => (
           <a key={media.id}
             className="status-media"
             style={{backgroundImage: `url(${media.preview_url})`}}
             target="_blank"
             href={media.url}
-            onClick={this.onClickMedia.bind(this, media)}
+            onClick={this.onClickMedia.bind(this, mediaList, idx)}
             />
         ))}
 
@@ -410,10 +410,10 @@ export default class TimelineStatus extends React.Component {
     })
   }
 
-  onClickMedia(media, e) {
+  onClickMedia(mediaList, idx, e) {
     e.preventDefault()
 
-    this.props.onClickMedia(media)
+    this.props.onClickMedia(mediaList, idx)
   }
 
   /**

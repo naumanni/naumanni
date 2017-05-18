@@ -72,9 +72,9 @@ export default class TimelineActions {
     return TimelineData.mergeStatuses(entities, [result])[0]
   }
 
-  onClickMedia(media) {
+  onClickMedia(mediaList, idx) {
     this.context.useCase(
       new PushDialogUseCase()
-    ).execute(DIALOG_MEDIA_VIEWER, {media})
+    ).execute(DIALOG_MEDIA_VIEWER, {mediaList, initialIdx: idx})
   }
 }

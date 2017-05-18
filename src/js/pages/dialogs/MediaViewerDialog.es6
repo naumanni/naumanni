@@ -1,26 +1,57 @@
 import React from 'react'
 
 import Dialog from './Dialog'
+import {IconFont} from 'src/pages/parts'
 
 
 /**
  * メディア表示ダイアログ
  */
 export default class MediaViewerDialog extends Dialog {
+  constructor(...args) {
+    super(...args)
+
+    const {initialIdx} = this.props
+
+    this.state = {
+      currentIdx: initialIdx,
+    }
+  }
+
   /**
    * @override
    */
   render() {
-    const {media} = this.props
+    const {mediaList} = this.props
+    const {currentIdx} = this.state
+    const media = mediaList[currentIdx]
 
     return (
       <div className={`${this.dialogClassName} dialog--mediaViewer--${media.type}`}>
         {this.renderCloseButton()}
+        {this.hasPrev && this.renderPrevButton()}
+        {this.hasNext && this.renderNextButton()}
         {media.type === 'image'
           ? this.renderImage(media)
           : this.renderVideo(media)
         }
       </div>
+    )
+  }
+
+  renderPrevButton() {
+    return (
+      <button className="dialog-button dialog-button--prev" onClick={::this.onClickPrev}>
+        <IconFont iconName="left-open" />
+      </button>
+    )
+  }
+
+  renderNextButton() {
+    return (
+      <button className="dialog-button dialog-button--next" onClick={::this.onClickNext}>
+        <IconFont iconName="right-open" />
+      </button>
     )
   }
 
@@ -44,6 +75,22 @@ export default class MediaViewerDialog extends Dialog {
     )
   }
 
+  onClickPrev() {
+    const {currentIdx} = this.state
+
+    this.setState({
+      currentIdx: currentIdx - 1,
+    })
+  }
+
+  onClickNext() {
+    const {currentIdx} = this.state
+
+    this.setState({
+      currentIdx: currentIdx + 1,
+    })
+  }
+
   /**
    * @override
    * @private
@@ -51,5 +98,19 @@ export default class MediaViewerDialog extends Dialog {
    */
   get dialogClassName() {
     return super.dialogClassName + ' dialog--mediaViewer'
+  }
+
+  // private
+  get hasPrev() {
+    const {currentIdx} = this.state
+
+    return currentIdx !== 0
+  }
+
+  get hasNext() {
+    const {mediaList} = this.props
+    const {currentIdx} = this.state
+
+    return currentIdx !== mediaList.length - 1
   }
 }
