@@ -8,7 +8,8 @@
   .naumanniDashboard-version {
     position: absolute;
 /*    color: color($colorBackgroundWatermark blackness(20%));*/
-    color: $colorBackgroundWatermark;
+/*    color: $colorBackgroundWatermark;*/
+    color: #91adbf;
     text-shadow: 0 1px 0px $colorBackgroundWatermarkShadow;
     z-index: $zIndexBackground;
     pointer-events: none;
