@@ -275,14 +275,31 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
       const endpoint = list === LIST_FOLLOWERS ? 'listFollowers' : 'listFollowings'
       const accounts = new Map()
 
-      const responses = await Promise.all(
-        tokens.map((token) => token.requester[endpoint]({id: account.getIdByHost(token.host), limit: 80}))
-      )
+      await Promise.all(
+        tokens.map(async (token) => {
+          const id = account.getIdByHost(token.host)
+          if(!id)
+            return
 
-      responses
-        .map(({entities, result}) => result.map((uri) => entities.accounts[uri]))
-        .reduce((a, accounts) => a.concat(accounts), [])
-        .forEach((acc) => accounts.set(acc.uri, acc))
+          let nextUrl
+
+          for(;;) {
+            const {entities, result, link} = await token.requester[endpoint]({id, limit: 80}, {endpoint: nextUrl})
+            if(!accounts)
+              break
+
+            // TODO: mergeする
+            result
+              .map((uri) => entities.accounts[uri])
+              .reduce((a, accounts) => a.concat(accounts), [])
+              .forEach((acc) => accounts.set(acc.uri, acc))
+
+            nextUrl = link && link.next
+            if(!nextUrl)
+              break
+          }
+        })
+      )
 
       if(list === LIST_FOLLOWERS)
         this.setState({followers: Array.from(accounts.values())})

@@ -288,7 +288,7 @@ class FriendsListener extends EventEmitter {
           if(!friends.has(account.acct))
             friends.set(account.acct, new UIFriend(account))
         })
-        nextUrl = link.next
+        nextUrl = link && link.next
         if(!nextUrl)
           break
       }
