@@ -71,10 +71,8 @@ export default class Dashboard extends React.Component {
     if(initializer) {
       return (
         <div className="naumanniDashboard">
-          <div className="naumanniDashboard-version">
-            {NAUMANNI_VERSION}
-            {initializer}
-          </div>
+          <div className="naumanniDashboard-version">{NAUMANNI_VERSION}</div>
+          {initializer}
         </div>
       )
     }
@@ -84,13 +82,13 @@ export default class Dashboard extends React.Component {
     return (
       <div className={`naumanniApp ${dialogs.length ? 'is-shownDialogs' : ''}`}>
         <div className="naumanniDashboard">
-          <div className="naumanniDashboard-version">{NAUMANNI_VERSION}</div>
           <DashboardHeader
             tokens={tokens}
             onStartAddAccount={::this.onStartAddAccount}
             onOpenColumn={::this.onOpenColumn}
             onGenKey={::this.onGenKey}
           />
+          <div className="naumanniDashboard-version">{NAUMANNI_VERSION}</div>
           <ColumnContainer ref="columnContainer" columns={columns} />
         </div>
         <ModalDialogContainer dialogs={dialogs} />
@@ -155,6 +153,7 @@ export default class Dashboard extends React.Component {
 // Dashboard local components
 /**
  * 初期化して、ついでに状況を表示する奴
+ * しかし状況は読み込み中しか無いのであった
  */
 class AppIntializer extends React.Component {
   constructor(...args) {

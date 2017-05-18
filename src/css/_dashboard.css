@@ -7,13 +7,13 @@
 
   .naumanniDashboard-version {
     position: absolute;
-    padding-top: calc(50vh + $sizeBackgroundLogo / 2);
-    text-align: center;
+/*    color: color($colorBackgroundWatermark blackness(20%));*/
     color: $colorBackgroundWatermark;
     text-shadow: 0 1px 0px $colorBackgroundWatermarkShadow;
-    width: 100%;
     z-index: $zIndexBackground;
     pointer-events: none;
+    right: 4px;
+    margin-top: $marginHalf;
   }
 
   animation: blurOut 300ms ease-out forwards;
@@ -44,7 +44,9 @@
 
 
 .naumanniDashboard-initializationProgress {
-  margin-top: $marginDefault;
+  position: absolute;
+  padding-top: calc(50vh + $sizeBackgroundLogo / 2);
+  width: 100%;
   text-align: center;
   color: $colorBackgroundWatermark;
   text-shadow: 0 1px 0px $colorBackgroundWatermarkShadow;
