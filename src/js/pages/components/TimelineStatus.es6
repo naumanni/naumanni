@@ -64,7 +64,7 @@ export default class TimelineStatus extends React.Component {
     const mainStatus = reblog || status
     const mainAccount = reblogAccount || account
     const statusBodyClass = ['status-body']
-    const onClickAvatar = this.onClickAvatar.bind(this, account)
+    const onClickAvatar = this.onClickAvatar.bind(this, mainAccount)
 
     if(mainStatus.spoilerText.length) {
       statusBodyClass.push(
@@ -80,7 +80,7 @@ export default class TimelineStatus extends React.Component {
           <div className="status-row status-reblogFrom">
             <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
             <div className="status-rowRight">
-              <a onClick={onClickAvatar}>{account.display_name}</a> boosted
+              <a onClick={this.onClickAvatar.bind(this, account)}>{account.display_name}</a> boosted
             </div>
           </div>
         )}
