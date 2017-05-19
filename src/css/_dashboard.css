@@ -7,14 +7,12 @@
 
   .naumanniDashboard-version {
     position: absolute;
-/*    color: color($colorBackgroundWatermark blackness(20%));*/
-/*    color: $colorBackgroundWatermark;*/
-    color: #91adbf;
-    text-shadow: 0 1px 0px $colorBackgroundWatermarkShadow;
-    z-index: $zIndexBackground;
+    color: rgba(255, 255, 255, 0.3);
+    z-index: 11;
     pointer-events: none;
-    right: 4px;
-    margin-top: $marginHalf;
+    top: 12px;
+    right: 40px;
+    pointer-events: none;
   }
 
   animation: blurOut 300ms ease-out forwards;
