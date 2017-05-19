@@ -7,6 +7,7 @@ import moment from 'moment'
 import Application from './Application'
 import AppStore from './store/AppStore'
 
+import {NAUMANNI_VERSION} from 'src/constants'
 import Dashboard from 'src/pages/Dashboard'
 
 
@@ -19,7 +20,7 @@ if(process.env.NODE_ENV === 'production') {
   const Raven = require('raven-js')
   Raven
     .config('https://95c423d821584e798c480087ae77d823@sentry.io/166289', {
-      release: process.env.NAUMANNI_VERSION || 'dev',
+      release: NAUMANNI_VERSION,
     })
     .install()
 }

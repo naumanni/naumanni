@@ -19,7 +19,7 @@ import Column from './Column'
 /**
  * AutoPagingするカラム
  */
-export default class PagignColumn extends Column {
+export default class PagingColumn extends Column {
   static propTypes = {
     subject: PropTypes.string.isRequired,
   }

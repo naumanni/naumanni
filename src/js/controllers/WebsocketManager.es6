@@ -30,6 +30,9 @@ class WebsocketConnection {
   }
 
   conncetIfNeed() {
+    if(this.socket)
+      return
+
     const socket = new WebSocket(this.url)
 
     this.socket = socket

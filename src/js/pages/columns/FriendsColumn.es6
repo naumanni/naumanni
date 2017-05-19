@@ -305,8 +305,10 @@ class FriendsListener extends EventEmitter {
   async sortFriends(friends=null) {
     if(!friends) {
       friends = new Map()
-      for(const friend of this.state.friends) {
-        friends.set(friend.account.acct, friend)
+      if(this.state.friends) {
+        for(const friend of this.state.friends) {
+          friends.set(friend.account.acct, friend)
+        }
       }
     }
 

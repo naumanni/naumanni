@@ -1,10 +1,13 @@
 /* eslint-disable require-jsdoc */
 import DefinePlugin from 'webpack/lib/DefinePlugin'
 import UglifyJsPlugin from 'webpack/lib/optimize/UglifyJsPlugin'
+import {execSync} from 'child_process'
 
 
 const SOURCE_DIR = `${__dirname}/src/js`
 const DEST_DIR = `${__dirname}/static`
+const NAUMANNI_VERSION = process.env.NAUMANNI_VERSION || ('' + execSync('git describe')).trim()
+
 
 class LoggerPlugin {
   apply(compiler) {
@@ -53,7 +56,7 @@ module.exports = {
   plugins: [
     new DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-      'process.env.NAUMANNI_VERSION': JSON.stringify(process.env.NAUMANNI_VERSION),
+      'process.env.NAUMANNI_VERSION': JSON.stringify(NAUMANNI_VERSION),
     }),
     new LoggerPlugin(),
   ],
