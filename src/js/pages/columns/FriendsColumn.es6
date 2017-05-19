@@ -315,7 +315,6 @@ class FriendsListener extends EventEmitter {
 
     // TODO: すげー雑
     const records = await TalkRecord.query.listByKey('subject', this.subject)
-    console.log('sortFriends', records)
     for(const record of records) {
       // いまのところrecordのtargetは1人
       require('assert')(record.targets.size === 1)
