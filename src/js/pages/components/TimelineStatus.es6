@@ -80,7 +80,9 @@ export default class TimelineStatus extends React.Component {
           <div className="status-row status-reblogFrom">
             <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
             <div className="status-rowRight">
-              <a onClick={this.onClickAvatar.bind(this, account)}>{account.display_name}</a> boosted
+              <UserDisplayName
+                account={account}
+                onClick={this.onClickAvatar.bind(this, account)} /> boosted
             </div>
           </div>
         )}
