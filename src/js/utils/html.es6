@@ -56,6 +56,19 @@ const TAG_BR = 'br'
 const TAG_P = 'p'
 const TAG_SPAN = 'span'
 
+export function parsedHtmlToText(parsed) {
+  return parsed.map((token) => {
+    switch(token.type) {
+    case TOKEN_TEXT: return token.text
+    case TOKEN_BREAK: return '\n'
+    case TOKEN_URL: return token.url
+    case TOKEN_MENTION: return token.acct
+    case TOKEN_HASHTAG: return `#${token.tag}`
+    }
+  }).join('')
+}
+
+
 /**
  * Mastodonのstatusはhtmlで返されるが、その際、mentionのホスト名を省略する。
  * つまり`@shn@oppai.tokyo @shn@friends.nico`というstatusは `<...>@shn</...> <...>@shn</...>`となる。

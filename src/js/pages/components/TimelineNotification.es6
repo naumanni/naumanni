@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
   NOTIFICATION_TYPE_MENTION, NOTIFICATION_TYPE_REBLOG, NOTIFICATION_TYPE_FAVOURITE, NOTIFICATION_TYPE_FOLLOW,
+  NOTIFICATION_MESSAGES,
 } from 'src/constants'
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
 import {NotificationRefPropType, OAuthTokenListPropType} from 'src/propTypes'
@@ -96,14 +97,15 @@ export default class TimelineNotification extends React.Component {
     switch(notificationRef.type) {
     case NOTIFICATION_TYPE_FAVOURITE:
       iconName = 'star-filled'
-      what = '%username%さんがあなたのトゥートをお気に入りに登録しました'
+      what = NOTIFICATION_MESSAGES[notificationRef.type]
       break
 
     case NOTIFICATION_TYPE_REBLOG:
       iconName = 'reblog'
-      what = '%username%さんがあなたのトゥートをブーストしました'
+      what = NOTIFICATION_MESSAGES[notificationRef.type]
       break
     }
+
     what += ' '
 
     return (

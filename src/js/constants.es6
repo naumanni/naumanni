@@ -66,3 +66,16 @@ export const AUTO_PAGING_MARGIN = 300
 export const MAX_STATUSES = 40
 
 export const TOOTFORM_PLACEHOLDER = 'What\'s up?'
+
+// localStorageのKey
+export const STORAGE_KEY_LAST_SEND_FROM = 'naumanni::last_send_from'
+export const STORAGE_KEY_PREFERENCES = 'naumanni::preferences'
+
+
+// i18lするまでのつなぎ
+export const NOTIFICATION_MESSAGES = {
+  [NOTIFICATION_TYPE_MENTION]: '%username%さんから返信されました',
+  [NOTIFICATION_TYPE_FOLLOW]: '%username%さんにフォローされました ',
+  [NOTIFICATION_TYPE_FAVOURITE]: '%username%さんがあなたのトゥートをお気に入りに登録しました',
+  [NOTIFICATION_TYPE_REBLOG]: '%username%さんがあなたのトゥートをブーストしました',
+}

@@ -2,11 +2,13 @@ import {
   SUBJECT_MIXED,
   EVENT_NOTIFICATION, STREAM_HOME, WEBSOCKET_EVENT_MESSAGE,
   NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
+  NOTIFICATION_MESSAGES,
 } from 'src/constants'
 import {makeWebsocketUrl} from 'src/utils'
 import TokenListener from './TokenListener'
 import WebsocketManager from './WebsocketManager'
 import UpdateLastTalkRecordUseCase from 'src/usecases/UpdateLastTalkRecordUseCase'
+import SoundDriver from 'src/controllers/SoundDriver'
 
 
 /**
@@ -78,7 +80,7 @@ export default class NotificationCenter {
         const status = notification.status && entities.statuses[notification.status]
         const account = notification.account && entities.accounts[notification.account]
 
-        console.log('on', notification, status, account)
+        console.log('on', notification.toJSON(), status.toJSON(), account.toJSON())
 
         this.onNotificationReceived(token, notification, status, account)
       }
@@ -87,23 +89,52 @@ export default class NotificationCenter {
 
   onNotificationReceived(token, notification, status, account) {
     // とりあえずべた書き
-    if(notification.type === NOTIFICATION_TYPE_MENTION &&
-       status.visibility === VISIBLITY_DIRECT &&
-       (status.mentions && status.mentions.length === 1 && status.mentions[0].acct === token.acct)) {
-      // 自分宛てのDM
-      // TODO: encryptedだった時の処理
-      const statusId = status.getIdByHost(token.host)
-      this.context.useCase(new UpdateLastTalkRecordUseCase())
-        .execute({
-          token,
-          self: token.acct,
-          recipients: [account.acct],
-          latestStatusId: statusId,
-          lastTalk: {
-            from: account.acct,
-            message: status.content,
-          },
-        })
+    if(notification.type === NOTIFICATION_TYPE_MENTION) {
+      // Talkの並び順
+      if(status.visibility === VISIBLITY_DIRECT &&
+         (status.mentions && status.mentions.length === 1 && status.mentions[0].acct === token.acct)) {
+        // 自分宛てのDM
+        this.updateLastTalkRecord(token, notification, status, account)
+      }
+    }
+
+    // ブラウザ通知とか
+    this.notifyUser(token, notification, status, account)
+  }
+
+  updateLastTalkRecord(token, notification, status, account) {
+    // TODO: encryptedだった時の処理
+    const statusId = status.getIdByHost(token.host)
+    this.context.useCase(new UpdateLastTalkRecordUseCase())
+      .execute({
+        token,
+        self: token.acct,
+        recipients: [account.acct],
+        latestStatusId: statusId,
+        lastTalk: {
+          from: account.acct,
+          message: status.content,
+        },
+      })
+  }
+
+  notifyUser(token, notification, status, account) {
+    const acctPref = this.context.getState().preferenceState.byAcct(token.acct)
+    const prefForType = acctPref.notifications[notification.type] || {}
+
+    if(prefForType.audio)
+      SoundDriver.play('notify')
+
+    if(window.Notification && prefForType.desktop) {
+      const what = NOTIFICATION_MESSAGES[notification.type].replace('%username%', account.displayName)
+      const title = `${token.acct}: ${what}`
+      const body = (status && (status.spoiler_text.length > 0 ? status.spoiler_text : status.plainContent)) || ''
+
+      new Notification(title, {body, icon: account.avatar, tag: notification.uri})
     }
   }
 }
+
+
+// こんな雑で良いのか?
+Notification.requestPermission()

@@ -1,5 +1,5 @@
 export * from './misc'
-export {parseMastodonHtml} from './html'
+export {parseMastodonHtml, parsedHtmlToText} from './html'
 
 import RefCounter from './RefCounter'
 export {RefCounter}

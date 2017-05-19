@@ -5,7 +5,7 @@ import {
   MESSAGE_TAG_REX,
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
-import {parseMastodonHtml} from 'src/utils'
+import {parseMastodonHtml, parsedHtmlToText} from 'src/utils'
 import Attachment from './Attachment'
 
 
@@ -101,6 +101,10 @@ export default class Status extends StatusRecord {
       this._parsedContent = new List(parseMastodonHtml(this.content, mentions))
     }
     return this._parsedContent
+  }
+
+  get plainContent() {
+    return parsedHtmlToText(this.parsedContent)
   }
 
   get createdAt() {
