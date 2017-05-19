@@ -287,7 +287,7 @@ export default class TimelineStatus extends React.Component {
               return (
                 <li className={`${disabled ? 'is-disabled' : ''} ${on ? 'on' : ''}`}
                   key={token.acct}
-                  onClick={(e) => !disabled && this.props.onReblogStatus(token, status, !on)}
+                  onClick={(e) => !disabled && this.onReblogStatus(token, status, !on)}
                 >
                   <IconFont iconName="reblog" className={on ? 'is-active' : ''} />
                   <UserIconWithHost account={account} size="mini" />
@@ -317,7 +317,7 @@ export default class TimelineStatus extends React.Component {
               return (
                 <li className={`${disabled ? 'is-disabled' : ''} ${on ? 'on' : ''}`}
                   key={token.acct}
-                  onClick={(e) => !disabled && this.props.onFavouriteStatus(token, status, !on)}
+                  onClick={(e) => !disabled && this.onFavouriteStatus(token, status, !on)}
                 >
                   <IconFont iconName="star-filled" className={on ? 'is-active' : ''} />
                   <UserIconWithHost account={account} size="mini" />
@@ -361,6 +361,16 @@ export default class TimelineStatus extends React.Component {
   onClickToggleFavouritePanel(e) {
     e.preventDefault()
     this.togglePanel('FavouritePanel')
+  }
+
+  async onReblogStatus(token, status, on) {
+    await this.props.onReblogStatus(token, status, on)
+    this.hideAllPanel()
+  }
+
+  async onFavouriteStatus(token, status, on) {
+    await this.props.onFavouriteStatus(token, status, on)
+    this.hideAllPanel()
   }
 
   togglePanel(panel) {
