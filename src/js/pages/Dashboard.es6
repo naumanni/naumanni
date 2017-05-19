@@ -71,7 +71,7 @@ export default class Dashboard extends React.Component {
     if(initializer) {
       return (
         <div className="naumanniDashboard">
-          <div className="naumanniDashboard-version">{NAUMANNI_VERSION}</div>
+          <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
           {initializer}
         </div>
       )
@@ -88,7 +88,7 @@ export default class Dashboard extends React.Component {
             onOpenColumn={::this.onOpenColumn}
             onGenKey={::this.onGenKey}
           />
-          <div className="naumanniDashboard-version">{NAUMANNI_VERSION}</div>
+          <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
           <ColumnContainer ref="columnContainer" columns={columns} />
         </div>
         <ModalDialogContainer dialogs={dialogs} />

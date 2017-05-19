@@ -1,7 +1,7 @@
 // Mastodon's max message size
 export const MASTODON_MAX_CONTENT_SIZE = 500
 
-export const NAUMANNI_VERSION = `naumanni ${process.env.NAUMANNI_VERSION || 'development ver.'}`
+export const NAUMANNI_VERSION = `${process.env.NAUMANNI_VERSION || 'development'}`
 
 export const REGEX_PGP_FINGERPRINT = /PGP Key Fingerprint: ([0-9a-fA-F]+)/
 
