@@ -1,5 +1,5 @@
 import twitter from 'twitter-text'
-import {AllHtmlEntities} from 'html-entities'
+import htmlparser from 'htmlparser2'
 
 import {
   TOKEN_TEXT, TOKEN_BREAK, TOKEN_URL, TOKEN_MENTION, TOKEN_HASHTAG,
@@ -8,9 +8,13 @@ import {
 
 const BR_REX = /<br(\s+\/)?>/ig
 const TAG_REX = /<\s*(\/?\w+)(?:\s+(.*?))?>/g
-const ATTR_REX = /([^=]+)(?:=("[^"]*"|'[^']*'|\S+))\s*/g
-const HTML_MENTION_REX = /^<a (?:.*?)href="([^"]+)(?:.*?)">@(?:<span>)?([a-zA-Z0-9_]{1,20})(?:<\/span>)?<\/a><\/span>/i
-const END_A_TAG_REX = /<\s*\/a\s*>/g
+
+const anchorRegex = {
+  mention: {
+    href: /https?:\/\/([^/]+)\/@([a-zA-Z0-9_]+)/,
+    text: /@([a-zA-Z0-9_]+)(@[a-zA-Z0-9\.\-]+[a-zA-Z0-9]+)?/,
+  },
+}
 
 
 // patch twitter-text
@@ -47,42 +51,10 @@ twitter.extractMentionsOrListsWithIndices = function(text) {
 }
 
 
-export function parseMastodonHtml(content, mentions=[]) {
-  const parser = function* (content) {
-    for(const token of _expandMastodonStatus(content)) {
-      if(typeof token === 'string') {
-        for(const t of _parsePlainText(token))
-          yield t
-        // yield {type: TOKEN_TEXT, text: token}
-      } else {
-        yield token
-      }
-    }
-  }
-
-  const tokens = []
-
-  for(let token of parser(content)) {
-    if(token.type === TOKEN_MENTION) {
-      // 対応するmentionが見つからなければtextにしておく
-      if(!mentions || !mentions.find((m) => m.acct === token.acct)) {
-        token = {type: TOKEN_TEXT, text: _stripTags(token.source)}
-      }
-    }
-    tokens.push(token)
-  }
-
-  // decode all text entities
-  for(let token of tokens) {
-    if(token.type === TOKEN_TEXT) {
-      token.text = AllHtmlEntities.decode(token.text)
-    }
-  }
-
-
-  return tokens
-}
-
+const TAG_A = 'a'
+const TAG_BR = 'br'
+const TAG_P = 'p'
+const TAG_SPAN = 'span'
 
 /**
  * Mastodonのstatusはhtmlで返されるが、その際、mentionのホスト名を省略する。
@@ -91,106 +63,66 @@ export function parseMastodonHtml(content, mentions=[]) {
  *
  * あと一部、というかfriends.nicoがニコニコ動画のURLのホスト名を省略しやがったりするので、それも正す
  *
+ * また、空行を1個以上はさむと、<p></p>で段落を分けて、見かけ上、空行1個にまとめられているような感じになるので、それにも倣う
+ *
  * @param {string} content
+ * @return {Token[]}
  */
-function* _expandMastodonStatus(content) {
-  // かなり雑なhtmlパーサ
-  // TODO: TAG_REX使いまわしてるからyieldの間に値変わるじゃん...
-  let startpos
-  let endpos
+function _expandMastodonStatus(content) {
+  const tokens = []
+  const tagStack = []
 
-  for(let idx=0; idx<10; ++idx) {
-    startpos = TAG_REX.lastIndex
-    const match = TAG_REX.exec(content)
-    if(!match)
-      break
+  const _push = (type, params) => tokens.push({type, ...params})
 
-    const tag = match[1].toLowerCase()
-    const attrs = match[2] ? match[2].trim() : ''
-    endpos = TAG_REX.lastIndex
+  const reformatter = new htmlparser.Parser({
+    onopentag(name, attributes) {
+      tagStack.unshift({name, attributes})
+    },
 
-    if(startpos !== match.index)
-      yield content.substring(startpos, match.index)
+    ontext(text) {
+      const closest = tagStack.find(({name}) => ['a', 'p'].indexOf(name) >= 0)
 
-    if(tag === 'br') {
-      yield {
-        type: TOKEN_BREAK,
-        source: content.substring(match.index, endpos),
-      }
-    } else if(tag === 'span' && attrs.indexOf('class="h-card"') >= 0) {
-      // is h-card -> mention
-      const mentionMatch = HTML_MENTION_REX.exec(content.substring(match.index + match[0].length))
-      if(mentionMatch) {
-        // validate mention
-        const url = new URL(mentionMatch[1])
-        const screenName = mentionMatch[2]
-        if(url.pathname === `/@${screenName}`) {
-          // this is mention!!!
-          endpos = endpos + mentionMatch[0].length
-          yield {
-            type: TOKEN_MENTION,
-            acct: `${screenName}@${url.hostname}`,
-            source: content.substring(match.index, endpos),
-          }
-        } else {
-          console.error('this is not mention!', mentionMatch)
-        }
+      if(!closest) {
+        // plain text?
+        tokens.push(..._parsePlainText(text))
+      } else if(closest.name === TAG_P) {
+        _push(TOKEN_TEXT, {text: text})
+      } else if(closest.name === TAG_A) {
+        closest.text = (closest.text || '') + text
       } else {
-        console.error('this is not mention!!', content.substring(match.index + match[0].length))
-        console.log(content)
+        console.warn('missing text', text, '@', closest, ':', content)
       }
-    } else if(tag === 'a') {
-      const parsed = []
-      let attrMatch
-      while(attrMatch = ATTR_REX.exec(attrs)) {
-        const key = attrMatch[1].toLowerCase()
-        let val = attrMatch[2]
-        if(val.startsWith('"')) {
-          require('assert')(val.endsWith('"'))
-          val = val.substring(1, val.length - 1)
-        } else if(val.startsWith('\'')) {
-          require('assert')(val.endsWith('\''))
-          val = val.substring(1, val.length - 1)
-        }
-        parsed.push([key, AllHtmlEntities.decode(val)])
+    },
+
+    onclosetag(name) {
+      const tag = tagStack.shift()
+
+      if(!(tag && tag.name === name)) {
+        console.error('tag mismatch', name, '<->', tag, ':', content)
       }
 
-      const href = parsed.find(([key, val]) => key === 'href')
-
-      if(href) {
-        try {
-          const url = new URL(href[1])
-          if(url.protocol === 'https:' || url.protocol === 'http:') {
-            END_A_TAG_REX.lastIndex = endpos
-            const endMatch = END_A_TAG_REX.exec(content)
-            endpos = endMatch ? endMatch.index + endMatch[0].length : content.length
-
-            require('assert')(endpos >= TAG_REX.lastIndex)
-
-            yield {
-              type: TOKEN_URL,
-              url: url.href,
-              source: content.substring(match.index, endpos),
-            }
-          } else {
-            console.error(`not http url: ${url.protocol} ${href[1]} \`${content}\``)
-          }
-        } catch(e) {
-          // invalid URL, ignore error
-          console.error(e, href)
-        }
+      if(name === TAG_BR) {
+        _push(TOKEN_BREAK)
+      } else if(name === TAG_P) {
+        // mastdonが空行が1個以上あると、</p><p>で分ける。naumanniでは単純にbrにしてしまえ
+        _push(TOKEN_BREAK)
+        _push(TOKEN_BREAK)
+      } else if(name === TAG_A) {
+        tokens.push(..._processAnchorTag(tag.attributes.href, tag.text))
+      } else if(name === TAG_SPAN) {
+        // ignore span
       } else {
-        console.error(`No href found: ${attrs} \`${content}\``)
+        console.warn('clostag ignored', tag, ':', content)
       }
-    } else {
-      // ignore unknown tag
-    }
+    },
+  }, {
+    decodeEntities: true,
+  })
 
-    TAG_REX.lastIndex = endpos
-  }
+  reformatter.write(content)
+  reformatter.end()
 
-  if(startpos !== content.length)
-    yield content.substring(startpos)
+  return tokens
 }
 
 
@@ -209,7 +141,7 @@ function _parsePlainText(content) {
   }
 
   let lastpos = 0
-  return entities.reduce((tokens, entity) => {
+  return entities.reduce((tokens, entity, idx, entities, ...args) => {
     const {indices: [start, end]} = entity
     const source = content.substring(start, end)
 
@@ -231,8 +163,54 @@ function _parsePlainText(content) {
     }
 
     lastpos = end
+
+    if(idx === entities.length - 1) {
+      // laset token ... push all text
+      if(lastpos < content.length) {
+        tokens.push({type: TOKEN_TEXT, text: content.substring(lastpos)})
+      }
+    }
+
     return tokens
   }, [])
+}
+
+
+function _processAnchorTag(href, text) {
+  if(!href) {
+    return [{type: TOKEN_TEXT, text}]
+  }
+
+  if(text.startsWith('@')) {
+    // is mention?
+    const matchHref = href.match(anchorRegex.mention.href)
+    const matchText = text.match(anchorRegex.mention.text)
+    if(matchHref && matchText) {
+      const [_1, hrefHost, hrefUsername] = matchHref
+      const [_2, textUsername, textHost] = matchText
+
+      if(hrefUsername === textUsername && (!textHost || hrefHost === textHost)) {
+        return [{
+          type: TOKEN_MENTION,
+          acct: `${hrefUsername}@${hrefHost}`,
+          source: text,
+        }]
+      }
+    }
+  }
+  if(text.startsWith('#')) {
+    return [{
+      type: TOKEN_HASHTAG,
+      tag: text.substring(1),
+      url: href,
+    }]
+  }
+
+  return [{
+    type: TOKEN_URL,
+    url: href,
+    text: text,
+  }]
 }
 
 
@@ -251,4 +229,36 @@ function _splitText(text) {
 
 function _stripTags(html) {
   return html.replace(TAG_REX, '')
+}
+
+
+export function parseMastodonHtml(content, mentions=[]) {
+  const tokens =
+    _expandMastodonStatus(content)
+      .map((token) => {
+        if(token.type === TOKEN_MENTION) {
+          // 対応するmentionが見つからなければtextにしておく
+          if(!mentions || !mentions.find((m) => m.acct === token.acct)) {
+            token = {type: TOKEN_TEXT, text: _stripTags(token.source)}
+          }
+        }
+        return token
+      })
+
+  // trim tail breaks
+  while(tokens.length && tokens[tokens.length - 1].type === TOKEN_BREAK)
+    tokens.pop()
+
+  // Collapse sequential text
+  for(let idx=0; idx < tokens.length - 1; ++idx) {
+    if(tokens[idx].type === TOKEN_TEXT) {
+      const end = tokens.findIndex(({type}, j) => j >= idx && type !== TOKEN_TEXT)
+      if(end < 0 || end - 1 > idx) {
+        const texts = tokens.splice(idx + 1, (end < 0 ? tokens.length : end - idx - 1))
+        tokens[idx].text += texts.map(({text}) => text).join('')
+      }
+    }
+  }
+
+  return tokens
 }

@@ -5,9 +5,6 @@ import {
 import {parseMastodonHtml} from '../html'
 
 
-const MENTION_RE = /(?:^|[^\/\w])@([a-z0-9_]+(?:@[a-z0-9\.\-]+[a-z0-9]+)?)/i
-
-
 describe('parseMastodonHtml', () => {
   it('can parse html status', () => {
     const TEST_CONTENT = '<p>ぶっちゃけ最近は尻も好きです<br />PGP Key Fingerprint: c3760e259ed09aae51d7d85e893ab07b862199c1</p>'
@@ -20,21 +17,21 @@ describe('parseMastodonHtml', () => {
   })
 
   it('can parse link, tag, mention status', () => {
-    const TEST_CONTENT = 'http://www.google.com/ @shn@oppai.tokyo @hogehoge #tagA #日本語tag'
+    const TEST_CONTENT = 'http://www.google.com/ @shn@oppai.tokyo &lt; @hogehoge #tagA #日本語tag'
 
-    const tokens = parseMastodonHtml(TEST_CONTENT, null)
-    expect(tokens).toHaveLength(9)
+    const tokens = parseMastodonHtml(TEST_CONTENT, [
+      {url: "https://oppai.tokyo/@shn", acct: "shn@oppai.tokyo", id: 4182, username: "shn"},
+    ])
+    expect(tokens).toHaveLength(7)
     expect(tokens[0]).toMatchObject({type: TOKEN_URL, url: 'http://www.google.com/'})
     expect(tokens[1]).toMatchObject({type: TOKEN_TEXT, text: ' '})
     // mentionsを与えていないのでtextになる
-    expect(tokens[2]).toMatchObject({type: TOKEN_TEXT, text: '@shn@oppai.tokyo'})
-    expect(tokens[3]).toMatchObject({type: TOKEN_TEXT, text: ' '})
+    expect(tokens[2]).toMatchObject({type: TOKEN_MENTION, acct: 'shn@oppai.tokyo'})
+    expect(tokens[3]).toMatchObject({type: TOKEN_TEXT, text: ' < @hogehoge '})
     // mentionsを与えていないのでtextになる
-    expect(tokens[4]).toMatchObject({type: TOKEN_TEXT, text: '@hogehoge'})
+    expect(tokens[4]).toMatchObject({type: TOKEN_HASHTAG, tag: 'tagA'})
     expect(tokens[5]).toMatchObject({type: TOKEN_TEXT, text: ' '})
-    expect(tokens[6]).toMatchObject({type: TOKEN_HASHTAG, tag: 'tagA'})
-    expect(tokens[7]).toMatchObject({type: TOKEN_TEXT, text: ' '})
-    expect(tokens[8]).toMatchObject({type: TOKEN_HASHTAG, tag: '日本語tag'})
+    expect(tokens[6]).toMatchObject({type: TOKEN_HASHTAG, tag: '日本語tag'})
   })
 
   it('can parse real mastodon status', () => {
@@ -46,21 +43,11 @@ describe('parseMastodonHtml', () => {
       // {url: "https://mstdn.onosendai.jp/@shn", acct: "shn", id: 983, username: "shn"},
     ])
 
-    expect(tokens).toHaveLength(6)
-    expect(tokens[0]).toMatchObject({
-      type: TOKEN_MENTION,
-      acct: "shn@oppai.tokyo",
-      source: "<span class=\"h-card\"><a href=\"https://oppai.tokyo/@shn\">@<span>shn</span></a></span>",
-    })
+    expect(tokens).toHaveLength(4)
+    expect(tokens[0]).toMatchObject({type: TOKEN_MENTION, acct: "shn@oppai.tokyo",})
     expect(tokens[1]).toMatchObject({type: TOKEN_TEXT, text: ' '})
-    expect(tokens[2]).toMatchObject({
-      type: TOKEN_MENTION,
-      acct: "shn@friends.nico",
-      source: "<span class=\"h-card\"><a href=\"https://friends.nico/@shn\">@<span>shn</span></a></span>",
-    })
-    expect(tokens[3]).toMatchObject({type: TOKEN_TEXT, text: ' '})
-    expect(tokens[4]).toMatchObject({type: TOKEN_TEXT, text: '@shn'})
-    expect(tokens[5]).toMatchObject({type: TOKEN_TEXT, text: ' どうなんだろこれ'})
+    expect(tokens[2]).toMatchObject({type: TOKEN_MENTION, acct: "shn@friends.nico",})
+    expect(tokens[3]).toMatchObject({type: TOKEN_TEXT, text: ' @shn どうなんだろこれ'})
   })
 
   it('can parse real friends.nico status', () => {
@@ -74,7 +61,6 @@ describe('parseMastodonHtml', () => {
     expect(tokens[2]).toMatchObject({
       type: TOKEN_URL,
       url: 'https://nico.ms/lv297979410',
-      source: '<a href="https://nico.ms/lv297979410" rel="nofollow noopener" target="_blank"><span>lv297979410</span></a>',
     })
   })
 
@@ -87,11 +73,7 @@ describe('parseMastodonHtml', () => {
 
     expect(tokens).toHaveLength(5)
     expect(tokens[0]).toMatchObject({type: TOKEN_TEXT, text: '@shn@mastdn.onosendai.jp '})
-    expect(tokens[1]).toMatchObject({
-      type: TOKEN_MENTION,
-      acct: 'shn@oppai.tokyo',
-      source: "<span class=\"h-card\"><a href=\"https://oppai.tokyo/@shn\">@<span>shn</span></a></span>",
-    })
+    expect(tokens[1]).toMatchObject({type: TOKEN_MENTION, acct: 'shn@oppai.tokyo'})
     expect(tokens[2]).toMatchObject({type: TOKEN_TEXT, text: ' '})
     expect(tokens[3]).toMatchObject({type: TOKEN_BREAK})
     expect(tokens[4]).toMatchObject({type: TOKEN_TEXT, text: 'はなげ'})
@@ -129,5 +111,12 @@ describe('parseMastodonHtml', () => {
     tokens = parseMastodonHtml(`<p><a href="https://www.youtube.com/watch?v=4qh6UPp6m4I"><span class="invisible">https://www.</span><span class="ellipsis">youtube.com/watch?v=4qh6UPp6m4</span><span class="invisible">I</span></a></p>`)
     expect(tokens).toHaveLength(1)
     expect(tokens[0]).toMatchObject({type: TOKEN_URL, url: 'https://www.youtube.com/watch?v=4qh6UPp6m4I'})
+
+    tokens = parseMastodonHtml(`<p>いくつかバグを修正して更新しました <a href="https://oppai.tokyo/tags/naumanni">#<span>naumanni</span></a></p><p>* Websocketつなぎまくってて重かった<br>* ユーザー名を設定してない人のBoost名が表示されていなかった<br>* Fav/Boostしたらフォームを閉じるように</p>`)
+    expect(tokens[1]).toMatchObject({type: TOKEN_HASHTAG, tag: 'naumanni'})
+    expect(tokens[2]).toMatchObject({type: TOKEN_BREAK})
+    expect(tokens[3]).toMatchObject({type: TOKEN_BREAK})
+    expect(tokens[5]).toMatchObject({type: TOKEN_BREAK})
+    expect(tokens).toHaveLength(9)
   })
 })

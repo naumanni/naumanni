@@ -73,8 +73,7 @@ export function SafeContent({parsedContent, ...props}) {
         const {acct} = token
         return <a href={_urlFromAcct(acct)} onClick={(e) => props.onAvatarClicked(acct, e)}>@{acct}</a>
       } else if(type === TOKEN_HASHTAG) {
-        console.log(token)
-        return <span>#{token.tag}</span>
+        return <a href={token.url} rel="nofollow noopener" target="_blank">#{token.tag}</a>
       } else {
         console.error(token)
       }
