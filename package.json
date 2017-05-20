@@ -89,7 +89,8 @@
   "jest": {
     "collectCoverageFrom": [
       "**/*.es6",
-      "!**/__stories__/*.js"
+      "!**/__stories__/*.js",
+      "!**/libs/*"
     ],
     "coverageDirectory": "./coverage",
     "moduleFileExtensions": [
