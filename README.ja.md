@@ -1,5 +1,6 @@
 # Naumanni
-[![CircleCI](https://circleci.com/gh/naumanni/naumanni/tree/master.svg?style=svg)](https://circleci.com/gh/naumanni/naumanni/tree/master)😢
+[![CircleCI](https://circleci.com/gh/naumanni/naumanni/tree/master.svg?style=svg)](https://circleci.com/gh/naumanni/naumanni/tree/master)
+[![Test Coverage](https://codeclimate.com/github/naumanni/naumanni/badges/coverage.svg)](https://codeclimate.com/github/naumanni/naumanni/coverage)😢
 
 Naumanni(ナウマン)は、マストドン専用のWebユーザーインタフェースです。
 マストドンと同様にDockerイメージから手軽に起動でき、誰でも設置できる自由なソフトウェアです。
