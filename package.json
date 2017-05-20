@@ -30,7 +30,7 @@
     "crc-32": "^1.0.2",
     "exif-js": "^2.2.1",
     "history": "^4.6.1",
-    "html-entities": "^1.2.1",
+    "htmlparser2": "^3.9.2",
     "immutability-helper": "^2.1.2",
     "immutable": "^3.8.1",
     "moment": "^2.18.1",
