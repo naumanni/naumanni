@@ -1,3 +1,7 @@
+general:
+  artifacts:
+    - coverage
+
 machine:
   node:
     version: v6.1.0
@@ -13,5 +17,4 @@ dependencies:
 
 test:
   override:
-    - yarn run build
     - yarn test

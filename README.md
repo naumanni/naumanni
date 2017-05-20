@@ -1,6 +1,7 @@
 [日本語](README.ja.md)
 
-# What is Naumanni?
+# Naumanni
+[![CircleCI](https://circleci.com/gh/naumanni/naumanni/tree/master.svg?style=svg)](https://circleci.com/gh/naumanni/naumanni/tree/master)😢
 
 Naumanni is a Web user interface specially designed for Mastodon. Just like Mastodon, users can easily launch from Docker and install freely.　Multiple instances can be managed horizontally, and in addition to easy-to-use SMS-like direct messaging functions, it plans to add AI and end-to-end encryption functions.　
 
