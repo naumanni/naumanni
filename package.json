@@ -6,10 +6,11 @@
   "author": "Shin ADACHI <shn@glucose.jp>",
   "license": "MIT",
   "scripts": {
-    "build": "run-s clean build:*",
+    "build": "run-s clean copy:js build:*",
     "build:js": "webpack",
     "build:css": "postcss src/css/main.css -d static",
     "clean": "rm -f static/main.bundle.js static/main.css static/main.bundle.js.map static/*.LICENSE node_modules/.cache/babel-loader/*",
+    "copy:js": "cp node_modules/openpgp/dist/openpgp.*.js static",
     "lint": "eslint --config .eslintrc.yml --cache ./src/js/**/*.es6",
     "lint:fix": "eslint --fix --ext=es6 --config .eslintrc.yml src/",
     "test": "run-s build test:js",
