@@ -18,3 +18,5 @@ dependencies:
 test:
   override:
     - yarn test
+  post:
+    - yarn run codeclimate-test-reporter < ./coverage/lcov.info
