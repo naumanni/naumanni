@@ -190,12 +190,17 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
 
   renderAccounts(accounts) {
     // TODO: 絞込付きFriendListを使ったほうが良いのでは
+    const onClickHandler = ::this.actionDelegate.onAvatarClicked
+
     return (
       <ul className="accountList">
         {accounts.map((account) => (
           <li key={account.acct}>
-            <AccountRow account={account} onClick={(...args) => this.actionDelegate.onAvatarClicked(...args)}
-              />
+            <AccountRow
+              account={account}
+              onAvatarClicked={onClickHandler}
+              onClick={onClickHandler}
+            />
           </li>
         ))}
       </ul>
