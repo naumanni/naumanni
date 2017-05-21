@@ -145,3 +145,23 @@ export function niceScrollLeft(containerNode, targetX) {
   }
   requestAnimationFrame(_step)
 }
+
+
+/**
+ * 次の更新タイミングで関数を実行する
+ * alminから拝借
+ */
+export const raq = (function() {
+  // Browser
+  if(typeof requestAnimationFrame === 'function') {
+    return requestAnimationFrame
+  }
+
+  // Other
+  if(typeof setTimeout === 'function') {
+    return function nextTick(handler: Function) {
+      setTimeout(handler, 0)
+    }
+  }
+  throw new Error('No Available requestFrameAnimation or process.nextTick')
+}())

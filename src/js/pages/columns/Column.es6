@@ -95,7 +95,7 @@ export default class Column extends React.Component {
     return columnBodyClassName.join(' ')
   }
 
-  onChangeConext() {
+  onChangeConext(changingStores) {
     this.setState(this.getStateFromContext())
   }
 
