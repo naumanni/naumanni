@@ -17,6 +17,10 @@ const STORAGE_KEY_LAST_SEND_FROM = 'naumanni::last_send_from'
  * Status作成画面
  */
 export default class TootWindow extends React.Component {
+  static propTypes = {
+    onClose: PropTypes.func.isRequired,
+  }
+
   static contextTypes = {
     context: PropTypes.any,
   }
@@ -66,6 +70,7 @@ export default class TootWindow extends React.Component {
           initialSendFrom={this.loadSendForm()}
           tokens={tokens}
           onSend={::this.onSend}
+          onClose={::this.onClose}
         />
       </div>
     )
@@ -91,6 +96,10 @@ export default class TootWindow extends React.Component {
     this.saveSendFrom(sendFrom)
 
     // close tootwindow
+    this.props.onClose()
+  }
+
+  async onClose() {
     this.props.onClose()
   }
 

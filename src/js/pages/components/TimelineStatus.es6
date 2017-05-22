@@ -11,6 +11,11 @@ import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
 import {DropdownMenuButton, IconFont, UserIconWithHost, SafeContent, UserDisplayName, UserAcct} from '../parts'
 
 
+const PANEL_REPLY = 'ReplyPanel'
+const PANEL_REBLOG = 'ReblogPanel'
+const PANEL_FAVOURITE = 'ReblogPanel'
+
+
 export default class TimelineStatus extends React.Component {
   static propTypes = {
     subject: AcctPropType,
@@ -263,6 +268,7 @@ export default class TimelineStatus extends React.Component {
         <div>
           <TootForm {...this.props}
             onSend={::this.onSendReply}
+            onClose={::this.onCloseReplyPanel}
             initialSendFrom={sendFrom}
             initialContent={`@${account.acct} `}
             />
@@ -350,17 +356,17 @@ export default class TimelineStatus extends React.Component {
 
   onClickToggleReply(e) {
     e.preventDefault()
-    this.togglePanel('ReplyPanel')
+    this.togglePanel(PANEL_REPLY)
   }
 
   onClickToggleReblogPanel(e) {
     e.preventDefault()
-    this.togglePanel('ReblogPanel')
+    this.togglePanel(PANEL_REBLOG)
   }
 
   onClickToggleFavouritePanel(e) {
     e.preventDefault()
-    this.togglePanel('FavouritePanel')
+    this.togglePanel(PANEL_FAVOURITE)
   }
 
   async onReblogStatus(token, status, on) {
@@ -395,9 +401,9 @@ export default class TimelineStatus extends React.Component {
 
   hideAllPanel() {
     return Promise.all([
-      this.showHidePanel(false, 'ReplyPanel'),
-      this.showHidePanel(false, 'ReblogPanel'),
-      this.showHidePanel(false, 'FavouritePanel'),
+      this.showHidePanel(false, PANEL_REPLY),
+      this.showHidePanel(false, PANEL_REBLOG),
+      this.showHidePanel(false, PANEL_FAVOURITE),
     ])
   }
 
@@ -436,8 +442,12 @@ export default class TimelineStatus extends React.Component {
   onSendReply(...args) {
     return this.props.onSendReply(this.props.status, ...args)
       .then(() => {
-        this.showHidePanel(false, 'ReplyPanel')
+        this.showHidePanel(false, PANEL_REPLY)
       })
+  }
+
+  onCloseReplyPanel() {
+    this.showHidePanel(false, PANEL_REPLY)
   }
 }
 

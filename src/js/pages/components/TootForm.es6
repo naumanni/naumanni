@@ -23,6 +23,7 @@ export default class TootForm extends React.Component {
     maxContentLength: PropTypes.number,
     tokens: OAuthTokenArrayPropType.isRequired,
     onSend: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
     initialSendFrom: PropTypes.arrayOf(PropTypes.string),
     initialContent: PropTypes.string,
   }
@@ -30,6 +31,7 @@ export default class TootForm extends React.Component {
   static defaultProps = {
     maxContentLength: MASTODON_MAX_CONTENT_SIZE,
     initialSendFrom: null,
+    initialContent: '',
   }
 
   /**
@@ -219,6 +221,22 @@ export default class TootForm extends React.Component {
       this.state.mediaFiles.length <= MAX_MEDIA_FILES
   }
 
+
+  /**
+   * ユーザーが閉じようとした時に呼ばれる。
+   * 空だったら閉じる、からじゃなかったら今のところスルー（本当は確認出したい）
+   */
+  wantClose() {
+    const {mediaFiles, statusContent, spoilerTextContent} = this.state
+
+    if(mediaFiles.length || spoilerTextContent.length || (this.props.initialContent != statusContent)) {
+      // 空じゃないので何もしない
+      return
+    }
+
+    this.props.onClose && this.props.onClose()
+  }
+
   // cb
   onChangeSpoilerText(e) {
     this.setState({spoilerTextContent: e.target.value})
@@ -316,12 +334,12 @@ export default class TootForm extends React.Component {
    * @param {Event} e
    */
   onKeyDown(e) {
-    console.log(e.keyCode)
     if(e.ctrlKey && e.keyCode == KEY_ENTER && this.canSend()) {
+      // (Ctrl|Cmd)+Enterで投稿したい
       this.onClickSend(e)
-    }
-    if(e.keyCode == KEY_ESC) {
-
+    } else if(e.keyCode == KEY_ESC) {
+      // ESCが押されたら閉じたい
+      this.wantClose()
     }
   }
 }
