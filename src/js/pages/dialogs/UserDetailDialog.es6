@@ -1,16 +1,17 @@
 import React from 'react'
 
 import {COLUMN_TALK, AUTO_PAGING_MARGIN} from 'src/constants'
-import TimelineData from 'src/infra/TimelineData'
-import {IconFont, NowLoading} from 'src/pages/parts'
-import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
-import UserDetail from 'src/pages/components/UserDetail'
-import {AccountTimelineLoader} from 'src/controllers/TimelineLoader'
 import TimelineActions from 'src/controllers/TimelineActions'
-import TimelineStatus from 'src/pages/components/TimelineStatus'
-import AccountRow from 'src/pages/components/AccountRow'
-import {HistoryRelatedDialog} from './Dialog'
+import {AccountTimelineLoader} from 'src/controllers/TimelineLoader'
+import TimelineData from 'src/infra/TimelineData'
 import {StatusTimeline} from 'src/models/Timeline'
+import AccountRow from 'src/pages/components/AccountRow'
+import UserDetail from 'src/pages/components/UserDetail'
+import TimelineStatus from 'src/pages/components/TimelineStatus'
+import {IconFont, NowLoading} from 'src/pages/parts'
+import {AcctPropType} from 'src/propTypes'
+import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
+import {HistoryRelatedDialog} from './Dialog'
 
 export const LIST_STATUSES = 'statuses'
 export const LIST_FOLLOWINGS = 'followings'
@@ -21,11 +22,24 @@ export const LIST_FOLLOWERS = 'followers'
  * ユーザー詳細表示
  */
 export default class UserDetailDialog extends HistoryRelatedDialog {
+  static propTypes = {
+    acct: AcctPropType.isRequired,
+  }
   /**
    * @constructor
    */
   constructor(...args) {
     super(...args)
+
+    const {acct} = this.props
+
+    // acctと同ホストのTokenがあればそれを使う
+    let tokens = this.context.context.getState().tokenState.tokens
+    let acctHost = acct.split('@')[1]
+
+    const primaryToken = tokens.find((t) => t.host === acctHost)
+    if(primaryToken)
+      tokens = [primaryToken]
 
     this.state = {
       ...this.state,
@@ -34,7 +48,7 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
       relationships: {},
       timeline: null,
       // TODO: Contextの更新をチェックする
-      tokens: this.context.context.getState().tokenState.tokens,
+      tokens,
     }
 
     this.actionDelegate = new TimelineActions(this.context)
@@ -190,12 +204,17 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
 
   renderAccounts(accounts) {
     // TODO: 絞込付きFriendListを使ったほうが良いのでは
+    const onClickHandler = ::this.actionDelegate.onAvatarClicked
+
     return (
       <ul className="accountList">
         {accounts.map((account) => (
           <li key={account.acct}>
-            <AccountRow account={account} onClick={(...args) => this.actionDelegate.onAvatarClicked(...args)}
-              />
+            <AccountRow
+              account={account}
+              onAvatarClicked={onClickHandler}
+              onClick={onClickHandler}
+            />
           </li>
         ))}
       </ul>
@@ -284,7 +303,14 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
           let nextUrl
 
           for(;;) {
-            const {entities, result, link} = await token.requester[endpoint]({id, limit: 80}, {endpoint: nextUrl})
+            let response
+            try {
+              response = await token.requester[endpoint]({id, limit: 80}, {endpoint: nextUrl})
+            } catch(e) {
+              // おそらく404とか
+              return
+            }
+            const {entities, result, link} = response
             if(!accounts)
               break
 

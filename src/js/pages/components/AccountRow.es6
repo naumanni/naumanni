@@ -20,7 +20,7 @@ export default class AccountRow extends React.Component {
     const onClickAvatar = (e) => this.props.onAvatarClicked(account, e)
 
     return (
-      <article className="accountRow" onClick={() => onClick && onClick(account)}>
+      <article className="accountRow" onClick={(e) => onClick && onClick(account, e)}>
         <div className="accountRow-avatar">
           <UserIconWithHost account={account} onClick={onClickAvatar} />
         </div>

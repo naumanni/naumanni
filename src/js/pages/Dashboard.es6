@@ -6,6 +6,7 @@ import {AppPropType, ContextPropType} from 'src/propTypes'
 import InitializeApplicationUseCase from 'src/usecases/InitializeApplicationUseCase'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
+import {raq} from 'src/utils'
 
 import ColumnContainer from './components/ColumnContainer'
 import DashboardHeader from './components/DashboardHeader'
@@ -36,7 +37,7 @@ export default class Dashboard extends React.Component {
     const {context} = this.props.app
 
     this.listenerRemovers = [
-      context.onChange(() => this.setState(this.getStateFromContext())),
+      context.onChange(::this.onConetextChanged),
       context.onDispatch(::this.onContextDispatch),
     ]
   }
@@ -114,6 +115,12 @@ export default class Dashboard extends React.Component {
     this.setState({initializer: null}, () => {
       // routing開始
       this.props.app.history.start()
+    })
+  }
+
+  onConetextChanged(changingStores) {
+    raq(() => {
+      this.setState(this.getStateFromContext())
     })
   }
 
