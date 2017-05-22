@@ -13,7 +13,7 @@ import {DropdownMenuButton, IconFont, UserIconWithHost, SafeContent, UserDisplay
 
 const PANEL_REPLY = 'ReplyPanel'
 const PANEL_REBLOG = 'ReblogPanel'
-const PANEL_FAVOURITE = 'ReblogPanel'
+const PANEL_FAVOURITE = 'FavouritePanel'
 
 
 export default class TimelineStatus extends React.Component {
