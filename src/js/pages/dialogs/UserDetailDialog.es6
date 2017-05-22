@@ -376,7 +376,6 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
     let id = account.getIdByHost(token.host)
     let newRelationship
 
-    console.log('onToggleFollowClicked', account.toJSON(), token.host)
     if(!id) {
       // idがないので取得
       const {entities, result} = await requester.searchAccount({q: acct})
@@ -384,7 +383,7 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
       const fetched = accounts.find((a) => a.acct === acct)
 
       if(fetched) {
-        account = account.checkMerge(fetched)
+        account = account.checkMerge(fetched).merged
         console.log('after', account.toJSON())
         id = account.getIdByHost(token.host)
       }

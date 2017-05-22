@@ -13,16 +13,14 @@ import {DropdownMenuButton, IconFont, UserIconWithHost, SafeContent, UserDisplay
 
 const PANEL_REPLY = 'ReplyPanel'
 const PANEL_REBLOG = 'ReblogPanel'
-const PANEL_FAVOURITE = 'ReblogPanel'
+const PANEL_FAVOURITE = 'FavouritePanel'
 
 
-export default class TimelineStatus extends React.Component {
+class TimelineStatus extends React.Component {
   static propTypes = {
     subject: AcctPropType,
     account: AccountPropType.isRequired,
     status: StatusPropType.isRequired,
-    reblog: StatusPropType,
-    reblogAccount: AccountPropType,
     modifier: PropTypes.string,
     tokens: TootForm.propTypes.tokens,
     onLockStatus: PropTypes.func,
@@ -35,12 +33,11 @@ export default class TimelineStatus extends React.Component {
   constructor(...args) {
     super(...args)
 
-    const {status, reblog} = this.props
-    const mainStatus = reblog || status
+    const {status} = this.props
 
     this.state = {
-      isShowMediaCover: mainStatus.sensitive,
-      isContentOpen: mainStatus.hasSpoilerText ? false : true,
+      isShowMediaCover: status.sensitive,
+      isContentOpen: status.hasSpoilerText ? false : true,
       isShowReplyPanel: false,
       isAnimatedReplyPanel: true,
       isShowFavouritePanel: false,
@@ -63,15 +60,12 @@ export default class TimelineStatus extends React.Component {
    * @override
    */
   render() {
-    const {status, reblog, account, reblogAccount, modifier} = this.props
-    require('assert')(!reblog || (reblog && reblogAccount))
+    const {children, status, account, modifier} = this.props
     const {isContentOpen, isShowReplyPanel} = this.state
-    const mainStatus = reblog || status
-    const mainAccount = reblogAccount || account
     const statusBodyClass = ['status-body']
-    const onClickAvatar = this.onClickAvatar.bind(this, mainAccount)
+    const onClickAvatar = this.onClickAvatar.bind(this, account)
 
-    if(mainStatus.spoilerText.length) {
+    if(status.spoilerText.length) {
       statusBodyClass.push(
         'has-spoilerText',
         isContentOpen ? 'is-contentOpen' : 'is-contentClose'
@@ -81,21 +75,12 @@ export default class TimelineStatus extends React.Component {
     return (
       <article className={`status ${modifier ? `status--${modifier}` : ''}`}>
 
-        {reblog && (
-          <div className="status-row status-reblogFrom">
-            <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
-            <div className="status-rowRight">
-              <UserDisplayName
-                account={account}
-                onClick={this.onClickAvatar.bind(this, account)} /> boosted
-            </div>
-          </div>
-        )}
+        {children}
 
         <div className="status-row status-content">
           <div className="status-rowLeft">
             <div className="status-avatar">
-              <UserIconWithHost account={mainAccount} onClick={onClickAvatar} />
+              <UserIconWithHost account={account} onClick={onClickAvatar} />
             </div>
             <div className="status-visibility">
               <VisibilityIcon visibility={status.visibility} />
@@ -105,13 +90,13 @@ export default class TimelineStatus extends React.Component {
 
             <div className="status-info">
               <div className="status-author">
-                <UserDisplayName account={mainAccount} onClick={onClickAvatar} />
-                <UserAcct account={mainAccount} onClick={onClickAvatar} />
+                <UserDisplayName account={account} onClick={onClickAvatar} />
+                <UserAcct account={account} onClick={onClickAvatar} />
               </div>
               <a className="status-createdAt"
-                 href={mainStatus.url}
+                 href={status.url}
                  target="_blank"
-                 alt={mainStatus.created_at}>{mainStatus.createdAt.fromNow()}
+                 alt={status.created_at}>{status.createdAt.fromNow()}
               </a>
             </div>
 
@@ -119,7 +104,7 @@ export default class TimelineStatus extends React.Component {
               {this.renderSpoilerText()}
               {isContentOpen && (
                 <div className="status-content">
-                  <SafeContent parsedContent={mainStatus.parsedContent} {...this.props} />
+                  <SafeContent parsedContent={status.parsedContent} {...this.props} />
                 </div>
               )}
             </div>
@@ -161,14 +146,13 @@ export default class TimelineStatus extends React.Component {
   renderSpoilerText() {
     const {status} = this.props
     const {isContentOpen} = this.state
-    const mainStatus = status.reblog || status
 
-    if(!mainStatus.hasSpoilerText)
+    if(!status.hasSpoilerText)
       return null
 
     return (
       <div className="status-spoilerText">
-        {mainStatus.spoilerText}
+        {status.spoilerText}
         <a className="status-contentOpener"
           onClick={() => this.setState({isContentOpen: !isContentOpen})}>
           {isContentOpen ? 'Close' : 'More...'}
@@ -178,10 +162,9 @@ export default class TimelineStatus extends React.Component {
   }
 
   renderMedia() {
-    const {status, reblog} = this.props
+    const {status} = this.props
     const {isShowMediaCover} = this.state
-    const mainStatus = reblog || status
-    const mediaList = mainStatus.media_attachments
+    const mediaList = status.media_attachments
     if(!mediaList.length)
       return null
 
@@ -189,7 +172,7 @@ export default class TimelineStatus extends React.Component {
       'status-mediaList',
       `status-mediaList${mediaList.length}`,
     ]
-    if(mainStatus.sensitive) {
+    if(status.sensitive) {
       className.push('is-sensitive')
     }
 
@@ -287,13 +270,12 @@ export default class TimelineStatus extends React.Component {
           <ul>
             {tokens.map((token) => {
               const {account} = token
-              const disabled = status.getIdByHost(token.host) ? false : true
               const on = status.isRebloggedAt(token.acct) ? true : false
 
               return (
-                <li className={`${disabled ? 'is-disabled' : ''} ${on ? 'on' : ''}`}
+                <li className={`${on ? 'on' : ''}`}
                   key={token.acct}
-                  onClick={(e) => !disabled && this.onReblogStatus(token, status, !on)}
+                  onClick={(e) => this.onReblogStatus(token, status, !on)}
                 >
                   <IconFont iconName="reblog" className={on ? 'is-active' : ''} />
                   <UserIconWithHost account={account} size="mini" />
@@ -317,13 +299,12 @@ export default class TimelineStatus extends React.Component {
           <ul>
             {tokens.map((token) => {
               const {account} = token
-              const disabled = status.getIdByHost(token.host) ? false : true
               const on = status.isFavouritedAt(token.acct) ? true : false
 
               return (
-                <li className={`${disabled ? 'is-disabled' : ''} ${on ? 'on' : ''}`}
+                <li className={`${on ? 'on' : ''}`}
                   key={token.acct}
-                  onClick={(e) => !disabled && this.onFavouriteStatus(token, status, !on)}
+                  onClick={(e) => this.onFavouriteStatus(token, status, !on)}
                 >
                   <IconFont iconName="star-filled" className={on ? 'is-active' : ''} />
                   <UserIconWithHost account={account} size="mini" />
@@ -470,4 +451,46 @@ function VisibilityIcon({visibility, className}) {
   }
 
   return <IconFont className={className} iconName={iconName} />
+}
+
+
+/**
+ * Reblogはここで吸収
+ * @return {React.Component}
+ */
+export default function TimelineStatusContainer({modifier, reblog, reblogAccount, ...props}, ...args) {
+  let children = null
+
+  if(reblog || reblogAccount) {
+    require('assert')(reblog && reblogAccount)
+    const account = props.account
+    props = {
+      ...props,
+      status: reblog,
+      account: reblogAccount,
+    }
+
+    children = (
+      <div className="status-row status-reblogFrom">
+        <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
+        <div className="status-rowRight">
+          <UserDisplayName
+            account={account}
+            onClick={(e) => {
+              e.preventDefault()
+              props.onAvatarClicked(account)
+            }} /> boosted
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <TimelineStatus {...props}>{children}</TimelineStatus>
+  )
+}
+TimelineStatusContainer.propTypes = {
+  reblog: StatusPropType,
+  reblogAccount: AccountPropType,
+  ...TimelineStatus.propTypes,
 }

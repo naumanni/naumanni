@@ -197,8 +197,7 @@ export default class TalkColumn extends Column {
 
     // get latest status id
     let lastStatusId = null
-
-    if(this.state.talk) {
+    if(this.state.talk.length) {
       const lastTalkGroup = this.state.talk[this.state.talk.length - 1]
       const lastStatus = lastTalkGroup.statuses[lastTalkGroup.statuses.length - 1]
       lastStatusId = lastStatus.getIdByHost(this.state.token.host)
@@ -264,7 +263,7 @@ export default class TalkColumn extends Column {
   onKeyDownMessage(e) {
     require('assert')(!this.state.loading)
 
-    if(e.ctrlKey && e.keyCode == KEY_ENTER) {
+    if((e.ctrlKey || e.metaKey) && e.keyCode == KEY_ENTER) {
       e.preventDefault()
       this.sendMessage()
     }

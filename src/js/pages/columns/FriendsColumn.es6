@@ -312,14 +312,14 @@ class FriendsListener extends EventEmitter {
       }
     }
 
-
     // TODO: すげー雑
     const records = await TalkRecord.query.listByKey('subject', this.subject)
     for(const record of records) {
       // いまのところrecordのtargetは1人
       require('assert')(record.targets.size === 1)
       const friend = friends.get(record.targets.get(0))
-      friend.record = record
+      if(friend)
+        friend.record = record
     }
 
     // friend list
