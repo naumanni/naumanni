@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import {VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC} from 'src/constants'
 import {IconFont} from 'src/pages/parts'
-import TootPanel from './components/TootPanel'
+import TootForm from './components/TootForm'
 import {postStatusManaged} from 'src/infra/TimelineData'
 
 
@@ -62,7 +62,7 @@ export default class TootWindow extends React.Component {
           <button onClick={this.props.onClose}><IconFont iconName="cancel" /></button>
         </div>
 
-        <TootPanel
+        <TootForm
           initialSendFrom={this.loadSendForm()}
           tokens={tokens}
           onSend={::this.onSend}

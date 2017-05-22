@@ -9,14 +9,14 @@ import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
 import {NotificationRefPropType} from 'src/propTypes'
 import {IconFont, UserIconWithHost, UserDisplayName, UserAcct, CushionString} from '../parts'
 import TimelineStatus from './TimelineStatus'
-import TootPanel from './TootPanel'
+import TootForm from './TootForm'
 
 
 // TODO: notificationRefと切り離してPureComponentにする
 export default class TimelineNotification extends React.Component {
   static propTypes = {
     notificationRef: NotificationRefPropType.isRequired,
-    tokens: TootPanel.propTypes.tokens,
+    tokens: TootForm.propTypes.tokens,
     onAvatarClicked: TimelineActionPropTypes.onAvatarClicked,
     onLockStatus: PropTypes.func,
   }

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
-import TootPanel from './TootPanel'
+import TootForm from './TootForm'
 import {AcctPropType, AccountPropType, StatusPropType} from 'src/propTypes'
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
 import {DropdownMenuButton, IconFont, UserIconWithHost, SafeContent, UserDisplayName, UserAcct} from '../parts'
@@ -19,7 +19,7 @@ export default class TimelineStatus extends React.Component {
     reblog: StatusPropType,
     reblogAccount: AccountPropType,
     modifier: PropTypes.string,
-    tokens: TootPanel.propTypes.tokens,
+    tokens: TootForm.propTypes.tokens,
     onLockStatus: PropTypes.func,
     ...TimelineActionPropTypes,
   }
@@ -261,7 +261,7 @@ export default class TimelineStatus extends React.Component {
     return (
       <div className={`status-replyPanel ${isAnimatedReplyPanel ? 'off' : ''}`}>
         <div>
-          <TootPanel {...this.props}
+          <TootForm {...this.props}
             onSend={::this.onSendReply}
             initialSendFrom={sendFrom}
             initialContent={`@${account.acct} `}
@@ -429,8 +429,8 @@ export default class TimelineStatus extends React.Component {
   }
 
   /**
-   * TootPanel用のonSendをoverrideする。
-   * Send完了時にTootPanelを閉じたい
+   * TootForm用のonSendをoverrideする。
+   * Send完了時にTootFormを閉じたい
    * @return {Promise}
    */
   onSendReply(...args) {

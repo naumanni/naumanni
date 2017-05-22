@@ -321,11 +321,11 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
       overflow: hidden;
     }
 
-    .tootPanel {
+    .tootForm {
       transition: margin-top 0.3s ease-in-out;
       margin-top: 0;
     }
-    &.off .tootPanel {
+    &.off .tootForm {
       margin-top: -120%;  /* 100%だとなんでかはみ出る。なんで? */
     }
   }

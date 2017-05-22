@@ -1,10 +1,10 @@
-.tootPanel {
+.tootForm {
   background: $colorTootPanelBackground;
   padding: $marginDefault;
   position: relative;
   color: #fff;
 
-  .tootPanel-error {
+  .tootForm-error {
     background: $colorAccentLighter;
     color: red;
     padding: $marginHalf;
@@ -18,7 +18,7 @@
     margin: $marginDefault 0 $marginHalf 0;
   }
 
-  .tootPanel-sendFrom {
+  .tootForm-sendFrom {
     @mixin clearfix;
 
     list-style: none;
@@ -45,19 +45,19 @@
     }
   }
 
-  .tootPanel-note {
+  .tootForm-note {
     margin: 0;
     font-size: $fontSizeSmall;
     color: $colorGray1;
     text-align: right;
   }
 
-  .tootPanel-content {
+  .tootForm-content {
     background: $colorTootContentBackground;
     border-radius: $marginHalf;
     margin-bottom: $marginHalf;
 
-    .tootPanel-spoilerText {
+    .tootForm-spoilerText {
       display: block;
       background: transparent;
       border: none;
@@ -70,7 +70,7 @@
       font-size: $fontSizeNormal;
     }
 
-    .tootPanel-status {
+    .tootForm-status {
       display: block;
       background: transparent;
       border: none;
@@ -81,7 +81,7 @@
       font-size: $fontSizeNormal;
     }
 
-    .tootPanel-contentActions {
+    .tootForm-contentActions {
       padding-left: 6px;  /* 微妙にその下とずれる */
 
       > * {
@@ -102,7 +102,7 @@
       }
     }
 
-    .tootPanel-mediaFiles {
+    .tootForm-mediaFiles {
       display: flex;
       flex-wrap: wrap;
       width: calc(100% - 2px);
@@ -118,7 +118,7 @@
     }
   }
 
-  .tootPanel-messageTo {
+  .tootForm-messageTo {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -154,13 +154,13 @@
     }
   }
 
-  .tootPanel-send {
+  .tootForm-send {
     margin: $marginDefault 0;
     flex: 1 1 auto;
     text-align: right;
   }
 
-  .tootPanel-charCount {
+  .tootForm-charCount {
     margin-right: 1ex;
   }
 }
