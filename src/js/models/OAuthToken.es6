@@ -81,6 +81,7 @@ export default class OAuthToken extends OAuthTokenRecord {
           token: this,
           endpoint: `https://${this.host}/api/v1`,
         })
+      this._requester.extendTokenHandler = () => {}
     }
     return this._requester
   }
