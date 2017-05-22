@@ -291,7 +291,7 @@ export default MastodonAPISpec.make({
 
   followRemoteAccount: {
     endpoint: '/follows',
-    entity: [account],
+    entity: account,
     method: 'post',
   },
 
