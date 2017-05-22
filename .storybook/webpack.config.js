@@ -7,6 +7,10 @@ module.exports = function(storybookBaseConfig, configType) {
       test: /\.es6$/,
       exclude: /node_modules/,
       loader: 'babel',
+    },
+    {
+      test: /\.json$/,
+      loader: 'json',
     }
   )
 
