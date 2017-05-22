@@ -31,6 +31,15 @@
   flex-direction: column;
   overflow: hidden;
 
+  .userTimeline-warning {
+    background: $colorWarningBackground;
+    border: 1px solid $colorWarningBorder;
+    color: $colorWarningText;
+    border-radius: 6px;
+    margin: $marginDefault;
+    padding: $marginHalf;
+  }
+
   .userTimeline-counts {
     display: flex;
     flex: 0 0 4.3rem;

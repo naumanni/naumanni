@@ -26,6 +26,7 @@ export default class UserDetail extends React.Component {
       headerStyle.backgroundImage = `\
 linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%),
 url(${account.header})`
+
     return (
       <div className="userDetail" style={headerStyle}>
         {tokens.length == 1
@@ -164,7 +165,7 @@ url(${account.header})`
       doFollow = false
     } else {
       icon = 'user-plus'
-      text = account.locked ? 'フローを申請する' : 'フォローする'
+      text = account.locked ? 'フォローを申請する' : 'フォローする'
       doFollow = true
     }
 

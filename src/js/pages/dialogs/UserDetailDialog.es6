@@ -31,15 +31,7 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
   constructor(...args) {
     super(...args)
 
-    const {acct} = this.props
-
-    // acctと同ホストのTokenがあればそれを使う
-    let tokens = this.context.context.getState().tokenState.tokens
-    let acctHost = acct.split('@')[1]
-
-    const primaryToken = tokens.find((t) => t.host === acctHost)
-    if(primaryToken)
-      tokens = [primaryToken]
+    const {tokens} = this.context.context.getState().tokenState
 
     this.state = {
       ...this.state,
@@ -127,8 +119,7 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
   }
 
   renderTimeline() {
-    const {account} = this.state
-    const {list} = this.state
+    const {account, list, primaryToken} = this.state
 
     const _renderCount = (type, label, count) => {
       return (
@@ -144,6 +135,12 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
 
     return (
       <div className="userTimeline">
+
+        {primaryToken && account && primaryToken.host !== account.instance && (
+          <div className="userTimeline-warning">
+            これは最新のデータではない可能性があります。
+          </div>
+        )}
 
         <div className="userTimeline-counts">
           {_renderCount(LIST_STATUSES, '投稿', account.statuses_count)}
@@ -227,7 +224,8 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
   async start() {
     // 全Tokenからとってみる
     const {acct} = this.props
-    const {tokens} = this.state
+    let {tokens} = this.state
+    let recommendedToken  // 一番statusCountの多い情報を持っているサーバのToken
     let account = null
 
     // idが欲しい
@@ -239,14 +237,16 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
       if(!fetched)
         return
 
-      // // 自ホスト優先, 新しい方優先
-      // if(!this.state.account || fetched.instance === token.host ||
-      //    this.state.account.createdAt.isBefore(fetched.createdAt))
-      //   account = fetched
-      if(!this.state.account)
+      // 自ホスト優先, statuses_countが多い方優先
+      if(!account) {
         account = fetched
-      else
+        recommendedToken = token
+      } else if(fetched.instance === token.host || fetched.statuses_count > account.statuses_count) {
         account = account.checkMerge(fetched).merged
+        recommendedToken = token
+      } else {
+        account = fetched.checkMerge(account).merged
+      }
 
       // めっちゃキモいけど手っ取り早い...
       const setStateWaiter = new Promise((resolve, reject) => {
@@ -263,69 +263,73 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
       await setStateWaiter
     }))
 
-    this.startLoadList(this.state.list)
+    // primaryTokenを決める
+    let acctHost = acct.split('@')[1]
+
+    // acctと同ホストのTokenがあればそれを使う.
+    let primaryToken = tokens.find((t) => t.host === acctHost) || recommendedToken
+
+    this.setState({
+      account: account,
+      primaryToken,
+    })
+
+    this.startLoadList(this.state.list, primaryToken)
   }
 
-  async startLoadList(list) {
-    const {account, tokens} = this.state
+  async startLoadList(list, primaryToken) {
+    const {account} = this.state
+
+    if(!primaryToken)
+      primaryToken = this.state.primaryToken
 
     if(list === LIST_STATUSES) {
-      if(!this.timelineLoaders) {
-        this.timelineLoaders = tokens
-          .map((token) => new AccountTimelineLoader(account, this.timeline, token, this.db))
-          .map((loader) => {
-            return {loader, loading: false}
-          })
+      if(!this.timelineLoader) {
+        this.timelineLoader = new AccountTimelineLoader(account, this.timeline, primaryToken, this.db)
       }
 
-      for(const loaderInfo of this.timelineLoaders) {
-        loaderInfo.loading = true
-        loaderInfo.loader.loadInitial()
-          .then(() => {
-            loaderInfo.loading = false
-            this.setState({timelineIsLoading: this._isListLoading()})
-          }, () => {
-            loaderInfo.loading = false
-            this.setState({timelineIsLoading: this._isListLoading()})
-          })
-      }
-      this.setState({timelineIsLoading: this._isListLoading()})
+      this.isLoadingTimeline = true
+      this.setState({timelineIsLoading: true})
+      this.timelineLoader.loadInitial()
+        .then(() => {
+          this.isLoadingTimeline = false
+          this.setState({timelineIsLoading: false})
+        }, () => {
+          this.isLoadingTimeline = false
+          this.setState({timelineIsLoading: false})
+        })
     } else {
       const endpoint = list === LIST_FOLLOWERS ? 'listFollowers' : 'listFollowings'
       const accounts = new Map()
 
-      await Promise.all(
-        tokens.map(async (token) => {
-          const id = account.getIdByHost(token.host)
-          if(!id)
-            return
+      const id = account.getIdByHost(primaryToken.host)
+      if(!id)
+        return
 
-          let nextUrl
+      let nextUrl
 
-          for(;;) {
-            let response
-            try {
-              response = await token.requester[endpoint]({id, limit: 80}, {endpoint: nextUrl})
-            } catch(e) {
-              // おそらく404とか
-              return
-            }
-            const {entities, result, link} = response
-            if(!accounts)
-              break
+      for(;;) {
+        let response
+        try {
+          response = await primaryToken.requester[endpoint]({id, limit: 80}, {endpoint: nextUrl})
+        } catch(e) {
+          // おそらく404とか
+          return
+        }
+        const {entities, result, link} = response
+        if(!accounts)
+          break
 
-            // TODO: mergeする
-            result
-              .map((uri) => entities.accounts[uri])
-              .reduce((a, accounts) => a.concat(accounts), [])
-              .forEach((acc) => accounts.set(acc.uri, acc))
+        // TODO: mergeする
+        result
+          .map((uri) => entities.accounts[uri])
+          .reduce((a, accounts) => a.concat(accounts), [])
+          .forEach((acc) => accounts.set(acc.uri, acc))
 
-            nextUrl = link && link.next
-            if(!nextUrl)
-              break
-          }
-        })
-      )
+        nextUrl = link && link.next
+        if(!nextUrl)
+          break
+      }
 
       if(list === LIST_FOLLOWERS)
         this.setState({followers: Array.from(accounts.values())})
@@ -335,20 +339,18 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
   }
 
   loadMoreStatuses() {
-    for(const loaderInfo of Object.values(this.timelineLoaders)) {
-      if(!loaderInfo.loading && !loaderInfo.loader.isTailReached()) {
-        loaderInfo.loading = true
-        loaderInfo.loader.loadNext()
-          .then(() => {
-            loaderInfo.loading = false
-            this.setState({timelineIsLoading: this._isListLoading()})
-          }, () => {
-            loaderInfo.loading = false
-            this.setState({timelineIsLoading: this._isListLoading()})
-          })
-      }
+    if(!this.isLoadingTimeline && !this.timelineLoader.isTailReached()) {
+      this.isLoadingTimeline = true
+      this.setState({tailLoading: true})
+      this.timelineLoader.loadNext()
+        .then(() => {
+          this.isLoadingTimeline = false
+          this.setState({tailLoading: false})
+        }, () => {
+          this.isLoadingTimeline = false
+          this.setState({tailLoading: false})
+        })
     }
-    this.setState({tailLoading: this._isListLoading()})
   }
 
   onClickListTab(newList) {
@@ -369,16 +371,30 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
   }
 
   async onToggleFollowClicked(token, account, doFollow) {
+    const {acct} = account
     const {requester} = token
-    const id = account.getIdByHost(token.host)
+    let id = account.getIdByHost(token.host)
     let newRelationship
+
+    console.log('onToggleFollowClicked', account.toJSON(), token.host)
+    if(!id) {
+      // idがないので取得
+      const {entities, result} = await requester.searchAccount({q: acct})
+      const accounts = result.map((r) => entities.accounts[r])
+      const fetched = accounts.find((a) => a.acct === acct)
+
+      if(fetched) {
+        account = account.checkMerge(fetched)
+        console.log('after', account.toJSON())
+        id = account.getIdByHost(token.host)
+      }
+    }
 
     if(doFollow) {
       if(id) {
         newRelationship = (await requester.followAccount({id: account.getIdByHost(token.host)})).result
       } else {
-        // Detail表示している時点でAccountはもってるのだから、ここには来ないのでは?
-        await requester.followRemoteAccount({uri: account.acct}, {token})
+        await requester.followRemoteAccount({uri: acct}, {token})
       }
     } else {
       require('assert')(id, 'account id required')
@@ -410,9 +426,5 @@ export default class UserDetailDialog extends HistoryRelatedDialog {
         this.loadMoreStatuses()
       }
     }
-  }
-
-  _isListLoading() {
-    return !Object.values(this.timelineLoaders).every((loaderInfo) => !loaderInfo.loading)
   }
 }
