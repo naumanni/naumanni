@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import {VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC} from 'src/constants'
 import {IconFont} from 'src/pages/parts'
-import TootPanel from './components/TootPanel'
+import TootForm from './components/TootForm'
 import {postStatusManaged} from 'src/infra/TimelineData'
 
 
@@ -17,6 +17,10 @@ const STORAGE_KEY_LAST_SEND_FROM = 'naumanni::last_send_from'
  * Status作成画面
  */
 export default class TootWindow extends React.Component {
+  static propTypes = {
+    onClose: PropTypes.func.isRequired,
+  }
+
   static contextTypes = {
     context: PropTypes.any,
   }
@@ -62,10 +66,11 @@ export default class TootWindow extends React.Component {
           <button onClick={this.props.onClose}><IconFont iconName="cancel" /></button>
         </div>
 
-        <TootPanel
+        <TootForm
           initialSendFrom={this.loadSendForm()}
           tokens={tokens}
           onSend={::this.onSend}
+          onClose={::this.onClose}
         />
       </div>
     )
@@ -89,8 +94,9 @@ export default class TootWindow extends React.Component {
     )
 
     this.saveSendFrom(sendFrom)
+  }
 
-    // close tootwindow
+  async onClose() {
     this.props.onClose()
   }
 

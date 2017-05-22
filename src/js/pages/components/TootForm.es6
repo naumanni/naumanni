@@ -6,7 +6,7 @@ import Textarea from 'react-textarea-autosize'
 import {
   MASTODON_MAX_CONTENT_SIZE,
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
-  KEY_ENTER, TOOTFORM_PLACEHOLDER,
+  KEY_ENTER, KEY_ESC, TOOTFORM_PLACEHOLDER,
 } from 'src/constants'
 import {OAuthTokenArrayPropType} from 'src/propTypes'
 import {IconFont, UserIconWithHost} from 'src/pages/parts'
@@ -18,11 +18,12 @@ const MAX_MEDIA_FILES = 4
 /**
  * Tootを編集する。ロジックは提供しないよ
  */
-export default class TootPanel extends React.Component {
+export default class TootForm extends React.Component {
   static propTypes = {
     maxContentLength: PropTypes.number,
     tokens: OAuthTokenArrayPropType.isRequired,
     onSend: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
     initialSendFrom: PropTypes.arrayOf(PropTypes.string),
     initialContent: PropTypes.string,
   }
@@ -30,6 +31,7 @@ export default class TootPanel extends React.Component {
   static defaultProps = {
     maxContentLength: MASTODON_MAX_CONTENT_SIZE,
     initialSendFrom: null,
+    initialContent: '',
   }
 
   /**
@@ -78,15 +80,15 @@ export default class TootPanel extends React.Component {
       error = `添付できるメディアは${MAX_MEDIA_FILES}つまでです`
 
     return (
-      <div className="tootPanel">
+      <div className="tootForm">
         {error && (
-          <div className="tootPanel-error">
+          <div className="tootForm-error">
             {error}
           </div>
         )}
 
         <h2>From</h2>
-        <ul className="tootPanel-sendFrom">
+        <ul className="tootForm-sendFrom">
           {tokens.map((token) => {
             const {account} = token
             const isSelected = sendFrom.indexOf(account.acct) >= 0
@@ -100,14 +102,14 @@ export default class TootPanel extends React.Component {
             )
           })}
         </ul>
-        <p className="tootPanel-note">Shift+Clickで複数選択できます。</p>
+        <p className="tootForm-note">Shift+Clickで複数選択できます。</p>
 
         <h2>Toot</h2>
-        <div className="tootPanel-content">
+        <div className="tootForm-content">
           {showContentsWarning && (
             <textarea
               ref="textareaSpoilerText"
-              className="tootPanel-spoilerText"
+              className="tootForm-spoilerText"
               value={spoilerTextContent}
               placeholder="内容の警告"
               onKeyDown={::this.onKeyDown}
@@ -116,17 +118,17 @@ export default class TootPanel extends React.Component {
 
           <Textarea
             ref="textareaStatus"
-            className="tootPanel-status" value={statusContent}
+            className="tootForm-status" value={statusContent}
             placeholder={TOOTFORM_PLACEHOLDER}
             onKeyDown={::this.onKeyDown}
             onChange={::this.onChangeStatus}
             minRows={3}
-            maxRows={TootPanel.maxTootRows()}></Textarea>
+            maxRows={TootForm.maxTootRows()}></Textarea>
 
           {this.renderMediaFiles()}
 
-          <div className="tootPanel-contentActions">
-            <label className="tootPanel-addMedia">
+          <div className="tootForm-contentActions">
+            <label className="tootForm-addMedia">
               <IconFont iconName="camera" />
               <input
                 type="file"
@@ -134,7 +136,7 @@ export default class TootPanel extends React.Component {
                 style={{display: 'none'}} ref="fileInput" onChange={::this.onChangeMediaFile} />
             </label>
             <button
-              className={`tootPanel-toggleContentsWarning ${showContentsWarning ? 'is-active' : ''}`}
+              className={`tootForm-toggleContentsWarning ${showContentsWarning ? 'is-active' : ''}`}
               type="button"
               onClick={::this.onClickToggleShowContentsWarning}>
               <IconFont iconName="attention" />
@@ -142,7 +144,7 @@ export default class TootPanel extends React.Component {
           </div>
         </div>
 
-        <ul className="tootPanel-messageTo">
+        <ul className="tootForm-messageTo">
           <li
             className={visibility === VISIBLITY_PUBLIC ? 'is-active' : ''}
             onClick={this.onClickVisibility.bind(this, VISIBLITY_PUBLIC)}>
@@ -172,8 +174,8 @@ export default class TootPanel extends React.Component {
           </li>
         </ul>
 
-        <div className="tootPanel-send">
-          <span className="tootPanel-charCount">{500 - textLength}</span>
+        <div className="tootForm-send">
+          <span className="tootForm-charCount">{500 - textLength}</span>
           <button
             className="button button--primary"
             disabled={!this.canSend()} type="button"
@@ -197,7 +199,7 @@ export default class TootPanel extends React.Component {
     }
 
     return (
-      <div className="tootPanel-mediaFiles">
+      <div className="tootForm-mediaFiles">
         {mediaFiles.map((file) => {
           return <MediaFileThumbnail
             key={this.mediaFileKeys.get(file)} mediaFile={file} showClose={true}
@@ -217,6 +219,22 @@ export default class TootPanel extends React.Component {
     return !isSending && sendFrom.length &&
       trimmedStatusLength > 0 && textLength < maxContentLength &&
       this.state.mediaFiles.length <= MAX_MEDIA_FILES
+  }
+
+
+  /**
+   * ユーザーが閉じようとした時に呼ばれる。
+   * 空だったら閉じる、からじゃなかったら今のところスルー（本当は確認出したい）
+   */
+  wantClose() {
+    const {mediaFiles, statusContent, spoilerTextContent} = this.state
+
+    if(mediaFiles.length || spoilerTextContent.length || (this.props.initialContent != statusContent)) {
+      // 空じゃないので何もしない
+      return
+    }
+
+    this.props.onClose()
   }
 
   // cb
@@ -277,8 +295,9 @@ export default class TootPanel extends React.Component {
         message,
       })
         .then(() => {
-          // TODO: 送信成功した時点で、閉じられちゃうからここで怒られる...
+          // 送信成功したら閉じる
           this.setState({isSending: false})
+          this.props.onClose()
         }, (error) => {
           this.setState({isSending: false, error: '' + error})
         })
@@ -316,8 +335,12 @@ export default class TootPanel extends React.Component {
    * @param {Event} e
    */
   onKeyDown(e) {
-    if(e.ctrlKey && e.keyCode == KEY_ENTER && this.canSend()) {
+    if((e.ctrlKey || e.metaKey) && e.keyCode == KEY_ENTER && this.canSend()) {
+      // (Ctrl|Cmd)+Enterで投稿したい
       this.onClickSend(e)
+    } else if(e.keyCode == KEY_ESC) {
+      // ESCが押されたら閉じたい
+      this.wantClose()
     }
   }
 }

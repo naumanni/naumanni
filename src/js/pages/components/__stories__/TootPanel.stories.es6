@@ -1,11 +1,11 @@
 import React from 'react'
 import {storiesOf, action, linkTo} from '@kadira/storybook'
 
-import TootPanel from '../TootPanel'
+import TootForm from '../TootForm'
 import {tokens, setTimeoutAsync} from './fixtures'
 
 
-storiesOf('TootPanel', module)
+storiesOf('TootForm', module)
   .addDecorator((story) => (
     <div className="storybookContainer" style={{width: '360px'}}>
       {story()}
@@ -14,7 +14,7 @@ storiesOf('TootPanel', module)
 
   .add('Can show', () => {
     return (
-      <TootPanel tokens={tokens} onSend={(...args) => {
+      <TootForm tokens={tokens} onSend={(...args) => {
         action('send')(...args)
         return setTimeoutAsync(500).then(() => {
           console.log('aaa')

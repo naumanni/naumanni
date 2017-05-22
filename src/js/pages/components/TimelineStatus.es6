@@ -5,10 +5,15 @@ import PropTypes from 'prop-types'
 import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
-import TootPanel from './TootPanel'
+import TootForm from './TootForm'
 import {AcctPropType, AccountPropType, StatusPropType} from 'src/propTypes'
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
 import {DropdownMenuButton, IconFont, UserIconWithHost, SafeContent, UserDisplayName, UserAcct} from '../parts'
+
+
+const PANEL_REPLY = 'ReplyPanel'
+const PANEL_REBLOG = 'ReblogPanel'
+const PANEL_FAVOURITE = 'ReblogPanel'
 
 
 export default class TimelineStatus extends React.Component {
@@ -19,7 +24,7 @@ export default class TimelineStatus extends React.Component {
     reblog: StatusPropType,
     reblogAccount: AccountPropType,
     modifier: PropTypes.string,
-    tokens: TootPanel.propTypes.tokens,
+    tokens: TootForm.propTypes.tokens,
     onLockStatus: PropTypes.func,
     ...TimelineActionPropTypes,
   }
@@ -261,8 +266,9 @@ export default class TimelineStatus extends React.Component {
     return (
       <div className={`status-replyPanel ${isAnimatedReplyPanel ? 'off' : ''}`}>
         <div>
-          <TootPanel {...this.props}
+          <TootForm {...this.props}
             onSend={::this.onSendReply}
+            onClose={::this.onCloseReplyPanel}
             initialSendFrom={sendFrom}
             initialContent={`@${account.acct} `}
             />
@@ -350,17 +356,17 @@ export default class TimelineStatus extends React.Component {
 
   onClickToggleReply(e) {
     e.preventDefault()
-    this.togglePanel('ReplyPanel')
+    this.togglePanel(PANEL_REPLY)
   }
 
   onClickToggleReblogPanel(e) {
     e.preventDefault()
-    this.togglePanel('ReblogPanel')
+    this.togglePanel(PANEL_REBLOG)
   }
 
   onClickToggleFavouritePanel(e) {
     e.preventDefault()
-    this.togglePanel('FavouritePanel')
+    this.togglePanel(PANEL_FAVOURITE)
   }
 
   async onReblogStatus(token, status, on) {
@@ -395,9 +401,9 @@ export default class TimelineStatus extends React.Component {
 
   hideAllPanel() {
     return Promise.all([
-      this.showHidePanel(false, 'ReplyPanel'),
-      this.showHidePanel(false, 'ReblogPanel'),
-      this.showHidePanel(false, 'FavouritePanel'),
+      this.showHidePanel(false, PANEL_REPLY),
+      this.showHidePanel(false, PANEL_REBLOG),
+      this.showHidePanel(false, PANEL_FAVOURITE),
     ])
   }
 
@@ -429,15 +435,19 @@ export default class TimelineStatus extends React.Component {
   }
 
   /**
-   * TootPanel用のonSendをoverrideする。
-   * Send完了時にTootPanelを閉じたい
+   * TootForm用のonSendをoverrideする。
+   * Send完了時にTootFormを閉じたい
    * @return {Promise}
    */
   onSendReply(...args) {
     return this.props.onSendReply(this.props.status, ...args)
       .then(() => {
-        this.showHidePanel(false, 'ReplyPanel')
+        this.showHidePanel(false, PANEL_REPLY)
       })
+  }
+
+  onCloseReplyPanel() {
+    this.showHidePanel(false, PANEL_REPLY)
   }
 }
 

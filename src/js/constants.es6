@@ -31,7 +31,8 @@ export const NOTIFICATION_TYPE_REBLOG = 'reblog'
 export const NOTIFICATION_TYPE_FAVOURITE = 'favourite'
 export const NOTIFICATION_TYPE_FOLLOW = 'follow'
 
-export const KEY_ENTER = 13
+export const KEY_ENTER = 13  // 0x0D
+export const KEY_ESC = 27    // 0x1B
 
 export const ACCT_PATTERN = '[a-zA-Z0-9_]+@[a-zA-Z0-9\.\-]+[a-zA-Z0-9]+'
 export const ACCT_REX = new RegExp(ACCT_PATTERN)

@@ -321,11 +321,11 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
       overflow: hidden;
     }
 
-    .tootPanel {
+    .tootForm {
       transition: margin-top 0.3s ease-in-out;
       margin-top: 0;
     }
-    &.off .tootPanel {
+    &.off .tootForm {
       margin-top: -120%;  /* 100%だとなんでかはみ出る。なんで? */
     }
   }
@@ -467,6 +467,7 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
     .notification-accountInfo {
       margin-left: $statusBodyMarginLeft;
       line-height: 1.3;
+      word-break: break-all;
 
       > * {
         display: block;
