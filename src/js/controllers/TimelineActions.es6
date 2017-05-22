@@ -49,6 +49,10 @@ export default class TimelineActions {
     await Promise.all(
       sendFrom.map(async (token) => {
         // in_reply_to_id を付加する
+        if(!status.getIdByHost(token.host)) {
+          status = await this.resolveStatus(token, status)
+        }
+
         messageContent.message.in_reply_to_id = status.getIdByHost(token.host)
         // TODO: tootpanelの方にwarning出す?
         return await postStatusManaged(token, messageContent)
@@ -58,6 +62,11 @@ export default class TimelineActions {
 
   async onReblogStatus(token, status, toReblog) {
     const api = toReblog ? 'reblogStatus' : 'unreblogStatus'
+
+    if(!status.getIdByHost(token.host)) {
+      status = await this.resolveStatus(token, status)
+    }
+
     const {entities, result} = await token.requester[api]({
       id: status.getIdByHost(token.host),
     }, {token})
@@ -66,6 +75,11 @@ export default class TimelineActions {
 
   async onFavouriteStatus(token, status, toFav) {
     const api = toFav ? 'favouriteStatus' : 'unfavouriteStatus'
+
+    if(!status.getIdByHost(token.host)) {
+      status = await this.resolveStatus(token, status)
+    }
+
     const {entities, result} = await token.requester[api]({
       id: status.getIdByHost(token.host),
     }, {token})
@@ -76,5 +90,16 @@ export default class TimelineActions {
     this.context.useCase(
       new PushDialogUseCase()
     ).execute(DIALOG_MEDIA_VIEWER, {mediaList, initialIdx: idx})
+  }
+
+  /**
+   * tokenのHostでのidを得るために、statusを検索する
+   * @param {OAuthToken} token
+   * @param {Status} status
+   * @return {Status}
+   */
+  async resolveStatus(token, status) {
+    const {entities} = await token.requester.search({q: status.url, resolve: 'true'})
+    return entities.statuses[status.uri]
   }
 }

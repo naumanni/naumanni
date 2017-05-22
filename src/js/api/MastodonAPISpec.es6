@@ -15,7 +15,10 @@ const notification = new schema.Entity('notifications', {
   account: account,
   status: status,
 })
-
+const result = new schema.Entity('results', {
+  accounts: [account],
+  statuses: [status],
+})
 
 export function normalizeResponse(entity, {result: responseBody, ...response}, host, acct=null) {
   let {entities, result} = normalize(responseBody, entity)
@@ -298,6 +301,12 @@ export default MastodonAPISpec.make({
   listAccountStatuses: {
     endpoint: '/accounts/:id/statuses',
     entity: [status],
+    method: 'get',
+  },
+
+  search: {
+    endpoint: '/search',
+    entity: result,
     method: 'get',
   },
 })

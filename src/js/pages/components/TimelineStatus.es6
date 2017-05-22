@@ -270,13 +270,12 @@ class TimelineStatus extends React.Component {
           <ul>
             {tokens.map((token) => {
               const {account} = token
-              const disabled = status.getIdByHost(token.host) ? false : true
               const on = status.isRebloggedAt(token.acct) ? true : false
 
               return (
-                <li className={`${disabled ? 'is-disabled' : ''} ${on ? 'on' : ''}`}
+                <li className={`${on ? 'on' : ''}`}
                   key={token.acct}
-                  onClick={(e) => !disabled && this.onReblogStatus(token, status, !on)}
+                  onClick={(e) => this.onReblogStatus(token, status, !on)}
                 >
                   <IconFont iconName="reblog" className={on ? 'is-active' : ''} />
                   <UserIconWithHost account={account} size="mini" />
@@ -300,13 +299,12 @@ class TimelineStatus extends React.Component {
           <ul>
             {tokens.map((token) => {
               const {account} = token
-              const disabled = status.getIdByHost(token.host) ? false : true
               const on = status.isFavouritedAt(token.acct) ? true : false
 
               return (
-                <li className={`${disabled ? 'is-disabled' : ''} ${on ? 'on' : ''}`}
+                <li className={`${on ? 'on' : ''}`}
                   key={token.acct}
-                  onClick={(e) => !disabled && this.onFavouriteStatus(token, status, !on)}
+                  onClick={(e) => this.onFavouriteStatus(token, status, !on)}
                 >
                   <IconFont iconName="star-filled" className={on ? 'is-active' : ''} />
                   <UserIconWithHost account={account} size="mini" />
