@@ -334,7 +334,7 @@ export default class TootForm extends React.Component {
    * @param {Event} e
    */
   onKeyDown(e) {
-    if(e.ctrlKey && e.keyCode == KEY_ENTER && this.canSend()) {
+    if((e.ctrlKey || e.metaKey) && e.keyCode == KEY_ENTER && this.canSend()) {
       // (Ctrl|Cmd)+Enterで投稿したい
       this.onClickSend(e)
     } else if(e.keyCode == KEY_ESC) {
