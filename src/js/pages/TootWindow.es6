@@ -94,9 +94,6 @@ export default class TootWindow extends React.Component {
     )
 
     this.saveSendFrom(sendFrom)
-
-    // close tootwindow
-    this.props.onClose()
   }
 
   async onClose() {

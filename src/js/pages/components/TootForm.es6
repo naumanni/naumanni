@@ -234,7 +234,7 @@ export default class TootForm extends React.Component {
       return
     }
 
-    this.props.onClose && this.props.onClose()
+    this.props.onClose()
   }
 
   // cb
@@ -295,8 +295,9 @@ export default class TootForm extends React.Component {
         message,
       })
         .then(() => {
-          // TODO: 送信成功した時点で、閉じられちゃうからここで怒られる...
+          // 送信成功したら閉じる
           this.setState({isSending: false})
+          this.props.onClose()
         }, (error) => {
           this.setState({isSending: false, error: '' + error})
         })
