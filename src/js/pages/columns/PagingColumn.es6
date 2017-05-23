@@ -92,13 +92,13 @@ export default class PagingColumn extends Column {
    * @override
    */
   renderBody() {
-    const {timeline, tailLoading} = this.state
+    const {timeline, isTailLoading} = this.state
 
     return (
       <div className={this.columnBodyClassName()}>
         <ul className="timeline" onScroll={::this.onTimelineScrolled}>
           {timeline.map((ref) => this.renderTimelineRow(ref))}
-          {tailLoading && <li className="timeline-loading"><NowLoading /></li>}
+          {isTailLoading && <li className="timeline-loading"><NowLoading /></li>}
         </ul>
       </div>
     )
@@ -295,7 +295,7 @@ export default class PagingColumn extends Column {
     // Scroll位置がBottomまであとちょっとになれば、次を読み込む
     if(scrollTop + node.clientHeight > node.scrollHeight - AUTO_PAGING_MARGIN) {
       //
-      if(!this.state.tailLoading) {
+      if(!this.state.isTailLoading) {
         this.loadMoreStatuses()
       }
     }
