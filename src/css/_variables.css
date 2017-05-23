@@ -68,6 +68,8 @@ $colorHeaderBackground: $colorMainDarkest;
 $colorHeaderButton: $colorMainNormal;
 $sizeHeaderHeight: calc($sizeHeaderIcon + $marginDefault * 2);
 
+$colorMenuBorder: $colorGray1;
+
 /* Toot画面 */
 $colorTootPanelBackground: $colorMainDarker;
 $colorTootContentBackground: #fff;
@@ -89,7 +91,7 @@ $sizeColumnHeader: 48px;
 $colorStatusBorder: $colorGray1;
 $colorStatusDate: $colorGray3;
 $colorStatusStatusMeta: $colorMainLighter;
-$colorStatusLink: $colorAccentNormal;
+$colorStatusLink: #0884cc;
 $colorStatusText: $colorText;
 $colorStatusInfo: $colorGray2;
 $colorStatusSpoilerOpenerBackground: $colorGray1;

@@ -30,7 +30,7 @@
     right: $marginDefault;
 
     > * {
-      margin-left: $marginHalf;
+      margin-left: $marginDefault;
     }
 
     .dropdownMenuButton {
