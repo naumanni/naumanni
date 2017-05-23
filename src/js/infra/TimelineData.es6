@@ -140,7 +140,7 @@ export class TimelineData extends EventEmitter {
       const account = this.accounts.get(uri)
 
       if(!status && !account) {
-        console.warn(`incrementStatuses: '${uri}' not found`)
+        console.warn(`changeRefCounts: '${uri}' not found`)
         continue
       }
 

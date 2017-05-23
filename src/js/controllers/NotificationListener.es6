@@ -26,9 +26,19 @@ export default class NotificationListener extends TimelineListener {
         const {normalizeNotification} = require('src/api/MastodonAPISpec')
         const {entities, result} = normalizeNotification({result: payload.payload}, host, acct)
 
+        // ToDo NotificationLoaderと被ってる
         const notificationRefs = this.db.mergeNotifications(entities, [result])
         const removes = this.timeline.push(notificationRefs)
-        this.db.decrement(removes.map((ref) => ref.uri))
+          .reduce((removes, ref) => {
+            const accountRef = ref.accountRef
+            if(accountRef)
+              removes.push(accountRef.uri)
+            const statusRef = ref.statusRef
+            if(statusRef)
+              removes.push(statusRef.uri)
+            return removes
+          }, [])
+        this.db.decrement(removes)
       }
     }
   }
