@@ -1,31 +1,44 @@
 import React from 'react'
 import {shallow} from 'enzyme'
 import {spy} from 'sinon'
+import renderer from 'react-test-renderer';
 
 import MediaFileThumbnail from '../MediaFileThumbnail'
 import IconFont from '../IconFont'
 import NowLoading from '../NowLoading'
 
+
+const takeSnapshot = (component) => {
+  const tree = renderer.create(component).toJSON()
+  expect(tree).toMatchSnapshot()
+}
+
 describe('MediaFileThumbnail', () => {
   var mediaFile
-  var wrapper = shallow(<MediaFileThumbnail mediaFile={mediaFile} />)
+  var component = <MediaFileThumbnail mediaFile={mediaFile} />
+  var wrapper = shallow(component)
 
   describe('no file', () => {
     it('has mediaThumbnail mediaThumbnail--nofile classes', () => {
       expect(wrapper.find('.mediaThumbnail--nofile').length).toBe(1)
     })
+
+    it('snapshot', () => takeSnapshot(component))
   })
 
   describe('image file', () => {
     beforeAll(() => {
       mediaFile = new File([new ArrayBuffer(0)], 'image.jpg', {type: 'image/jpg'})
-      wrapper = shallow(<MediaFileThumbnail mediaFile={mediaFile} />)
+      component = <MediaFileThumbnail mediaFile={mediaFile} />
+      wrapper = shallow(component)
     })
 
     describe('no state of canvas', () => {
       it('has mediaThumbnail mediaThumbnail--generic classes', () => {
         expect(wrapper.find('.mediaThumbnail--generic').length).toBe(1)
       })
+
+      it('snapshot', () => takeSnapshot(component))
     })
 
     describe('has state of isImage', () => {
@@ -39,6 +52,8 @@ describe('MediaFileThumbnail', () => {
         expect(wrapper.contains(<NowLoading />)).toBeTruthy()
       })
 
+      it('snapshot', () => takeSnapshot(component))
+
       describe('has state of canvas', () => {
         it('has mediaThumbnail mediaThumbnail--image classes', () => {
           wrapper.setState({
@@ -48,6 +63,8 @@ describe('MediaFileThumbnail', () => {
           })
           expect(wrapper.find('.mediaThumbnail--image').length).toBe(1)
         })
+
+        it('snapshot', () => takeSnapshot(component))
       })
     })
   })
@@ -55,7 +72,8 @@ describe('MediaFileThumbnail', () => {
   describe('video file', () => {
     beforeAll(() => {
       mediaFile = new File([new ArrayBuffer(0)], 'sample.video', {type: 'video/quicktime'})
-      wrapper = shallow(<MediaFileThumbnail mediaFile={mediaFile} />)
+      component = <MediaFileThumbnail mediaFile={mediaFile} />
+      wrapper = shallow(component)
     })
 
     it('has mediaThumbnail mediaThumbnail--generic classes', () => {
@@ -71,12 +89,15 @@ describe('MediaFileThumbnail', () => {
       )
       expect(wrapper.contains(nodes)).toBeTruthy()
     })
+
+    it('snapshot', () => takeSnapshot(component))
   })
 
   describe('doc file', () => {
     beforeAll(() => {
       mediaFile = new File([''], 'sample.txt')
-      wrapper = shallow(<MediaFileThumbnail mediaFile={mediaFile} />)
+      component = <MediaFileThumbnail mediaFile={mediaFile} />
+      wrapper = shallow(component)
     })
 
     it('has mediaThumbnail mediaThumbnail--generic classes', () => {
@@ -92,12 +113,16 @@ describe('MediaFileThumbnail', () => {
       )
       expect(wrapper.contains(nodes)).toBeTruthy()
     })
+
+    it('snapshot', () => takeSnapshot(component))
   })
 
   describe('has not showClose props', () => {
     it('has not mediaThumbnail-close element', () => {
       expect(wrapper.find('.mediaThumbnail-close').length).toBe(0)
     })
+
+    it('snapshot', () => takeSnapshot(component))
   })
 
   describe('has showClose props', () => {
@@ -105,12 +130,13 @@ describe('MediaFileThumbnail', () => {
 
     beforeAll(() => {
       onCloseSpy = spy()
-      wrapper = shallow(
+      component = (
         <MediaFileThumbnail
           mediaFile={mediaFile}
           showClose={true}
           onClose={onCloseSpy} />
-        )
+      )
+      wrapper = shallow(component)
     })
 
     it('has mediaThumbnail-close element', () => {
@@ -122,5 +148,7 @@ describe('MediaFileThumbnail', () => {
       closeButton.simulate('click')
       expect(onCloseSpy.calledOnce).toBeTruthy()
     })
+
+    it('snapshot', () => takeSnapshot(component))
   })
 })

@@ -88,6 +88,7 @@
     "postcss-nested": "^1.0.1",
     "postcss-simple-vars": "^3.1.0",
     "react-test-renderer": "^15.5.4",
+    "sinon": "^2.3.1",
     "webpack": "^2.4.1"
   },
   "jest": {

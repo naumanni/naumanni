@@ -1,0 +1,137 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MediaFileThumbnail doc file snapshot 1`] = `
+<div
+  className="mediaThumbnail mediaThumbnail--generic"
+>
+  <div
+    className="mediaThumbnail-genericFile"
+  >
+    <span
+      className="mediaThumbnail-type"
+    >
+      <span
+        className="icon icon-doc"
+      />
+    </span>
+    <span
+      className="mediaThumbnail-name"
+    >
+      sample.txt
+    </span>
+  </div>
+</div>
+`;
+
+exports[`MediaFileThumbnail has not showClose props snapshot 1`] = `
+<div
+  className="mediaThumbnail mediaThumbnail--generic"
+>
+  <div
+    className="mediaThumbnail-genericFile"
+  >
+    <span
+      className="mediaThumbnail-type"
+    >
+      <span
+        className="icon icon-doc"
+      />
+    </span>
+    <span
+      className="mediaThumbnail-name"
+    >
+      sample.txt
+    </span>
+  </div>
+</div>
+`;
+
+exports[`MediaFileThumbnail has showClose props snapshot 1`] = `
+<div
+  className="mediaThumbnail mediaThumbnail--generic"
+>
+  <button
+    className="mediaThumbnail-close"
+    onClick={[Function]}
+  >
+    <span
+      className="icon icon-cancel"
+    />
+  </button>
+  <div
+    className="mediaThumbnail-genericFile"
+  >
+    <span
+      className="mediaThumbnail-type"
+    >
+      <span
+        className="icon icon-doc"
+      />
+    </span>
+    <span
+      className="mediaThumbnail-name"
+    >
+      sample.txt
+    </span>
+  </div>
+</div>
+`;
+
+exports[`MediaFileThumbnail image file has state of isImage has state of canvas snapshot 1`] = `
+<div
+  className="mediaThumbnail mediaThumbnail--loading"
+>
+  <div
+    className="niceLoader"
+  />
+</div>
+`;
+
+exports[`MediaFileThumbnail image file has state of isImage snapshot 1`] = `
+<div
+  className="mediaThumbnail mediaThumbnail--loading"
+>
+  <div
+    className="niceLoader"
+  />
+</div>
+`;
+
+exports[`MediaFileThumbnail image file no state of canvas snapshot 1`] = `
+<div
+  className="mediaThumbnail mediaThumbnail--loading"
+>
+  <div
+    className="niceLoader"
+  />
+</div>
+`;
+
+exports[`MediaFileThumbnail no file snapshot 1`] = `
+<div
+  className="mediaThumbnail mediaThumbnail--nofile"
+/>
+`;
+
+exports[`MediaFileThumbnail video file snapshot 1`] = `
+<div
+  className="mediaThumbnail mediaThumbnail--generic"
+>
+  <div
+    className="mediaThumbnail-genericFile"
+  >
+    <span
+      className="mediaThumbnail-type"
+    >
+      <span
+        className="icon icon-video"
+      />
+    </span>
+    <span
+      className="mediaThumbnail-name"
+    >
+      sample.video
+    </span>
+  </div>
+</div>
+`;
