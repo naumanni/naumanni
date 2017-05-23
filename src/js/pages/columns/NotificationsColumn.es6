@@ -64,35 +64,6 @@ export default class NotificationColumn extends PagingColumn {
     )
   }
 
-  loadMoreStatuses() {
-    require('assert')(this.subtimeline)
-
-    if(!this.timelineLoaders) {
-      this.timelineLoaders = {}
-      for(const token of this.tokenListener.getTokens()) {
-        this.timelineLoaders[token.address] = {
-          loader: new NotificationTimelineLoader(this.subtimeline, token, this.db),
-          loading: false,
-        }
-      }
-    }
-
-    for(const loaderInfo of Object.values(this.timelineLoaders)) {
-      if(!loaderInfo.loading && !loaderInfo.loader.isTailReached()) {
-        loaderInfo.loading = true
-        loaderInfo.loader.loadNext()
-          .then(() => {
-            loaderInfo.loading = false
-            this.updateLoadingStatus()
-          }, () => {
-            loaderInfo.loading = false
-            this.updateLoadingStatus()
-          })
-      }
-    }
-    this.updateLoadingStatus()
-  }
-
   /**
    * @override
    */

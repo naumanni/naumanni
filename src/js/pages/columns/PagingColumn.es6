@@ -154,9 +154,9 @@ export default class PagingColumn extends Column {
   }
 
   updateLoadingStatus() {
-    this.setState({
-      isTailLoading: !Object.values(this.timelineLoaders).every((loaderInfo) => !loaderInfo.loading),
-    })
+    let isTailLoading = this.timelineLoaders &&
+      !Object.values(this.timelineLoaders).every((loaderInfo) => !loaderInfo.loading)
+    this.setState({isTailLoading})
   }
 
   // virtual methods
