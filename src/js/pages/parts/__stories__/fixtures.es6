@@ -1,4 +1,4 @@
-import {Account} from 'src/models'
+import {Account, Status} from 'src/models'
 
 
 const accountA = new Account({
@@ -25,4 +25,45 @@ const accountA = new Account({
   },
 })
 
-export {accountA}
+const statusA = new Status({
+  'id_by_host': {
+    'friends.nico': 9823571,
+  },
+  'uri': 'tag:friends.nico,2017-05-16:objectId=9823571:objectType=Status',
+  'url': 'https://friends.nico/@glpt/9823571',
+  'content': '<p><span class=\"h-card\"><a href=\"https://friends.nico/@glpt2\" class=\"u-url mention\">@<span>glpt2</span></a></span> pong<br /><script>alert(\"abracadabra\")</script></p>',
+  'created_at': '2017-05-16T08:50:08.188Z',
+  'account': 'https://friends.nico/@glpt',
+  'reblogs_count': 0,
+  'favourites_count': 0,
+  'sensitive': false,
+  'spoiler_text': '',
+  'visibility': 'direct',
+  'media_attachments': [],
+  'mentions': [{
+    'url': 'https://friends.nico/@glpt2',
+    'acct': 'glpt2@friends.nico',
+    'id': 111968,
+    'username': 'glpt2',
+  }],
+  'tags': [],
+  'application': {
+    'name': 'Web',
+    'website': null,
+  },
+  'reblog': null,
+  'in_reply_to_id_by_host': {
+    'friends.nico': 9823456,
+  },
+  'in_reply_to_account_id_by_host': {
+    'friends.nico': 111968,
+  },
+  'reblogged_by_acct': {
+    'glpt@friends.nico': null,
+  },
+  'favourited_by_acct': {
+    'glpt@friends.nico': null,
+  },
+})
+
+export {accountA, statusA}
