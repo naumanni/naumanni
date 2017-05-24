@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CushionString match snapshot 1`] = `
+<div>
+  spam
+  <span
+    className="cushionString"
+  >
+        
+  </span>
+  ham
+</div>
+`;
