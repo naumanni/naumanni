@@ -2,14 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
-import {AccountPropType, OAuthTokenArrayPropType} from 'src/propTypes'
+import {AccountPropType, OAuthTokenListPropType} from 'src/propTypes'
 import {SafeNote, SafeLink} from 'src/pages/parts'
 
 
 export default class UserDetail extends React.Component {
   static propTypes = {
     account: AccountPropType.isRequired,
-    tokens: OAuthTokenArrayPropType.isRequired,
+    tokens: OAuthTokenListPropType.isRequired,
     relationships: PropTypes.object.isRequired,
     onOpenTalkClicked: PropTypes.func.isRequired,
     onToggleFollowClicked: PropTypes.func.isRequired,
@@ -29,7 +29,7 @@ url(${account.header})`
 
     return (
       <div className="userDetail" style={headerStyle}>
-        {tokens.length == 1
+        {tokens.size == 1
           ? this.renderActionsSingleToken()
           : this.renderActionsMultiTokens()
         }
@@ -47,7 +47,7 @@ url(${account.header})`
 
   renderActionsSingleToken() {
     const {account} = this.props
-    const token = this.props.tokens[0]
+    const token = this.props.tokens.get(0)
 
     // 自分では?
     if(account.acct === token.acct) {

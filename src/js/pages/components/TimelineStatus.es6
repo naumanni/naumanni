@@ -6,7 +6,7 @@ import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
 import TootForm from './TootForm'
-import {AcctPropType, AccountPropType, StatusPropType} from 'src/propTypes'
+import {AcctPropType, AccountPropType, StatusPropType, OAuthTokenListPropType} from 'src/propTypes'
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
 import {DropdownMenuButton, IconFont, UserIconWithHost, SafeContent, UserDisplayName, UserAcct} from '../parts'
 
@@ -22,7 +22,7 @@ class TimelineStatus extends React.Component {
     account: AccountPropType.isRequired,
     status: StatusPropType.isRequired,
     modifier: PropTypes.string,
-    tokens: TootForm.propTypes.tokens,
+    tokens: OAuthTokenListPropType,
     onLockStatus: PropTypes.func,
     ...TimelineActionPropTypes,
   }
@@ -210,8 +210,8 @@ class TimelineStatus extends React.Component {
     const on = tokens.find((token) => status.isRebloggedAt(token.acct)) ? true : false
 
     const onClickHandler =
-      tokens.length === 1
-        ? this.props.onReblogStatus.bind(this, tokens[0], status, !on)
+      tokens.size === 1
+        ? this.props.onReblogStatus.bind(this, tokens.get(0), status, !on)
         : ::this.onClickToggleReblogPanel
 
     return (
@@ -226,8 +226,8 @@ class TimelineStatus extends React.Component {
     const on = tokens.find((token) => status.isFavouritedAt(token.acct)) ? true : false
 
     const onClickHandler =
-      tokens.length === 1
-        ? this.props.onFavouriteStatus.bind(this, tokens[0], status, !on)
+      tokens.size === 1
+        ? this.props.onFavouriteStatus.bind(this, tokens.get(0), status, !on)
         : ::this.onClickToggleFavouritePanel
 
     return (

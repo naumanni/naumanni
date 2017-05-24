@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import ImmutablePropTypes from 'react-immutable-proptypes'
 import {Context} from 'almin'
 
 import {
@@ -35,7 +36,6 @@ AcctPropType.isRequired = AcctPropTypeBase.bind(null, true)
 const AppPropType = PropTypes.any
 const AccountPropType = PropTypes.instanceOf(Account)
 const NotificationPropType = PropTypes.instanceOf(Notification)
-const OAuthTokenArrayPropType = PropTypes.arrayOf(PropTypes.instanceOf(OAuthToken))
 const StatusPropType = PropTypes.instanceOf(Status)
 export {AcctPropType, AccountPropType, AppPropType, NotificationPropType, StatusPropType}
 

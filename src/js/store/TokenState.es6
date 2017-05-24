@@ -1,3 +1,5 @@
+import {List} from 'immutable'
+
 import * as actions from 'src/actions'
 
 
@@ -6,14 +8,16 @@ export default class TokenState {
    * @param {OAuthToken[]} tokens
    */
   constructor(tokens=[]) {
-    this._tokens = tokens
-    this._tokens.sort((a, b) => {
+    tokens = [...tokens]
+    tokens.sort((a, b) => {
       if(a.acct > b.acct)
         return 1
       else if(a.acct < b.acct)
         return -1
       return 0
     })
+
+    this._tokens = new List(tokens)
   }
 
   reduce(payload) {

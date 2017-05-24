@@ -6,17 +6,16 @@ import {
   NOTIFICATION_TYPE_MENTION, NOTIFICATION_TYPE_REBLOG, NOTIFICATION_TYPE_FAVOURITE, NOTIFICATION_TYPE_FOLLOW,
 } from 'src/constants'
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
-import {NotificationRefPropType} from 'src/propTypes'
+import {NotificationRefPropType, OAuthTokenListPropType} from 'src/propTypes'
 import {IconFont, UserIconWithHost, UserDisplayName, UserAcct, CushionString} from '../parts'
 import TimelineStatus from './TimelineStatus'
-import TootForm from './TootForm'
 
 
 // TODO: notificationRefと切り離してPureComponentにする
 export default class TimelineNotification extends React.Component {
   static propTypes = {
     notificationRef: NotificationRefPropType.isRequired,
-    tokens: TootForm.propTypes.tokens,
+    tokens: OAuthTokenListPropType,
     onAvatarClicked: TimelineActionPropTypes.onAvatarClicked,
     onLockStatus: PropTypes.func,
   }

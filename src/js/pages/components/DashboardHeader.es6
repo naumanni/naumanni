@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import {OAuthTokenArrayPropType} from 'src/propTypes'
+import {OAuthTokenListPropType} from 'src/propTypes'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
 import {
   COLUMN_TIMELINE, COLUMN_FRIENDS, COLUMN_NOTIFICATIONS,
@@ -16,7 +16,7 @@ import TootWindow from '../TootWindow'
  */
 export default class DashboardHeader extends React.Component {
   static propTypes = {
-    tokens: OAuthTokenArrayPropType.isRequired,
+    tokens: OAuthTokenListPropType.isRequired,
     onStartAddAccount: PropTypes.func.isRequired,
     onOpenColumn: PropTypes.func.isRequired,
     onGenKey: PropTypes.func.isRequired,
