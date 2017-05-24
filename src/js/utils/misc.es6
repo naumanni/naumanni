@@ -1,4 +1,5 @@
 import bezierEasing from 'bezier-easing'
+import {is, List, Record} from 'immutable'
 
 
 // host -> wss urlのマップ  JSで取る方法が面倒なので、増えるまでハードコーディングで
@@ -165,3 +166,42 @@ export const raq = (function() {
   }
   throw new Error('No Available requestFrameAnimation or process.nextTick')
 }())
+
+
+/**
+ * 2つのRecordから、指定されたKeyだけ比べる
+ * @param {string[]} keys
+ * @param {Record} a
+ * @param {Record} b
+ * @return {bool} 指定されたKeyを比べて、全て同じであればtrue
+ */
+export function isKeys(keys, a, b) {
+  if(a === null || b === null) {
+    return a === b
+  }
+
+  require('assert')((a instanceof Record) && (b instanceof Record))
+
+  for(const key of keys) {
+    if(!is(a.get(key), b.get(key))) {
+      return false
+    }
+  }
+  return true
+}
+
+/**
+ * 2つのList<Record>内のRecordから、指定されたKeyだけ比べる
+ * @param {string[]} keys
+ * @param {List<Record>} aList
+ * @param {List<Record>} bList
+ * @return {bool} 指定されたKeyを比べて、全て同じであればtrue
+ */
+export function isKeysList(keys, aList, bList) {
+  require('assert')((aList instanceof List) && (bList instanceof List))
+
+  if(aList.size != bList.size)
+    return false
+
+  return aList.every((a, idx) => isKeys(keys, a, bList.get(idx)))
+}

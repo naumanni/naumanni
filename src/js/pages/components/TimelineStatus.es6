@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {is} from 'immutable'
 
 
 import {
@@ -8,6 +9,7 @@ import {
 import TootForm from './TootForm'
 import {AcctPropType, AccountPropType, StatusPropType, OAuthTokenListPropType} from 'src/propTypes'
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
+import {isKeys, isKeysList} from 'src/utils'
 import {DropdownMenuButton, IconFont, UserIconWithHost, SafeContent, UserDisplayName, UserAcct} from '../parts'
 
 
@@ -25,6 +27,22 @@ class TimelineStatus extends React.Component {
     tokens: OAuthTokenListPropType,
     onLockStatus: PropTypes.func,
     ...TimelineActionPropTypes,
+  }
+
+  // propsの中でrendering対象のkey
+  static propDeepKeys = {
+    'account': new Set([
+      'acct',
+      ...UserIconWithHost.propDeepKeys.account,
+      ...UserDisplayName.propDeepKeys.account,
+      ...UserAcct.propDeepKeys.account,
+    ]),
+    'status': new Set([
+      'sensitive', 'spoiler_text', 'visibility', 'url', 'created_at', 'content', 'mentions',
+      'reblogged_by_acct', 'favourited_by_acct',
+      // 'media_attachments',   // deepに比べる
+    ]),
+    'media_attachments': new Set(['url', 'preview_url']),
   }
 
   /**
@@ -45,6 +63,13 @@ class TimelineStatus extends React.Component {
       isShowReblogPanel: false,
       isAnimatedReblogPanel: true,
     }
+  }
+
+  /**
+   * @override
+   */
+  shouldComponentUpdate(nextProps, nextState) {
+    return shouldComponentUpdateTimelineStatus(this.props, this.state, nextProps, nextState)
   }
 
   /**
@@ -179,7 +204,7 @@ class TimelineStatus extends React.Component {
     return (
       <div className={className.join(' ')}>
         {mediaList.map((media, idx) => (
-          <a key={media.id}
+          <a key={media.preview_url}
             className="status-media"
             style={{backgroundImage: `url(${media.preview_url})`}}
             target="_blank"
@@ -455,42 +480,103 @@ function VisibilityIcon({visibility, className}) {
 
 
 /**
+ * TimelineStatusのshouldComponentUpdateを切り出したもの
+ * TimelineStatusContainerでも使うので
+ * @param {object} prevProps
+ * @param {object} prevState
+ * @param {object} nextProps
+ * @param {object} nextState
+ * @return {bool}
+ */
+function shouldComponentUpdateTimelineStatus(prevProps, prevState, nextProps, nextState) {
+  if(
+    !is(prevProps.subject, nextProps.subject) ||
+    !isKeys(TimelineStatus.propDeepKeys.account, prevProps.account, nextProps.account) ||
+    !isKeys(TimelineStatus.propDeepKeys.status, prevProps.status, nextProps.status) ||
+    !isKeysList(
+      TimelineStatus.propDeepKeys.media_attachments,
+      prevProps.status.media_attachments, nextProps.status.media_attachments) ||
+    !is(prevProps.modifier, nextProps.modifier) ||
+    !is(prevProps.tokens, nextProps.tokens) ||
+    !Object.keys(nextState || {}).every((s) => is(nextState[s], prevState[s]))
+  ) {
+    return true
+  }
+  return false
+}
+
+/**
  * Reblogはここで吸収
  * @return {React.Component}
  */
-export default function TimelineStatusContainer({modifier, reblog, reblogAccount, ...props}, ...args) {
-  let children = null
-
-  if(reblog || reblogAccount) {
-    require('assert')(reblog && reblogAccount)
-    const account = props.account
-    props = {
-      ...props,
-      status: reblog,
-      account: reblogAccount,
-    }
-
-    children = (
-      <div className="status-row status-reblogFrom">
-        <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
-        <div className="status-rowRight">
-          <UserDisplayName
-            account={account}
-            onClick={(e) => {
-              e.preventDefault()
-              props.onAvatarClicked(account)
-            }} /> boosted
-        </div>
-      </div>
-    )
+export default class TimelineStatusContainer extends React.Component {
+  static propTypes = {
+    reblog: StatusPropType,
+    reblogAccount: AccountPropType,
+    ...TimelineStatus.propTypes,
   }
 
-  return (
-    <TimelineStatus {...props}>{children}</TimelineStatus>
-  )
-}
-TimelineStatusContainer.propTypes = {
-  reblog: StatusPropType,
-  reblogAccount: AccountPropType,
-  ...TimelineStatus.propTypes,
+  /**
+   * @override
+   */
+  shouldComponentUpdate(nextProps, nextState) {
+    let {reblog, reblogAccount, ...prevProps} = this.props
+
+    if(reblog) {
+      const prevAcount = prevProps.account
+      const nextAccount = nextProps.account
+      prevProps = {
+        ...prevProps,
+        status: reblog,
+        account: reblogAccount,
+      }
+      nextProps = {
+        ...nextProps,
+        status: nextProps.reblog,
+        account: nextProps.reblogAccount,
+      }
+
+      if(!isKeys(UserDisplayName.propDeepKeys.account, prevAcount, nextAccount)) {
+        return true
+      }
+    }
+
+    return shouldComponentUpdateTimelineStatus(prevProps, {}, nextProps, {})
+  }
+
+  /**
+   * @override
+   */
+  render() {
+    let {reblog, reblogAccount, ...props} = this.props
+    let children = null
+
+    if(reblog || reblogAccount) {
+      require('assert')(reblog && reblogAccount)
+      const account = props.account
+      props = {
+        ...props,
+        status: reblog,
+        account: reblogAccount,
+      }
+
+      children = (
+        <div className="status-row status-reblogFrom">
+          <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
+          <div className="status-rowRight">
+            <UserDisplayName
+              account={account}
+              onClick={(e) => {
+                e.preventDefault()
+                props.onAvatarClicked(account)
+              }} /> boosted
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <TimelineStatus {...props}>{children}</TimelineStatus>
+    )
+  }
 }

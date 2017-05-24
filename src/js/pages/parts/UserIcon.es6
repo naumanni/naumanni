@@ -14,6 +14,11 @@ export class UserIconWithHost extends React.Component {
     size: PropTypes.string,
   }
 
+  // propsの中でrendering対象のkey
+  static propDeepKeys = {
+    'account': new Set('acct', 'avatar', 'avatar_static'),
+  }
+
   /**
    * @override
    */
