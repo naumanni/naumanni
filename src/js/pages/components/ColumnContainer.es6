@@ -67,6 +67,7 @@ export default class ColumnContainer extends React.Component {
         ref: column.key,
         key: column.key,
         column: column,
+        onClickHeader: ::this.scrollToColumn,
         ...column.params,
       })
   }

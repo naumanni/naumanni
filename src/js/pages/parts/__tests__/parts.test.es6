@@ -26,7 +26,7 @@ describe('DropdownMenuButton', () => {
 
     // menu was showed
     expect(tree.children[0].props.className).toBe('dropdownMenuButton-button')
-    tree.children[0].props.onClick({preventDefault: jest.fn()})
+    tree.children[0].props.onClick({preventDefault: jest.fn(), stopPropagation: jest.fn()})
     tree = component.toJSON();
     expect(tree).toMatchSnapshot('DropdownMenuButton can show and hide menu : button and menu are visible')
 
@@ -36,13 +36,13 @@ describe('DropdownMenuButton', () => {
     expect(tree).toMatchSnapshot('DropdownMenuButton can show and hide menu : only button is visible')
 
     // menu was showed
-    tree.children[0].props.onClick({preventDefault: jest.fn()})
+    tree.children[0].props.onClick({preventDefault: jest.fn(), stopPropagation: jest.fn()})
     tree = component.toJSON();
     expect(tree).toMatchSnapshot('DropdownMenuButton can show and hide menu : button and menu are visible')
 
     // menu was closed after link click
     expect(tree.children[1].props.className).toBe('dropdownMenuButton-menu')
-    tree.children[1].props.onClick({preventDefault: jest.fn()})
+    tree.children[1].props.onClick({preventDefault: jest.fn(), stopPropagation: jest.fn()})
     tree = component.toJSON();
     expect(tree).toMatchSnapshot('DropdownMenuButton can show and hide menu : only button is visible')
   })
