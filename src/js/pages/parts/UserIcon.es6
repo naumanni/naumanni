@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {is} from 'immutable'
 
 import {AccountPropType} from 'src/propTypes'
 import {makeFaviconUrl} from 'src/utils'
@@ -11,6 +12,16 @@ export class UserIconWithHost extends React.Component {
   static propTypes = {
     account: AccountPropType.isRequired,
     size: PropTypes.string,
+  }
+
+  /**
+   * @override
+   */
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      this.props.size === nextProps.size &&
+      is(this.props.account, nextProps.account)
+    ) ? false : true
   }
 
   /**
