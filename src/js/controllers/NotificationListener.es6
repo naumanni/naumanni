@@ -1,4 +1,3 @@
-import moment from 'moment'
 import {
   EVENT_NOTIFICATION, STREAM_HOME, WEBSOCKET_EVENT_MESSAGE,
 } from 'src/constants'

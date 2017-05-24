@@ -113,11 +113,15 @@ export default class Status extends StatusRecord {
   }
 
   get createdAt() {
-    return moment(this.created_at)
+    if(!this._createdAt)
+      this._createdAt = moment(this.created_at)
+    return this._createdAt
   }
 
   get fetchedAt() {
-    return this.fetched_at ? moment(this.fetched_at) : null
+    if(!this._fetchedAt)
+      this._fetchedAt = this.fetched_at ? moment(this.fetched_at) : null
+    return this._fetchedAt
   }
 
   get hasSpoilerText() {
