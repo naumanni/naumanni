@@ -4,7 +4,7 @@
   "main": "index.js",
   "repository": "git@github.com:naumanni/naumanni.git",
   "author": "Shin ADACHI <shn@glucose.jp>",
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "scripts": {
     "build": "run-s clean copy:js build:*",
     "build:js": "webpack",
