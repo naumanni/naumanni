@@ -5,7 +5,7 @@ import {
   MESSAGE_TAG_REX,
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
-import {parseMastodonHtml, parsedHtmlToText} from 'src/utils'
+import {compareDateForTL, parseMastodonHtml, parsedHtmlToText} from 'src/utils'
 import Attachment from './Attachment'
 
 
@@ -47,7 +47,12 @@ const StatusRecord = Record({  // eslint-disable-line new-cap
   in_reply_to_account_id_by_host: new Map(),
   reblogged_by_acct: new Map(),
   favourited_by_acct: new Map(),
+
+  // naumanni
+  fetched_at: null,  // WebSocketから取得した日付
 })
+
+const NOT_SET = {}
 
 
 /**
@@ -111,6 +116,10 @@ export default class Status extends StatusRecord {
     return moment(this.created_at)
   }
 
+  get fetchedAt() {
+    return this.fetched_at ? moment(this.fetched_at) : null
+  }
+
   get hasSpoilerText() {
     return this.spoiler_text.length > 0
   }
@@ -150,30 +159,47 @@ export default class Status extends StatusRecord {
     }
 
     // mergeする。originalの方が優先。どっちも??であれば、next
-    const merged = super.mergeDeepWith((prev, next, key) => {
-      let result = next
+    const merged = this.withMutations((self) => {
+      newObj.forEach((next, key) => {
+        self.update(key, NOT_SET, (prev) => {
+          let result = next
 
-      if(!is(prev, next)) {
-        if(this.isOriginal)
-          result = prev
-        else if(newObj.isOriginal)
-          result = next
-      }
-      return result
-    }, newObj)
+          if(key === 'fetched_at') {
+            // fetched_atは一番古い日付を使う. nullだったら、WebSocket以前にもってたってことなのでnullのまま
+            if(!prev || (prev && next && prev < next))
+              result = prev
+          } else if(prev instanceof Map) {
+            // mapだったらnext優先でmergeする
+            result = prev.mergeDeep(next)
+          } else {
+            // それ以外はoriginal優先
+            if(this.isOriginal)
+              result = prev
+            else if(newObj.isOriginal)
+              result = next
+          }
+
+          return result
+        })
+      })
+    })
     merged.isOriginal = this.isOriginal || newObj.isOriginal
 
     return {isChanged: true, merged}
   }
 
-  static compareCreatedAt(a, b) {
-    const aAt = a.createdAt
-    const bAt = b.createdAt
-    if(aAt.isBefore(bAt))
+  static compareForTimeline(a, b) {
+    const af = a.fetchedAt
+    const bf = b.fetchedAt
+
+    if(af && bf)
+      return compareDateForTL(af, bf)
+    else if(!af && bf)
       return 1
-    else if(aAt.isAfter(bAt))
+    else if(af && !bf)
       return -1
-    return 0
+    else
+      return compareDateForTL(a.createdAt, b.createdAt)
   }
 
   // naumanni用機能

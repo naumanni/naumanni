@@ -1,3 +1,4 @@
+import moment from 'moment'
 import {
   EVENT_NOTIFICATION, STREAM_HOME, WEBSOCKET_EVENT_MESSAGE,
 } from 'src/constants'
@@ -26,7 +27,10 @@ export default class NotificationListener extends TimelineListener {
         const {normalizeNotification} = require('src/api/MastodonAPISpec')
         const {entities, result} = normalizeNotification({result: payload.payload}, host, acct)
 
-        // ToDo NotificationLoaderと被ってる
+        // fetchedAtを付与
+        this.modifyEntities(entities)
+
+        // TODO: NotificationLoaderと被ってる
         const notificationRefs = this.db.mergeNotifications(entities, [result])
         const removes = this.timeline.push(notificationRefs)
           .reduce((removes, ref) => {

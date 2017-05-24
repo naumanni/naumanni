@@ -58,7 +58,7 @@ class TalkBlock {
   push(newStatus) {
     // require('assert')(newStatus.createdAt.isAfter(this.statuses[0].createdAt))
     this.statuses.push(newStatus)
-    this.statuses.sort((a, b) => -Status.compareCreatedAt(a, b))
+    this.statuses.sort((a, b) => -Status.compareForTimeline(a, b))
   }
 
   isMatch(newStatus) {
@@ -259,7 +259,7 @@ export default class TalkListener extends EventEmitter {
       return false
 
     this.statuses = this.statuses.concat(statuses)
-    this.statuses.sort((a, b) => -Status.compareCreatedAt(a.resolve(), b.resolve()))
+    this.statuses.sort((a, b) => -Status.compareForTimeline(a.resolve(), b.resolve()))
 
     // rebuild talks
     this.decryptStatuses()

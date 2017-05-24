@@ -1,3 +1,4 @@
+import moment from 'moment'
 import {
   EVENT_UPDATE, EVENT_NOTIFICATION,
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
@@ -46,10 +47,24 @@ export default class TimelineListener {
       if(payload.event === EVENT_UPDATE) {
         const {entities, result} = normalizeStatus({result: payload.payload}, token.account.instance, token.acct)
 
+        // fetchedAtを付与
+        this.modifyEntities(entities)
+
         const statusRefs = this.db.mergeStatuses(entities, [result])
         const removes = this.timeline.push(statusRefs)
         this.db.decrement(removes.map((ref) => ref.uri))
       }
     }
+  }
+
+  /**
+   * Websocketから得たStatusにfetched_atを付与する
+   * @param {object} entities normalizeしたあとのやつ
+   */
+  modifyEntities(entities) {
+    const now = moment().toISOString('T')
+    Object.keys(entities.statuses || {}).forEach((uri) => {
+      entities.statuses[uri] = entities.statuses[uri].set('fetched_at', now)
+    })
   }
 }

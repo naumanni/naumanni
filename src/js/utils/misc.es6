@@ -205,3 +205,18 @@ export function isKeysList(keys, aList, bList) {
 
   return aList.every((a, idx) => isKeys(keys, a, bList.get(idx)))
 }
+
+
+/**
+ * TL向けに日付を比べる。つまり古いほうが下
+ * @param {moment} a
+ * @param {moment} b
+ * @return {number}
+ */
+export function compareDateForTL(a, b) {
+  if(a.isBefore(b))  // a < b
+    return 1
+  else if(a.isAfter(b))  // a > b
+    return -1
+  return 0
+}
