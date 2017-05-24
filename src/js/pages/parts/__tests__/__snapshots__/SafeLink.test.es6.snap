@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SafeLink children will be passed as its children 1`] = `
+<a
+  href="http://example.com"
+>
+  spam
+</a>
+`;
+
+exports[`SafeLink http link allowed as href 1`] = `
+<a
+  href="http://example.com"
+/>
+`;
+
+exports[`SafeLink https link allowed as href 1`] = `
+<a
+  href="https://example.com"
+/>
+`;
+
+exports[`SafeLink javascript link will be converted to "javascript:void(0)" 1`] = `
+<a
+  href="javascript:void(0)"
+/>
+`;
+
+exports[`SafeLink props will be passed as attributes 1`] = `
+<a
+  href="http://example.com"
+  target="_blank"
+/>
+`;
