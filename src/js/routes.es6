@@ -1,7 +1,7 @@
 import ReplaceDialogsUseCase from 'src/usecases/ReplaceDialogsUseCase'
 import {
   ACCT_PATTERN,
-  DIALOG_ADD_ACCOUNT, DIALOG_AUTHORIZE_ACCOUNT, DIALOG_USER_DETAIL,
+  DIALOG_ADD_ACCOUNT, DIALOG_AUTHORIZE_ACCOUNT, DIALOG_USER_DETAIL, DIALOG_GLOBAL_SETTINGS,
 } from 'src/constants'
 import {parseQuery} from 'src/utils'
 
@@ -11,6 +11,7 @@ export default function installRoutes(history) {
   history.route('accountAdd', '/account/add', routeAccountAdd)
   history.route('authorize', '/authorize', routeAuthorize)
   history.route('userDetail', `/user/@:acct(${ACCT_PATTERN})`, routeUserDetail)
+  history.route('settings', '/settings', routeSettings)
 }
 
 
@@ -48,9 +49,14 @@ function routeAuthorize(history, location, params, action) {
 }
 
 function routeUserDetail(history, location, params, action) {
-  console.log('routeUserDetail')
   let {acct} = params
 
   history.context.useCase(new ReplaceDialogsUseCase())
     .execute([{type: DIALOG_USER_DETAIL, params: {acct: acct}}])
+}
+
+
+function routeSettings(history, location, params, action) {
+  history.context.useCase(new ReplaceDialogsUseCase())
+    .execute([{type: DIALOG_GLOBAL_SETTINGS}])
 }

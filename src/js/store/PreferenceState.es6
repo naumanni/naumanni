@@ -60,7 +60,7 @@ export default class PreferenceState {
   }
 
   byAcct(acct) {
-    return this._preferences.byAccts[acct]
+    return this._preferences.byAccts[acct] || DEFAULT_ACCT_SETTING
   }
 
   onPrefecencesLoaded({globals, byAccts}) {
