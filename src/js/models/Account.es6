@@ -1,12 +1,12 @@
 import moment from 'moment'
-import {List, Record} from 'immutable'
+import {is, List, Map, Record} from 'immutable'
 
 import {REGEX_PGP_FINGERPRINT} from 'src/constants'
-import {isObjectSame, parseMastodonHtml} from 'src/utils'
+import {parseMastodonHtml} from 'src/utils'
 
 
 const AccountRecord = Record({  // eslint-disable-line new-cap
-  id_by_host: {},
+  id_by_host: new Map(),
   username: null,
   acct: null,
   display_name: null,
@@ -30,9 +30,14 @@ const AccountRecord = Record({  // eslint-disable-line new-cap
 export default class Account extends AccountRecord {
   /**
    * @constructor
+   * @param {Object} raw
    */
-  constructor(...args) {
-    super(...args)
+  constructor(raw, {isOriginal}={}) {
+    super({
+      ...raw,
+      id_by_host: new Map(raw.id_by_host),
+    })
+    this.isOriginal = isOriginal
   }
 
   /**
@@ -81,7 +86,7 @@ export default class Account extends AccountRecord {
   }
 
   getIdByHost(host) {
-    return this.id_by_host[host]
+    return this.id_by_host.get(host)
   }
 
   get hasKeypair() {
@@ -132,21 +137,26 @@ export default class Account extends AccountRecord {
     return `https://${this.instance}${url}`
   }
 
+  // TODO: Statusと一緒
   checkMerge(newObj) {
-    let isChanged = false
-    const merged = super.mergeDeepWith((prev, next, key) => {
-      if(typeof prev === 'object') {
-        if(!isObjectSame(prev, next)) {
-          isChanged = true
-          return {...(prev || {}), ...(next || {})}
-        }
-      } else if(prev !== next) {
-        isChanged = true
-      }
-      return next
-    }, newObj)
+    if(is(this, newObj)) {
+      return {isChanged: false, merged: this}
+    }
 
-    return {isChanged, merged}
+    // mergeする。originalの方が優先。どっちも??であれば、next
+    const merged = super.mergeDeepWith((prev, next, key) => {
+      let result = next
+
+      if(!is(prev, next)) {
+        if(this.isOriginal)
+          result = prev
+        else if(newObj.isOriginal)
+          result = next
+      }
+      return result
+    }, newObj)
+    merged.isOriginal = this.isOriginal || newObj.isOriginal
+    return {isChanged: true, merged}
   }
 
   get createdAt() {

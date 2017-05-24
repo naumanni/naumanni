@@ -1,15 +1,33 @@
 import moment from 'moment'
-import {List, Record} from 'immutable'
+import {is, List, Map, Record} from 'immutable'
 
 import {
   MESSAGE_TAG_REX,
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
-import {isObjectSame, parseMastodonHtml} from 'src/utils'
+import {parseMastodonHtml} from 'src/utils'
+import Attachment from './Attachment'
 
+
+const TagRecord = Record({  // eslint-disable-line new-cap
+  name: '',
+  // url: new Map(),    // hostによって値が違うのでomitする
+})
+
+const MentionRecord = Record({  // eslint-disable-line new-cap
+  url: '',
+  username: '',
+  acct: '',
+  // id: 0,   // hostによって値が違うのでomitする
+})
+
+const ApplicationRecord = Record({  // eslint-disable-line new-cap
+  name: '',
+  website: '',
+})
 
 const StatusRecord = Record({  // eslint-disable-line new-cap
-  id_by_host: {},
+  id_by_host: new Map(),
   uri: '',
   url: '',
   content: '',
@@ -20,24 +38,17 @@ const StatusRecord = Record({  // eslint-disable-line new-cap
   sensitive: '',
   spoiler_text: '',
   visibility: '',
-  media_attachments: [],
-  mentions: [],
-  tags: [],
-  application: '',
+  media_attachments: new List(),
+  mentions: new List(),
+  tags: new List(),
+  application: new ApplicationRecord(),
   reblog: null,
-  in_reply_to_id_by_host: {},
-  in_reply_to_account_id_by_host: {},
-  reblogged_by_acct: {},
-  favourited_by_acct: {},
+  in_reply_to_id_by_host: new Map(),
+  in_reply_to_account_id_by_host: new Map(),
+  reblogged_by_acct: new Map(),
+  favourited_by_acct: new Map(),
 })
 
-/*
-mention
-url URL of user's profile (can be remote) no
-username  The username of the account no
-acct  Equals username for local users, includes @domain for remote ones no
-id  Account ID  no
-*/
 
 /**
  * MastodonのStatus
@@ -47,18 +58,28 @@ export default class Status extends StatusRecord {
    * @constructor
    * @param {object} raw
    */
-  constructor(raw) {
-    if(raw.media_attachments && raw.media_attachments.length) {
-      const Attachment = require('./Attachment').default
-      raw.media_attachments = raw.media_attachments.map((rawmedia) => new Attachment(rawmedia))
+  constructor(raw, {isOriginal}={}) {
+    raw = {
+      ...raw,
+      id_by_host: new Map(raw.id_by_host),
+      in_reply_to_id_by_host: new Map(raw.in_reply_to_id_by_host),
+      in_reply_to_account_id_by_host: new Map(raw.in_reply_to_id_by_host),
+      reblogged_by_acct: new Map(raw.reblogged_by_acct),
+      favourited_by_acct: new Map(raw.favourited_by_acct),
+      sensitive: !!raw.sensitive,
+      media_attachments: new List((raw.media_attachments || []).map((obj) => new Attachment(obj))),
+      tags: new List((raw.tags || []).map((obj) => new TagRecord(obj))),
+      mentions: new List((raw.mentions || []).map((obj) => new MentionRecord(obj))),
+      application: new ApplicationRecord(raw.application),  // TODO: Recordにする
     }
 
     super(raw)
+    this.isOriginal = isOriginal || false
   }
 
   // とりあえず
   get hosts() {
-    return Object.keys(this.id_by_host)
+    return this.id_by_host.keySeq().toArray()
   }
 
   get id() {
@@ -67,11 +88,11 @@ export default class Status extends StatusRecord {
   }
 
   getIdByHost(host) {
-    return this.id_by_host[host]
+    return this.id_by_host.get(host)
   }
 
   getInReplyToIdByHost(host) {
-    return this.in_reply_to_id_by_host[host]
+    return this.in_reply_to_id_by_host.get(host)
   }
 
   get parsedContent() {
@@ -101,11 +122,11 @@ export default class Status extends StatusRecord {
   }
 
   isRebloggedAt(acct) {
-    return this.reblogged_by_acct[acct]
+    return this.reblogged_by_acct.get(acct)
   }
 
   isFavouritedAt(acct) {
-    return this.favourited_by_acct[acct]
+    return this.favourited_by_acct.get(acct)
   }
 
   /**
@@ -120,29 +141,25 @@ export default class Status extends StatusRecord {
   }
 
   checkMerge(newObj) {
-    let isChanged = false
+    if(is(this, newObj)) {
+      return {isChanged: false, merged: this}
+    }
 
+    // mergeする。originalの方が優先。どっちも??であれば、next
     const merged = super.mergeDeepWith((prev, next, key) => {
       let result = next
-      if(typeof prev === 'object') {
-        if((!prev && next) || (prev && !next)) {
-          isChanged = true
-        } else if(Array.isArray(next)) {
-          // media_attachmentの中身はサーバによって必ず違うので、長さだけチェック
-          if(prev.length != next.length)
-            isChanged = true
-        } else if(!isObjectSame(prev, next)) {
-          isChanged = true
-          result = {...(prev || {}), ...(next || {})}
-        }
-      } else if(prev !== next) {
-        isChanged = true
-      }
 
+      if(!is(prev, next)) {
+        if(this.isOriginal)
+          result = prev
+        else if(newObj.isOriginal)
+          result = next
+      }
       return result
     }, newObj)
+    merged.isOriginal = this.isOriginal || newObj.isOriginal
 
-    return {isChanged, merged}
+    return {isChanged: true, merged}
   }
 
   static compareCreatedAt(a, b) {

@@ -51,6 +51,8 @@ export default class TimelineActions {
         // in_reply_to_id を付加する
         if(!status.getIdByHost(token.host)) {
           status = await this.resolveStatus(token, status)
+          if(!status)
+            throw new Error('status not found')
         }
 
         messageContent.message.in_reply_to_id = status.getIdByHost(token.host)
@@ -65,6 +67,8 @@ export default class TimelineActions {
 
     if(!status.getIdByHost(token.host)) {
       status = await this.resolveStatus(token, status)
+      if(!status)
+        throw new Error('status not found')
     }
 
     const {entities, result} = await token.requester[api]({
@@ -78,6 +82,8 @@ export default class TimelineActions {
 
     if(!status.getIdByHost(token.host)) {
       status = await this.resolveStatus(token, status)
+      if(!status)
+        throw new Error('status not found')
     }
 
     const {entities, result} = await token.requester[api]({
@@ -100,6 +106,8 @@ export default class TimelineActions {
    */
   async resolveStatus(token, status) {
     const {entities} = await token.requester.search({q: status.url, resolve: 'true'})
+    if(!entities.statuses || !entities.statuses[status.uri])
+      return null
     return entities.statuses[status.uri]
   }
 }

@@ -16,7 +16,7 @@ export class TimelineData extends EventEmitter {
     super(...args)
 
     // uriがkeyつってんだから、accounts/statusesの区別要らないはずだよね...
-    this.accounts = new Map()
+    this.accounts = new Map()  // immutable.Mapじゃないから注意
     this.statuses = new Map()
 
     this.referenceCounts = new Map()

@@ -1,7 +1,7 @@
 import {normalize, schema} from 'normalizr'
+import {List, Map} from 'immutable'
 
 import {Account, Notification, Status} from 'src/models'
-
 import APISpec from './APISpec'
 
 
@@ -20,6 +20,10 @@ const result = new schema.Entity('results', {
   statuses: [status],
 })
 
+
+const HOST_REX = /^https?:\/\/([^/]+)\//
+
+
 export function normalizeResponse(entity, {result: responseBody, ...response}, host, acct=null) {
   let {entities, result} = normalize(responseBody, entity)
   let entitiesByUrl = {}
@@ -29,15 +33,18 @@ export function normalizeResponse(entity, {result: responseBody, ...response}, h
     entities.accounts = Object.keys(entities.accounts).reduce(
       (map, key) => {
         const data = entities.accounts[key]
+        // originalのAccountを作ったhost
+        const originalHost = data.url.match(HOST_REX)[1]
+        const isOriginal = host === originalHost
 
         // acctにhost名が入ってない場合は補正する
         if(data.acct.indexOf('@') < 0)
           data.acct = `${data.acct}@${host}`
 
-        data.id_by_host = {[host]: data.id}
+        data.id_by_host = new Map({[host]: data.id})
         delete data.id
 
-        map[key] = new Account(data)
+        map[key] = new Account(data, {isOriginal})
         return map
       }, {}
     )
@@ -53,6 +60,10 @@ export function normalizeResponse(entity, {result: responseBody, ...response}, h
     entities.statuses = Object.keys(entities.statuses).reduce(
       (map, key) => {
         const data = entities.statuses[key]
+        // originalのStatusを作ったhost
+        const originalHost = data.url.match(HOST_REX)[1]
+        const isOriginal = host === originalHost
+
         data.id_by_host = {[host]: data.id}
         delete data.id
         // reblog: null,
@@ -75,13 +86,27 @@ export function normalizeResponse(entity, {result: responseBody, ...response}, h
         delete data.favourited
 
         // 自ホストのmentionのacctにinstance名が足りてないので細くする
-        data.mentions = data.mentions.map((mention) => {
+        data.mentions = new List(data.mentions.map((mention) => {
           if(mention.acct.indexOf('@') >= 0)
             return mention
           return {...mention, acct: `${mention.acct}@${host}`}
+        }))
+
+        // attachments urlがHostによって違うので差分を吸収する
+        data.media_attachments = data.media_attachments.map((attachment) => {
+          attachment.id_by_host = new Map({[host]: attachment.id})
+          delete attachment.id
+
+          attachment.url_by_host = new Map({[host]: attachment.url})
+          attachment.url = attachment.remote_url || attachment.url
+          delete attachment.remote_url
+
+          attachment.preview_url_by_host = new Map({[host]: attachment.preview_url})
+
+          return attachment
         })
 
-        map[key] = new Status(data)
+        map[key] = new Status(data, {isOriginal})
         return map
       }, {}
     )

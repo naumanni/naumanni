@@ -124,8 +124,8 @@ describe('Status', () => {
     })
     const {isChanged, merged} = oldObj.checkMerge(newObj)
 
-    expect(merged.id_by_host.aaa).toBe(111)
-    expect(merged.id_by_host.bbb).toBe(222)
+    expect(merged.getIdByHost('aaa')).toBe(111)
+    expect(merged.getIdByHost('bbb')).toBe(222)
   })
 
   it('should not merge same object', () => {
@@ -146,6 +146,6 @@ describe('Status', () => {
     const {isChanged, merged} = oldObj.checkMerge(newObj)
 
     expect(isChanged).toBe(false)
-    expect(merged.id_by_host.aaa).toBe(111)
+    expect(merged.getIdByHost('aaa')).toBe(111)
   })
 })

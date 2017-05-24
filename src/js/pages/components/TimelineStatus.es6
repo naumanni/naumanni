@@ -165,12 +165,12 @@ class TimelineStatus extends React.Component {
     const {status} = this.props
     const {isShowMediaCover} = this.state
     const mediaList = status.media_attachments
-    if(!mediaList.length)
+    if(mediaList.isEmpty())
       return null
 
     const className = [
       'status-mediaList',
-      `status-mediaList${mediaList.length}`,
+      `status-mediaList${mediaList.size}`,
     ]
     if(status.sensitive) {
       className.push('is-sensitive')
