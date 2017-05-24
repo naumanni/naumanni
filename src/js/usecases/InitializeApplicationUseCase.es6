@@ -18,12 +18,15 @@ export default class InitializeApplicationUseCase extends UseCase {
   async execute() {
     await initializeDatabase()
 
+    // Tokenを読み込む
+    await this.context.useCase(new LoadTokensUseCase()).execute()
+
     // とりまべた書き
     // Preferencesを読み込む
-    let preferences
+    let preferences = {}
 
     try {
-      preferences = JSON.parse(localStorage.getItem(STORAGE_KEY_PREFERENCES))
+      preferences = JSON.parse(localStorage.getItem(STORAGE_KEY_PREFERENCES)) || {}
     } catch(e) {
       preferences = {}
     }
@@ -31,8 +34,5 @@ export default class InitializeApplicationUseCase extends UseCase {
       type: actions.PREFERENCES_LOADED,
       preferences,
     })
-
-    // Tokenを読み込む
-    await this.context.useCase(new LoadTokensUseCase()).execute()
   }
 }

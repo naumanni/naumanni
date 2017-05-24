@@ -55,7 +55,6 @@ function routeUserDetail(history, location, params, action) {
     .execute([{type: DIALOG_USER_DETAIL, params: {acct: acct}}])
 }
 
-
 function routeSettings(history, location, params, action) {
   history.context.useCase(new ReplaceDialogsUseCase())
     .execute([{type: DIALOG_GLOBAL_SETTINGS}])

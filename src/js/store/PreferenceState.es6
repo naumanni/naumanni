@@ -39,7 +39,9 @@ export default class PreferenceState {
   reduce(payload) {
     switch(payload.type) {
     case actions.PREFERENCES_LOADED:
-      return this.onPrefecencesLoaded(payload)
+      return this.onPrefecencesLoaded(payload.preferences)
+    case actions.PREFERENCES_UPDATED:
+      return this.onPrefecencesUpdated(payload.preferences)
     case actions.TOKEN_LOADED:
       return this.onTokenLoaded(payload)
     case actions.TOKEN_ADDED:
@@ -64,6 +66,10 @@ export default class PreferenceState {
   }
 
   onPrefecencesLoaded({globals, byAccts}) {
+    return new PreferenceState(globals, byAccts)
+  }
+
+  onPrefecencesUpdated({globals, byAccts}) {
     return new PreferenceState(globals, byAccts)
   }
 

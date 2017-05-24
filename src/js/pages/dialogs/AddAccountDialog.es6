@@ -37,7 +37,7 @@ export default class AddAccountDialog extends Dialog {
    */
   renderBody() {
     return (
-      <div className="addAccountDialogBody">
+      <div className="dialog-body">
         <input type="text" ref="account" placeholder="@shn@mstdn.onosendai.jp" style={{width: '100%'}} />
       </div>
     )

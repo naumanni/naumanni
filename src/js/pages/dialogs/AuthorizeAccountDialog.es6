@@ -1,7 +1,6 @@
 import React from 'react'
 // import PropTypes from 'prop-types'
 
-
 import AuthorizeAccountUseCase from 'src/usecases/AuthorizeAccountUseCase'
 import Dialog from './Dialog'
 
@@ -55,7 +54,7 @@ export default class AuthorizeAccountDialog extends Dialog {
    */
   renderBody() {
     return (
-      <div className="authorizeAccountDialogBody">
+      <div className="dialog-body">
         {this.state.progress}
         {this.state.error && <p className="error">{this.state.error}</p>}
       </div>

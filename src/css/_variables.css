@@ -1,5 +1,5 @@
 /* 定数系 直接使わないで! */
-$colorMainLightest: #EFEBE9;
+$colorMainLightest: #f0f3f5;
 $colorMainLighter: #AEC8D9;
 $colorMainNormal: #0884CC;
 $colorMainDarker: #066399;
@@ -122,6 +122,8 @@ $colorUserAccount: colorGray3;
 $colorModalDialogContainerBackground: rgba(0, 0, 0, 0.5);
 $colorDialogBackground: $colorWhite;
 $radiusDialog: calc($radiusDefault * 2);
+
+$colorTabBackground: $colorMainLightest;
 
 $zIndexBackground: 0;
 $zIndexHeader: 10;
