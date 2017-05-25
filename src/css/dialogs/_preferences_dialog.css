@@ -30,7 +30,7 @@
 
 
 /* */
-.dialog--globalSettings {
+.dialog--preferences {
   .dialog-body {
     width: 70vw;
     height: calc(90vh - 300px);
@@ -95,8 +95,12 @@
       margin: $marginDefault 0 $marginHalf;
     }
     label {
-      width: 6em;
       display: inline-block;
+      margin-left: 2em;
+
+      &:first-child {
+        margin-left: 0;
+      }
     }
   }
 }

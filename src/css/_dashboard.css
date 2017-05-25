@@ -227,3 +227,7 @@
     font-weight: bold;
   }
 }
+
+.naumanniDashboard-header .menu--global {
+  width: 10em;
+}

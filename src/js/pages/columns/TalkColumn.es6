@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {findDOMNode} from 'react-dom'
+import {FormattedDate, FormattedMessage as _FM} from 'react-intl'
 
 import {
   SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
@@ -90,7 +91,7 @@ export default class TalkColumn extends Column {
     const {me, members} = this.state
 
     if(!me || !members) {
-      return 'トーク'
+      return <_FM id="column.title.talk" />
     }
 
     const memberNames = Object.values(members).map((a) => a.display_name || a.acct)
@@ -98,7 +99,9 @@ export default class TalkColumn extends Column {
     return (
       <h1 className="column-headerTitle">
         <div className="column-headerTitleSub">{me.acct}</div>
-        <div className="column-headerTitleMain">Talk with {memberNames}</div>
+        <div className="column-headerTitleMain">
+          <_FM id="column.title.talk_with" values={{memberNames}} />
+        </div>
       </h1>
     )
   }
@@ -107,6 +110,8 @@ export default class TalkColumn extends Column {
    * @override
    */
   renderBody() {
+    const {formatMessage: _} = this.context.intl
+
     if(this.state.loading) {
       return <NowLoading />
     }
@@ -123,7 +128,7 @@ export default class TalkColumn extends Column {
             value={this.state.newMessage}
             onChange={::this.onChangeMessage}
             onKeyDown={::this.onKeyDownMessage}
-            placeholder="何か入力してControl+Enter" />
+            placeholder={_({id: 'talk.form.placeholder'})} />
         </div>
       </div>
     )
@@ -187,7 +192,12 @@ export default class TalkColumn extends Column {
             return (
               <li key={key}>
                 <div className="status-content"><SafeContent parsedContent={parsedContent} /></div>
-                <div className="status-date">{createdAt.format('YYYY-MM-DD HH:mm:ss')}</div>
+                <div className="status-date">
+                  <FormattedDate value={createdAt.toDate()}
+                    year="numeric" month="2-digit" day="2-digit"
+                    hour="2-digit" minute="2-digit" second="2-digit"
+                  />
+                </div>
               </li>
             )
           })}

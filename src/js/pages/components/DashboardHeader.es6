@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {intlShape, FormattedMessage as _FM} from 'react-intl'
 
 import {OAuthTokenListPropType} from 'src/propTypes'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
@@ -15,6 +16,10 @@ import TootWindow from '../TootWindow'
  * [logo] [toot欄] [account icon] [account icon] [account icon] [account icon] .... [歯車]
  */
 export default class DashboardHeader extends React.Component {
+  static contextTypes = {
+    intl: intlShape,
+  }
+
   static propTypes = {
     tokens: OAuthTokenListPropType.isRequired,
     onStartAddAccount: PropTypes.func.isRequired,
@@ -39,6 +44,7 @@ export default class DashboardHeader extends React.Component {
    * @override
    */
   render() {
+    const {formatMessage: _} = this.context.intl
     const {isShowTootWindow} = this.state
     const {tokens} = this.props
 
@@ -51,7 +57,7 @@ export default class DashboardHeader extends React.Component {
         <div className="naumanniDashboard-header-toot">
           <input
             className={`${isShowTootWindow ? 'is-hidden' : ''}`}
-            type="text" placeholder={TOOTFORM_PLACEHOLDER}
+            type="text" placeholder={_({id: 'toot_form.placeholder'})}
             onFocus={::this.onTootFocus} />
           {isShowTootWindow && <TootWindow onClose={::this.onTootWindowClose} />}
         </div>
@@ -114,28 +120,28 @@ export default class DashboardHeader extends React.Component {
             this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_HOME})}
           >
           <IconFont className="menu-itemIcon" iconName="home" />
-          <span className="menu-itemLabel">United Home timeline</span>
+          <span className="menu-itemLabel"><_FM id="column.title.united_timeline_home" /></span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_LOCAL})}>
           <IconFont className="menu-itemIcon" iconName="users" />
-          <span className="menu-itemLabel">United Local timeline</span>
+          <span className="menu-itemLabel"><_FM id="column.title.united_timeline_local" /></span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: SUBJECT_MIXED, timelineType: TIMELINE_FEDERATION})}>
           <IconFont className="menu-itemIcon" iconName="globe" />
-          <span className="menu-itemLabel">United Federated timeline</span>
+          <span className="menu-itemLabel"><_FM id="column.title.united_timeline_federation" /></span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_NOTIFICATIONS, {subject: SUBJECT_MIXED})}>
           <IconFont className="menu-itemIcon" iconName="bell" />
-          <span className="menu-itemLabel">United Notification</span>
+          <span className="menu-itemLabel"><_FM id="column.title.united_notifications" /></span>
         </li>
 
       </ul>
@@ -165,34 +171,34 @@ export default class DashboardHeader extends React.Component {
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_HOME})}>
           <IconFont className="menu-itemIcon" iconName="home" />
-          <span>Home timeline</span>
+          <span><_FM id="column.title.timeline_home" /></span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_LOCAL})}>
           <IconFont className="menu-itemIcon" iconName="users" />
-          <span>Local timeline</span>
+          <span><_FM id="column.title.timeline_local" /></span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_FEDERATION})}>
           <IconFont className="menu-itemIcon" iconName="globe" />
-          <span>Federated timeline</span>
+          <span><_FM id="column.title.timeline_federation" /></span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_NOTIFICATIONS, {subject: account.acct})}>
           <IconFont className="menu-itemIcon" iconName="bell" />
-          <span>Notifications</span>
+          <span><_FM id="column.title.notifications" /></span>
         </li>
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(this, COLUMN_FRIENDS, {subject: account.acct})}>
           <IconFont className="menu-itemIcon" iconName="mail" />
-          <span>Message</span>
+          <span><_FM id="column.title.message" /></span>
         </li>
 
         <li className="menu-item"
@@ -233,7 +239,7 @@ export default class DashboardHeader extends React.Component {
           onClick={() => this.props.onShowSettings()}
         >
           <IconFont className="menu-itemIcon" iconName="cog" />
-          <span>Settings</span>
+          <span><_FM id="preferences.title" /></span>
         </li>
       </ul>
     )

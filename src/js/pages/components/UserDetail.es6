@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {FormattedMessage as _FM} from 'react-intl'
 
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
 import {AccountPropType, OAuthTokenListPropType} from 'src/propTypes'
@@ -62,7 +63,7 @@ url(${account.header})`
           className="button"
           onClick={() => this.props.onOpenTalkClicked(token, account)}
         >
-          <IconFont iconName="talk" /> トーク
+          <IconFont iconName="talk" /> <_FM id="user_detail.label.talk" />
         </button>
         <button
           disabled={disable}
@@ -79,10 +80,12 @@ url(${account.header})`
     return (
       <div className="userDetail-actions">
         <DropdownMenuButton onRenderMenu={::this.onRenderTalkMenu}>
-          <button className="button"><IconFont iconName="talk" /> トーク</button>
+          <button className="button"><IconFont iconName="talk" /> <_FM id="user_detail.label.talk" /></button>
         </DropdownMenuButton>
         <DropdownMenuButton onRenderMenu={::this.onRenderFollowMenu}>
-          <button className="button button--primary"><IconFont iconName="user-plus" /> フォロー</button>
+          <button className="button button--primary">
+            <IconFont iconName="user-plus" /> <_FM id="user_detail.label.follow" />
+          </button>
         </DropdownMenuButton>
       </div>
     )
@@ -151,21 +154,21 @@ url(${account.header})`
     if(account.acct === me) {
       disable = true
       icon = 'meh'
-      text = 'あなたです!'
+      text = <_FM id="user_detail.label.is_you" />
     } else if(isRequested) {
       if(isFollowing) {
         console.warn('relationshipがrequestedなのにfollowing!!', relationship)
       }
       disable = true
       icon = 'hourglass-o'
-      text = 'リクエスト中...'
+      text = <_FM id="user_detail.label.requesting" />
     } else if(isFollowing) {
       icon = 'user-times'
-      text = 'フォローを解除する'
+      text = <_FM id="user_detail.label.unfollow" />
       doFollow = false
     } else {
       icon = 'user-plus'
-      text = account.locked ? 'フォローを申請する' : 'フォローする'
+      text = account.locked ? <_FM id="user_detail.label.request" /> : <_FM id="user_detail.label.do_follow" />
       doFollow = true
     }
 

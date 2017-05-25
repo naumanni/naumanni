@@ -1,6 +1,6 @@
 import moment from 'moment'
 import React from 'react'
-import {IntlProvider, addLocaleData} from 'react-intl'
+import {IntlProvider, addLocaleData, intlShape} from 'react-intl'
 
 import * as actions from 'src/actions'
 import {NAUMANNI_VERSION} from 'src/constants'
@@ -29,7 +29,7 @@ export default class Dashboard extends React.Component {
     super(...args)
 
     this.state = {
-      initializer: <AppIntializer app={this.props.app} onInitialized={::this.onAppInitialized} />,
+      initializing: true,
       locale: 'en',   // 初期ロケールはen
       ...this.getStateFromContext(),
     }
@@ -71,26 +71,20 @@ export default class Dashboard extends React.Component {
    * @override
    */
   render() {
-    const {
-      initializer,
-    } = this.state
-
-    if(initializer) {
-      return (
-        <div className="naumanniDashboard">
-          <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
-          {initializer}
-        </div>
-      )
-    }
-
-    const {locale, messages, columns, dialogs, tokens} = this.state
+    const {initializing, locale, messages, columns, dialogs, tokens} = this.state
     return (
       <IntlProvider
         locale={locale}
         messages={messages}
         defaultLocale="en"
+        ref="intlProvider"
       >
+        {initializing ? (
+        <div className="naumanniDashboard">
+          <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
+          <AppIntializer app={this.props.app} onInitialized={::this.onAppInitialized} />
+        </div>
+        ) : (
         <div className={`naumanniApp ${dialogs.length ? 'is-shownDialogs' : ''}`}>
           <div className="naumanniDashboard">
             <DashboardHeader
@@ -106,6 +100,7 @@ export default class Dashboard extends React.Component {
           </div>
           <ModalDialogContainer dialogs={dialogs} />
         </div>
+        )}
       </IntlProvider>
     )
   }
@@ -124,7 +119,7 @@ export default class Dashboard extends React.Component {
    * アプリの初期化が完了したら呼ばれる
    */
   onAppInitialized() {
-    this.setState({initializer: null}, () => {
+    this.setState({initializing: false}, () => {
       // routing開始
       this.props.app.history.start()
     })
@@ -189,11 +184,13 @@ export default class Dashboard extends React.Component {
 
   onShowSettings() {
     const {history} = this.props.app
-    history.push(history.makeUrl('settings'))
+    history.push(history.makeUrl('preferences'))
   }
 
   onSignOut(token) {
-    if(window.confirm(`Are you sure you want to sign out of ${token.acct} ?`)) {
+    const {formatMessage: _} = this.refs.intlProvider.getChildContext().intl
+
+    if(window.confirm(_({id: 'dashboard.confirm.signout'}, {acct: token.acct}))) {
       const {context} = this.props.app
       const {columns} = this.state
 
@@ -209,11 +206,17 @@ export default class Dashboard extends React.Component {
  * しかし状況は読み込み中しか無いのであった
  */
 class AppIntializer extends React.Component {
+  static contextTypes = {
+    intl: intlShape,
+  }
+
   constructor(...args) {
     super(...args)
 
+    const {formatMessage: _} = this.context.intl
+
     this.state = {
-      progress: '読み込み中...',
+      progress: _({id: 'dashboard.initialize.loading'}),
     }
   }
 

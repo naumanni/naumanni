@@ -224,7 +224,8 @@ $loaderVMargin: 2rem;
 
 
 .cushionString {
+  display: inline-block;
   white-space: nowrap;
   word-break: normal;
-  word-spacing: 0.3em;
+  width: 5em;
 }

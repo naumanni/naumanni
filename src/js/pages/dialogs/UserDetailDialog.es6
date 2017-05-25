@@ -1,4 +1,5 @@
 import React from 'react'
+import {FormattedMessage as _FM} from 'react-intl'
 
 import {COLUMN_TALK, AUTO_PAGING_MARGIN} from 'src/constants'
 import TimelineActions from 'src/controllers/TimelineActions'
@@ -138,14 +139,14 @@ export default class UserDetailDialog extends HistoryBaseDialog {
 
         {primaryToken && account && primaryToken.host !== account.instance && (
           <div className="userTimeline-warning">
-            これは最新のデータではない可能性があります。
+            <_FM id="user_detail.warning.not_latest_data" />
           </div>
         )}
 
         <div className="userTimeline-counts">
-          {_renderCount(LIST_STATUSES, '投稿', account.statuses_count)}
-          {_renderCount(LIST_FOLLOWINGS, 'フォロー中', account.following_count)}
-          {_renderCount(LIST_FOLLOWERS, 'フォロワー', account.followers_count)}
+          {_renderCount(LIST_STATUSES, <_FM id="user_detail_dialog.label.statuses" />, account.statuses_count)}
+          {_renderCount(LIST_FOLLOWINGS, <_FM id="user_detail_dialog.label.followings" />, account.following_count)}
+          {_renderCount(LIST_FOLLOWERS, <_FM id="user_detail_dialog.label.followers" />, account.followers_count)}
         </div>
 
         {list === LIST_STATUSES && this.renderStatuses()}

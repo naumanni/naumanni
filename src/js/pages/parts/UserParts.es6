@@ -31,5 +31,5 @@ UserAcct.propDeepKeys = {
 
 
 export function CushionString({length}) {
-  return <span className="cushionString">{new Array(length).fill(nbsp).join('')}</span>
+  return <span className="cushionString">{nbsp}</span>
 }
