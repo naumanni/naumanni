@@ -382,13 +382,13 @@ class TimelineStatus extends React.Component {
     this.togglePanel(PANEL_FAVOURITE)
   }
 
-  async onReblogStatus(token, status, on) {
-    await this.props.onReblogStatus(token, status, on)
+  onReblogStatus(token, status, on) {
+    this.props.onReblogStatus(token, status, on)
     this.hideAllPanel()
   }
 
-  async onFavouriteStatus(token, status, on) {
-    await this.props.onFavouriteStatus(token, status, on)
+  onFavouriteStatus(token, status, on) {
+    this.props.onFavouriteStatus(token, status, on)
     this.hideAllPanel()
   }
 
