@@ -288,6 +288,9 @@ class TimelineStatus extends React.Component {
   renderReblogPanel() {
     const {tokens, status} = this.props
     const {isAnimatedReblogPanel} = this.state
+    // publicであればどのアカウントからでもFav/Boostできる
+    const isPublic = status.canReblog()
+
 
     return (
       <div className={`status-reblogPanel ${isAnimatedReblogPanel ? 'off' : ''}`}>
@@ -295,12 +298,13 @@ class TimelineStatus extends React.Component {
           <ul>
             {tokens.map((token) => {
               const {account} = token
+              const disabled = isPublic ? false : (status.getIdByHost(token.host) ? false : true)
               const on = status.isRebloggedAt(token.acct) ? true : false
 
               return (
-                <li className={`${on ? 'on' : ''}`}
+                <li className={`${disabled ? 'is-disabled' : ''} ${on ? 'on' : ''}`}
                   key={token.acct}
-                  onClick={(e) => this.onReblogStatus(token, status, !on)}
+                  onClick={(e) => !disabled && this.onReblogStatus(token, status, !on)}
                 >
                   <IconFont iconName="reblog" className={on ? 'is-active' : ''} />
                   <UserIconWithHost account={account} size="mini" />
@@ -317,6 +321,8 @@ class TimelineStatus extends React.Component {
   renderFavPanel() {
     const {tokens, status} = this.props
     const {isAnimatedFavouritePanel} = this.state
+    // publicであればどのアカウントからでもFav/Boostできる
+    const isPublic = status.canReblog()
 
     return (
       <div className={`status-favPanel ${isAnimatedFavouritePanel ? 'off' : ''}`}>
@@ -324,12 +330,13 @@ class TimelineStatus extends React.Component {
           <ul>
             {tokens.map((token) => {
               const {account} = token
+              const disabled = isPublic ? false : (status.getIdByHost(token.host) ? false : true)
               const on = status.isFavouritedAt(token.acct) ? true : false
 
               return (
-                <li className={`${on ? 'on' : ''}`}
+                <li className={`${disabled ? 'is-disabled' : ''} ${on ? 'on' : ''}`}
                   key={token.acct}
-                  onClick={(e) => this.onFavouriteStatus(token, status, !on)}
+                  onClick={(e) => !disabled && this.onFavouriteStatus(token, status, !on)}
                 >
                   <IconFont iconName="star-filled" className={on ? 'is-active' : ''} />
                   <UserIconWithHost account={account} size="mini" />
