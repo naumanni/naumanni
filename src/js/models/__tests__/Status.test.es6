@@ -31,7 +31,7 @@ describe('Status', () => {
         bbb: 4545,
       },
       media_attachments: [{
-        id: 666
+        id: 666,
       }],
       content: '<p>aaa <a href="http://www.google.com/">http://www.google.com/</a></p>',
       created_at: '2017-05-08T14:02:55.000Z',
@@ -74,7 +74,7 @@ describe('Status', () => {
 
     const obj2 = obj.merge({
       content: '@bob@my.host --NEM.7b352097.1/2--dummytext',
-      visibility: 'public'
+      visibility: 'public',
     })
     expect(obj2.canReblog()).toBeTruthy()
     expect(obj2.messageBlockInfo).toMatchObject({checksum: '7b352097', index: 1, total: 2})

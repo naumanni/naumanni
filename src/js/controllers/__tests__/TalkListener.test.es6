@@ -4,14 +4,14 @@ import TalkListener from '../TalkListener'
 jest.mock('src/api/APIRequester')
 jest.mock('src/controllers/WebsocketManager', () => {
   return {
-    listen: jest.fn()
+    listen: jest.fn(),
   }
 })
 
 
 beforeAll(() => {
   process.removeAllListeners('unhandledRejection')
-  process.on('unhandledRejection', console.dir);
+  process.on('unhandledRejection', console.dir)
 })
 
 
@@ -24,7 +24,7 @@ describe('TalkListener', () => {
       id_by_host: {'dummy': 1},
       acct: 'shn@oppai.tokyo',
       url: 'https://oppai.tokyo/@shn',
-      note: `PGP Key Fingerprint: 0001FFFF`,
+      note: 'PGP Key Fingerprint: 0001FFFF',
     })
     mockToken.attachAccount(mockSelf)
     const mockRecipient = 'shn@mstdn.onosendai.jp'

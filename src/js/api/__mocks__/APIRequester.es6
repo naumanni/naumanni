@@ -7,7 +7,6 @@ APIRequester.__setScenario = function(scenario) {
 }
 
 
-
 /**
  * Scenarioの値を返す
  */
@@ -48,7 +47,7 @@ class DummyAPIRequester extends APIRequester.APIRequester {
     const scenarioKey = `${method.toLowerCase()}:${endpoint}?${params.join('&')}`
 
     const req = {
-      url: `http://dummy${endpoint}`
+      url: `http://dummy${endpoint}`,
     }
 
     req.then = function(resolve, reject) {
@@ -66,7 +65,7 @@ class DummyAPIRequester extends APIRequester.APIRequester {
       })
     }
     req.catch = function(cb) {
-      return this.then(undefined, cb);
+      return this.then(undefined, cb)
     }
 
     return {spec, req}
