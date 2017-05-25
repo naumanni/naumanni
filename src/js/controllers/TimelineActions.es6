@@ -49,13 +49,14 @@ export default class TimelineActions {
     await Promise.all(
       sendFrom.map(async (token) => {
         // in_reply_to_id を付加する
-        if(!status.getIdByHost(token.host)) {
+        let inReplyToId = status.getIdByHost(token.host)
+        if(!inReplyToId) {
           status = await this.resolveStatus(token, status)
-          if(!status)
-            throw new Error('status not found')
+          if(status)
+            inReplyToId = status.getIdByHost(token.host)
         }
+        messageContent.message.in_reply_to_id = inReplyToId
 
-        messageContent.message.in_reply_to_id = status.getIdByHost(token.host)
         // TODO: tootpanelの方にwarning出す?
         return await postStatusManaged(token, messageContent)
       })
