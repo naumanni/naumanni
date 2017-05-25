@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SafeNote TOKEN_BREAK will be converted to <br /> element 1`] = `
+<p>
+  <br />
+</p>
+`;
+
+exports[`SafeNote TOKEN_HASHTAG will be converted to #<span> element 1`] = `
+<p>
+  <span>
+    #
+    naumanni
+  </span>
+</p>
+`;
+
+exports[`SafeNote TOKEN_MENTION will be converted to @<span> element 1`] = `
+<p>
+  <span>
+    @
+    john
+  </span>
+</p>
+`;
+
+exports[`SafeNote TOKEN_TEXT will be converted to <span> element 1`] = `
+<p>
+  <span>
+    spam
+  </span>
+</p>
+`;
+
+exports[`SafeNote TOKEN_URL will be converted to <a> element 1`] = `
+<p>
+  <a
+    href="http://example.com"
+    rel="nofollow noopener"
+    target="_blank"
+  >
+    http://example.com
+  </a>
+</p>
+`;
+
+exports[`SafeNote unknown token will be converted to empty <p> element 1`] = `<p />`;

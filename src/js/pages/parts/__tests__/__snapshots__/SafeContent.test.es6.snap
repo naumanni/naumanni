@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SafeContent TOKEN_BREAK match snapshot 1`] = `
+<p>
+  <br />
+</p>
+`;
+
+exports[`SafeContent TOKEN_HASHTAG match snapshot 1`] = `
+<p>
+  <a
+    href={undefined}
+    rel="nofollow noopener"
+    target="_blank"
+  >
+    #
+    naumanni
+  </a>
+</p>
+`;
+
+exports[`SafeContent TOKEN_MENTION match snapshot 1`] = `
+<p>
+  <a
+    href="https://friends.nico/@glpt"
+    onClick={[Function]}
+  >
+    @
+    glpt@friends.nico
+  </a>
+</p>
+`;
+
+exports[`SafeContent TOKEN_TEXT match snapshot 1`] = `
+<p>
+  <span>
+    hello
+  </span>
+</p>
+`;
+
+exports[`SafeContent TOKEN_URL long path url match snapshot 1`] = `
+<p>
+  <a
+    href="http://example.com/abcdefghijklmnopqrstuvwxyz"
+    rel="nofollow noopener"
+    target="_blank"
+  >
+    example.com/abcdefghijklmn…
+  </a>
+</p>
+`;
+
+exports[`SafeContent TOKEN_URL normal url match snapshot 1`] = `
+<p>
+  <a
+    href="http://example.com/"
+    rel="nofollow noopener"
+    target="_blank"
+  >
+    example.com/
+  </a>
+</p>
+`;
+
+exports[`SafeContent TOKEN_URL query and anchor specified url match snapshot 1`] = `
+<p>
+  <a
+    href="http://example.com/?q=p#anchor"
+    rel="nofollow noopener"
+    target="_blank"
+  >
+    example.com/?q=p#anchor
+  </a>
+</p>
+`;
+
+exports[`SafeContent TOKEN_URL username:password specified url match snapshot 1`] = `
+<p>
+  <a
+    href="http://john:pass@example.com/"
+    rel="nofollow noopener"
+    target="_blank"
+  >
+    john:pass@example.com/
+  </a>
+</p>
+`;

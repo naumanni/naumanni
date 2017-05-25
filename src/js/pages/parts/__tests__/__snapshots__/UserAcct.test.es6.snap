@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserAcct default match snapshot 1`] = `
+<a
+  className="user-acct"
+  href={null}
+  target="_blank"
+>
+  @
+  shn@oppai.tokyo
+</a>
+`;

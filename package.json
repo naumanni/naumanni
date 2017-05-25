@@ -67,6 +67,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
     "codeclimate-test-reporter": "^0.4.1",
+    "enzyme": "^2.8.2",
     "eslint": "^3.19.0",
     "eslint-config-google": "^0.7.1",
     "eslint-import-resolver-babel-module": "^3.0.0",
@@ -87,6 +88,7 @@
     "postcss-nested": "^1.0.1",
     "postcss-simple-vars": "^3.1.0",
     "react-test-renderer": "^15.5.4",
+    "sinon": "^2.3.1",
     "webpack": "^2.4.1"
   },
   "jest": {
