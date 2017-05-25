@@ -106,7 +106,7 @@ export class StatusTimeline extends Timeline {
   }
 
   compare(a, b) {
-    return Status.compareCreatedAt(a.resolve(), b.resolve())
+    return Status.compareForTimeline(a.resolve(), b.resolve())
   }
 }
 
@@ -142,7 +142,7 @@ export class NotificationTimeline extends Timeline {
   }
 
   compare(a, b) {
-    return Notification.compareCreatedAt(a, b)
+    return Notification.compareForTimeline(a, b)
   }
 }
 

@@ -22,7 +22,7 @@
       width: 100%;
       border: none;
       font-size: 1rem;
-      line-height: 2rem;
+      line-height: 32px;
       flex: 1 1 auto;
       padding: 0 $marginDefault 0 2em;
       border-radius: $marginHalf;

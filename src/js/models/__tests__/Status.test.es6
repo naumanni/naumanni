@@ -100,9 +100,9 @@ describe('Status', () => {
       created_at: '2017-05-08T14:02:55.000Z',
     })
 
-    expect(Status.compareCreatedAt(a, b)).toBe(1)
-    expect(Status.compareCreatedAt(b, a)).toBe(-1)
-    expect(Status.compareCreatedAt(a, a)).toBe(0)
+    expect(Status.compareForTimeline(a, b)).toBe(1)
+    expect(Status.compareForTimeline(b, a)).toBe(-1)
+    expect(Status.compareForTimeline(a, a)).toBe(0)
   })
 
   it('can merge', () => {
@@ -124,8 +124,33 @@ describe('Status', () => {
     })
     const {isChanged, merged} = oldObj.checkMerge(newObj)
 
-    expect(merged.id_by_host.aaa).toBe(111)
-    expect(merged.id_by_host.bbb).toBe(222)
+    expect(merged.getIdByHost('aaa')).toBe(111)
+    expect(merged.getIdByHost('bbb')).toBe(222)
+  })
+
+  it('can merge map attribute', () => {
+    const oldObj = new Status({
+      id_by_host: {
+        aaa: 111,
+      },
+      reblogged_by_acct: {
+        'shn@oppai.tokyo': false,
+        'shnx@pawoo.net': false,
+        'shn@mstdn.onosendai.jp': true,
+      },
+    }, {isOriginal: true})
+    const newObj = new Status({
+      id_by_host: {
+        aaa: 111,
+      },
+      reblogged_by_acct: {
+        'shn@mstdn.onosendai.jp': false,
+      },
+    })
+    const {isChanged, merged} = oldObj.checkMerge(newObj)
+
+    expect(isChanged).toBeTruthy()
+    expect(merged.isRebloggedAt('shn@mstdn.onosendai.jp')).toBeFalsy()
   })
 
   it('should not merge same object', () => {
@@ -146,6 +171,6 @@ describe('Status', () => {
     const {isChanged, merged} = oldObj.checkMerge(newObj)
 
     expect(isChanged).toBe(false)
-    expect(merged.id_by_host.aaa).toBe(111)
+    expect(merged.getIdByHost('aaa')).toBe(111)
   })
 })

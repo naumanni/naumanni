@@ -16,7 +16,7 @@ export class TimelineData extends EventEmitter {
     super(...args)
 
     // uriがkeyつってんだから、accounts/statusesの区別要らないはずだよね...
-    this.accounts = new Map()
+    this.accounts = new Map()  // immutable.Mapじゃないから注意
     this.statuses = new Map()
 
     this.referenceCounts = new Map()
@@ -140,7 +140,7 @@ export class TimelineData extends EventEmitter {
       const account = this.accounts.get(uri)
 
       if(!status && !account) {
-        console.warn(`incrementStatuses: '${uri}' not found`)
+        console.warn(`changeRefCounts: '${uri}' not found`)
         continue
       }
 
@@ -266,7 +266,11 @@ export class StatusRef extends DBRef {
   }
 
   get accountUri() {
-    return this.resolve().account
+    const status = this.resolve()
+    if(!status) {
+      console.warn('status cannnot resolved')
+    }
+    return status && status.account
   }
 }
 

@@ -42,5 +42,9 @@ $marginAccountInfo: calc($sizeAvatar + $marginDefault);
 
   .accountRow-note {
     word-break: break-all;
+
+    a {
+      color: $colorStatusLink;
+    }
   }
 }

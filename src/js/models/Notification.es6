@@ -1,6 +1,8 @@
 import {Record} from 'immutable'
 import moment from 'moment'
 
+import {compareDateForTL} from 'src/utils'
+
 
 const NotificationRecord = Record({  // eslint-disable-line new-cap
   host: '',
@@ -30,13 +32,7 @@ export default class Notification extends NotificationRecord {
   }
 
   // TODO: どっかに纏める
-  static compareCreatedAt(a, b) {
-    const aAt = a.createdAt
-    const bAt = b.createdAt
-    if(aAt.isBefore(bAt))
-      return 1
-    else if(aAt.isAfter(bAt))
-      return -1
-    return 0
+  static compareForTimeline(a, b) {
+    return compareDateForTL(a.createdAt, b.createdAt)
   }
 }

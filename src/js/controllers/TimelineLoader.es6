@@ -97,8 +97,20 @@ export class NotificationTimelineLoader extends TimelineLoader {
 
   _push(entities, result) {
     const notificationRefs = this._db.mergeNotifications(entities, result)
-    const removes = this._timeline.push(notificationRefs)
-    this._db.decrement(removes.map((ref) => ref.uri))
+
+    // TimelineData.mergeNotificationsと重複している
+    const removes =
+      this._timeline.push(notificationRefs)
+        .reduce((removes, ref) => {
+          const accountRef = ref.accountRef
+          if(accountRef)
+            removes.push(accountRef.uri)
+          const statusRef = ref.statusRef
+          if(statusRef)
+            removes.push(statusRef.uri)
+          return removes
+        }, [])
+    this._db.decrement(removes)
   }
 }
 

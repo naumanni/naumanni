@@ -1,7 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import {VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC} from 'src/constants'
+import {
+  VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
+  STORAGE_KEY_LAST_SEND_FROM,
+} from 'src/constants'
 import {IconFont} from 'src/pages/parts'
 import TootForm from './components/TootForm'
 import {postStatusManaged} from 'src/infra/TimelineData'
@@ -9,8 +12,6 @@ import {postStatusManaged} from 'src/infra/TimelineData'
 
 const MODE_TOOT = 'toot'
 const MODE_DIRECT = 'direct'
-
-const STORAGE_KEY_LAST_SEND_FROM = 'naumanni::last_send_from'
 
 
 /**

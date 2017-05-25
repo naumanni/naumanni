@@ -53,9 +53,7 @@ export default class Dialog extends React.Component {
         <header className="dialog-header">
           {this.renderHeader()}
         </header>
-        <div className="dialog-body">
-          {this.renderBody()}
-        </div>
+        {this.renderBody()}
         <footer className="dialog-footer">
           {this.renderFooter()}
         </footer>
@@ -122,8 +120,11 @@ export default class Dialog extends React.Component {
  * closeするときにhistory.back()するdialog
  * もっと良い名前を... 誰か...
  */
-export class HistoryRelatedDialog extends Dialog {
+export class HistoryBaseDialog extends Dialog {
   close() {
-    this.app.history.back()
+    if(!this._backing) {
+      this.app.history.back()
+      this._backing = true
+    }
   }
 }

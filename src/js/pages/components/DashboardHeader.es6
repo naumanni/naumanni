@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import {OAuthTokenArrayPropType} from 'src/propTypes'
+import {OAuthTokenListPropType} from 'src/propTypes'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
 import {
   COLUMN_TIMELINE, COLUMN_FRIENDS, COLUMN_NOTIFICATIONS,
@@ -16,10 +16,11 @@ import TootWindow from '../TootWindow'
  */
 export default class DashboardHeader extends React.Component {
   static propTypes = {
-    tokens: OAuthTokenArrayPropType.isRequired,
+    tokens: OAuthTokenListPropType.isRequired,
     onStartAddAccount: PropTypes.func.isRequired,
     onOpenColumn: PropTypes.func.isRequired,
     onGenKey: PropTypes.func.isRequired,
+    onShowSettings: PropTypes.func.isRequired,
   }
 
   /**
@@ -66,9 +67,11 @@ export default class DashboardHeader extends React.Component {
 
         <span className="naumanniDashboard-header-spacer" />
 
-        <button className="naumanniDashboard-header-configButton">
-          <IconFont iconName="cog" />
-        </button>
+        <DropdownMenuButton onRenderMenu={::this.onRenderGlobalMenu}>
+          <button className="naumanniDashboard-header-configButton">
+            <IconFont iconName="cog" />
+          </button>
+        </DropdownMenuButton>
 
       </header>
     )
@@ -207,6 +210,23 @@ export default class DashboardHeader extends React.Component {
           <p>
             Network communication error
           </p>
+        </li>
+      </ul>
+    )
+  }
+
+  /**
+   * システムに関するMenu
+   * @return {React.Component}
+   */
+  onRenderGlobalMenu() {
+    return (
+      <ul className="menu menu--global">
+        <li className="menu-item"
+          onClick={() => this.props.onShowSettings()}
+        >
+          <IconFont className="menu-itemIcon" iconName="cog" />
+          <span>Settings</span>
         </li>
       </ul>
     )

@@ -1,13 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {is} from 'immutable'
 
 
 import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
 import TootForm from './TootForm'
-import {AcctPropType, AccountPropType, StatusPropType} from 'src/propTypes'
+import {AcctPropType, AccountPropType, StatusPropType, OAuthTokenListPropType} from 'src/propTypes'
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
+import {isKeys, isKeysList} from 'src/utils'
 import {DropdownMenuButton, IconFont, UserIconWithHost, SafeContent, UserDisplayName, UserAcct} from '../parts'
 
 
@@ -22,9 +24,25 @@ class TimelineStatus extends React.Component {
     account: AccountPropType.isRequired,
     status: StatusPropType.isRequired,
     modifier: PropTypes.string,
-    tokens: TootForm.propTypes.tokens,
+    tokens: OAuthTokenListPropType,
     onLockStatus: PropTypes.func,
     ...TimelineActionPropTypes,
+  }
+
+  // propsの中でrendering対象のkey
+  static propDeepKeys = {
+    'account': new Set([
+      'acct',
+      ...UserIconWithHost.propDeepKeys.account,
+      ...UserDisplayName.propDeepKeys.account,
+      ...UserAcct.propDeepKeys.account,
+    ]),
+    'status': new Set([
+      'sensitive', 'spoiler_text', 'visibility', 'url', 'created_at', 'content', 'mentions',
+      'reblogged_by_acct', 'favourited_by_acct',
+      // 'media_attachments',   // deepに比べる
+    ]),
+    'media_attachments': new Set(['url', 'preview_url']),
   }
 
   /**
@@ -45,6 +63,13 @@ class TimelineStatus extends React.Component {
       isShowReblogPanel: false,
       isAnimatedReblogPanel: true,
     }
+  }
+
+  /**
+   * @override
+   */
+  shouldComponentUpdate(nextProps, nextState) {
+    return shouldComponentUpdateTimelineStatus(this.props, this.state, nextProps, nextState)
   }
 
   /**
@@ -165,12 +190,12 @@ class TimelineStatus extends React.Component {
     const {status} = this.props
     const {isShowMediaCover} = this.state
     const mediaList = status.media_attachments
-    if(!mediaList.length)
+    if(mediaList.isEmpty())
       return null
 
     const className = [
       'status-mediaList',
-      `status-mediaList${mediaList.length}`,
+      `status-mediaList${mediaList.size}`,
     ]
     if(status.sensitive) {
       className.push('is-sensitive')
@@ -179,7 +204,7 @@ class TimelineStatus extends React.Component {
     return (
       <div className={className.join(' ')}>
         {mediaList.map((media, idx) => (
-          <a key={media.id}
+          <a key={media.preview_url}
             className="status-media"
             style={{backgroundImage: `url(${media.preview_url})`}}
             target="_blank"
@@ -210,8 +235,8 @@ class TimelineStatus extends React.Component {
     const on = tokens.find((token) => status.isRebloggedAt(token.acct)) ? true : false
 
     const onClickHandler =
-      tokens.length === 1
-        ? this.props.onReblogStatus.bind(this, tokens[0], status, !on)
+      tokens.size === 1
+        ? this.props.onReblogStatus.bind(this, tokens.get(0), status, !on)
         : ::this.onClickToggleReblogPanel
 
     return (
@@ -226,8 +251,8 @@ class TimelineStatus extends React.Component {
     const on = tokens.find((token) => status.isFavouritedAt(token.acct)) ? true : false
 
     const onClickHandler =
-      tokens.length === 1
-        ? this.props.onFavouriteStatus.bind(this, tokens[0], status, !on)
+      tokens.size === 1
+        ? this.props.onFavouriteStatus.bind(this, tokens.get(0), status, !on)
         : ::this.onClickToggleFavouritePanel
 
     return (
@@ -263,6 +288,9 @@ class TimelineStatus extends React.Component {
   renderReblogPanel() {
     const {tokens, status} = this.props
     const {isAnimatedReblogPanel} = this.state
+    // publicであればどのアカウントからでもFav/Boostできる
+    const isPublic = status.canReblog()
+
 
     return (
       <div className={`status-reblogPanel ${isAnimatedReblogPanel ? 'off' : ''}`}>
@@ -270,12 +298,13 @@ class TimelineStatus extends React.Component {
           <ul>
             {tokens.map((token) => {
               const {account} = token
+              const disabled = isPublic ? false : (status.getIdByHost(token.host) ? false : true)
               const on = status.isRebloggedAt(token.acct) ? true : false
 
               return (
-                <li className={`${on ? 'on' : ''}`}
+                <li className={`${disabled ? 'is-disabled' : ''} ${on ? 'on' : ''}`}
                   key={token.acct}
-                  onClick={(e) => this.onReblogStatus(token, status, !on)}
+                  onClick={(e) => !disabled && this.onReblogStatus(token, status, !on)}
                 >
                   <IconFont iconName="reblog" className={on ? 'is-active' : ''} />
                   <UserIconWithHost account={account} size="mini" />
@@ -292,6 +321,8 @@ class TimelineStatus extends React.Component {
   renderFavPanel() {
     const {tokens, status} = this.props
     const {isAnimatedFavouritePanel} = this.state
+    // publicであればどのアカウントからでもFav/Boostできる
+    const isPublic = status.canReblog()
 
     return (
       <div className={`status-favPanel ${isAnimatedFavouritePanel ? 'off' : ''}`}>
@@ -299,12 +330,13 @@ class TimelineStatus extends React.Component {
           <ul>
             {tokens.map((token) => {
               const {account} = token
+              const disabled = isPublic ? false : (status.getIdByHost(token.host) ? false : true)
               const on = status.isFavouritedAt(token.acct) ? true : false
 
               return (
-                <li className={`${on ? 'on' : ''}`}
+                <li className={`${disabled ? 'is-disabled' : ''} ${on ? 'on' : ''}`}
                   key={token.acct}
-                  onClick={(e) => this.onFavouriteStatus(token, status, !on)}
+                  onClick={(e) => !disabled && this.onFavouriteStatus(token, status, !on)}
                 >
                   <IconFont iconName="star-filled" className={on ? 'is-active' : ''} />
                   <UserIconWithHost account={account} size="mini" />
@@ -350,13 +382,13 @@ class TimelineStatus extends React.Component {
     this.togglePanel(PANEL_FAVOURITE)
   }
 
-  async onReblogStatus(token, status, on) {
-    await this.props.onReblogStatus(token, status, on)
+  onReblogStatus(token, status, on) {
+    this.props.onReblogStatus(token, status, on)
     this.hideAllPanel()
   }
 
-  async onFavouriteStatus(token, status, on) {
-    await this.props.onFavouriteStatus(token, status, on)
+  onFavouriteStatus(token, status, on) {
+    this.props.onFavouriteStatus(token, status, on)
     this.hideAllPanel()
   }
 
@@ -455,42 +487,103 @@ function VisibilityIcon({visibility, className}) {
 
 
 /**
+ * TimelineStatusのshouldComponentUpdateを切り出したもの
+ * TimelineStatusContainerでも使うので
+ * @param {object} prevProps
+ * @param {object} prevState
+ * @param {object} nextProps
+ * @param {object} nextState
+ * @return {bool}
+ */
+function shouldComponentUpdateTimelineStatus(prevProps, prevState, nextProps, nextState) {
+  if(
+    !is(prevProps.subject, nextProps.subject) ||
+    !isKeys(TimelineStatus.propDeepKeys.account, prevProps.account, nextProps.account) ||
+    !isKeys(TimelineStatus.propDeepKeys.status, prevProps.status, nextProps.status) ||
+    !isKeysList(
+      TimelineStatus.propDeepKeys.media_attachments,
+      prevProps.status.media_attachments, nextProps.status.media_attachments) ||
+    !is(prevProps.modifier, nextProps.modifier) ||
+    !is(prevProps.tokens, nextProps.tokens) ||
+    !Object.keys(nextState || {}).every((s) => is(nextState[s], prevState[s]))
+  ) {
+    return true
+  }
+  return false
+}
+
+/**
  * Reblogはここで吸収
  * @return {React.Component}
  */
-export default function TimelineStatusContainer({modifier, reblog, reblogAccount, ...props}, ...args) {
-  let children = null
-
-  if(reblog || reblogAccount) {
-    require('assert')(reblog && reblogAccount)
-    const account = props.account
-    props = {
-      ...props,
-      status: reblog,
-      account: reblogAccount,
-    }
-
-    children = (
-      <div className="status-row status-reblogFrom">
-        <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
-        <div className="status-rowRight">
-          <UserDisplayName
-            account={account}
-            onClick={(e) => {
-              e.preventDefault()
-              props.onAvatarClicked(account)
-            }} /> boosted
-        </div>
-      </div>
-    )
+export default class TimelineStatusContainer extends React.Component {
+  static propTypes = {
+    reblog: StatusPropType,
+    reblogAccount: AccountPropType,
+    ...TimelineStatus.propTypes,
   }
 
-  return (
-    <TimelineStatus {...props}>{children}</TimelineStatus>
-  )
-}
-TimelineStatusContainer.propTypes = {
-  reblog: StatusPropType,
-  reblogAccount: AccountPropType,
-  ...TimelineStatus.propTypes,
+  /**
+   * @override
+   */
+  shouldComponentUpdate(nextProps, nextState) {
+    let {reblog, reblogAccount, ...prevProps} = this.props
+
+    if(reblog) {
+      const prevAcount = prevProps.account
+      const nextAccount = nextProps.account
+      prevProps = {
+        ...prevProps,
+        status: reblog,
+        account: reblogAccount,
+      }
+      nextProps = {
+        ...nextProps,
+        status: nextProps.reblog,
+        account: nextProps.reblogAccount,
+      }
+
+      if(!isKeys(UserDisplayName.propDeepKeys.account, prevAcount, nextAccount)) {
+        return true
+      }
+    }
+
+    return shouldComponentUpdateTimelineStatus(prevProps, {}, nextProps, {})
+  }
+
+  /**
+   * @override
+   */
+  render() {
+    let {reblog, reblogAccount, ...props} = this.props
+    let children = null
+
+    if(reblog || reblogAccount) {
+      require('assert')(reblog && reblogAccount)
+      const account = props.account
+      props = {
+        ...props,
+        status: reblog,
+        account: reblogAccount,
+      }
+
+      children = (
+        <div className="status-row status-reblogFrom">
+          <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
+          <div className="status-rowRight">
+            <UserDisplayName
+              account={account}
+              onClick={(e) => {
+                e.preventDefault()
+                props.onAvatarClicked(account)
+              }} /> boosted
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <TimelineStatus {...props}>{children}</TimelineStatus>
+    )
+  }
 }

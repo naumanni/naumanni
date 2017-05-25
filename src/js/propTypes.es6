@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types'
+import ImmutablePropTypes from 'react-immutable-proptypes'
 import {Context} from 'almin'
 
 import {
   ACCT_REX,
 } from 'src/constants'
 import {
-  Account, Notification, OAuthToken, Status,
+  Account, Notification, OAuthToken, Status, Attachment,
   UIDialog,
 } from 'src/models'
 import {
@@ -35,9 +36,11 @@ AcctPropType.isRequired = AcctPropTypeBase.bind(null, true)
 const AppPropType = PropTypes.any
 const AccountPropType = PropTypes.instanceOf(Account)
 const NotificationPropType = PropTypes.instanceOf(Notification)
-const OAuthTokenArrayPropType = PropTypes.arrayOf(PropTypes.instanceOf(OAuthToken))
 const StatusPropType = PropTypes.instanceOf(Status)
-export {AcctPropType, AccountPropType, AppPropType, NotificationPropType, OAuthTokenArrayPropType, StatusPropType}
+export {AcctPropType, AccountPropType, AppPropType, NotificationPropType, StatusPropType}
+
+export const AttachmentListPropType = ImmutablePropTypes.iterableOf(PropTypes.instanceOf(Attachment))
+export const OAuthTokenListPropType = ImmutablePropTypes.iterableOf(PropTypes.instanceOf(OAuthToken))
 
 const NotificationRefPropType = PropTypes.instanceOf(NotificationRef)
 export {NotificationRefPropType}

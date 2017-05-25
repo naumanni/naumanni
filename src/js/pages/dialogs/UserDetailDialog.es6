@@ -11,7 +11,7 @@ import TimelineStatus from 'src/pages/components/TimelineStatus'
 import {IconFont, NowLoading} from 'src/pages/parts'
 import {AcctPropType} from 'src/propTypes'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
-import {HistoryRelatedDialog} from './Dialog'
+import {HistoryBaseDialog} from './Dialog'
 
 export const LIST_STATUSES = 'statuses'
 export const LIST_FOLLOWINGS = 'followings'
@@ -21,7 +21,7 @@ export const LIST_FOLLOWERS = 'followers'
 /**
  * ユーザー詳細表示
  */
-export default class UserDetailDialog extends HistoryRelatedDialog {
+export default class UserDetailDialog extends HistoryBaseDialog {
   static propTypes = {
     acct: AcctPropType.isRequired,
   }

@@ -88,6 +88,7 @@ export default class Dashboard extends React.Component {
             onStartAddAccount={::this.onStartAddAccount}
             onOpenColumn={::this.onOpenColumn}
             onGenKey={::this.onGenKey}
+            onShowSettings={::this.onShowSettings}
           />
           <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
           <ColumnContainer ref="columnContainer" columns={columns} />
@@ -137,7 +138,6 @@ export default class Dashboard extends React.Component {
 
   onStartAddAccount() {
     const {history} = this.props.app
-    // TODO: named routingしたい
     history.push(history.makeUrl('accountAdd'))
   }
 
@@ -153,6 +153,11 @@ export default class Dashboard extends React.Component {
     context.useCase(
       new GenerateKeypairUseCase()
     ).execute(token, account)
+  }
+
+  onShowSettings() {
+    const {history} = this.props.app
+    history.push(history.makeUrl('settings'))
   }
 }
 

@@ -35,9 +35,12 @@ async function main() {
   Application.setup(context)
 
   if(process.env.NODE_ENV !== 'production') {
+    // for development
     const AlminLogger = require('almin-logger')
     const logger = new AlminLogger()
     logger.startLogging(context)
+
+    window.Perf = require('react-addons-perf')
   }
 
   // init open pgp

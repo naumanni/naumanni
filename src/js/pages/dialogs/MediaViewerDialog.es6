@@ -1,13 +1,18 @@
 import React from 'react'
 
-import Dialog from './Dialog'
 import {IconFont} from 'src/pages/parts'
+import {AttachmentListPropType} from 'src/propTypes'
+import Dialog from './Dialog'
 
 
 /**
  * メディア表示ダイアログ
  */
 export default class MediaViewerDialog extends Dialog {
+  static propTypes = {
+    mediaList: AttachmentListPropType.isRequired,
+  }
+
   constructor(...args) {
     super(...args)
 
@@ -24,7 +29,7 @@ export default class MediaViewerDialog extends Dialog {
   render() {
     const {mediaList} = this.props
     const {currentIdx} = this.state
-    const media = mediaList[currentIdx]
+    const media = mediaList.get(currentIdx)
 
     return (
       <div className={`${this.dialogClassName} dialog--mediaViewer--${media.type}`}>
@@ -111,6 +116,6 @@ export default class MediaViewerDialog extends Dialog {
     const {mediaList} = this.props
     const {currentIdx} = this.state
 
-    return currentIdx !== mediaList.length - 1
+    return currentIdx !== mediaList.size - 1
   }
 }

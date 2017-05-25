@@ -7,7 +7,7 @@ import OAuthApp from 'src/models/OAuthApp'
 import Database from 'src/infra/Database'
 // import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
 
-import Dialog from './Dialog'
+import {HistoryBaseDialog} from './Dialog'
 
 const ACCOUNT_REX = /^@([^@]+)@(.*)$/
 
@@ -15,7 +15,7 @@ const ACCOUNT_REX = /^@([^@]+)@(.*)$/
 /**
  * アカウント追加ダイアログ
  */
-export default class AddAccountDialog extends Dialog {
+export default class AddAccountDialog extends HistoryBaseDialog {
   /**
    * override
    */
@@ -37,7 +37,7 @@ export default class AddAccountDialog extends Dialog {
    */
   renderBody() {
     return (
-      <div className="addAccountDialogBody">
+      <div className="dialog-body">
         <input type="text" ref="account" placeholder="@shn@mstdn.onosendai.jp" style={{width: '100%'}} />
       </div>
     )
@@ -53,11 +53,6 @@ export default class AddAccountDialog extends Dialog {
         <button className="button-primary" onClick={::this.onClickAdd}>Add</button>
       </div>
     )
-  }
-
-  onClickClose(e) {
-    e.preventDefault()
-    this.app.history.back()
   }
 
   onClickAdd(e) {

@@ -1,0 +1,115 @@
+/* とりあえずここでしか使ってないのでここに書いてしまえ **/
+
+.tabs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  > li {
+    display: inline-block;
+    padding: $marginDefault calc($marginDefault * 2);
+    cursor: pointer;
+
+    &.on {
+      background: $colorTabBackground;
+      border-radius: $marginDefault $marginDefault 0 0;
+    }
+  }
+}
+
+.tabPane {
+  display: none;
+  position: relative;
+  padding: $marginDefault;
+
+  &.on {
+    display: block;
+    background: $colorTabBackground;
+  }
+}
+
+
+/* */
+.dialog--globalSettings {
+  .dialog-body {
+    width: 70vw;
+    height: calc(90vh - 300px);
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    > .tabs {
+      flex: 0 0 auto;
+    }
+    > .tabPane {
+      flex: 1 1 auto;
+      overflow-y: scroll;
+    }
+
+    .tabPane {
+      > .note {
+        margin: 0;
+        padding: $marginDefault;
+        border-radius: $marginDefault;
+
+        background: #f0f0f0;
+        border: 1px solid #eee;
+
+        &.note--danger {
+          background: #e06d6d;
+          border: 1px solid #d32f2f;
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+
+.tabPane--notification {
+  .notificationSetting {
+    display: flex;
+    flex-wrap: wrap;
+
+    .notificationSetting-byAcct {
+      flex: 1 1 auto;
+      min-width: 15em;
+      max-width: 20em;
+      padding: $marginDefault;
+    }
+
+    .notificationSetting-acctInfo {
+      @mixin clearfix;
+
+      .userIcon {
+        float: left;
+      }
+
+      .user-acct {
+        margin-left: calc($sizeAvatar + $marginHalf);
+        display: block;
+      }
+    }
+
+    h4 {
+      margin: $marginDefault 0 $marginHalf;
+    }
+    label {
+      width: 6em;
+      display: inline-block;
+    }
+  }
+}
+
+
+.tabPane--emeregency {
+  .tabPane--emeregency-resetAllButton {
+    text-align: center;
+    margin: 64px 0;
+
+    .button {
+      padding-left: 32px;
+      padding-right: 32px;
+    }
+  }
+}

@@ -8,7 +8,7 @@ import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
   KEY_ENTER, KEY_ESC, TOOTFORM_PLACEHOLDER,
 } from 'src/constants'
-import {OAuthTokenArrayPropType} from 'src/propTypes'
+import {OAuthTokenListPropType} from 'src/propTypes'
 import {IconFont, UserIconWithHost} from 'src/pages/parts'
 import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
 
@@ -21,7 +21,7 @@ const MAX_MEDIA_FILES = 4
 export default class TootForm extends React.Component {
   static propTypes = {
     maxContentLength: PropTypes.number,
-    tokens: OAuthTokenArrayPropType.isRequired,
+    tokens: OAuthTokenListPropType.isRequired,
     onSend: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
     initialSendFrom: PropTypes.arrayOf(PropTypes.string),
@@ -47,7 +47,7 @@ export default class TootForm extends React.Component {
       isSending: false,
       mediaFiles: [],
       messageTo: '',
-      sendFrom: initialSendFrom != null ? initialSendFrom : [tokens[0].acct],
+      sendFrom: initialSendFrom != null ? initialSendFrom : [tokens.get(0).acct],
       showContentsWarning: false,
       spoilerTextContent: '',
       statusContent: this.props.initialContent || '',

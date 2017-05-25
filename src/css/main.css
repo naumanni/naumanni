@@ -15,4 +15,5 @@
 @import "components/_toot_panel.css";
 @import "components/_status_notifications.css";
 @import "dialogs/_userdetail_dialog.css";
+@import "dialogs/_globalsettings_dialog.css";
 @import "_dashboard.css";
