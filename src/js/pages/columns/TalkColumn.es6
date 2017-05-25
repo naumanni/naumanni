@@ -1,6 +1,7 @@
 // import update from 'immutability-helper'
 import PropTypes from 'prop-types'
 import React from 'react'
+import {findDOMNode} from 'react-dom'
 
 import {
   SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
@@ -151,6 +152,13 @@ export default class TalkColumn extends Column {
     super.onChangeConext()
 
     this.listener.updateToken(this.state.token)
+  }
+
+  /**
+   * @override
+   */
+  scrollNode() {
+    return findDOMNode(this.refs.talkGroups)
   }
 
   renderTalkGroup(talkGroup, prevTalkGroup, nextTalkGroup) {

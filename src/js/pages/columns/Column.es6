@@ -96,6 +96,10 @@ export default class Column extends React.Component {
     return columnBodyClassName.join(' ')
   }
 
+  scrollNode() {
+    return null
+  }
+
   onChangeConext(changingStores) {
     this.setState(this.getStateFromContext())
   }
@@ -127,7 +131,15 @@ export default class Column extends React.Component {
     const columnBounds = findDOMNode(this).getBoundingClientRect()
 
     if(columnBounds.right > window.innerWidth || columnBounds.left < 0) {
+      // if the column is out of the window, adjusts horizontal scroll
       this.props.onClickHeader(this.props.column.key)
+    } else {
+      // if the column is in the window, reset its scroll offset
+      let scrollNode = this.scrollNode()
+      if(!scrollNode) {
+        return
+      }
+      scrollNode.scrollTop = 0
     }
   }
 }
