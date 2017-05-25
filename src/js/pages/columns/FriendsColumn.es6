@@ -1,6 +1,7 @@
 // import update from 'immutability-helper'
 import PropTypes from 'prop-types'
 import React from 'react'
+import {findDOMNode} from 'react-dom'
 
 import {SUBJECT_MIXED, COLUMN_FRIENDS, COLUMN_TALK} from 'src/constants'
 import {TalkRecord} from 'src/models'
@@ -86,7 +87,7 @@ export default class FriendsColumn extends Column {
     return (
       <div className={this.columnBodyClassName()}>
         {this.renderFilter()}
-        <ul className="friends-list">
+        <ul className="friends-list" ref="friendsList">
           {friends.map((friend) => (
             <li key={friend.key}>
               <AccountRow
@@ -125,6 +126,14 @@ export default class FriendsColumn extends Column {
   onChangeConext() {
     super.onChangeConext()
     this.listener.updateTokens(this.state.token)
+  }
+
+
+  /**
+   * @override
+   */
+  scrollNode() {
+    return findDOMNode(this.refs.friendsList)
   }
 
   renderFilter() {

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import ReactDOM from 'react-dom'
+import {findDOMNode} from 'react-dom'
 
 import {
   COLUMN_TIMELINE,
@@ -96,7 +96,7 @@ export default class PagingColumn extends Column {
 
     return (
       <div className={this.columnBodyClassName()}>
-        <ul className="timeline" onScroll={::this.onTimelineScrolled}>
+        <ul className="timeline" onScroll={::this.onTimelineScrolled} ref="timeline">
           {timeline.map((ref) => this.renderTimelineRow(ref))}
           {tailLoading && <li className="timeline-loading"><NowLoading /></li>}
         </ul>
@@ -117,6 +117,13 @@ export default class PagingColumn extends Column {
     if(!this.isMixedTimeline()) {
       this.setState({token: tokenState.getTokenByAcct(this.props.subject)})
     }
+  }
+
+  /**
+   * @override
+   */
+  scrollNode() {
+    return findDOMNode(this.refs.timeline)
   }
 
   loadMoreStatuses() {

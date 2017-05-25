@@ -1,4 +1,5 @@
 import React from 'react'
+import {findDOMNode} from 'react-dom'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
@@ -69,7 +70,7 @@ export default class Column extends React.Component {
 
     return (
       <div className="column">
-          <header className={headerClass}>
+        <header className={headerClass} onClick={::this.onClickHeader}>
           {title}
           <div className="column-headerMenu">
             <DropdownMenuButton onRenderMenu={::this.onRenderColumnMenu}>
@@ -93,6 +94,10 @@ export default class Column extends React.Component {
       columnBodyClassName.push('is-loading')
 
     return columnBodyClassName.join(' ')
+  }
+
+  scrollNode() {
+    return null
   }
 
   onChangeConext(changingStores) {
@@ -120,5 +125,21 @@ export default class Column extends React.Component {
   onClickCloseColumn() {
     const {context} = this.context
     context.useCase(new CloseColumnUseCase()).execute(this.props.column)
+  }
+
+  onClickHeader() {
+    const columnBounds = findDOMNode(this).getBoundingClientRect()
+
+    if(columnBounds.right > window.innerWidth || columnBounds.left < 0) {
+      // if the column is out of the window, adjusts horizontal scroll
+      this.props.onClickHeader(this.props.column.key)
+    } else {
+      // if the column is in the window, reset its scroll offset
+      let scrollNode = this.scrollNode()
+      if(!scrollNode) {
+        return
+      }
+      scrollNode.scrollTop = 0
+    }
   }
 }
