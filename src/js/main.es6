@@ -11,8 +11,10 @@ import {NAUMANNI_VERSION} from 'src/constants'
 import Dashboard from 'src/pages/Dashboard'
 
 
-// moment.locale(window.navigator.language)
-moment.locale('ja')
+// initialize initial locale(==en)
+moment.locale('en')
+// react-intl内でenを読み込んでいるように見える...
+// addLocaleData([...require('react-intl/locale-data/en')])
 
 
 // install Raven @ production

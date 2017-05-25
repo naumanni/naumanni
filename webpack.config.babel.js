@@ -38,6 +38,7 @@ module.exports = {
     path: DEST_DIR,
     filename: '[name].bundle.js',
     chunkFilename: '[id].[chunkhash].chunked.js',
+    publicPath: '/static/',
   },
   module: {
     rules: [
