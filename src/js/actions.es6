@@ -1,5 +1,6 @@
 export const TOKEN_LOADED = 'TOKEN_LOADED'
 export const TOKEN_ADDED = 'TOKEN_ADDED'
+export const TOKEN_DELETED = 'TOKEN_DELETED'
 
 // ui
 export const COLUMN_ADD_REQUESTED = 'COLUMN_ADD_REQUESTED'

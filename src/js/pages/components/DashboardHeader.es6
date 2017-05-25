@@ -21,6 +21,7 @@ export default class DashboardHeader extends React.Component {
     onOpenColumn: PropTypes.func.isRequired,
     onGenKey: PropTypes.func.isRequired,
     onShowSettings: PropTypes.func.isRequired,
+    onSignOut: PropTypes.func.isRequired,
   }
 
   /**
@@ -192,6 +193,12 @@ export default class DashboardHeader extends React.Component {
           onClick={this.props.onOpenColumn.bind(this, COLUMN_FRIENDS, {subject: account.acct})}>
           <IconFont className="menu-itemIcon" iconName="mail" />
           <span>Message</span>
+        </li>
+
+        <li className="menu-item"
+          onClick={this.props.onSignOut.bind(this, token)}>
+          <IconFont className="menu-itemIcon" iconName="logout" />
+          <span>Sign out</span>
         </li>
       </ul>
     )

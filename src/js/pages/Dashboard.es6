@@ -5,6 +5,7 @@ import {NAUMANNI_VERSION} from 'src/constants'
 import {AppPropType, ContextPropType} from 'src/propTypes'
 import InitializeApplicationUseCase from 'src/usecases/InitializeApplicationUseCase'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
+import SignOutUseCase from 'src/usecases/SignOutUseCase'
 import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
 import {raq} from 'src/utils'
 
@@ -89,6 +90,7 @@ export default class Dashboard extends React.Component {
             onOpenColumn={::this.onOpenColumn}
             onGenKey={::this.onGenKey}
             onShowSettings={::this.onShowSettings}
+            onSignOut={::this.onSignOut}
           />
           <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
           <ColumnContainer ref="columnContainer" columns={columns} />
@@ -158,6 +160,15 @@ export default class Dashboard extends React.Component {
   onShowSettings() {
     const {history} = this.props.app
     history.push(history.makeUrl('settings'))
+  }
+
+  onSignOut(token) {
+    if(window.confirm(`Are you sure you want to sign out of ${token.acct} ?`)) {
+      const {context} = this.props.app
+      const {columns} = this.state
+
+      context.useCase(new SignOutUseCase()).execute(token, columns)
+    }
   }
 }
 
