@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'naumanni';
-  src: url('./font/naumanni.eot?90707607');
-  src: url('./font/naumanni.eot?90707607#iefix') format('embedded-opentype'),
-       url('./font/naumanni.woff2?90707607') format('woff2'),
-       url('./font/naumanni.woff?90707607') format('woff'),
-       url('./font/naumanni.ttf?90707607') format('truetype'),
-       url('./font/naumanni.svg?90707607#naumanni') format('svg');
+  src: url('./font/naumanni.eot?68009571');
+  src: url('./font/naumanni.eot?68009571#iefix') format('embedded-opentype'),
+       url('./font/naumanni.woff2?68009571') format('woff2'),
+       url('./font/naumanni.woff?68009571') format('woff'),
+       url('./font/naumanni.ttf?68009571') format('truetype'),
+       url('./font/naumanni.svg?68009571#naumanni') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -15,7 +15,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'naumanni';
-    src: url('./font/naumanni.svg?90707607#naumanni') format('svg');
+    src: url('./font/naumanni.svg?68009571#naumanni') format('svg');
   }
 }
 */
@@ -84,6 +84,7 @@
 .icon-talk:before { content: '\e81a'; } /* '' */
 .icon-right-open:before { content: '\e81b'; } /* '' */
 .icon-left-open:before { content: '\e81c'; } /* '' */
+.icon-logout:before { content: '\e81d'; } /* '' */
 .icon-bell:before { content: '\f0f3'; } /* '' */
 .icon-meh:before { content: '\f11a'; } /* '' */
 .icon-user-secret:before { content: '\f21b'; } /* '' */

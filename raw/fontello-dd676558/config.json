@@ -225,6 +225,12 @@
       "src": "fontawesome"
     },
     {
+      "uid": "2d76f2c8d13be40694ecadfea7fb83c3",
+      "css": "logout",
+      "code": 59421,
+      "src": "entypo"
+    },
+    {
       "uid": "a70b0a7ad233888d003444ad6c75f30e",
       "css": "logo",
       "code": 59392,
