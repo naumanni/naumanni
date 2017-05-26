@@ -28,11 +28,23 @@
   }
 }
 
+.formGroup {
+  margin: 1rem 0 1rem;
+  > h3 {
+    margin: 0;
+  }
+}
+.formGroup--inline {
+  display: flex;
+  justify-content: space-between;
+}
+
 
 /* */
 .dialog--preferences {
+  width: 70vw;
+
   .dialog-body {
-    width: 70vw;
     height: calc(90vh - 300px);
     position: relative;
 

@@ -69,3 +69,8 @@ export const MAX_STATUSES = 40
 // localStorageのKey
 export const STORAGE_KEY_LAST_SEND_FROM = 'naumanni::last_send_from'
 export const STORAGE_KEY_PREFERENCES = 'naumanni::preferences'
+
+export const LOCALES = Object.freeze({
+  en: 'English',
+  ja: '日本語',
+})

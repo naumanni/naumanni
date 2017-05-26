@@ -3,16 +3,20 @@ import React from 'react'
 import {FormattedMessage as _FM} from 'react-intl'
 // import PropTypes from 'prop-types'
 
+import {LOCALES} from 'src/constants'
 import {UserAcct, UserIconWithHost} from 'src/pages/parts'
 import UpdatePreferencesUseCase from 'src/usecases/UpdatePreferencesUseCase'
 import {HistoryBaseDialog} from './Dialog'
 
 
+const TAB_PREFERENCES = 'TAB_PREFERENCES'
 const TAB_NOTIFICATIONS = 'TAB_NOTIFICATIONS'
 const TAB_EMERGENCY = 'TAB_EMERGENCY'
 
 
 const tabs = [
+  // PreferencesDialogの中にPreferencesタブとはこれいかに？
+  [TAB_PREFERENCES, <_FM id="preferecens_dialog.tab.preferences" />],
   [TAB_NOTIFICATIONS, <_FM id="preferecens_dialog.tab.notifications" />],
   [TAB_EMERGENCY, <_FM id="preferecens_dialog.tab.emergency" />],
 ]
@@ -79,6 +83,7 @@ export default class PreferencesDialog extends HistoryBaseDialog {
           })}
         </ul>
 
+        {this.renderPreferencesTab(currentTab === TAB_PREFERENCES)}
         {this.renderNotificationTab(currentTab === TAB_NOTIFICATIONS)}
         {this.renderEmergencyTab(currentTab === TAB_EMERGENCY)}
       </div>
@@ -107,6 +112,24 @@ export default class PreferencesDialog extends HistoryBaseDialog {
     )
   }
 
+  renderPreferencesTab(on) {
+    return (
+      <div className={`tabPane tabPane--preferences ${on ? 'on' : ''}`}>
+        <div className="formGroup formGroup--inline languageSetting">
+          <h3><_FM id="preferecens_dialog.label.language" /></h3>
+          <select
+            value={this.getPrefVal(['globals', 'locale'], true)}
+            onChange={this.onChangeForm.bind(this, ['globals', 'locale'])}>
+            {Object.keys(LOCALES).map((key) => {
+              return (
+                <option key={key} value={key}>{LOCALES[key]}</option>
+              )
+            })}
+          </select>
+        </div>
+      </div>
+    )
+  }
   renderNotificationTab(on) {
     const {tokens} = this.state
 
@@ -216,9 +239,13 @@ export default class PreferencesDialog extends HistoryBaseDialog {
       window.resetAll()
   }
 
+  onChangeForm(keyPath, e) {
+    const current = this.changePrefVal(keyPath, e.target.value)
+    this.setState({current})
+  }
+
   onClickCheckbox(keyPath, e) {
     const current = this.changePrefVal(keyPath, e.target.checked ? true : false)
-    console.log(this.state.current.toJSON(), '->', current.toJSON())
     this.setState({current})
   }
 
