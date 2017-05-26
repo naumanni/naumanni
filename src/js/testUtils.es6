@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {config as openPGPConfig} from 'openpgp'
 
 
@@ -18,3 +19,20 @@ export function initOpenPGPTest(global=window) {
   }
   openPGPConfig.aead_protect = true // activate fast AES-GCM mode (not yet OpenPGP standard)
 }
+
+const intlContext = {
+  intl: {
+    formatDate: jest.fn(),
+    formatTime: jest.fn(),
+    formatMessage: jest.fn(),
+    formatRelative: jest.fn(),
+    formatNumber: jest.fn(),
+    formatPlural: jest.fn(),
+    formatMessage: jest.fn(),
+    formatHTMLMessage: jest.fn(),
+    now: jest.fn(),
+  },
+}
+
+
+export {intlContext}
