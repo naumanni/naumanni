@@ -66,6 +66,9 @@ export default class PreferenceState {
   }
 
   onPrefecencesLoaded({globals, byAccts}) {
+    globals = globals || {}
+    byAccts = byAccts || {}
+
     // 初期値
     if(!globals.locale)
       globals.locale = window.navigator.language || 'en'
