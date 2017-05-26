@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {intlShape} from 'react-intl'
 
 import {UIDialog} from 'src/models'
 import CloseDialogUseCase from 'src/usecases/CloseDialogUseCase'
@@ -13,6 +14,7 @@ export default class Dialog extends React.Component {
   static contextTypes = {
     app: PropTypes.any,
     context: PropTypes.any,
+    intl: intlShape,
   }
 
   static propTypes = {

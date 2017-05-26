@@ -1,4 +1,5 @@
 import React from 'react'
+import {FormattedMessage as _FM} from 'react-intl'
 // import PropTypes from 'prop-types'
 
 import {makeAPIRequester} from 'src/api/APIRequester'
@@ -29,7 +30,7 @@ export default class AddAccountDialog extends HistoryBaseDialog {
    * @override
    */
   renderHeader() {
-    return <h1>Add your account</h1>
+    return <h1><_FM id="add_account_dialog.title" /></h1>
   }
 
   /**
@@ -49,8 +50,12 @@ export default class AddAccountDialog extends HistoryBaseDialog {
   renderFooter() {
     return (
       <div className="dialog-footerButtons">
-        <button className="button-danger" onClick={::this.onClickClose}>Cancel</button>
-        <button className="button-primary" onClick={::this.onClickAdd}>Add</button>
+        <button className="button-danger" onClick={::this.onClickClose}>
+          <_FM id="add_account_dialog.label.cancel" />
+        </button>
+        <button className="button-primary" onClick={::this.onClickAdd}>
+          <_FM id="add_account_dialog.label.add" />
+        </button>
       </div>
     )
   }

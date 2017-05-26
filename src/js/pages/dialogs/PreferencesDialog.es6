@@ -1,26 +1,31 @@
 import {is, Map, fromJS} from 'immutable'
 import React from 'react'
+import {FormattedMessage as _FM} from 'react-intl'
 // import PropTypes from 'prop-types'
 
+import {LOCALES} from 'src/constants'
 import {UserAcct, UserIconWithHost} from 'src/pages/parts'
 import UpdatePreferencesUseCase from 'src/usecases/UpdatePreferencesUseCase'
 import {HistoryBaseDialog} from './Dialog'
 
 
+const TAB_PREFERENCES = 'TAB_PREFERENCES'
 const TAB_NOTIFICATIONS = 'TAB_NOTIFICATIONS'
 const TAB_EMERGENCY = 'TAB_EMERGENCY'
 
 
 const tabs = [
-  [TAB_NOTIFICATIONS, 'Notification'],
-  [TAB_EMERGENCY, 'Emergency'],
+  // PreferencesDialogの中にPreferencesタブとはこれいかに？
+  [TAB_PREFERENCES, <_FM id="preferecens_dialog.tab.preferences" />],
+  [TAB_NOTIFICATIONS, <_FM id="preferecens_dialog.tab.notifications" />],
+  [TAB_EMERGENCY, <_FM id="preferecens_dialog.tab.emergency" />],
 ]
 
 /**
  * 設定ダイアログ
  * PreferenceStoreに対応するのだから、PreferencesDialogでは?
  */
-export default class SettingsDialog extends HistoryBaseDialog {
+export default class PreferencesDialog extends HistoryBaseDialog {
   constructor(...args) {
     super(...args)
 
@@ -49,7 +54,7 @@ export default class SettingsDialog extends HistoryBaseDialog {
    * @return {string}
    */
   get dialogClassName() {
-    return super.dialogClassName + ' dialog--globalSettings'
+    return super.dialogClassName + ' dialog--preferences'
   }
 
   /**
@@ -78,6 +83,7 @@ export default class SettingsDialog extends HistoryBaseDialog {
           })}
         </ul>
 
+        {this.renderPreferencesTab(currentTab === TAB_PREFERENCES)}
         {this.renderNotificationTab(currentTab === TAB_NOTIFICATIONS)}
         {this.renderEmergencyTab(currentTab === TAB_EMERGENCY)}
       </div>
@@ -93,15 +99,37 @@ export default class SettingsDialog extends HistoryBaseDialog {
 
     return (
       <div className="dialog-footerButtons">
-        <button className="button button--danger" onClick={::this.onClickClose}>Cancel</button>
+        <button className="button button--danger" onClick={::this.onClickClose}>
+          <_FM id="preferecens_dialog.label.cancel" />
+        </button>
         <button
           className="button button--primary"
           disabled={!canSave}
-          onClick={::this.onClickSaveAndClose}>Save & Close</button>
+          onClick={::this.onClickSaveAndClose}>
+          <_FM id="preferecens_dialog.label.save_n_close" />
+        </button>
       </div>
     )
   }
 
+  renderPreferencesTab(on) {
+    return (
+      <div className={`tabPane tabPane--preferences ${on ? 'on' : ''}`}>
+        <div className="formGroup formGroup--inline languageSetting">
+          <h3><_FM id="preferecens_dialog.label.language" /></h3>
+          <select
+            value={this.getPrefVal(['globals', 'locale'], true)}
+            onChange={this.onChangeForm.bind(this, ['globals', 'locale'])}>
+            {Object.keys(LOCALES).map((key) => {
+              return (
+                <option key={key} value={key}>{LOCALES[key]}</option>
+              )
+            })}
+          </select>
+        </div>
+      </div>
+    )
+  }
   renderNotificationTab(on) {
     const {tokens} = this.state
 
@@ -117,7 +145,9 @@ export default class SettingsDialog extends HistoryBaseDialog {
 
     return (
       <div className={`tabPane tabPane--notification ${on ? 'on' : ''}`}>
-        <p className="note">新しい、フォロー/リプライ/ブースト/ファボがあった時の通知の設定をします。</p>
+        <p className="note">
+          <_FM id="preferecens_dialog.note.notifications" />
+        </p>
 
         <div className="notificationSetting">
         {tokens.map((token) => {
@@ -131,21 +161,45 @@ export default class SettingsDialog extends HistoryBaseDialog {
                 <UserAcct account={account} />
               </div>
 
-              <h4>Mention</h4>
-              <label>{_cbox(acct, 'notifications.mention.audio')} Audio</label>
-              <label>{_cbox(acct, 'notifications.mention.desktop')} Desktop</label>
+              <h4><_FM id="preferecens_dialog.label.mention" /></h4>
+              <div>
+                <label>
+                  {_cbox(acct, 'notifications.mention.audio')} <_FM id="preferecens_dialog.label.audio" />
+                </label>
+                <label>
+                  {_cbox(acct, 'notifications.mention.desktop')} <_FM id="preferecens_dialog.label.desktop" />
+                </label>
+              </div>
 
-              <h4>Boost</h4>
-              <label>{_cbox(acct, 'notifications.reblog.audio')} Audio</label>
-              <label>{_cbox(acct, 'notifications.reblog.desktop')} Desktop</label>
+              <h4><_FM id="preferecens_dialog.label.reblog" /></h4>
+              <div>
+                <label>
+                  {_cbox(acct, 'notifications.reblog.audio')} <_FM id="preferecens_dialog.label.audio" />
+                </label>
+                <label>
+                  {_cbox(acct, 'notifications.reblog.desktop')} <_FM id="preferecens_dialog.label.desktop" />
+                </label>
+              </div>
 
-              <h4>Favourite</h4>
-              <label>{_cbox(acct, 'notifications.favourite.audio')} Audio</label>
-              <label>{_cbox(acct, 'notifications.favourite.desktop')} Desktop</label>
+              <h4><_FM id="preferecens_dialog.label.favourite" /></h4>
+              <div>
+                <label>
+                  {_cbox(acct, 'notifications.favourite.audio')} <_FM id="preferecens_dialog.label.audio" />
+                </label>
+                <label>
+                  {_cbox(acct, 'notifications.favourite.desktop')} <_FM id="preferecens_dialog.label.desktop" />
+                </label>
+              </div>
 
-              <h4>Follow</h4>
-              <label>{_cbox(acct, 'notifications.follow.audio')} Audio</label>
-              <label>{_cbox(acct, 'notifications.follow.desktop')} Desktop</label>
+              <h4><_FM id="preferecens_dialog.label.follow" /></h4>
+              <div>
+                <label>
+                  {_cbox(acct, 'notifications.follow.audio')} <_FM id="preferecens_dialog.label.audio" />
+                </label>
+                <label>
+                  {_cbox(acct, 'notifications.follow.desktop')} <_FM id="preferecens_dialog.label.desktop" />
+                </label>
+              </div>
 
             </div>
           )
@@ -158,10 +212,14 @@ export default class SettingsDialog extends HistoryBaseDialog {
   renderEmergencyTab(on) {
     return (
       <div className={`tabPane tabPane--emeregency ${on ? 'on' : ''}`}>
-        <p className="note note--danger">このボタンを押すと、全ての設定をクリアして再読込します。（つまり最初の状態に戻ります）</p>
+        <p className="note note--danger">
+          <_FM id="preferecens_dialog.note.emergency" />
+        </p>
 
         <div className="tabPane--emeregency-resetAllButton">
-          <button className="button button--danger" onClick={::this.onClickResetAll}>全てをリセット</button>
+          <button className="button button--danger" onClick={::this.onClickResetAll}>
+            <_FM id="preferecens_dialog.label.reset_all" />
+          </button>
         </div>
       </div>
     )
@@ -176,13 +234,18 @@ export default class SettingsDialog extends HistoryBaseDialog {
   }
 
   onClickResetAll() {
-    if(window.confirm('本当にリセットを行いますか?'))
+    const {formatMessage: _} = this.context.intl
+    if(window.confirm(_({id: 'preferences_dialog.confirm.reset_all'})))
       window.resetAll()
+  }
+
+  onChangeForm(keyPath, e) {
+    const current = this.changePrefVal(keyPath, e.target.value)
+    this.setState({current})
   }
 
   onClickCheckbox(keyPath, e) {
     const current = this.changePrefVal(keyPath, e.target.checked ? true : false)
-    console.log(this.state.current.toJSON(), '->', current.toJSON())
     this.setState({current})
   }
 

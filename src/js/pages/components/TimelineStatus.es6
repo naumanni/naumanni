@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {is} from 'immutable'
-
+import {FormattedRelative, FormattedMessage as _FM} from 'react-intl'
 
 import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
@@ -121,7 +121,7 @@ class TimelineStatus extends React.Component {
               <a className="status-createdAt"
                  href={status.url}
                  target="_blank"
-                 alt={status.created_at}>{status.createdAt.fromNow()}
+                 alt={status.created_at}><FormattedRelative value={status.createdAt.toDate()} />
               </a>
             </div>
 
@@ -180,7 +180,9 @@ class TimelineStatus extends React.Component {
         {status.spoilerText}
         <a className="status-contentOpener"
           onClick={() => this.setState({isContentOpen: !isContentOpen})}>
-          {isContentOpen ? 'Close' : 'More...'}
+          {isContentOpen
+            ? <_FM id="timeline_status.label.content_close" />
+            : <_FM id="timeline_status.label.content_more" />}
         </a>
       </div>
     )
@@ -216,8 +218,8 @@ class TimelineStatus extends React.Component {
         {isShowMediaCover && (
           <div className="status-mediaListCover" onClick={::this.onClickMediaCover}>
             <p>
-              NSFW<br />
-              <span className="sub">Browse</span>
+              <_FM id="timeline_status.label.sensitive_content" /><br />
+              <span className="sub"><_FM id="timeline_status.label.click_to_view" /></span>
             </p>
           </div>
         )}

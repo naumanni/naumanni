@@ -170,7 +170,7 @@ export default class Status extends StatusRecord {
 
           if(key === 'fetched_at') {
             // fetched_atは一番古い日付を使う. nullだったら、WebSocket以前にもってたってことなのでnullのまま
-            if(!prev || (prev && next && prev < next))
+            if(!next || (prev && next && prev < next))
               result = prev
           } else if(prev instanceof Map) {
             // mapだったらnext優先でmergeする

@@ -1,4 +1,5 @@
 import React from 'react'
+import {FormattedMessage as _FM} from 'react-intl'
 
 import {
   COLUMN_NOTIFICATIONS, SUBJECT_MIXED, MAX_STATUSES, AUTO_PAGING_MARGIN,
@@ -27,18 +28,20 @@ export default class NotificationColumn extends PagingColumn {
    * @override
    */
   renderTitle() {
+    const {formatMessage} = this.context.intl
+
     if(this.isMixedTimeline()) {
-      return 'United Notification'
+      return formatMessage({id: 'column.title.united_notifications'})
     } else {
       const {token} = this.state
 
       if(!token)
-        return 'Notification'
+        return formatMessage({id: 'column.title.notifications'})
 
       return (
         <h1 className="column-headerTitle">
           <div className="column-headerTitleSub">{token.acct}</div>
-          <div className="column-headerTitleMain">Notifications</div>
+          <div className="column-headerTitleMain"><_FM id="column.title.notifications" /></div>
         </h1>
       )
     }

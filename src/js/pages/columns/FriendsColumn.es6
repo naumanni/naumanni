@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {findDOMNode} from 'react-dom'
+import {FormattedMessage as _FM} from 'react-intl'
 
 import {SUBJECT_MIXED, COLUMN_FRIENDS, COLUMN_TALK} from 'src/constants'
 import {TalkRecord} from 'src/models'
@@ -63,13 +64,13 @@ export default class FriendsColumn extends Column {
     const {token} = this.state
 
     if(!token) {
-      return 'Message'
+      return <_FM id="column.title.message" />
     }
 
     return (
       <h1 className="column-headerTitle">
         <div className="column-headerTitleSub">{token.acct}</div>
-        <div className="column-headerTitleMain">Message</div>
+        <div className="column-headerTitleMain"><_FM id="column.title.message" /></div>
       </h1>
     )
   }
@@ -138,10 +139,12 @@ export default class FriendsColumn extends Column {
 
   renderFilter() {
     const {filter} = this.state
+    const {formatMessage: _} = this.context.intl
 
     return (
       <div className="friends-filter">
-        <input type="text" value={filter} onChange={::this.onChangeFilter} placeholder="Filter" />
+        <input type="text" value={filter} onChange={::this.onChangeFilter}
+          placeholder={_({id: 'message.freind_filter.placeholder'})} />
       </div>
     )
   }

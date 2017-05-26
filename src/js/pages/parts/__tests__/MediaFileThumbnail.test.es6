@@ -1,7 +1,7 @@
 import React from 'react'
 import {shallow} from 'enzyme'
 import {spy} from 'sinon'
-import renderer from 'react-test-renderer';
+import renderer from 'react-test-renderer'
 
 import MediaFileThumbnail from '../MediaFileThumbnail'
 import IconFont from '../IconFont'
@@ -14,9 +14,9 @@ const takeSnapshot = (component) => {
 }
 
 describe('MediaFileThumbnail', () => {
-  var mediaFile
-  var component = <MediaFileThumbnail mediaFile={mediaFile} />
-  var wrapper = shallow(component)
+  let mediaFile
+  let component = <MediaFileThumbnail mediaFile={mediaFile} />
+  let wrapper = shallow(component)
 
   describe('no file', () => {
     it('has mediaThumbnail mediaThumbnail--nofile classes', () => {
@@ -126,7 +126,7 @@ describe('MediaFileThumbnail', () => {
   })
 
   describe('has showClose props', () => {
-    var onCloseSpy
+    let onCloseSpy
 
     beforeAll(() => {
       onCloseSpy = spy()

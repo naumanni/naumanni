@@ -1,4 +1,6 @@
+import moment from 'moment'
 import React from 'react'
+import {IntlProvider, addLocaleData, intlShape} from 'react-intl'
 
 import * as actions from 'src/actions'
 import {NAUMANNI_VERSION} from 'src/constants'
@@ -8,6 +10,7 @@ import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import SignOutUseCase from 'src/usecases/SignOutUseCase'
 import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
 import {raq} from 'src/utils'
+import {messages as enMessages} from 'src/locales/en'  // enはstatic linkしたい
 
 import ColumnContainer from './components/ColumnContainer'
 import DashboardHeader from './components/DashboardHeader'
@@ -26,9 +29,11 @@ export default class Dashboard extends React.Component {
     super(...args)
 
     this.state = {
-      initializer: <AppIntializer app={this.props.app} onInitialized={::this.onAppInitialized} />,
+      initializing: true,
+      locale: 'en',   // 初期ロケールはen
       ...this.getStateFromContext(),
     }
+    this.state.messages = enMessages
   }
 
   /**
@@ -66,43 +71,42 @@ export default class Dashboard extends React.Component {
    * @override
    */
   render() {
-    const {
-      initializer,
-    } = this.state
-
-    if(initializer) {
-      return (
-        <div className="naumanniDashboard">
-          <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
-          {initializer}
-        </div>
-      )
-    }
-
-    const {columns, dialogs, tokens} = this.state
-
+    const {initializing, locale, messages, columns, dialogs, tokens} = this.state
     return (
-      <div className={`naumanniApp ${dialogs.length ? 'is-shownDialogs' : ''}`}>
+      <IntlProvider
+        locale={locale}
+        messages={messages}
+        defaultLocale="en"
+        ref="intlProvider"
+      >
+        {initializing ? (
         <div className="naumanniDashboard">
-          <DashboardHeader
-            tokens={tokens}
-            onStartAddAccount={::this.onStartAddAccount}
-            onOpenColumn={::this.onOpenColumn}
-            onGenKey={::this.onGenKey}
-            onShowSettings={::this.onShowSettings}
-            onSignOut={::this.onSignOut}
-          />
           <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
-          <ColumnContainer ref="columnContainer" columns={columns} />
+          <AppIntializer app={this.props.app} onInitialized={::this.onAppInitialized} />
         </div>
-        <ModalDialogContainer dialogs={dialogs} />
-      </div>
+        ) : (
+        <div className={`naumanniApp ${dialogs.length ? 'is-shownDialogs' : ''}`}>
+          <div className="naumanniDashboard">
+            <DashboardHeader
+              tokens={tokens}
+              onStartAddAccount={::this.onStartAddAccount}
+              onOpenColumn={::this.onOpenColumn}
+              onGenKey={::this.onGenKey}
+              onShowSettings={::this.onShowSettings}
+              onSignOut={::this.onSignOut}
+            />
+            <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
+            <ColumnContainer ref="columnContainer" columns={columns} />
+          </div>
+          <ModalDialogContainer dialogs={dialogs} />
+        </div>
+        )}
+      </IntlProvider>
     )
   }
 
   getStateFromContext() {
-    const {context} = this.props.app
-    const state = context.getState()
+    const state = this.props.app.context.getState()
     return {
       columns: state.columnState.columns,
       dialogs: state.dialogsState.dialogs,
@@ -115,7 +119,7 @@ export default class Dashboard extends React.Component {
    * アプリの初期化が完了したら呼ばれる
    */
   onAppInitialized() {
-    this.setState({initializer: null}, () => {
+    this.setState({initializing: false}, () => {
       // routing開始
       this.props.app.history.start()
     })
@@ -125,6 +129,8 @@ export default class Dashboard extends React.Component {
     raq(() => {
       this.setState(this.getStateFromContext())
     })
+
+    this.onLocaleUpdated()
   }
 
   onContextDispatch(payload) {
@@ -136,6 +142,26 @@ export default class Dashboard extends React.Component {
       break
     }
     }
+  }
+
+  /**
+   * locale設定が更新されたかも
+   */
+  async onLocaleUpdated() {
+    const {preferenceState} = this.props.app.context.getState()
+    const newLocale = preferenceState.globals.locale
+
+    if(!newLocale || this.state.locale === newLocale)
+      return
+
+    const {messages, localeData} = await import(`../locales/${newLocale}.es6`)
+    moment.locale(newLocale)
+    addLocaleData(localeData)
+    this.setState({
+      locale: newLocale,
+      messages,
+    })
+    this.forceUpdate()
   }
 
   onStartAddAccount() {
@@ -159,11 +185,13 @@ export default class Dashboard extends React.Component {
 
   onShowSettings() {
     const {history} = this.props.app
-    history.push(history.makeUrl('settings'))
+    history.push(history.makeUrl('preferences'))
   }
 
   onSignOut(token) {
-    if(window.confirm(`Are you sure you want to sign out of ${token.acct} ?`)) {
+    const {formatMessage: _} = this.refs.intlProvider.getChildContext().intl
+
+    if(window.confirm(_({id: 'dashboard.confirm.signout'}, {acct: token.acct}))) {
       const {context} = this.props.app
       const {columns} = this.state
 
@@ -179,11 +207,17 @@ export default class Dashboard extends React.Component {
  * しかし状況は読み込み中しか無いのであった
  */
 class AppIntializer extends React.Component {
+  static contextTypes = {
+    intl: intlShape,
+  }
+
   constructor(...args) {
     super(...args)
 
+    const {formatMessage: _} = this.context.intl
+
     this.state = {
-      progress: '読み込み中...',
+      progress: _({id: 'dashboard.initialize.loading'}),
     }
   }
 

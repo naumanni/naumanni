@@ -70,7 +70,7 @@ describe('SafeContent', () => {
     describe('query and anchor specified url', () => {
       beforeAll(() => {
         parsedContent = [
-          {type: TOKEN_URL, url: 'http://example.com?q=p#anchor'}
+          {type: TOKEN_URL, url: 'http://example.com?q=p#anchor'},
         ]
         component = <SafeContent parsedContent={parsedContent} />
       })
@@ -91,7 +91,7 @@ describe('SafeContent', () => {
       })
     })
   })
-  
+
   describe('TOKEN_MENTION', () => {
     let onAvatarClickedSpy
 

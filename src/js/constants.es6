@@ -18,7 +18,7 @@ export const DIALOG_ADD_ACCOUNT = 'addAccount'
 export const DIALOG_AUTHORIZE_ACCOUNT = 'authorizeAccount'
 export const DIALOG_MEDIA_VIEWER = 'mediaViewer'
 export const DIALOG_USER_DETAIL = 'userDetail'
-export const DIALOG_GLOBAL_SETTINGS = 'globalSettings'
+export const DIALOG_GLOBAL_PREFERENCES = 'preferences'
 
 export const SUBJECT_MIXED = '!!__SUBJECT_MIXED__!!'   // Symbolだとjsonizeできないのでダメ
 
@@ -66,17 +66,11 @@ export const AUTO_PAGING_MARGIN = 300
 // Timelineで普段保持するStatus数
 export const MAX_STATUSES = 40
 
-export const TOOTFORM_PLACEHOLDER = 'What\'s up?'
-
 // localStorageのKey
 export const STORAGE_KEY_LAST_SEND_FROM = 'naumanni::last_send_from'
 export const STORAGE_KEY_PREFERENCES = 'naumanni::preferences'
 
-
-// i18lするまでのつなぎ
-export const NOTIFICATION_MESSAGES = {
-  [NOTIFICATION_TYPE_MENTION]: '%username%さんから返信されました',
-  [NOTIFICATION_TYPE_FOLLOW]: '%username%さんにフォローされました ',
-  [NOTIFICATION_TYPE_FAVOURITE]: '%username%さんがあなたのトゥートをお気に入りに登録しました',
-  [NOTIFICATION_TYPE_REBLOG]: '%username%さんがあなたのトゥートをブーストしました',
-}
+export const LOCALES = Object.freeze({
+  en: 'English',
+  ja: '日本語',
+})

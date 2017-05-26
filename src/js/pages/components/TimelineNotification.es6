@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {FormattedMessage as _FM, FormattedRelative} from 'react-intl'
 
 import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
   NOTIFICATION_TYPE_MENTION, NOTIFICATION_TYPE_REBLOG, NOTIFICATION_TYPE_FAVOURITE, NOTIFICATION_TYPE_FOLLOW,
-  NOTIFICATION_MESSAGES,
 } from 'src/constants'
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
 import {NotificationRefPropType, OAuthTokenListPropType} from 'src/propTypes'
@@ -52,7 +52,6 @@ export default class TimelineNotification extends React.Component {
   renderFollow(notificationRef) {
     const account = notificationRef.accountRef.resolve()
     const {createdAt} = notificationRef
-    const relativeTime = createdAt.fromNow()
     const onClickAvatar = (e) => this.props.onAvatarClicked(account, e)
 
     return (
@@ -62,12 +61,15 @@ export default class TimelineNotification extends React.Component {
             <IconFont iconName="user-plus" />
           </span>
           <span className="notification-what">
-            <UserDisplayName account={account} onClick={onClickAvatar} /> {'さんにフォローされました '}
-            <CushionString length={relativeTime.length} />
+            <_FM id="notification.what.follow"
+              values={{
+                displayName: <UserDisplayName account={account} onClick={onClickAvatar} />,
+              }} />
+            <CushionString />
             <span
               className="notification-createdAt"
-              alt={createdAt.format()}>
-              {relativeTime}
+              alt={createdAt.toISOString()}>
+              <FormattedRelative value={createdAt.toDate()} />
             </span>
           </span>
         </div>
@@ -90,23 +92,17 @@ export default class TimelineNotification extends React.Component {
     const account = notificationRef.accountRef.resolve()
     const {createdAt} = notificationRef
     let iconName = 'bell'
-    let what = notificationRef.type
-    const relativeTime = createdAt.fromNow()
     const onClickAvatar = (e) => this.props.onAvatarClicked(account, e)
 
     switch(notificationRef.type) {
     case NOTIFICATION_TYPE_FAVOURITE:
       iconName = 'star-filled'
-      what = NOTIFICATION_MESSAGES[notificationRef.type]
       break
 
     case NOTIFICATION_TYPE_REBLOG:
       iconName = 'reblog'
-      what = NOTIFICATION_MESSAGES[notificationRef.type]
       break
     }
-
-    what += ' '
 
     return (
       <article className={`notification notification--${notificationRef.type}`}>
@@ -115,12 +111,15 @@ export default class TimelineNotification extends React.Component {
             <IconFont iconName={iconName} />
           </span>
           <span className="notification-what">
-            <UserDisplayName account={account} onClick={onClickAvatar} /> {what.replace('%username%', '')}
-            <CushionString length={relativeTime.length} />
+            <_FM id={`notification.what.${notificationRef.type}`}
+              values={{
+                displayName: <UserDisplayName account={account} onClick={onClickAvatar} />,
+              }} />
+            <CushionString />
             <span
               className="notification-createdAt"
               alt={createdAt.format()}>
-              {relativeTime}
+              <FormattedRelative value={createdAt.toDate()} />
             </span>
           </span>
         </div>

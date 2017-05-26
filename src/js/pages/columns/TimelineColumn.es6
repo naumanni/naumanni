@@ -15,13 +15,6 @@ import {StatusTimeline} from 'src/models/Timeline'
 import PagingColumn from './PagingColumn'
 
 
-// TODO: i10n
-const TYPENAMEMAP = {
-  [TIMELINE_FEDERATION]: 'Federated timeline',
-  [TIMELINE_LOCAL]: 'Local timeline',
-  [TIMELINE_HOME]: 'Home timeline',
-}
-
 /**
  * タイムラインのカラム
  */
@@ -44,12 +37,13 @@ export default class TimelineColumn extends PagingColumn {
    * @override
    */
   renderTitle() {
-    const typeName = TYPENAMEMAP[this.props.timelineType]
+    const {formatMessage} = this.context.intl
 
     if(this.isMixedTimeline()) {
-      return `United ${typeName}`
+      return formatMessage({id: `column.title.united_timeline_${this.props.timelineType}`})
     } else {
       const {token} = this.state
+      const typeName = formatMessage({id: `column.title.timeline_${this.props.timelineType}`})
 
       if(!token)
         return typeName

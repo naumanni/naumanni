@@ -3,10 +3,10 @@ import {TimelineData} from '../TimelineData'
 
 
 const accountA = new Account({
-  url: 'accountA'
+  url: 'accountA',
 })
 const accountB = new Account({
-  url: 'accountB'
+  url: 'accountB',
 })
 
 const statusA = new Status({
@@ -18,7 +18,7 @@ const statusB = new Status({
   uri: 'statusB',
   account: accountB.uri,
   media_attachments: [],
-  reblog: 'statusC'
+  reblog: 'statusC',
 })
 const statusC = new Status({
   uri: 'statusC',

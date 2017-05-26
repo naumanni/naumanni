@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import update from 'immutability-helper'
 import Textarea from 'react-textarea-autosize'
+import {intlShape, FormattedMessage as _FM} from 'react-intl'
 
 import {
   MASTODON_MAX_CONTENT_SIZE,
@@ -19,6 +20,10 @@ const MAX_MEDIA_FILES = 4
  * Tootを編集する。ロジックは提供しないよ
  */
 export default class TootForm extends React.Component {
+  static contextTypes = {
+    intl: intlShape,
+  }
+
   static propTypes = {
     maxContentLength: PropTypes.number,
     tokens: OAuthTokenListPropType.isRequired,
@@ -69,6 +74,7 @@ export default class TootForm extends React.Component {
    * @override
    */
   render() {
+    const {formatMessage: _} = this.context.intl
     const {tokens} = this.props
     let {error} = this.state
     const {showContentsWarning, sendFrom, statusContent, spoilerTextContent, visibility} = this.state
@@ -77,7 +83,7 @@ export default class TootForm extends React.Component {
     const textLength = trimmedStatusLength + (showContentsWarning ? spoilerTextContent.trim().length : 0)
 
     if(this.state.mediaFiles.length > MAX_MEDIA_FILES)
-      error = `添付できるメディアは${MAX_MEDIA_FILES}つまでです`
+      error = _({id: 'toot_form.error.max_media_files'}, {mediaFileCount: MAX_MEDIA_FILES})
 
     return (
       <div className="tootForm">
@@ -87,7 +93,7 @@ export default class TootForm extends React.Component {
           </div>
         )}
 
-        <h2>From</h2>
+        <h2><_FM id="toot_form.head.from" /></h2>
         <ul className="tootForm-sendFrom">
           {tokens.map((token) => {
             const {account} = token
@@ -102,16 +108,16 @@ export default class TootForm extends React.Component {
             )
           })}
         </ul>
-        <p className="tootForm-note">Shift+Clickで複数選択できます。</p>
+        <p className="tootForm-note"><_FM id="toot_form.note.select_multiple_author" /></p>
 
-        <h2>Toot</h2>
+        <h2><_FM id="toot_form.head.toot" /></h2>
         <div className="tootForm-content">
           {showContentsWarning && (
             <textarea
               ref="textareaSpoilerText"
               className="tootForm-spoilerText"
               value={spoilerTextContent}
-              placeholder="内容の警告"
+              placeholder={_({id: 'toot_form.note.spoiler_text_form'})}
               onKeyDown={::this.onKeyDown}
               onChange={::this.onChangeSpoilerText}></textarea>
           )}
@@ -148,29 +154,29 @@ export default class TootForm extends React.Component {
           <li
             className={visibility === VISIBLITY_PUBLIC ? 'is-active' : ''}
             onClick={this.onClickVisibility.bind(this, VISIBLITY_PUBLIC)}>
-            <b><IconFont iconName="globe" /> 公開</b>
-            <p>公開TLに投稿する</p>
+            <b><IconFont iconName="globe" /> <_FM id="toot_form.label.visiblity_public" /></b>
+            <p><_FM id="toot_form.note.visiblity_public" /></p>
           </li>
 
           <li
             className={visibility === VISIBLITY_UNLISTED ? 'is-active' : ''}
             onClick={this.onClickVisibility.bind(this, VISIBLITY_UNLISTED)}>
-            <b><IconFont iconName="lock-open" /> 非収録</b>
-            <p>公開TLでは表示しない</p>
+            <b><IconFont iconName="lock-open" /> <_FM id="toot_form.label.visiblity_unlisted" /></b>
+            <p><_FM id="toot_form.note.visiblity_unlisted" /></p>
           </li>
 
           <li
             className={visibility === VISIBLITY_PRIVATE ? 'is-active' : ''}
             onClick={this.onClickVisibility.bind(this, VISIBLITY_PRIVATE)}>
-            <b><IconFont iconName="lock" /> 非公開</b>
-            <p>フォロワーだけに公開</p>
+            <b><IconFont iconName="lock" /> <_FM id="toot_form.label.visiblity_private" /></b>
+            <p><_FM id="toot_form.note.visiblity_private" /></p>
           </li>
 
           <li
             className={visibility === VISIBLITY_DIRECT ? 'is-active' : ''}
             onClick={this.onClickVisibility.bind(this, VISIBLITY_DIRECT)}>
-            <b><IconFont iconName="mail" /> DM</b>
-            <p>メンションしたユーザーだけに公開</p>
+            <b><IconFont iconName="mail" /> <_FM id="toot_form.label.visiblity_direct" /></b>
+            <p><_FM id="toot_form.note.visiblity_direct" /></p>
           </li>
         </ul>
 
@@ -179,7 +185,7 @@ export default class TootForm extends React.Component {
           <button
             className="button button--primary"
             disabled={!this.canSend()} type="button"
-            onClick={::this.onClickSend}>送信</button>
+            onClick={::this.onClickSend}><_FM id="toot_form.label.send" /></button>
         </div>
       </div>
     )

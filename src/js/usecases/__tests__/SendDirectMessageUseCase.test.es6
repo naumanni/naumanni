@@ -37,12 +37,12 @@ describe('SendDirectMessageUseCase', () => {
     const mockToken = new OAuthToken({})
     const mockSelf = new Account({
       acct: 'alice@my.host',
-      note: `PGP Key Fingerprint: 0001FFFF`,
+      note: 'PGP Key Fingerprint: 0001FFFF',
       url: 'http://dummy/@alice',
     })
     const mockRecipient = new Account({
       acct: 'bob@my.host',
-      note: `PGP Key Fingerprint: 0002FFFF`,
+      note: 'PGP Key Fingerprint: 0002FFFF',
       url: 'http://dummy/@bob',
     })
 
@@ -54,7 +54,7 @@ describe('SendDirectMessageUseCase', () => {
       token: mockToken,
       self: mockSelf,
       message: TEST_TEXT,
-      recipients: [mockRecipient]
+      recipients: [mockRecipient],
     })
 
     // このテスト文だと2回ぐらいコールされるはず
@@ -97,7 +97,7 @@ describe('SendDirectMessageUseCase', () => {
       token: mockToken,
       self: mockSelf,
       message: TEST_TEXT,
-      recipients: [mockRecipient]
+      recipients: [mockRecipient],
     })
 
     // このテスト文だと1回コールされるはず

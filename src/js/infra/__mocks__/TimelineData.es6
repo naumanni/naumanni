@@ -7,7 +7,7 @@ const mockPostStatusManaged = jest.fn((token, message) => {
         ...message,
         id_by_host: {[token.host]: 19191},
       })
-    }
+    },
   }
   return Promise.resolve(response)
 })
@@ -16,5 +16,5 @@ const mockPostStatusManaged = jest.fn((token, message) => {
 module.exports = {
   postStatusManaged: mockPostStatusManaged,
 
-  __postStatusManaged: mockPostStatusManaged
+  __postStatusManaged: mockPostStatusManaged,
 }

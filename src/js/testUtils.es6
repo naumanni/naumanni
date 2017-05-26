@@ -11,9 +11,9 @@ export function initOpenPGPTest(global=window) {
 
     global.crypto = {
       getRandomValues: function(buf) {
-        var bytes = crypto.randomBytes(buf.length);
-        buf.set(bytes);
-      }
+        let bytes = crypto.randomBytes(buf.length)
+        buf.set(bytes)
+      },
     }
   }
   openPGPConfig.aead_protect = true // activate fast AES-GCM mode (not yet OpenPGP standard)

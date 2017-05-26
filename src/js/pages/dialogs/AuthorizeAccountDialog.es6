@@ -1,4 +1,5 @@
 import React from 'react'
+import {FormattedMessage as _FM} from 'react-intl'
 // import PropTypes from 'prop-types'
 
 import AuthorizeAccountUseCase from 'src/usecases/AuthorizeAccountUseCase'
@@ -46,7 +47,7 @@ export default class AuthorizeAccountDialog extends Dialog {
    * @override
    */
   renderHeader() {
-    return <h1>Mastodonアカウントを認証中...</h1>
+    return <h1><_FM id="authorize_account_dialog.title" /></h1>
   }
 
   /**

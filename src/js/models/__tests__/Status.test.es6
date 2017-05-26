@@ -31,7 +31,7 @@ describe('Status', () => {
         bbb: 4545,
       },
       media_attachments: [{
-        id: 666
+        id: 666,
       }],
       content: '<p>aaa <a href="http://www.google.com/">http://www.google.com/</a></p>',
       created_at: '2017-05-08T14:02:55.000Z',
@@ -74,7 +74,7 @@ describe('Status', () => {
 
     const obj2 = obj.merge({
       content: '@bob@my.host --NEM.7b352097.1/2--dummytext',
-      visibility: 'public'
+      visibility: 'public',
     })
     expect(obj2.canReblog()).toBeTruthy()
     expect(obj2.messageBlockInfo).toMatchObject({checksum: '7b352097', index: 1, total: 2})
@@ -113,6 +113,7 @@ describe('Status', () => {
       media_attachments: [],
       content: 'aaa',
       spoiler_text: 'abc',
+      fetched_at: '2017-05-08T14:02:55.000Z',
     })
     const newObj = new Status({
       id_by_host: {
@@ -121,11 +122,20 @@ describe('Status', () => {
       media_attachments: [],
       content: 'aaa',
       spoiler_text: 'def',
+      fetched_at: null,
     })
-    const {isChanged, merged} = oldObj.checkMerge(newObj)
+    let {isChanged, merged} = oldObj.checkMerge(newObj)
 
     expect(merged.getIdByHost('aaa')).toBe(111)
     expect(merged.getIdByHost('bbb')).toBe(222)
+
+    // fetched_atは特別扱い。常にnullではない最古の値を使う
+    expect(merged.fetched_at).toBe('2017-05-08T14:02:55.000Z')
+    merged = newObj.checkMerge(oldObj).merged  // 逆方向
+    expect(merged.fetched_at).toBe('2017-05-08T14:02:55.000Z')
+    const objC = newObj.set('fetched_at', '2017-05-08T14:02:55.010Z')
+    merged = oldObj.checkMerge(objC).merged
+    expect(merged.fetched_at).toBe('2017-05-08T14:02:55.000Z')
   })
 
   it('can merge map attribute', () => {

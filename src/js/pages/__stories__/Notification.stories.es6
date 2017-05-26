@@ -40,10 +40,10 @@ storiesOf('Notiication', module)
                   },
                 },
               }
-            }
-          }
+            },
+          },
         }
-      }
+      },
     }
     const notificationCenter = new NotificationCenter(dummyContext)
     const dummyToken = new OAuthToken({
@@ -53,11 +53,11 @@ storiesOf('Notiication', module)
     }))
     const dummyAccount = new Account({
       acct: 'shn@oppai.tokyo',
-      avatar: "https://ot-mastodon.s3.amazonaws.com/accounts/avatars/000/000/001/original/2408e330e310f168.png",
-      display_name: "shn@oppai.tokyo✅",
+      avatar: 'https://ot-mastodon.s3.amazonaws.com/accounts/avatars/000/000/001/original/2408e330e310f168.png',
+      display_name: 'shn@oppai.tokyo✅',
     })
     const dummyStatus = new Status({
-      content: "<p>恐らく、ユーザーのdisplay_nameが設定されてないからだと思います。</p>"
+      content: '<p>恐らく、ユーザーのdisplay_nameが設定されてないからだと思います。</p>',
     })
 
     return (
@@ -65,7 +65,7 @@ storiesOf('Notiication', module)
         <button onClick={() => {
           notificationCenter.notifyUser(
             dummyToken,
-            new Notification({type: 'mention',}),
+            new Notification({type: 'mention'}),
             dummyStatus,
             dummyAccount,
           )
@@ -74,7 +74,7 @@ storiesOf('Notiication', module)
         <button onClick={() => {
           notificationCenter.notifyUser(
             dummyToken,
-            new Notification({type: 'reblog',}),
+            new Notification({type: 'reblog'}),
             dummyStatus,
             dummyAccount,
           )
@@ -83,7 +83,7 @@ storiesOf('Notiication', module)
         <button onClick={() => {
           notificationCenter.notifyUser(
             dummyToken,
-            new Notification({type: 'favourite',}),
+            new Notification({type: 'favourite'}),
             dummyStatus,
             dummyAccount,
           )
@@ -92,7 +92,7 @@ storiesOf('Notiication', module)
         <button onClick={() => {
           notificationCenter.notifyUser(
             dummyToken,
-            new Notification({type: 'follow',}),
+            new Notification({type: 'follow'}),
             null,
             dummyAccount,
           )

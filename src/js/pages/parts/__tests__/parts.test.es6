@@ -1,5 +1,5 @@
-import React from 'react';
-import renderer from 'react-test-renderer';
+import React from 'react'
+import renderer from 'react-test-renderer'
 
 import {Account} from 'src/models'
 import {DropdownMenuButton, IconFont, NowLoading, UserIconWithHost} from '../'
@@ -32,18 +32,18 @@ describe('DropdownMenuButton', () => {
 
     // menu was hidden
     tree.props.onMouseLeave()
-    tree = component.toJSON();
+    tree = component.toJSON()
     expect(tree).toMatchSnapshot('DropdownMenuButton can show and hide menu : only button is visible')
 
     // menu was showed
     tree.children[0].props.onClick({preventDefault: jest.fn(), stopPropagation: jest.fn()})
-    tree = component.toJSON();
+    tree = component.toJSON()
     expect(tree).toMatchSnapshot('DropdownMenuButton can show and hide menu : button and menu are visible')
 
     // menu was closed after link click
     expect(tree.children[1].props.className).toBe('dropdownMenuButton-menu')
     tree.children[1].props.onClick({preventDefault: jest.fn(), stopPropagation: jest.fn()})
-    tree = component.toJSON();
+    tree = component.toJSON()
     expect(tree).toMatchSnapshot('DropdownMenuButton can show and hide menu : only button is visible')
   })
 })

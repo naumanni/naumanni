@@ -2,6 +2,7 @@ import React from 'react'
 import {findDOMNode} from 'react-dom'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
+import {intlShape, FormattedMessage as _FM} from 'react-intl'
 
 import {UIColumn} from 'src/models'
 import {DropdownMenuButton, IconFont, NowLoading} from 'src/pages/parts'
@@ -16,6 +17,7 @@ export default class Column extends React.Component {
   static contextTypes = {
     app: AppPropType,
     context: ContextPropType,
+    intl: intlShape,
   }
 
   static propTypes = {
@@ -115,7 +117,7 @@ export default class Column extends React.Component {
         <li className="menu-item"
           onClick={::this.onClickCloseColumn}
           >
-          <span className="menu-itemLabel">Close</span>
+          <span className="menu-itemLabel"><_FM id="column.menu.close" /></span>
         </li>
 
       </ul>
