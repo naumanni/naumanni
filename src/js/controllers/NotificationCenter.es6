@@ -137,4 +137,6 @@ export default class NotificationCenter {
 
 
 // こんな雑で良いのか?
-Notification.requestPermission()
+if(window.Notification) {
+  Notification.requestPermission()
+}
