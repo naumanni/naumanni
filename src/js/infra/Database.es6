@@ -65,6 +65,33 @@ class NaummanniDatabase {
       }
     })
   }
+
+  del(obj) {
+    const storeName = getStoreNameFromObject(obj)
+    require('assert')(storeName)
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([storeName], 'readwrite')
+
+      transaction.oncomplete = (e) => {
+        resolve(e)
+      }
+
+      transaction.onerror = (e) => {
+        reject(e)
+      }
+
+      const objectStore = transaction.objectStore(storeName)
+      const delRequest = objectStore.delete(obj[getKeyPathFromObject(obj)])
+
+      delRequest.onsuccess = (e) => {
+      }
+
+      delRequest.onerror = (e) => {
+        console.error(e)
+      }
+    })
+  }
 }
 
 
@@ -250,6 +277,11 @@ class DatabaseQuery {
 // TEMPORARY
 function getStoreNameFromObject(obj) {
   return obj.constructor.storeName
+}
+
+// TEMPORARY
+function getKeyPathFromObject(obj) {
+  return obj.constructor.keyPath
 }
 
 

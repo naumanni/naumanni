@@ -26,6 +26,8 @@ export default class TokenState {
       return this.onTokenLoaded(payload)
     case actions.TOKEN_ADDED:
       return this.onTokenAdded(payload)
+    case actions.TOKEN_DELETED:
+      return this.onTokenDeleted(payload)
     default:
       return this
     }
@@ -37,6 +39,10 @@ export default class TokenState {
 
   onTokenAdded({token}) {
     return new TokenState([...this._tokens, token])
+  }
+
+  onTokenDeleted({token}) {
+    return new TokenState(this._tokens.filter((t) => !t.isEqual(token)))
   }
 
   getTokenByAcct(acct) {
