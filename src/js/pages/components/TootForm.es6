@@ -31,6 +31,7 @@ export default class TootForm extends React.Component {
     onClose: PropTypes.func.isRequired,
     initialSendFrom: PropTypes.arrayOf(PropTypes.string),
     initialContent: PropTypes.string,
+    initialVisibility: PropTypes.string,
   }
 
   static defaultProps = {
@@ -45,7 +46,7 @@ export default class TootForm extends React.Component {
   constructor(...args) {
     super(...args)
 
-    const {initialSendFrom, tokens} = this.props
+    const {initialSendFrom, initialVisibility, tokens} = this.props
 
     this.state = {
       error: null,
@@ -56,7 +57,7 @@ export default class TootForm extends React.Component {
       showContentsWarning: false,
       spoilerTextContent: '',
       statusContent: this.props.initialContent || '',
-      visibility: VISIBLITY_PUBLIC,
+      visibility: initialVisibility || VISIBLITY_PUBLIC,
     }
     this.mediaFileKeys = new WeakMap()
     this.mediaFileCounter = 0
