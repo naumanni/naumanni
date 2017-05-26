@@ -144,7 +144,7 @@ export default class DashboardHeader extends React.Component {
     const children = []
 
     // build menu
-    if(0 && token.isAlive()) {
+    if(token.isAlive()) {
       children.push(
         <li className="menu-description">
           <UserIconWithHost account={account} />
