@@ -74,4 +74,6 @@ export const messages = {
   'user_detail_dialog.label.followings': 'フォロー中',
   'user_detail_dialog.label.followers': 'フォロワー',
   'user_detail.warning.not_latest_data': 'これは最新のデータではない可能性があります。',
+  'welcome_dialog.label.sign_in': 'ログイン',
+  'welcome_dialog.label.sign_up': '新規登録',
 }

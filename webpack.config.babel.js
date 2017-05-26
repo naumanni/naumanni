@@ -1,4 +1,5 @@
 /* eslint-disable require-jsdoc */
+import path from 'path'
 import DefinePlugin from 'webpack/lib/DefinePlugin'
 import UglifyJsPlugin from 'webpack/lib/optimize/UglifyJsPlugin'
 import {execSync} from 'child_process'
@@ -63,6 +64,9 @@ module.exports = {
     ],
   },
   resolve: {
+    alias: {
+      naumanniConfig: path.resolve(__dirname, 'config.es6'),
+    },
     extensions: ['.es6', '.js'],
     modules: [
       SOURCE_DIR,

@@ -135,6 +135,13 @@ export default class Dashboard extends React.Component {
       // routing開始
       this.props.app.history.start()
     })
+
+    // Tokenが一個もなく、ルートを表示しようとしたら、WelcomeDialogを表示する
+    const {tokenState} = this.props.app.context.getState()
+    const {history} = this.props.app
+    if(tokenState.tokens.isEmpty() && history.is(history.makeUrl('top'))) {
+      history.push(history.makeUrl('welcome'))
+    }
   }
 
   onConetextChanged(changingStores) {
@@ -240,7 +247,8 @@ class AppIntializer extends React.Component {
   componentDidMount() {
     const {context} = this.props.app
 
-    context.useCase(new InitializeApplicationUseCase()).execute((progress) => this.setState())
+    context.useCase(new InitializeApplicationUseCase())
+      .execute((progress) => this.setState())
       .then(() => this.props.onInitialized())
   }
 

@@ -50,6 +50,16 @@ export default class BrowserHistory {
     this.routes[name] = route
   }
 
+  /**
+   * 現在、与えられたUrlかどうかを判定する
+   * @param {string} url 試したいUrl
+   * @return {bool}
+   */
+  is(url) {
+    // TODO: めっちゃ雑
+    return this.history.location.pathname === url
+  }
+
   makeUrl(name, params, options={}) {
     const route = this.routes[name]
     const compiled = pathToRegexp.compile(route.path)

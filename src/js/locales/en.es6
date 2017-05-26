@@ -77,4 +77,6 @@ export const messages = {
   'user_detail_dialog.label.followings': 'Followings',
   'user_detail_dialog.label.followers': 'Followers',
   'user_detail.warning.not_latest_data': 'This may not be the latest data.',
+  'welcome_dialog.label.sign_in': 'Log in',
+  'welcome_dialog.label.sign_up': 'Sign up',
 }

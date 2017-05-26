@@ -1,0 +1,39 @@
+/**
+ * With this file, you can change the behavior of Naumanni.
+ * You can set up the screen the user first sees and guide user to your own instance.
+ */
+
+export default {
+  // Set If you have your Mastodon instance. The new registration button will be displayed in the Welcome dialog.
+  PREFERRED_INSTANCE: 'mastodon.super.heros',
+
+  WELCOME_DIALOG: {
+    // CSS of the welcome dialog
+    dialogStyle: {
+      background: '#F0F3F5',
+    },
+
+    // content of the welcome dialog
+    html: `\
+<style type="text/css">
+  .welcome-note {
+    padding: 8px;
+    min-height: 256px;
+  }
+  .welcome-note .logo {
+    display: block;
+    width: 256px;
+    float: right;
+  }
+  .welcome-note h3 {
+    color: #066399;
+    margin: 0 0 1ex;
+  }
+</style>
+
+<img class="logo" src="/static/images/naumanni-logo.svg" />
+<h3>What is mastodon.super.heros?</h3>
+<p>blah blah blah</p>
+`,
+  },
+}
