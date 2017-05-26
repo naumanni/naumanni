@@ -43,6 +43,16 @@ module.exports = {
   module: {
     rules: [
       {
+        enforce: 'pre',
+        exclude: /(node_modules)/,
+        loader: 'eslint-loader',
+        options: {
+          fix: true,
+          // failOnError: true,
+        },
+        test: /\.es6$/,
+      },
+      {
         exclude: /node_modules/,
         loader: 'babel-loader',
         options: {
@@ -79,18 +89,5 @@ if(process.env.NODE_ENV === 'production') {
   const babelRule = module.exports.module.rules.find((x) => x.loader === 'babel-loader')
 } else {
   // dev
-  module.exports.devtool = 'source-map',
-  module.exports.module.rules.push(
-    {
-      enforce: 'pre',
-      exclude: /(node_modules)/,
-      loader: 'eslint-loader',
-      options: {
-        fix: true,
-        // failOnError: true,
-      },
-      test: /\.es6$/,
-    }
-  )
+  module.exports.devtool = 'source-map'
 }
-
