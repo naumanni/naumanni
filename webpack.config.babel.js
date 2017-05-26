@@ -89,6 +89,5 @@ if(process.env.NODE_ENV === 'production') {
   const babelRule = module.exports.module.rules.find((x) => x.loader === 'babel-loader')
 } else {
   // dev
-  module.exports.devtool = 'source-map',
+  module.exports.devtool = 'source-map'
 }
-
