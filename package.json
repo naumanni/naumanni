@@ -98,6 +98,7 @@
       "**/*.es6",
       "!**/__stories__/*.(js|es6)",
       "!**/__tests__/*.(js|es6)",
+      "!**/locales/*.(js|es6)",
       "!**/libs/*"
     ],
     "coverageDirectory": "./coverage",
