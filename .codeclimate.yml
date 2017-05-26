@@ -1,0 +1,17 @@
+engines:
+  csslint:
+    enabled: false
+  duplication:
+    enabled: false
+  eslint:
+    enabled: true
+  fixme:
+    enabled: true
+  rubocop:
+    enabled: false
+ratings:
+  paths:
+    - "**.es6"
+    - "**.js"
+exclude_paths:
+  - raw/
