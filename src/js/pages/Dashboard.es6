@@ -190,8 +190,9 @@ export default class Dashboard extends React.Component {
 
   onSignOut(token) {
     const {formatMessage: _} = this.refs.intlProvider.getChildContext().intl
+    const acct = token.acct || `<${token.host}>`
 
-    if(window.confirm(_({id: 'dashboard.confirm.signout'}, {acct: token.acct}))) {
+    if(window.confirm(_({id: 'dashboard.confirm.signout'}, {acct}))) {
       const {context} = this.props.app
       const {columns} = this.state
 

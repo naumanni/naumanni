@@ -215,11 +215,10 @@
 }
 
 
-.naumanniDashboard-header .naumanniDashboard-header-accounts .menu--badAccount {
+.naumanniDashboard-header .naumanniDashboard-header-accounts .menu-description--badAccount {
 /*  border-radius: 6px; */
   background-color: #fdf4f4;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
-  border: solid 1px #d32f2f;
   color: #d32f2f;
   font-size: 14px;
 

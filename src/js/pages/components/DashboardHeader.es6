@@ -90,25 +90,16 @@ export default class DashboardHeader extends React.Component {
    * @return {React.Component}
    */
   renderAccount(token) {
-    if(token.isAlive()) {
-      // 正常Token
-      return (
-        <li key={token.address}>
-          <DropdownMenuButton onRenderMenu={this.onRenderAccountMenu.bind(this, token)}>
-            <UserIconWithHost account={token.account} />
-          </DropdownMenuButton>
-        </li>
-      )
-    } else {
-      // 読み込みに失敗したToken
-      return (
-        <li key={token.address}>
-          <DropdownMenuButton onRenderMenu={this.onRenderBadAccountMenu.bind(this, token)}>
-            <div className="naumanniDashboard-header-badToken">×</div>
-          </DropdownMenuButton>
-        </li>
-      )
-    }
+    return (
+      <li key={token.address}>
+        <DropdownMenuButton onRenderMenu={this.onRenderAccountMenu.bind(this, token)}>
+          {token.isAlive()
+            ? <UserIconWithHost account={token.account} />
+            : <div className="naumanniDashboard-header-badToken">×</div>
+          }
+        </DropdownMenuButton>
+      </li>
+    )
   }
 
   // callbacks
@@ -150,9 +141,11 @@ export default class DashboardHeader extends React.Component {
 
   onRenderAccountMenu(token) {
     const {account} = token
+    const children = []
 
-    return (
-      <ul className="menu menu--header">
+    // build menu
+    if(0 && token.isAlive()) {
+      children.push(
         <li className="menu-description">
           <UserIconWithHost account={account} />
           <div className="menu-descriptionNote">
@@ -166,65 +159,64 @@ export default class DashboardHeader extends React.Component {
               {account.hasPrivateKey && <span className="user-hasPrivatekey"><IconFont iconName="key" />prv</span>}
             </div>
           </div>
-        </li>
+        </li>,
+
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_HOME})}>
           <IconFont className="menu-itemIcon" iconName="home" />
           <span><_FM id="column.title.timeline_home" /></span>
-        </li>
+        </li>,
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_LOCAL})}>
           <IconFont className="menu-itemIcon" iconName="users" />
           <span><_FM id="column.title.timeline_local" /></span>
-        </li>
+        </li>,
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_TIMELINE, {subject: account.acct, timelineType: TIMELINE_FEDERATION})}>
           <IconFont className="menu-itemIcon" iconName="globe" />
           <span><_FM id="column.title.timeline_federation" /></span>
-        </li>
+        </li>,
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(
             this, COLUMN_NOTIFICATIONS, {subject: account.acct})}>
           <IconFont className="menu-itemIcon" iconName="bell" />
           <span><_FM id="column.title.notifications" /></span>
-        </li>
+        </li>,
 
         <li className="menu-item"
           onClick={this.props.onOpenColumn.bind(this, COLUMN_FRIENDS, {subject: account.acct})}>
           <IconFont className="menu-itemIcon" iconName="mail" />
           <span><_FM id="column.title.message" /></span>
-        </li>
-
-        <li className="menu-item"
-          onClick={this.props.onSignOut.bind(this, token)}>
-          <IconFont className="menu-itemIcon" iconName="logout" />
-          <span>Sign out</span>
-        </li>
-      </ul>
-    )
-  }
-
-  /**
-   * 読み込みエラーになったTokenに関するMenu
-   * @param {OAuthToken} token
-   * @return {React.Component}
-   */
-  onRenderBadAccountMenu(token) {
-    return (
-      <ul className="menu menu--header menu--badAccount">
-        <li className="menu-description">
+        </li>,
+      )
+    } else {
+      children.push(
+        <li className="menu-description menu-description--badAccount">
           <strong>Host: {token.host}</strong>
           <p>
             Network communication error
           </p>
         </li>
-      </ul>
+      )
+    }
+    children.push(
+      <li className="menu-item"
+        onClick={this.props.onSignOut.bind(this, token)}>
+        <IconFont className="menu-itemIcon" iconName="logout" />
+        <span>Sign out</span>
+      </li>
+    )
+
+    return React.createElement(
+      'ul',
+      {className: 'menu menu--header'},
+      ...children
     )
   }
 
