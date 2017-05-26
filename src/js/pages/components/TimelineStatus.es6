@@ -265,7 +265,7 @@ class TimelineStatus extends React.Component {
   }
 
   renderReplyPanel() {
-    const {account, tokens, subject} = this.props
+    const {account, tokens, subject, status: {visibility}} = this.props
     const {isAnimatedReplyPanel} = this.state
 
     // デフォルトの返信元。 親Timelineの主題か、Statusと同じホストの最初のアカウントから選ぶ
@@ -281,6 +281,7 @@ class TimelineStatus extends React.Component {
             onClose={::this.onCloseReplyPanel}
             initialSendFrom={sendFrom}
             initialContent={`@${account.acct} `}
+            initialVisibility={visibility}
             />
         </div>
       </div>
