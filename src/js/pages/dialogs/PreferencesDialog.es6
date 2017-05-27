@@ -133,21 +133,35 @@ export default class PreferencesDialog extends HistoryBaseDialog {
   renderNotificationTab(on) {
     const {tokens} = this.state
 
-    const _cbox = (acct, key) => {
+    const _cbox = (acct, key, props={}) => {
       let keyPath = ['byAccts', acct, ...key.split('.')]
       return (
         <input type="checkbox"
           checked={this.getPrefVal(keyPath, true)}
           onChange={this.onClickCheckbox.bind(this, keyPath)}
+          {...props}
         />
       )
     }
+
+    const disableDesktop = window.Notification ? false : true
 
     return (
       <div className={`tabPane tabPane--notification ${on ? 'on' : ''}`}>
         <p className="note">
           <_FM id="preferecens_dialog.note.notifications" />
         </p>
+
+        {(window.Notification && Notification.permission === 'deneid') && (
+        <p className="note note--danger">
+          <_FM id="preferecens_dialog.note.notification_denied_warning" />
+        </p>
+        )}
+        {disableDesktop && (
+        <p className="note note--danger">
+          <_FM id="preferecens_dialog.note.no_desktop_notification" />
+        </p>
+        )}
 
         <div className="notificationSetting">
         {tokens.map((token) => {
@@ -167,7 +181,8 @@ export default class PreferencesDialog extends HistoryBaseDialog {
                   {_cbox(acct, 'notifications.mention.audio')} <_FM id="preferecens_dialog.label.audio" />
                 </label>
                 <label>
-                  {_cbox(acct, 'notifications.mention.desktop')} <_FM id="preferecens_dialog.label.desktop" />
+                  {_cbox(acct, 'notifications.mention.desktop', {disabled: disableDesktop})
+                  } <_FM id="preferecens_dialog.label.desktop" />
                 </label>
               </div>
 
@@ -177,7 +192,8 @@ export default class PreferencesDialog extends HistoryBaseDialog {
                   {_cbox(acct, 'notifications.reblog.audio')} <_FM id="preferecens_dialog.label.audio" />
                 </label>
                 <label>
-                  {_cbox(acct, 'notifications.reblog.desktop')} <_FM id="preferecens_dialog.label.desktop" />
+                  {_cbox(acct, 'notifications.reblog.desktop', {disabled: disableDesktop})
+                  } <_FM id="preferecens_dialog.label.desktop" />
                 </label>
               </div>
 
@@ -187,7 +203,8 @@ export default class PreferencesDialog extends HistoryBaseDialog {
                   {_cbox(acct, 'notifications.favourite.audio')} <_FM id="preferecens_dialog.label.audio" />
                 </label>
                 <label>
-                  {_cbox(acct, 'notifications.favourite.desktop')} <_FM id="preferecens_dialog.label.desktop" />
+                  {_cbox(acct, 'notifications.favourite.desktop', {disabled: disableDesktop})
+                  } <_FM id="preferecens_dialog.label.desktop" />
                 </label>
               </div>
 
@@ -197,7 +214,8 @@ export default class PreferencesDialog extends HistoryBaseDialog {
                   {_cbox(acct, 'notifications.follow.audio')} <_FM id="preferecens_dialog.label.audio" />
                 </label>
                 <label>
-                  {_cbox(acct, 'notifications.follow.desktop')} <_FM id="preferecens_dialog.label.desktop" />
+                  {_cbox(acct, 'notifications.follow.desktop', {disabled: disableDesktop})
+                  } <_FM id="preferecens_dialog.label.desktop" />
                 </label>
               </div>
 

@@ -17,6 +17,7 @@ export class Application {
      */
     this._context = null
     this._initialized = false
+    this._intl = null
   }
 
   setup(newContext) {
@@ -31,7 +32,7 @@ export class Application {
     installRoutes(this.history)
 
     // notification center
-    this.notificationCenter = new NotificationCenter(this.context)
+    this.notificationCenter = new NotificationCenter({app: this, context: this.context})
   }
 
   /**
@@ -39,6 +40,14 @@ export class Application {
    */
   get context() {
     return this._context
+  }
+
+  get intl() {
+    return this._intl
+  }
+
+  setIntl(newIntl) {
+    this._intl = newIntl
   }
 }
 

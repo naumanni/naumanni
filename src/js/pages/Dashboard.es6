@@ -46,6 +46,17 @@ export default class Dashboard extends React.Component {
       context.onChange(::this.onConetextChanged),
       context.onDispatch(::this.onContextDispatch),
     ]
+
+    const {intlProvider} = this.refs
+    this.props.app.setIntl(intlProvider && intlProvider.getChildContext().intl)
+  }
+
+  /**
+   * @override
+   */
+  componentDidUpdate(prevProps, prevState) {
+    const {intlProvider} = this.refs
+    this.props.app.setIntl(intlProvider && intlProvider.getChildContext().intl)
   }
 
   /**
@@ -55,6 +66,7 @@ export default class Dashboard extends React.Component {
     for(const remover of this.listenerRemovers) {
       remover()
     }
+    this.props.app.setIntl(null)
   }
 
   /**
