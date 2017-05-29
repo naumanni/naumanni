@@ -24,12 +24,12 @@ export default class NotificationCenter {
     })
     this.listeners = {}
 
-    this.context.onChange(::this.onChangeConext)
-    this.onChangeConext()
+    this.context.onChange(::this.onChangeContext)
+    this.onChangeContext()
   }
 
   // callbacks
-  onChangeConext() {
+  onChangeContext() {
     this.tokenListener.updateTokens(this.context.getState().tokenState.tokens)
   }
 

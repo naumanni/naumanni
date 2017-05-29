@@ -153,8 +153,8 @@ export default class TalkColumn extends Column {
   /**
    * @override
    */
-  onChangeConext() {
-    super.onChangeConext()
+  onChangeContext() {
+    super.onChangeContext()
 
     this.listener.updateToken(this.state.token)
   }
