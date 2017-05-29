@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
-  STORAGE_KEY_LAST_SEND_FROM,
+  STORAGE_KEY_LAST_SEND_FROM, STORAGE_KEY_TOOT_VISIBILITY,
 } from 'src/constants'
 import {IconFont} from 'src/pages/parts'
 import TootForm from './components/TootForm'
@@ -69,6 +69,7 @@ export default class TootWindow extends React.Component {
 
         <TootForm
           initialSendFrom={this.loadSendForm()}
+          initialVisibility={this.loadTootVisibility()}
           tokens={tokens}
           onSend={::this.onSend}
           onClose={::this.onClose}
@@ -95,10 +96,19 @@ export default class TootWindow extends React.Component {
     )
 
     this.saveSendFrom(sendFrom)
+    this.saveTootVisibility(messageContent.message.visibility)
   }
 
   async onClose() {
     this.props.onClose()
+  }
+
+  saveTootVisibility(visibility) {
+    localStorage.setItem(STORAGE_KEY_TOOT_VISIBILITY, visibility)
+  }
+
+  loadTootVisibility() {
+    return localStorage.getItem(STORAGE_KEY_TOOT_VISIBILITY) || VISIBLITY_PUBLIC
   }
 
   saveSendFrom(sendFrom) {
