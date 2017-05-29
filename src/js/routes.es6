@@ -3,6 +3,7 @@ import {
   ACCT_PATTERN,
   DIALOG_ADD_ACCOUNT, DIALOG_AUTHORIZE_ACCOUNT, DIALOG_USER_DETAIL, DIALOG_GLOBAL_PREFERENCES, DIALOG_WELCOME,
 } from 'src/constants'
+import config from 'src/config'
 import {parseQuery} from 'src/utils'
 
 
@@ -12,7 +13,11 @@ export default function installRoutes(history) {
   history.route('authorize', '/authorize', routeAuthorize)
   history.route('preferences', '/preferences', routePreferences)
   history.route('userDetail', `/user/@:acct(${ACCT_PATTERN})`, routeUserDetail)
-  history.route('welcome', '/welcome', routeWelcome)
+
+  // welcomeダイアログの設定があれば
+  if(config.WELCOME_DIALOG) {
+    history.route('welcome', '/welcome', routeWelcome)
+  }
 }
 
 

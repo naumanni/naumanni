@@ -1,5 +1,5 @@
 const DEFAULT_CONFIG = {
-  WELCOME_DIALOG: {},
+  WELCOME_DIALOG: null,
 }
 
 const config = (function() {

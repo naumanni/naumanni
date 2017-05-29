@@ -4,6 +4,7 @@ import {IntlProvider, addLocaleData, intlShape} from 'react-intl'
 
 import * as actions from 'src/actions'
 import {NAUMANNI_VERSION} from 'src/constants'
+import config from 'src/config'
 import {AppPropType, ContextPropType} from 'src/propTypes'
 import InitializeApplicationUseCase from 'src/usecases/InitializeApplicationUseCase'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
@@ -139,7 +140,7 @@ export default class Dashboard extends React.Component {
     // Tokenが一個もなく、ルートを表示しようとしたら、WelcomeDialogを表示する
     const {tokenState} = this.props.app.context.getState()
     const {history} = this.props.app
-    if(tokenState.tokens.isEmpty() && history.is(history.makeUrl('top'))) {
+    if(config.WELCOME_DIALOG && tokenState.tokens.isEmpty() && history.is(history.makeUrl('top'))) {
       history.push(history.makeUrl('welcome'))
     }
   }
