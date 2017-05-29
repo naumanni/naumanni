@@ -1,8 +1,13 @@
 export const localeData = require('react-intl/locale-data/en')
 export const messages = {
   'add_account_dialog.title': 'Add new mastodon account',
+  'add_account_dialog.note.add_account':
+    'Add a new account to Naumanni. Please approve naumanni on the following page.',
   'add_account_dialog.label.add': 'Add',
+  'add_account_dialog.label.another_instance': 'or, another instance',
+  'add_account_dialog.label.hostname_placeholder': 'Mastodon host name',
   'add_account_dialog.label.cancel': 'Cancel',
+  'add_account_dialog.label.major_instances': 'If you have an account ...',
   'authorize_account_dialog.title': 'Authenticating Mastodon account...',
   'column.menu.close': 'Close',
   'column.title.notifications': 'Notifications',

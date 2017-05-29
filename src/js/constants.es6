@@ -76,3 +76,14 @@ export const LOCALES = Object.freeze({
   en: 'English',
   ja: '日本語',
 })
+
+
+// naumanniおすすめのInstance
+export const NAUMANNI_PREFERRED_INSTANCES = [
+  ['mastodon.social'],
+  ['mastodon.cloud'],
+  ['mastodon.xyz'],
+  ['pawoo.net', 'https://pawoo.net/favicon.png'],
+  ['mstdn.jp'],
+  ['friends.nico'],
+]

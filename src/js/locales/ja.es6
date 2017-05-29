@@ -1,8 +1,12 @@
 export const localeData = require('react-intl/locale-data/ja')
 export const messages = {
   'add_account_dialog.title': '新しいアカウントを追加',
+  'add_account_dialog.note.add_account': 'Naumanniに新しいアカウントを追加します。先のページでnaumanniを承認してください。',
   'add_account_dialog.label.add': '登録',
+  'add_account_dialog.label.another_instance': 'もしくは、他のインスタンス',
+  'add_account_dialog.label.hostname_placeholder': 'Mastodonのホスト名',
   'add_account_dialog.label.cancel': 'キャンセル',
+  'add_account_dialog.label.major_instances': 'もしアカウントがあるのなら…',
   'authorize_account_dialog.title': 'Mastodonアカウントを認証中...',
   'column.menu.close': '閉じる',
   'column.title.notifications': '通知',
