@@ -36,6 +36,9 @@ export const messages = {
   'preferecens_dialog.label.reset_all': '全てをリセット',
   'preferecens_dialog.label.save_n_close': '保存して閉じる',
   'preferecens_dialog.note.emergency': 'このボタンを押すと、全ての設定をクリアして再読込します。（つまり最初の状態に戻ります）',
+  'preferecens_dialog.note.no_desktop_notification': 'このブラウザは、デスクトップ通知の機能がサポートされていません。',
+  'preferecens_dialog.note.notification_denied_warning':
+    'デスクトップ通知が許可されていません。デスクトップ通知を利用したい場合は、ブラウザの設定から、許可の設定をしてください。',
   'preferecens_dialog.note.notifications': '新しい、フォロー/リプライ/ブースト/ファボがあった時の通知の設定をします。',
   'preferecens_dialog.tab.emergency': '緊急',
   'preferecens_dialog.tab.notifications': '通知',

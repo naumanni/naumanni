@@ -11,6 +11,13 @@ SoundDriver.addSound('notify', 'notify.mp3')
 
 storiesOf('Notiication', module)
   .add('Can show', () => {
+    const dummyApp = {
+      intl: {
+        formatMessage(txt, values) {
+          return `${txt.id}: ${JSON.stringify(values)}`
+        }
+      }
+    }
     const dummyContext = {
       onChange: () => {},
       getState: () => {
@@ -45,7 +52,7 @@ storiesOf('Notiication', module)
         }
       },
     }
-    const notificationCenter = new NotificationCenter(dummyContext)
+    const notificationCenter = new NotificationCenter({app: dummyApp, context: dummyContext})
     const dummyToken = new OAuthToken({
     })
     dummyToken.attachAccount(new Account({

@@ -35,8 +35,13 @@ export const messages = {
   'preferecens_dialog.label.reblog': 'Boost',
   'preferecens_dialog.label.reset_all': 'Reset ALL',
   'preferecens_dialog.label.save_n_close': 'Save & Close',
-  'preferecens_dialog.note.emergency': 'Press this button to clear all settings and reload. '
-    + '(It will return to the initial state)',
+  'preferecens_dialog.note.emergency':
+    'Press this button to clear all settings and reload. ' +
+    '(It will return to the initial state)',
+  'preferecens_dialog.note.no_desktop_notification': 'This browser does not support desktop notification function.',
+  'preferecens_dialog.note.notification_denied_warning':
+    'Desktop notifications are not granted. ' +
+    'If you want to use notifications, please set permission from browser setting.',
   'preferecens_dialog.note.notifications': 'Set up notification when new follow/mention/boost/favourite occurs.',
   'preferecens_dialog.tab.emergency': 'Emergency',
   'preferecens_dialog.tab.notifications': 'Notifications',

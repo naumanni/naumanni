@@ -2,7 +2,6 @@ import {
   SUBJECT_MIXED,
   EVENT_NOTIFICATION, STREAM_HOME, WEBSOCKET_EVENT_MESSAGE,
   NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
-  NOTIFICATION_MESSAGES,
 } from 'src/constants'
 import {makeWebsocketUrl} from 'src/utils'
 import TokenListener from './TokenListener'
@@ -15,7 +14,8 @@ import SoundDriver from 'src/controllers/SoundDriver'
  * 常時起動してブラウザ通知とかTalkとか出すやつ
  */
 export default class NotificationCenter {
-  constructor(context) {
+  constructor({app, context}) {
+    this.app = app
     this.context = context
     this.tokenListener = new TokenListener(SUBJECT_MIXED, {
       onTokenAdded: ::this.onTokenAdded,
@@ -126,7 +126,8 @@ export default class NotificationCenter {
       SoundDriver.play('notify')
 
     if(window.Notification && prefForType.desktop) {
-      const what = NOTIFICATION_MESSAGES[notification.type].replace('%username%', account.displayName)
+      const {formatMessage: _} = this.app.intl
+      const what = _({id: `notification.what.${notification.type}`}, {displayName: account.displayName})
       const title = `${token.acct}: ${what}`
       const body = (status && (status.spoiler_text.length > 0 ? status.spoiler_text : status.plainContent)) || ''
 
