@@ -107,8 +107,8 @@ export default class PagingColumn extends Column {
   /**
    * @override
    */
-  onChangeConext(changingStores) {
-    super.onChangeConext(changingStores)
+  onChangeContext(changingStores) {
+    super.onChangeContext(changingStores)
 
     // なんだかなあ
     const {tokenState} = this.context.context.getState()

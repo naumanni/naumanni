@@ -42,7 +42,7 @@ export default class Column extends React.Component {
     const {context} = this.context
 
     this.listenerRemovers = [
-      context.onChange(::this.onChangeConext),
+      context.onChange(::this.onChangeContext),
     ]
   }
 
@@ -102,7 +102,7 @@ export default class Column extends React.Component {
     return null
   }
 
-  onChangeConext(changingStores) {
+  onChangeContext(changingStores) {
     this.setState(this.getStateFromContext())
   }
 

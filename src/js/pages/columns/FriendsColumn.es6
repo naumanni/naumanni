@@ -124,8 +124,8 @@ export default class FriendsColumn extends Column {
   /**
    * @override
    */
-  onChangeConext() {
-    super.onChangeConext()
+  onChangeContext() {
+    super.onChangeContext()
     this.listener.updateTokens(this.state.token)
   }
 

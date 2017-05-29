@@ -44,7 +44,7 @@ export default class PreferencesDialog extends HistoryBaseDialog {
     const {context} = this.context
 
     this.listenerRemovers.push(
-      context.onChange(::this.onChangeConext),
+      context.onChange(::this.onChangeContext),
     )
   }
 
@@ -225,7 +225,7 @@ export default class PreferencesDialog extends HistoryBaseDialog {
     )
   }
 
-  onChangeConext(changingStores) {
+  onChangeContext(changingStores) {
     this.setState(this.getStateFromContext())
   }
 

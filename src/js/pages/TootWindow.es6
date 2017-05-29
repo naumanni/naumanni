@@ -42,7 +42,7 @@ export default class TootWindow extends React.Component {
     const {context} = this.context
 
     this.listenerRemovers = [
-      context.onChange(::this.onChangeConext),
+      context.onChange(::this.onChangeContext),
     ]
   }
 
@@ -77,7 +77,7 @@ export default class TootWindow extends React.Component {
     )
   }
 
-  onChangeConext() {
+  onChangeContext() {
     this.setState(this.getStateFromContext())
   }
 
