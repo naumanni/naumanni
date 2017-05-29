@@ -50,7 +50,7 @@ export default class DashboardHeader extends React.Component {
 
     return (
       <header className="naumanniDashboard-header">
-        <DropdownMenuButton modifier="mixedColumMenu" onRenderMenu={::this.onRenderCompoundMenu}>
+        <DropdownMenuButton modifier="mixedColumnMenu" onRenderMenu={::this.onRenderCompoundMenu}>
           <img className="naumanniDashboard-header-logo" src="/static/images/naumanni-headerLogo.svg" />
         </DropdownMenuButton>
 

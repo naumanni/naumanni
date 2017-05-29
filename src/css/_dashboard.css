@@ -177,7 +177,7 @@
     border-style: dashed;
   }
 
-  .dropdownMenuButton--mixedColumMenu {
+  .dropdownMenuButton--mixedColumnMenu {
     .dropdownMenuButton-menu {
       left: 0;
       right: auto;
