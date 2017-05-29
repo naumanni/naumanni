@@ -39,37 +39,58 @@ export default class AuthorizeAccountDialog extends Dialog {
       .then(() => {
         this.app.history.replace('/')
       }, (error) => {
-        this.setState({error: '' + error})
+        // build error message
+        const {formatMessage: _} = this.context.intl
+        let message
+
+        if(error.response && error.response.body && error.response.body.error &&
+           error.response.body.error_description) {
+          message = _({id: 'authorize_account_dialog.progress.error_json'}, error.response.body)
+        } else if(error.message) {
+          message = _({id: 'authorize_account_dialog.progress.error_message'}, {message: error.message})
+        } else {
+          message = _({id: 'authorize_account_dialog.progress.error_message'}, {message: '' + error})
+        }
+
+        this.setState({error: message})
       })
   }
 
   /**
    * @override
    */
-  renderHeader() {
-    return <h1><_FM id="authorize_account_dialog.title" /></h1>
-  }
+  render() {
+    const {error} = this.state
 
-  /**
-   * @override
-   */
-  renderBody() {
     return (
-      <div className="dialog-body">
-        {this.state.progress}
-        {this.state.error && <p className="error">{this.state.error}</p>}
+      <div className={this.dialogClassName}>
+        {error
+          ? <p className="has-error">{error}</p>
+          : <p><_FM id="authorize_account_dialog.progress.authorizing" /></p>
+        }
+
+        {error && (
+          <div className="dialog-footer">
+            <div className="dialog-footerButtons">
+              <button className="button button--danger" onClick={::this.onClickClose}>Close</button>
+            </div>
+          </div>
+        )}
       </div>
     )
   }
 
   /**
    * @override
+   * @private
+   * @return {string}
    */
-  renderFooter() {
-    if(this.state.error) {
-      <div className="dialog-footerButtons">
-        <button className="button-danger" onClick={::this.onClickClose}>Close</button>
-      </div>
-    }
+  get dialogClassName() {
+    return super.dialogClassName + ' dialog--authorization'
+  }
+
+  onClickClose() {
+    const {history} = this.context.app
+    history.push(history.makeUrl('top'))
   }
 }
