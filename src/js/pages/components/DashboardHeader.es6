@@ -11,6 +11,7 @@ import {
 } from 'src/constants'
 import TootWindow from '../TootWindow'
 
+
 /**
  * ダッシュボードのヘッダ
  * [logo] [toot欄] [account icon] [account icon] [account icon] [account icon] .... [歯車]
@@ -50,7 +51,7 @@ export default class DashboardHeader extends React.Component {
 
     return (
       <header className="naumanniDashboard-header">
-        <DropdownMenuButton modifier="mixedColumnMenu" onRenderMenu={::this.onRenderCompoundMenu}>
+        <DropdownMenuButton ref="mixedColumnMenu" modifier="mixedColumnMenu" onRenderMenu={::this.onRenderCompoundMenu}>
           <img className="naumanniDashboard-header-logo" src="/static/images/naumanni-headerLogo.svg" />
         </DropdownMenuButton>
 
@@ -63,8 +64,18 @@ export default class DashboardHeader extends React.Component {
         </div>
 
         <ul className="naumanniDashboard-header-accounts">
-          {tokens.map((token) => this.renderAccount(token))}
-          <li>
+          {tokens.map((token, idx) => {
+            const props = {}
+            if(idx === 0)
+              props.ref = 'firstAccount'
+
+            return (
+              <li key={token.address} {...props}>
+                {this.renderAccount(token)}
+              </li>
+            )
+          })}
+          <li ref="addAccount">
             <button className="naumanniDashboard-header-addAccountButton"
               onClick={() => this.props.onStartAddAccount()}>
               <IconFont iconName="plus" />
@@ -87,18 +98,17 @@ export default class DashboardHeader extends React.Component {
   /**
    * ヘッダに顔アイコンを書くよ
    * @param {OAuthToken} token
+   * @param {number} idx
    * @return {React.Component}
    */
   renderAccount(token) {
     return (
-      <li key={token.address}>
-        <DropdownMenuButton onRenderMenu={this.onRenderAccountMenu.bind(this, token)}>
-          {token.isAlive()
-            ? <UserIconWithHost account={token.account} />
-            : <div className="naumanniDashboard-header-badToken">×</div>
-          }
-        </DropdownMenuButton>
-      </li>
+      <DropdownMenuButton onRenderMenu={this.onRenderAccountMenu.bind(this, token)}>
+        {token.isAlive()
+          ? <UserIconWithHost account={token.account} />
+          : <div className="naumanniDashboard-header-badToken">×</div>
+        }
+      </DropdownMenuButton>
     )
   }
 
@@ -218,6 +228,25 @@ export default class DashboardHeader extends React.Component {
       {className: 'menu menu--header'},
       ...children
     )
+  }
+
+  /**
+   * HeaderのTooltipを作る
+   * @return {array<React.Component>}
+   */
+  buildTooltip() {
+    const firstToken = this.props.tokens.get(0)
+
+    return [
+      {
+        target: this.refs.mixedColumnMenu, children: 'United timeline',
+        offsetX: 12,
+      },
+      {
+        target: this.refs.firstAccount, position: 'rightTop',
+        children: `${firstToken.host} timeline`},
+      {target: this.refs.addAccount, children: 'Add account'},
+    ]
   }
 
   /**

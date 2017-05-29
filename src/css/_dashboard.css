@@ -97,7 +97,8 @@
     > li {
       width: $sizeHeaderIcon;
       height: $sizeHeaderIcon;
-      margin: $marginHalf;
+      margin: 0 $marginHalf;
+      padding: calc($sizeHeaderHeight / 2 - $sizeHeaderIcon / 2) 0;
     }
 
     .userIcon {

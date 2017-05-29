@@ -10,12 +10,14 @@ import InitializeApplicationUseCase from 'src/usecases/InitializeApplicationUseC
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import SignOutUseCase from 'src/usecases/SignOutUseCase'
 import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
+import {AddTooltipUseCase, RemoveTooltipUseCase} from 'src/usecases/AddTooltipUseCase'
+import {UITooltipGroup} from 'src/models'
 import {raq} from 'src/utils'
 import {messages as enMessages} from 'src/locales/en'  // enはstatic linkしたい
-
 import ColumnContainer from './components/ColumnContainer'
 import DashboardHeader from './components/DashboardHeader'
 import ModalDialogContainer from './components/ModalDialogContainer'
+import {TooltipContainer} from './components/TooltipContainer'
 
 
 export default class Dashboard extends React.Component {
@@ -35,6 +37,7 @@ export default class Dashboard extends React.Component {
       ...this.getStateFromContext(),
     }
     this.state.messages = enMessages
+    this.initialized = false
   }
 
   /**
@@ -84,7 +87,7 @@ export default class Dashboard extends React.Component {
    * @override
    */
   render() {
-    const {initializing, locale, messages, columns, dialogs, tokens} = this.state
+    const {initializing, locale, messages, columns, dialogs, tokens, tooltips} = this.state
     return (
       <IntlProvider
         locale={locale}
@@ -98,9 +101,12 @@ export default class Dashboard extends React.Component {
           <AppIntializer app={this.props.app} onInitialized={::this.onAppInitialized} />
         </div>
         ) : (
-        <div className={`naumanniApp ${dialogs.length ? 'is-shownDialogs' : ''}`}>
+        <div
+          className={`naumanniApp ${dialogs.length ? 'is-shownDialogs' : ''}`}
+          onClick={::this.onClickDashboard}>
           <div className="naumanniDashboard">
             <DashboardHeader
+              ref="header"
               tokens={tokens}
               onStartAddAccount={::this.onStartAddAccount}
               onOpenColumn={::this.onOpenColumn}
@@ -112,6 +118,7 @@ export default class Dashboard extends React.Component {
             <ColumnContainer ref="columnContainer" columns={columns} />
           </div>
           <ModalDialogContainer dialogs={dialogs} />
+          <TooltipContainer tooltips={tooltips} />
         </div>
         )}
       </IntlProvider>
@@ -124,6 +131,7 @@ export default class Dashboard extends React.Component {
       columns: state.columnState.columns,
       dialogs: state.dialogsState.dialogs,
       tokens: state.tokenState.allTokens,
+      tooltips: state.tooltipState.tooltips,
     }
   }
 
@@ -135,19 +143,38 @@ export default class Dashboard extends React.Component {
     this.setState({initializing: false}, () => {
       // routing開始
       this.props.app.history.start()
+      this.initialized = true
     })
-
-    // Tokenが一個もなく、ルートを表示しようとしたら、WelcomeDialogを表示する
-    const {tokenState} = this.props.app.context.getState()
-    const {history} = this.props.app
-    if(config.WELCOME_DIALOG && tokenState.tokens.isEmpty() && history.is(history.makeUrl('top'))) {
-      history.push(history.makeUrl('welcome'))
-    }
   }
 
   onConetextChanged(changingStores) {
     raq(() => {
       this.setState(this.getStateFromContext())
+
+      const {tokens} = this.state
+      const {history} = this.props.app
+
+      if(this.initialized && history.is(history.makeUrl('top'))) {
+        // Tokenが一個もなく、ルートを表示しようとしたら、WelcomeDialogを表示する
+        if(config.WELCOME_DIALOG && tokens.isEmpty()) {
+          history.push(history.makeUrl('welcome'))
+          this.initialized = false
+        }
+
+        // Tokenが一個で、columnsが0個だったら、tooltipを表示
+        if(tokens.size === 1 && this.state.columns.length === 0) {
+          const {context} = this.props.app
+          const tooltips = new UITooltipGroup({tooltips: this.refs.header.buildTooltip()})
+
+          context.useCase(new AddTooltipUseCase()).execute(tooltips)
+          this.initialized = false
+          this.tooltips = tooltips
+        }
+
+        if(tokens.size > 0) {
+          this.initialized = false
+        }
+      }
     })
 
     this.onLocaleUpdated()
@@ -217,6 +244,14 @@ export default class Dashboard extends React.Component {
       const {columns} = this.state
 
       context.useCase(new SignOutUseCase()).execute(token, columns)
+    }
+  }
+
+  onClickDashboard() {
+    if(this.tooltips) {
+      const {context} = this.props.app
+      context.useCase(new RemoveTooltipUseCase()).execute(this.tooltips)
+      this.tooltips = null
     }
   }
 }
