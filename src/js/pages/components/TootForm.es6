@@ -58,6 +58,7 @@ export default class TootForm extends React.Component {
       spoilerTextContent: '',
       statusContent: this.props.initialContent || '',
       visibility: initialVisibility || VISIBLITY_PUBLIC,
+      sensitive: false,
     }
     this.mediaFileKeys = new WeakMap()
     this.mediaFileCounter = 0
@@ -78,12 +79,14 @@ export default class TootForm extends React.Component {
     const {formatMessage: _} = this.context.intl
     const {tokens} = this.props
     let {error} = this.state
-    const {showContentsWarning, sendFrom, statusContent, spoilerTextContent, visibility} = this.state
+    const {
+      showContentsWarning, sendFrom, statusContent, spoilerTextContent, visibility, mediaFiles, sensitive,
+    } = this.state
 
     const trimmedStatusLength = statusContent.trim().length
     const textLength = trimmedStatusLength + (showContentsWarning ? spoilerTextContent.trim().length : 0)
 
-    if(this.state.mediaFiles.length > MAX_MEDIA_FILES)
+    if(mediaFiles.length > MAX_MEDIA_FILES)
       error = _({id: 'toot_form.error.max_media_files'}, {mediaFileCount: MAX_MEDIA_FILES})
 
     return (
@@ -148,6 +151,14 @@ export default class TootForm extends React.Component {
               onClick={::this.onClickToggleShowContentsWarning}>
               <IconFont iconName="attention" />
             </button>
+            {mediaFiles.length > 0 &&
+              <button
+                className={`tootForm-toggleNsfw ${sensitive ? 'is-active' : ''}`}
+                type="button"
+                onClick={::this.onClickToggleNsfw}>
+                <IconFont iconName="nsfw" />
+              </button>
+            }
           </div>
         </div>
 
@@ -270,8 +281,13 @@ export default class TootForm extends React.Component {
 
   onRemoveMediaFile(file) {
     const idx = this.state.mediaFiles.indexOf(file)
-    if(idx >= 0)
-      this.setState(update(this.state, {mediaFiles: {$splice: [[idx, 1]]}}))
+    if(idx >= 0) {
+      const newState = update(this.state, {mediaFiles: {$splice: [[idx, 1]]}})
+      this.setState({
+        ...newState,
+        sensitive: newState.mediaFiles.length === 0 ? false : newState.sensitive,
+      })
+    }
   }
 
   onClickToggleShowContentsWarning() {
@@ -281,11 +297,17 @@ export default class TootForm extends React.Component {
     })
   }
 
+  onClickToggleNsfw() {
+    this.setState({
+      sensitive: !this.state.sensitive,
+    })
+  }
+
   onClickSend(e) {
     e.preventDefault()
 
     const {
-      sendFrom, statusContent, showContentsWarning, spoilerTextContent, visibility,
+      sendFrom, statusContent, showContentsWarning, spoilerTextContent, visibility, sensitive,
     } = this.state
     const sendFromTokens = this.props.tokens.filter(
       (token) => sendFrom.find((acct) => acct === token.acct)
@@ -294,6 +316,7 @@ export default class TootForm extends React.Component {
       status: statusContent.trim(),
       spoiler_text: showContentsWarning ? spoilerTextContent.trim() : null,
       visibility,
+      sensitive,
     }
 
     this.setState({isSending: true, error: null}, () => {
