@@ -1,10 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import {
-  VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
-  STORAGE_KEY_LAST_SEND_FROM, STORAGE_KEY_TOOT_VISIBILITY,
-} from 'src/constants'
+import {STORAGE_KEY_LAST_SEND_FROM, STORAGE_KEY_TOOT_VISIBILITY, VISIBLITY_PUBLIC} from 'src/constants'
 import {IconFont} from 'src/pages/parts'
 import TootForm from './components/TootForm'
 import {postStatusManaged} from 'src/infra/TimelineData'
