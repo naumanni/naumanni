@@ -7,10 +7,6 @@ import initializeDatabase from 'src/infra'
 
 
 export default class InitializeApplicationUseCase extends UseCase {
-  constructor() {
-    super()
-  }
-
   /**
    * Applicationの最初の初期化
    * @param {func} cb

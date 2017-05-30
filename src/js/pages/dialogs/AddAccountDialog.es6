@@ -2,6 +2,8 @@ import React from 'react'
 import {FormattedMessage as _FM} from 'react-intl'
 // import PropTypes from 'prop-types'
 
+import config from 'src/config'
+import {NAUMANNI_PREFERRED_INSTANCES} from 'src/constants'
 import {makeAPIRequester} from 'src/api/APIRequester'
 import MastodonAPISpec from 'src/api/MastodonAPISpec'
 import OAuthApp from 'src/models/OAuthApp'
@@ -10,7 +12,7 @@ import Database from 'src/infra/Database'
 
 import {HistoryBaseDialog} from './Dialog'
 
-const ACCOUNT_REX = /^@([^@]+)@(.*)$/
+const HOSTNAME_REX = /^(?:[^.]+\.)*[^.]+$/
 
 
 /**
@@ -22,8 +24,7 @@ export default class AddAccountDialog extends HistoryBaseDialog {
    */
   componentDidMount() {
     super.componentDidMount()
-
-    this.refs.account.focus()
+    this.refs.hostname.focus()
   }
 
   /**
@@ -37,9 +38,44 @@ export default class AddAccountDialog extends HistoryBaseDialog {
    * @override
    */
   renderBody() {
+    const {formatMessage: _} = this.context.intl
+    const {hasError} = this.state
+    const {PREFERRED_INSTANCE, PREFERRED_INSTANCE_FAVICON_URL} = config
+    let faviconUrl = PREFERRED_INSTANCE_FAVICON_URL || `https://${PREFERRED_INSTANCE}/favicon.ico`
+
     return (
-      <div className="dialog-body">
-        <input type="text" ref="account" placeholder="@shn@mstdn.onosendai.jp" style={{width: '100%'}} />
+      <div className="dialog-body addAccount">
+        <p className="note">
+          <_FM id="add_account_dialog.note.add_account" />
+        </p>
+
+        {!PREFERRED_INSTANCE &&
+        <div className="niceBorder"><span><_FM id="add_account_dialog.label.major_instances" /></span></div>
+        }
+
+        <div className="addAccount-instances">
+          {PREFERRED_INSTANCE ? (
+          <button className="button" onClick={this.onClickInstance.bind(this, PREFERRED_INSTANCE)}>
+            <img className="favicon" src={faviconUrl} /><br/>{PREFERRED_INSTANCE}
+          </button>
+          ) : (
+          NAUMANNI_PREFERRED_INSTANCES.map(([hostname, faviconUrl]) => (
+            <button
+              className="button"
+              onClick={this.onClickInstance.bind(this, hostname)}
+              key={hostname}>
+              <img className="favicon" src={faviconUrl || `https://${hostname}/favicon.ico`} /><br/>{hostname}
+            </button>
+          ))
+          )}
+        </div>
+
+        <div className="niceBorder"><span><_FM id="add_account_dialog.label.another_instance" /></span></div>
+
+        <input
+          type="text" ref="hostname"
+          className={`addAccount-hostnameInput ${hasError ? 'has-error' : ''}`}
+          placeholder={_({id: 'add_account_dialog.label.hostname_placeholder'})} style={{width: '100%'}} />
       </div>
     )
   }
@@ -50,31 +86,37 @@ export default class AddAccountDialog extends HistoryBaseDialog {
   renderFooter() {
     return (
       <div className="dialog-footerButtons">
-        <button className="button-danger" onClick={::this.onClickClose}>
+        <button className="button button--danger" onClick={::this.onClickClose}>
           <_FM id="add_account_dialog.label.cancel" />
         </button>
-        <button className="button-primary" onClick={::this.onClickAdd}>
+        <button className="button button--primary" onClick={::this.onClickAdd}>
           <_FM id="add_account_dialog.label.add" />
         </button>
       </div>
     )
   }
 
-  onClickAdd(e) {
+  onClickInstance(instance, e) {
     e.preventDefault()
+    this.refs.hostname.value = instance
 
-    const account = this.refs.account.value
-    const match = account.match(ACCOUNT_REX)
-
-    if(!match) {
-      throw new Error('invalid account')
-    }
-
-    const [_, username, host] = match
-    this.startAuthorize(username, host)
+    this.onClickAdd()
   }
 
-  async startAuthorize(username, host) {
+  onClickAdd(e) {
+    e && e.preventDefault()
+
+    this.setState({hasError: false})
+    const hostname = this.refs.hostname.value.trim()
+    if(!HOSTNAME_REX.test(hostname)) {
+      this.setState({hasError: true})
+      this.refs.hostname.focus()
+      return
+    }
+    this.startAuthorize(hostname)
+  }
+
+  async startAuthorize(host) {
     const scopes = ['read', 'write', 'follow']
     const {history} = this.app
 
@@ -97,6 +139,7 @@ export default class AddAccountDialog extends HistoryBaseDialog {
         client_name: 'naumanni',
         scopes: scopes.join(' '),
         redirect_uris: redirectUri,
+        website: `${window.location.origin}/`,
       })
       app = new OAuthApp({
         host: host,

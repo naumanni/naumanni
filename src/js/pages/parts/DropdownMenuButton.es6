@@ -42,7 +42,6 @@ export default class DropdownMenuButton extends React.Component {
 
   onClickButton(e) {
     e.preventDefault()
-    e.stopPropagation()
     this.setState({menuVisible: !this.state.menuVisible})
   }
 

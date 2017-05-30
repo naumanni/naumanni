@@ -9,4 +9,5 @@ export {Account, Attachment, Notification, OAuthApp, OAuthToken, Status, TalkRec
 
 import UIColumn from './UIColumn'
 import UIDialog from './UIDialog'
-export {UIColumn, UIDialog}
+import {UITooltipGroup} from './UITooltip'
+export {UIColumn, UIDialog, UITooltipGroup}

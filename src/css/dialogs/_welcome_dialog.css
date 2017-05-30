@@ -1,0 +1,10 @@
+.dialog--welcome {
+  .welcome-footer {
+    text-align: center;
+    padding: 8px;
+
+    .button {
+      margin: 0 1em;
+    }
+  }
+}

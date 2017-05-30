@@ -141,34 +141,45 @@ $loaderVMargin: 2rem;
 
 /** Button **/
 .button {
+  display: inline-block;
   font-size: $fontSizeButton;
   line-height: $sizeButtonHeight;
   min-width: $sizeButtonMinWidth;
-  border: none;
+  border: 1px solid $colorButtonBorder;
   border-radius: $radiusButton;
-
   background: #fff;
   color: #212121;
+  padding: 0;
+
+  &:hover {
+    color: $colorButtonHoverText;
+    text-decoration: none;
+  }
 
   &.button--primary {
+    border-color: $colorPrimaryButtonBorder;
     color: $colorPrimaryButtonText;
     background: $colorPrimaryButtonBackground;
 
     &:hover {
+      color: $colorPrimaryButtonHoverText;
       background: $colorPrimaryButtonHoverBackground;
     }
   }
 
   &.button--danger {
+    border-color: $colorDangerButtonBorder;
     color: $colorDangerButtonText;
     background: $colorDangerButtonBackground;
 
     &:hover {
+      color: $colorDangerButtonHoverText;
       background: $colorDangerButtonHoverBackground;
     }
   }
 
   &[disabled], &[disabled]:hover {
+    border-color: transparent;
     color: #bdbdbd;
     background: #e0e0e0;
   }
@@ -228,4 +239,17 @@ $loaderVMargin: 2rem;
   white-space: nowrap;
   word-break: normal;
   width: 5em;
+}
+
+
+.niceBorder {
+  border-bottom: 1px solid $colorGray1;
+  height: 0.5rem;
+  text-align: center;
+  margin: 1rem 0 1.5rem;
+
+  > span {
+    background-color: #fff;
+    padding: 0 2em;
+  }
 }

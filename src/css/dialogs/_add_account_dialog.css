@@ -1,0 +1,52 @@
+.addAccount {
+  .note {
+    margin: 0 0 calc($marginDefault * 2);
+  }
+}
+
+.addAccount-instances {
+  text-align: center;
+  margin: $marginDefault 0;
+
+  .button {
+    line-height: 1.0;
+    padding: $marginDefault;
+    margin: $marginDefault;
+    min-width: 9em;
+
+    .favicon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+/* TODO: Dashboard Headerのと被ってる */
+.addAccount-hostnameInput {
+  width: 100%;
+  background: $colorWhite;
+  border-radius: $radiusDefault;
+  border: 1px solid $colorGray2;
+  padding: 0 $marginHalf;
+  font-size: 1.2rem;
+  line-height: 2;
+  box-sizing: border-box;
+  margin: $marginDefault 0;
+
+  &.has-error {
+    border-color: $colorDangerButtonBackground;
+  }
+}
+
+
+.dialog--authorization {
+  p {
+    margin: $marginDefault;
+    font-size: 1.2rem;
+    color: $colorMainNormal;
+
+    &.has-error {
+      color: $colorDangerButtonBackground;
+    }
+  }
+}

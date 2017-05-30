@@ -1,9 +1,16 @@
 export const localeData = require('react-intl/locale-data/en')
 export const messages = {
   'add_account_dialog.title': 'Add new mastodon account',
+  'add_account_dialog.note.add_account':
+    'Add a new account to Naumanni. Please approve naumanni on the following page.',
   'add_account_dialog.label.add': 'Add',
+  'add_account_dialog.label.another_instance': 'or, another instance',
+  'add_account_dialog.label.hostname_placeholder': 'Mastodon host name',
   'add_account_dialog.label.cancel': 'Cancel',
-  'authorize_account_dialog.title': 'Authenticating Mastodon account...',
+  'add_account_dialog.label.major_instances': 'If you have an account ...',
+  'authorize_account_dialog.progress.authorizing': 'Authenticating Mastodon account...',
+  'authorize_account_dialog.progress.error_json': 'Authentication failed({error}): {error_description}',
+  'authorize_account_dialog.progress.error_message': 'Authentication failed: {message}',
   'column.menu.close': 'Close',
   'column.title.notifications': 'Notifications',
   'column.title.united_notifications': 'United notifications',
@@ -77,4 +84,6 @@ export const messages = {
   'user_detail_dialog.label.followings': 'Followings',
   'user_detail_dialog.label.followers': 'Followers',
   'user_detail.warning.not_latest_data': 'This may not be the latest data.',
+  'welcome_dialog.label.sign_in': 'Log in',
+  'welcome_dialog.label.sign_up': 'Sign up',
 }

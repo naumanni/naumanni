@@ -5,6 +5,7 @@ import DialogsStore from './DialogsStore'
 import PreferenceStore from './PreferenceStore'
 import TalkStore from './TalkStore'
 import TokenStore from './TokenStore'
+import TooltipStore from './TooltipStore'
 
 /**
  * 全Storeを纏める
@@ -18,9 +19,10 @@ export default class AppStoreGroup {
     return new StoreGroup([
       new ColumnStore(),
       new DialogsStore(),
+      new PreferenceStore(),
       new TalkStore(),
       new TokenStore(),
-      new PreferenceStore(),
+      new TooltipStore(),
     ])
   }
 }

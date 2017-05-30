@@ -49,12 +49,18 @@ $marginTimeline: 12px;
 $fontSizeButton: $fontSizeLarger;
 $sizeButtonHeight: 36px;
 $sizeButtonMinWidth: 120px;
+$colorButtonBorder: $colorGray3;
+$colorButtonHoverText: #636363;
 $colorPrimaryButtonBackground: #08ABCC;
 $colorPrimaryButtonHoverBackground: #52C5DC;
 $colorPrimaryButtonText: #ffffff;
+$colorPrimaryButtonBorder: transparent;
+$colorPrimaryButtonHoverText: $colorPrimaryButtonText;
 $colorDangerButtonBackground: #d32f2f;
 $colorDangerButtonHoverBackground: #e06d6d;
 $colorDangerButtonText: #ffffff;
+$colorDangerButtonBorder: transparent;
+$colorDangerButtonHoverText: $colorDangerButtonText;
 $radiusButton: 6px;
 
 
@@ -129,3 +135,4 @@ $zIndexBackground: 0;
 $zIndexHeader: 10;
 $zIndexModalDialogContainer: 1000;
 $zIndexDropDownMenu: 2000;
+$zIndexTooltipContainer: 3000;

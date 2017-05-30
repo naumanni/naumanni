@@ -1,9 +1,15 @@
 export const localeData = require('react-intl/locale-data/ja')
 export const messages = {
   'add_account_dialog.title': '新しいアカウントを追加',
+  'add_account_dialog.note.add_account': 'Naumanniに新しいアカウントを追加します。先のページでnaumanniを承認してください。',
   'add_account_dialog.label.add': '登録',
+  'add_account_dialog.label.another_instance': 'もしくは、他のインスタンス',
+  'add_account_dialog.label.hostname_placeholder': 'Mastodonのホスト名',
   'add_account_dialog.label.cancel': 'キャンセル',
-  'authorize_account_dialog.title': 'Mastodonアカウントを認証中...',
+  'add_account_dialog.label.major_instances': 'もしアカウントがあるのなら…',
+  'authorize_account_dialog.progress.authorizing': 'Mastodonアカウントを認証中...',
+  'authorize_account_dialog.progress.error_json': '認証できませんでした({error}): {error_description}',
+  'authorize_account_dialog.progress.error_message': '認証できませんでした: {message}',
   'column.menu.close': '閉じる',
   'column.title.notifications': '通知',
   'column.title.united_notifications': '統合通知',
@@ -74,4 +80,6 @@ export const messages = {
   'user_detail_dialog.label.followings': 'フォロー中',
   'user_detail_dialog.label.followers': 'フォロワー',
   'user_detail.warning.not_latest_data': 'これは最新のデータではない可能性があります。',
+  'welcome_dialog.label.sign_in': 'ログイン',
+  'welcome_dialog.label.sign_up': '新規登録',
 }
