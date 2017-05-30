@@ -70,15 +70,27 @@
       font-size: $fontSizeNormal;
     }
 
-    .tootForm-status {
-      display: block;
-      background: transparent;
-      border: none;
-      width: 100%;
-      padding: 8px;
-      margin: 0;
-      box-sizing: border-box;
-      font-size: $fontSizeNormal;
+    .tootForm-statusContainer {
+      .tootForm-status {
+        display: block;
+        background: transparent;
+        border: none;
+        width: 100%;
+        padding: 8px;
+        margin: 0;
+        box-sizing: border-box;
+        font-size: $fontSizeNormal;
+      }
+
+      .tootForm-autoSuggestions {
+        color: purple;
+
+        &-item {
+          &.selected {
+            background: yellow;
+          }
+        }
+      }
     }
 
     .tootForm-contentActions {

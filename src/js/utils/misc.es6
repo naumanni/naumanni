@@ -220,3 +220,34 @@ export function compareDateForTL(a, b) {
     return -1
   return 0
 }
+
+/**
+ * Parse input text for building autosuggestion query
+ * @param {string} str
+ * @param {number} caretPosition
+ * @return {[number, string]} a tuple of (query start position) and (suggestion query)
+ */
+export function textAtCursorMatchesToken(str, caretPosition) {
+  let word
+
+  const left = str.slice(0, caretPosition).search(/\S+$/)
+  const right = str.slice(caretPosition).search(/\s/)
+
+  if(right < 0) {
+    word = str.slice(left)
+  } else {
+    word = str.slice(left, right + caretPosition)
+  }
+
+  if(!word || word.trim().length < 2 || !word.startsWith('@')) {
+    return [null, null]
+  }
+
+  word = word.trim().toLowerCase().slice(1)
+
+  if(word.length > 0) {
+    return [left + 1, word]
+  }
+
+  return [null, null]
+}
