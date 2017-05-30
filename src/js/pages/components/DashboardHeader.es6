@@ -235,17 +235,23 @@ export default class DashboardHeader extends React.Component {
    * @return {array<React.Component>}
    */
   buildTooltip() {
+    const {formatMessage: _} = this.context.intl
     const firstToken = this.props.tokens.get(0)
 
     return [
       {
-        target: this.refs.mixedColumnMenu, children: 'United timeline',
+        target: this.refs.mixedColumnMenu,
+        children: _({id: 'tooltip.header.united_timeline'}),
         offsetX: 12,
       },
       {
         target: this.refs.firstAccount, position: 'rightTop',
-        children: `${firstToken.host} timeline`},
-      {target: this.refs.addAccount, children: 'Add account'},
+        children: _({id: 'tooltip.header.timeline'}, {hostname: firstToken.host}),
+      },
+      {
+        target: this.refs.addAccount,
+        children: _({id: 'tooltip.header.add_account'}),
+      },
     ]
   }
 

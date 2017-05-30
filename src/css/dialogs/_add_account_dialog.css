@@ -1,40 +1,58 @@
-.addAccount {
-  .note {
-    margin: 0 0 calc($marginDefault * 2);
+.dialog .dialog-body.addAccount {
+  padding: 0;
+
+  > .note {
+    margin: $marginDefault $marginDefault calc($marginDefault * 2);
+  }
+  > .niceBorder {
+    margin-left: $marginDefault;
+    margin-right: $marginDefault;
+  }
+  .addAccount-hostnameInput {
+    width: calc(100% - $marginDefault * 2);
+    box-sizing: border-box;
+    background: $colorWhite;
+    border-radius: $radiusDefault;
+    border: 1px solid $colorGray2;
+    padding: 0 $marginHalf;
+    font-size: 1.2rem;
+    line-height: 2;
+    box-sizing: border-box;
+    margin: $marginDefault;
+
+    &.has-error {
+      border-color: $colorDangerButtonBackground;
+    }
   }
 }
 
 .addAccount-instances {
+  position: relative;
   text-align: center;
-  margin: $marginDefault 0;
+  margin: $marginDefault $marginHalf;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 
   .button {
+    display: block;
     line-height: 1.0;
     padding: $marginDefault;
-    margin: $marginDefault;
-    min-width: 9em;
+    margin: $marginHalf;
+    flex: 1 1 8em;
+    max-width: calc(33% - $marginDefault);
+    box-sizing: border-box;
 
     .favicon {
       width: 24px;
       height: 24px;
     }
-  }
-}
 
-/* TODO: Dashboard Headerのと被ってる */
-.addAccount-hostnameInput {
-  width: 100%;
-  background: $colorWhite;
-  border-radius: $radiusDefault;
-  border: 1px solid $colorGray2;
-  padding: 0 $marginHalf;
-  font-size: 1.2rem;
-  line-height: 2;
-  box-sizing: border-box;
-  margin: $marginDefault 0;
-
-  &.has-error {
-    border-color: $colorDangerButtonBackground;
+    > div {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 }
 

@@ -56,7 +56,8 @@ export default class AddAccountDialog extends HistoryBaseDialog {
         <div className="addAccount-instances">
           {PREFERRED_INSTANCE ? (
           <button className="button" onClick={this.onClickInstance.bind(this, PREFERRED_INSTANCE)}>
-            <img className="favicon" src={faviconUrl} /><br/>{PREFERRED_INSTANCE}
+            <img className="favicon" src={faviconUrl} />
+            <div>{PREFERRED_INSTANCE}</div>
           </button>
           ) : (
           NAUMANNI_PREFERRED_INSTANCES.map(([hostname, faviconUrl]) => (
@@ -64,7 +65,8 @@ export default class AddAccountDialog extends HistoryBaseDialog {
               className="button"
               onClick={this.onClickInstance.bind(this, hostname)}
               key={hostname}>
-              <img className="favicon" src={faviconUrl || `https://${hostname}/favicon.ico`} /><br/>{hostname}
+              <img className="favicon" src={faviconUrl || `https://${hostname}/favicon.ico`} />
+              <div>{hostname}</div>
             </button>
           ))
           )}
@@ -75,7 +77,7 @@ export default class AddAccountDialog extends HistoryBaseDialog {
         <input
           type="text" ref="hostname"
           className={`addAccount-hostnameInput ${hasError ? 'has-error' : ''}`}
-          placeholder={_({id: 'add_account_dialog.label.hostname_placeholder'})} style={{width: '100%'}} />
+          placeholder={_({id: 'add_account_dialog.label.hostname_placeholder'})} />
       </div>
     )
   }
