@@ -1,17 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import update from 'immutability-helper'
-import Textarea from 'react-textarea-autosize'
 import {intlShape, FormattedMessage as _FM} from 'react-intl'
 
 import {
   MASTODON_MAX_CONTENT_SIZE,
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
-  KEY_ENTER, KEY_ESC, TOOTFORM_PLACEHOLDER,
+  KEY_ENTER, KEY_ESC,
 } from 'src/constants'
 import {OAuthTokenListPropType} from 'src/propTypes'
 import {IconFont, UserIconWithHost} from 'src/pages/parts'
 import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
+import AutoSuggestTextarea from './AutoSuggestTextarea'
 
 
 const MAX_MEDIA_FILES = 4
@@ -62,14 +62,6 @@ export default class TootForm extends React.Component {
     }
     this.mediaFileKeys = new WeakMap()
     this.mediaFileCounter = 0
-  }
-
-  /**
-   * @override
-   */
-  componentDidMount() {
-    // focus
-    this.refs.textareaStatus.focus()
   }
 
   /**
@@ -126,14 +118,12 @@ export default class TootForm extends React.Component {
               onChange={::this.onChangeSpoilerText}></textarea>
           )}
 
-          <Textarea
-            ref="textareaStatus"
-            className="tootForm-status" value={statusContent}
-            placeholder={TOOTFORM_PLACEHOLDER}
+          <AutoSuggestTextarea
+            statusContent={statusContent}
+            tokens={this.sendFromTokens}
+            onChangeStatus={::this.onChangeStatus}
             onKeyDown={::this.onKeyDown}
-            onChange={::this.onChangeStatus}
-            minRows={3}
-            maxRows={TootForm.maxTootRows()}></Textarea>
+          />
 
           {this.renderMediaFiles()}
 
@@ -203,12 +193,6 @@ export default class TootForm extends React.Component {
     )
   }
 
-  static maxTootRows() {
-    const staticHeightExceptTootTextArea = 400  // really rongh estimate...
-    const lineHeight = 20
-    return Math.floor((document.body.clientHeight - staticHeightExceptTootTextArea) / lineHeight)
-  }
-
   renderMediaFiles() {
     const {mediaFiles} = this.state
 
@@ -224,6 +208,12 @@ export default class TootForm extends React.Component {
             onClose={this.onRemoveMediaFile.bind(this, file)} />
         })}
       </div>
+    )
+  }
+
+  get sendFromTokens() {
+    return this.props.tokens.filter(
+      (token) => this.state.sendFrom.find((acct) => acct === token.acct)
     )
   }
 
@@ -260,8 +250,8 @@ export default class TootForm extends React.Component {
     this.setState({spoilerTextContent: e.target.value})
   }
 
-  onChangeStatus(e) {
-    this.setState({statusContent: e.target.value})
+  onChangeStatus(statusContent) {
+    this.setState({statusContent})
   }
 
   onClickVisibility(visibility) {
@@ -307,11 +297,8 @@ export default class TootForm extends React.Component {
     e.preventDefault()
 
     const {
-      sendFrom, statusContent, showContentsWarning, spoilerTextContent, visibility, sensitive,
+      statusContent, showContentsWarning, spoilerTextContent, visibility, sensitive,
     } = this.state
-    const sendFromTokens = this.props.tokens.filter(
-      (token) => sendFrom.find((acct) => acct === token.acct)
-    )
     const message = {
       status: statusContent.trim(),
       spoiler_text: showContentsWarning ? spoilerTextContent.trim() : null,
@@ -320,7 +307,7 @@ export default class TootForm extends React.Component {
     }
 
     this.setState({isSending: true, error: null}, () => {
-      this.props.onSend(sendFromTokens, {
+      this.props.onSend(this.sendFromTokens, {
         mediaFiles: this.state.mediaFiles,
         message,
       })
