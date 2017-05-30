@@ -139,6 +139,7 @@ export default class AddAccountDialog extends HistoryBaseDialog {
         client_name: 'naumanni',
         scopes: scopes.join(' '),
         redirect_uris: redirectUri,
+        website: `${window.location.origin}/`,
       })
       app = new OAuthApp({
         host: host,
