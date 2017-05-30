@@ -24,6 +24,7 @@ export const messages = {
   'column.title.united_timeline_local': '統合ローカルタイムライン',
   'dashboard.initialize.loading': '読み込み中...',
   'dashboard.confirm.signout': '本当に{acct}からログアウトしますか?',
+  'header.menu-item.sign-out': 'ログアウト',
   'notification.what.follow': '{displayName}さんにフォローされました',
   'notification.what.mention': '{displayName}さんから返信されました',
   'notification.what.favourite': '{displayName}さんがあなたのトゥートをお気に入りに登録しました',

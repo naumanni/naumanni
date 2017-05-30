@@ -219,7 +219,7 @@ export default class DashboardHeader extends React.Component {
       <li className="menu-item"
         onClick={this.props.onSignOut.bind(this, token)}>
         <IconFont className="menu-itemIcon" iconName="logout" />
-        <span>Sign out</span>
+        <span><_FM id="header.menu-item.sign-out" /></span>
       </li>
     )
 
