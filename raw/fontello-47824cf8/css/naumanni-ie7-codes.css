@@ -2,7 +2,6 @@
 .icon-search { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe800;&nbsp;'); }
 .icon-key { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe801;&nbsp;'); }
 .icon-camera { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe802;&nbsp;'); }
-.icon-nsfw { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe803;&nbsp;'); }
 .icon-reblog { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe804;&nbsp;'); }
 .icon-toot { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe805;&nbsp;'); }
 .icon-globe { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe806;&nbsp;'); }
@@ -29,6 +28,7 @@
 .icon-right-open { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe81b;&nbsp;'); }
 .icon-left-open { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe81c;&nbsp;'); }
 .icon-logout { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe81d;&nbsp;'); }
+.icon-nsfw { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe81e;&nbsp;'); }
 .icon-bell { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf0f3;&nbsp;'); }
 .icon-meh { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf11a;&nbsp;'); }
 .icon-user-secret { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf21b;&nbsp;'); }
