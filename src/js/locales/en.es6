@@ -25,6 +25,7 @@ export const messages = {
   'column.title.united_timeline_local': 'United local timeline',
   'dashboard.initialize.loading': 'Loading...',
   'dashboard.confirm.signout': 'Are you sure you want to sign out of {acct}?',
+  'header.menu-item.sign-out': 'Sign out',
   'message.freind_filter.placeholder': 'Filter',
   'notification.what.follow': '{displayName} followed you',
   'notification.what.mention': '{displayName} mentioned you',
