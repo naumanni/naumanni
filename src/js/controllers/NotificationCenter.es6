@@ -80,8 +80,6 @@ export default class NotificationCenter {
         const status = notification.status && entities.statuses[notification.status]
         const account = notification.account && entities.accounts[notification.account]
 
-        console.log('on', notification.toJSON(), status.toJSON(), account.toJSON())
-
         this.onNotificationReceived(token, notification, status, account)
       }
     }
