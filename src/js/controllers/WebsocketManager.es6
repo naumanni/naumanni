@@ -1,3 +1,4 @@
+import config, {getApiRoot} from 'src/config'
 import {
   WEBSOCKET_EVENT_ERROR, WEBSOCKET_EVENT_OPEN, WEBSOCKET_EVENT_MESSAGE, WEBSOCKET_EVENT_CLOSE,
 } from 'src/constants'
@@ -33,7 +34,11 @@ class WebsocketConnection {
     if(this.socket)
       return
 
-    const socket = new WebSocket(this.url)
+    const socket = new WebSocket(
+      config.PROXY_ENABLED
+        ? `${getApiRoot().replace(/^http/, 'ws')}ws/${this.url}`
+        : this.url
+    )
 
     this.socket = socket
     socket.onopen = ::this.onOpen

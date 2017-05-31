@@ -1,5 +1,6 @@
 import {Request} from 'superagent'
 
+import config, {getApiRoot} from 'src/config'
 import {defineError} from 'src/utils'
 
 const METHOD_NAME_REX = /^(list|get|patch|post|put|delete|upload)(.*)$/
@@ -59,9 +60,13 @@ export class APIRequester {
    * @param {object} specs
    * @param {url} enndpoint
    */
-  constructor(specs, {endpoint, hooks}) {
-    this.endpoint = endpoint || ''
-    this.prefixer = require('superagent-prefix')(this.endpoint)
+  constructor(specs, {endpoint: prefix, hooks}) {
+    this.prefix = prefix || ''
+    this.prefixer = require('superagent-prefix')(
+      config.PROXY_ENABLED
+        ? `${getApiRoot()}proxy/${prefix}`
+        : prefix
+    )
     this.specs = specs
     this.hooks = hooks || {}
 
@@ -133,6 +138,7 @@ export class APIRequester {
     req = req
       .use(this.prefixer)
       .set(options.headers || {})
+    req.prefix = this.prefix
 
     if(options.onprogress) {
       req = req.on('progress', options.onprogress)
