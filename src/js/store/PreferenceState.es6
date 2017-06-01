@@ -69,9 +69,9 @@ export default class PreferenceState {
     return this.byAccts.get(acct) || DEFAULT_ACCT_SETTING
   }
 
-  onPrefecencesLoaded({globals, byAccts}) {
-    globals = DEFAULT_GLOBALS.mergeDeep(DEFAULT_GLOBALS, globals)
-    byAccts = new Map(Object.keys(byAccts).map((acct) => {
+  onPrefecencesLoaded({globals, byAccts}={}) {
+    globals = DEFAULT_GLOBALS.mergeDeep(DEFAULT_GLOBALS, globals || {})
+    byAccts = new Map(Object.keys(byAccts || {}).map((acct) => {
       const acctPref = fromJS(byAccts[acct])
       return [acct, DEFAULT_ACCT_SETTING.mergeDeep(acctPref)]
     }))
