@@ -14,9 +14,6 @@ export default class InitializeApplicationUseCase extends UseCase {
   async execute() {
     await initializeDatabase()
 
-    // Tokenを読み込む
-    await this.context.useCase(new LoadTokensUseCase()).execute()
-
     // とりまべた書き
     // Preferencesを読み込む
     let preferences = {}
@@ -30,5 +27,8 @@ export default class InitializeApplicationUseCase extends UseCase {
       type: actions.PREFERENCES_LOADED,
       preferences,
     })
+
+    // Tokenを読み込む
+    await this.context.useCase(new LoadTokensUseCase()).execute()
   }
 }
