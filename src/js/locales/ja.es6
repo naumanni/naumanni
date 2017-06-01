@@ -22,6 +22,7 @@ export const messages = {
   'column.title.united_timeline_home': '統合ホーム',
   'column.title.timeline_local': 'ローカルタイムライン',
   'column.title.united_timeline_local': '統合ローカルタイムライン',
+  'column.title.hashtag': '#{tag}',
   'dashboard.initialize.loading': '読み込み中...',
   'dashboard.confirm.signout': '本当に{acct}からログアウトしますか?',
   'header.menu-item.sign-out': 'ログアウト',

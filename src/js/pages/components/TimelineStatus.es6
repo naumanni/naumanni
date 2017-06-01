@@ -129,7 +129,10 @@ class TimelineStatus extends React.Component {
               {this.renderSpoilerText()}
               {isContentOpen && (
                 <div className="status-content">
-                  <SafeContent parsedContent={status.parsedContent} {...this.props} />
+                  <SafeContent
+                    parsedContent={status.parsedContent}
+                    onClickHashTag={::this.onClickHashTag}
+                    {...this.props} />
                 </div>
               )}
             </div>
@@ -464,6 +467,11 @@ class TimelineStatus extends React.Component {
 
   onCloseReplyPanel() {
     this.showHidePanel(false, PANEL_REPLY)
+  }
+
+  onClickHashTag(tag, e) {
+    e.preventDefault()
+    this.props.onClickHashTag(tag)
   }
 }
 

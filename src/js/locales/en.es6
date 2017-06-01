@@ -23,6 +23,7 @@ export const messages = {
   'column.title.united_timeline_home': 'United home timeline',
   'column.title.timeline_local': 'Local timeline',
   'column.title.united_timeline_local': 'United local timeline',
+  'column.title.hashtag': '#{tag}',
   'dashboard.initialize.loading': 'Loading...',
   'dashboard.confirm.signout': 'Are you sure you want to sign out of {acct}?',
   'header.menu-item.sign-out': 'Sign out',

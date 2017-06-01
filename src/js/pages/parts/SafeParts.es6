@@ -44,7 +44,7 @@ export function SafeNote({parsedNote}) {
 }
 
 
-export function SafeContent({parsedContent, ...props}) {
+export function SafeContent({parsedContent, onClickHashTag, ...props}) {
   return React.createElement(
     'p',
     {},
@@ -73,7 +73,7 @@ export function SafeContent({parsedContent, ...props}) {
         const {acct} = token
         return <a href={_urlFromAcct(acct)} onClick={(e) => props.onAvatarClicked(acct, e)}>@{acct}</a>
       } else if(type === TOKEN_HASHTAG) {
-        return <a href={token.url} rel="nofollow noopener" target="_blank">#{token.tag}</a>
+        return <a href="#" onClick={onClickHashTag.bind(this, token.tag)}>#{token.tag}</a>
       } else {
         console.error(token)
       }

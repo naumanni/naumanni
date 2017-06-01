@@ -85,14 +85,23 @@ export function parseQuery(queryString) {
  * TODO: どっかに移したい
  * @param {OAuthToken} token
  * @param {string} stream
+ * @param {object} params
  * @return {string}
  */
-export function makeWebsocketUrl(token, stream) {
+export function makeWebsocketUrl(token, stream, params={}) {
   // 暫定: websocketのhostが違うことがあるのでハードコーディング
   // browserのwebsocketは301ハンドリングできないよ > @nullkal
   const host = WEBSOCKET_HOST_MAP[token.host] || token.host
+  const otherParams = Object.keys(params).length === 0
+    ? ''
+    : Object.keys(params)
+        .reduce((prev, k, i) => (
+          i === 0
+            ? `&${k}=${encodeURIComponent(params[k])}`
+            : `${prev}&${k}=${encodeURIComponent(params[k])}`
+        ), '')
 
-  return `wss://${host}/api/v1/streaming/?access_token=${token.accessToken}&stream=${stream}`
+  return `wss://${host}/api/v1/streaming/?access_token=${token.accessToken}&stream=${stream}${otherParams}`
 }
 
 

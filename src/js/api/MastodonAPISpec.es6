@@ -231,6 +231,12 @@ export default MastodonAPISpec.make({
     method: 'get',
   },
 
+  listHashtagTimeline: {
+    endpoint: '/timelines/tag/:tag',
+    entity: [status],
+    method: 'get',
+  },
+
   searchAccount: {
     endpoint: '/accounts/search',
     entity: [account],
