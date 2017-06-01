@@ -4,6 +4,15 @@ import * as actions from 'src/actions'
 
 
 describe('PreferenceState', () => {
+  it('can init', () => {
+    let state = new PreferenceState()
+    state = state.reduce({
+      type: actions.PREFERENCES_LOADED,
+    })
+    expect(state.globals.size).toBe(1)
+    expect(state.byAccts.size).toBe(0)
+  })
+
   it('can reduce by PREFERENCES_LOADED', () => {
     let state
 
