@@ -118,12 +118,12 @@ export default class NotificationCenter {
 
   notifyUser(token, notification, status, account) {
     const acctPref = this.context.getState().preferenceState.byAcct(token.acct)
-    const prefForType = acctPref.notifications[notification.type] || {}
+    const prefForType = acctPref.get('notifications').get(notification.type)
 
-    if(prefForType.audio)
+    if(prefForType.get('audio'))
       SoundDriver.play('notify')
 
-    if(window.Notification && prefForType.desktop) {
+    if(window.Notification && prefForType.get('desktop')) {
       const {formatMessage: _} = this.app.intl
       const what = _({id: `notification.what.${notification.type}`}, {displayName: account.displayName})
       const title = `${token.acct}: ${what}`
