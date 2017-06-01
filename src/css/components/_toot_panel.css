@@ -71,6 +71,8 @@
     }
 
     .tootForm-statusContainer {
+      position: relative;
+
       .tootForm-status {
         display: block;
         background: transparent;
@@ -83,11 +85,39 @@
       }
 
       .tootForm-autoSuggestions {
-        color: purple;
+        width: 100%;
+        padding: 4px 0;
+        color: $colorText;
+        background: $colorAccentLightest;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.15);
 
         &-item {
+          height: 36px;
+          padding: 4px 8px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+
+          > span {
+            vertical-align:-webkit-baseline-middle;
+          }
+
           &.selected {
-            background: yellow;
+            background: $colorGray1;
+          }
+
+          .userIcon {
+            margin: 0 $marginDefault 0 0;
+          }
+
+          .tootForm-autoSuggestions-name {
+            margin: 0 $marginDefault 0 0;
+            font-weight: bold;
+          }
+          
+          .tootForm-autoSuggestions-account {
+            color:$colorGray3;
+            font-size: $marginTimeline;
           }
         }
       }
