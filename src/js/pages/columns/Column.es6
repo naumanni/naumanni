@@ -1,11 +1,12 @@
 import React from 'react'
+import TransitionGroup from 'react-transition-group/TransitionGroup'
 import {findDOMNode} from 'react-dom'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import {intlShape, FormattedMessage as _FM} from 'react-intl'
 
 import {UIColumn} from 'src/models'
-import {DropdownMenuButton, IconFont, NowLoading} from 'src/pages/parts'
+import {ColumnHeaderMenu, DropdownMenuButton, IconFont, NowLoading} from 'src/pages/parts'
 import {AppPropType, ContextPropType} from 'src/propTypes'
 import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 
@@ -31,7 +32,10 @@ export default class Column extends React.Component {
   constructor(...args) {
     super(...args)
 
-    this.state = this.getStateFromContext()
+    this.state = {
+      ...this.getStateFromContext(),
+      menuVisible: this.props.menuVisible || false,
+    }
   }
 
   /**
@@ -59,33 +63,50 @@ export default class Column extends React.Component {
    * @override
    */
   render() {
-    const {loading} = this.state
-    let title = this.renderTitle()
-
-    if(typeof title === 'string')
-      title = <h1 className="column-headerTitle">{title}</h1>
-
-    const headerClass = classNames(
-      'column-header',
-      {'column-header-private': this.isPrivate()}
-    )
+    const {loading, menuVisible} = this.state
 
     return (
       <div className="column">
-        <header className={headerClass} onClick={::this.onClickHeader}>
-          {title}
-          <div className="column-headerMenu">
-            <DropdownMenuButton onRenderMenu={::this.onRenderColumnMenu}>
-              <button className="column-headerMenuButton"><IconFont iconName="cog" /></button>
-            </DropdownMenuButton>
-          </div>
-        </header>
+        {this.renderHeader()}
+        <TransitionGroup>
+          {menuVisible && this.renderMenuContent()}
+        </TransitionGroup>
 
         {loading
           ? <div className="column-body is-loading"><NowLoading /></div>
           : this.renderBody()
         }
       </div>
+    )
+  }
+
+  renderHeader() {
+    let title = this.renderTitle()
+
+    if(typeof title === 'string')
+      title = <h1 className="column-headerTitle">{title}</h1>
+
+    return (
+      <header
+        className={classNames(
+          'column-header',
+          {'column-header-private': this.isPrivate()}
+        )}
+        onClick={::this.onClickHeader}
+      >
+        {title}
+        <div className="column-headerMenu">
+          <DropdownMenuButton onRenderMenu={::this.onRenderColumnMenu}>
+            <button className="column-headerMenuButton"><IconFont iconName="cog" /></button>
+          </DropdownMenuButton>
+        </div>
+      </header>
+    )
+  }
+
+  renderMenuContent() {
+    return (
+        <ColumnHeaderMenu />
     )
   }
 

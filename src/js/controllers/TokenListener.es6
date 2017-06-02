@@ -15,8 +15,14 @@ export default class TokenListener extends ChangeEventEmitter {
 
   updateTokens(tokens) {
     if(this.subject !== SUBJECT_MIXED) {
-      // Accountタイムラインなので、一致するアカウントのみ
-      tokens = tokens.filter((token) => token.acct === this.subject)
+      const subjects = this.subject.split(',')
+      if(subjects.length === 1) {
+        // Accountタイムラインなので、一致するアカウントのみ
+        tokens = tokens.filter((token) => token.acct === this.subject)
+      } else {
+        // タグタイムラインなど、subjectが指定アカウントが複数ある場合
+        tokens = tokens.filter((token) => subjects.indexOf(token.acct) >= 0)
+      }
     }
     tokens = tokens.reduce((map, token) => {
       map[token.acct] = token

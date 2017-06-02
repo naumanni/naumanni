@@ -10,6 +10,7 @@ export default class DropdownMenuButton extends React.Component {
     modifier: PropTypes.string,
     // children
     onRenderMenu: PropTypes.func.isRequired,
+    onClick: PropTypes.func,
   }
 
   state = {
@@ -42,7 +43,9 @@ export default class DropdownMenuButton extends React.Component {
 
   onClickButton(e) {
     e.preventDefault()
-    this.setState({menuVisible: !this.state.menuVisible})
+    this.props.onClick
+      ? this.props.onClick(e)
+      : this.setState({menuVisible: !this.state.menuVisible})
   }
 
   onClickMenu() {

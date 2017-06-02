@@ -1,10 +1,13 @@
 import React from 'react'
+import classNames from 'classnames'
 import {FormattedMessage as _FM} from 'react-intl'
 
 import {COLUMN_TAG, STREAM_TAG} from 'src/constants'
 import {makeWebsocketUrl} from 'src/utils'
 import {HashtagTimelineLoader} from 'src/controllers/TimelineLoader'
 import TimelineListener from 'src/controllers/TimelineListener'
+import {ColumnHeaderMenu, DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
+import ReplaceColumnUseCase from 'src/usecases/ReplaceColumnUseCase'
 import PagingColumn from './PagingColumn'
 import TimelineColumn from './TimelineColumn'
 
@@ -33,6 +36,67 @@ export default class HashTagColumn extends TimelineColumn {
   /**
    * @override
    */
+  renderHeader() {
+    let title = this.renderTitle()
+
+    if(typeof title === 'string')
+      title = <h1 className="column-headerTitle">{title}</h1>
+
+    return (
+      <header
+        className={classNames(
+          'column-header',
+          {'column-header-private': this.isPrivate()}
+        )}
+        onClick={::this.onClickHeader}
+      >
+        {title}
+        <div className="column-headerMenu">
+          <DropdownMenuButton onRenderMenu={::this.onRenderColumnMenu} onClick={::this.onClickMenuButton} >
+            <button className="column-headerMenuButton"><IconFont iconName="cog" /></button>
+          </DropdownMenuButton>
+        </div>
+      </header>
+    )
+  }
+
+  /**
+   * @override
+   */
+  renderMenuContent() {
+    const {tokens} = this.state.tokenState
+    const subjects = this.props.subject.split(',')
+
+    return (
+      <ColumnHeaderMenu>
+        <div className="menu-item">
+          <h2><_FM id="column.menu.accountts.for" /></h2>
+          <ul className="menu-accounts">
+            {tokens.map((token) => {
+              const {account} = token
+              const isSelected = subjects.indexOf(account.acct) >= 0
+
+              return (
+                <li className={isSelected && 'is-selected'}
+                    key={account.acct}
+                    onClick={this.onToggleAccount.bind(this, account)}>
+                  <UserIconWithHost account={account} size="small" />
+                </li>
+              )
+            })}
+          </ul>
+          <p className="menu-note"><_FM id="column.menu.accountts.select_multiple_author" /></p>
+        </div>
+        <div className="menu-item--close" onClick={::this.onClickCloseColumn}>
+          <_FM id="column.menu.close" />
+        </div>
+      </ColumnHeaderMenu>
+    )
+  }
+
+  /**
+   * @override
+   */
   get listenerClass() {
     const {tag} = this.props
 
@@ -52,6 +116,47 @@ export default class HashTagColumn extends TimelineColumn {
     const {tag} = this.props
 
     return new HashtagTimelineLoader(tag, timeline, token, this.db)
+  }
+
+
+  /**
+   * @override(temporary)
+   */
+  onRenderColumnMenu() {
+    return null
+  }
+
+  // cb
+  onClickMenuButton(e) {
+    // TODO: make this header menu as common style
+    this.setState({menuVisible: !this.state.menuVisible})
+  }
+
+  onToggleAccount({acct}, e) {
+    let subjects = this.props.subject.split(',')
+
+    if(e.shiftKey) {
+      subjects = [...subjects]
+      const idx = subjects.indexOf(acct)
+
+      if(idx >= 0) {
+        subjects.splice(idx, 1)
+      } else {
+        subjects.push(acct)
+      }
+    } else {
+      subjects = [acct]
+    }
+
+    const {context} = this.context
+    const {column, tag} = this.props
+    const params = {
+      menuVisible: true,
+      subject: subjects.join(),
+      tag,
+    }
+
+    context.useCase(new ReplaceColumnUseCase()).execute(column, column.type, params)
   }
 }
 require('./').registerColumn(COLUMN_TAG, HashTagColumn)

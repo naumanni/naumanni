@@ -11,6 +11,8 @@ export const messages = {
   'authorize_account_dialog.progress.authorizing': 'Authenticating Mastodon account...',
   'authorize_account_dialog.progress.error_json': 'Authentication failed({error}): {error_description}',
   'authorize_account_dialog.progress.error_message': 'Authentication failed: {message}',
+  'column.menu.accountts.for': 'for',
+  'column.menu.accountts.select_multiple_author': 'Shift+Click to select multiple',
   'column.menu.close': 'Close',
   'column.title.notifications': 'Notifications',
   'column.title.united_notifications': 'United notifications',
