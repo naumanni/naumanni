@@ -92,13 +92,15 @@ export default class AutoSuggestTextarea extends React.Component {
               )}
               onClick={this.onClickSuggestion.bind(this, account)}
             >
-              <UserIconWithHost account={account} size="small" />
-              <span className="tootForm-autoSuggestions-name">
-                {account.display_name && ` ${account.display_name}`}
-              </span>
-              <span className="tootForm-autoSuggestions-account">
-                {`@${account.acct}`}
-              </span>
+              <UserIconWithHost account={account} size="mini" />
+              <div className="tootForm-autoSuggestions-namebox">
+                <p className="tootForm-autoSuggestions-name">
+                  {account.display_name && ` ${account.display_name}`}
+                </p>
+                <p className="tootForm-autoSuggestions-account">
+                  {`@${account.acct}`}
+                </p>
+              </div>
             </div>
             ))
           }

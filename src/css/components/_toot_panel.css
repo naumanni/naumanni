@@ -85,40 +85,55 @@
       }
 
       .tootForm-autoSuggestions {
+        position: fixed;
         width: 100%;
         padding: 4px 0;
         color: $colorText;
         background: $colorAccentLightest;
-        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.15);
+        box-shadow: 0 2px 2px 1px rgba(0, 0, 0, 0.15);
+        
 
         &-item {
-          height: 36px;
+          position: relative;
+          min-height: 37px;
           padding: 4px 8px;
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
 
-          > span {
-            vertical-align:-webkit-baseline-middle;
-          }
 
           &.selected {
             background: $colorGray1;
           }
 
           .userIcon {
-            margin: 0 $marginDefault 0 0;
-          }
-
-          .tootForm-autoSuggestions-name {
-            margin: 0 $marginDefault 0 0;
-            font-weight: bold;
+            position: absolute;
+            vertical-align: top;
           }
           
-          .tootForm-autoSuggestions-account {
-            color:$colorGray3;
-            font-size: $marginTimeline;
+          .tootForm-autoSuggestions-namebox {
+            display: inline-block;
+            padding: 0 0 0 32px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            > p {
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
+
+            .tootForm-autoSuggestions-name {
+              margin: 0 $marginDefault 0 0;
+              font-weight: bold;
+            }
+
+            .tootForm-autoSuggestions-account {
+              color:$colorGray3;
+              font-size: $marginTimeline;
+            }
           }
+
         }
       }
     }
