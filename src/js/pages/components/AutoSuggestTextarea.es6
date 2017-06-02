@@ -75,13 +75,14 @@ export default class AutoSuggestTextarea extends React.Component {
   // render
   renderSuggestions() {
     const {suggestions, suggestionsHidden, selectedSuggestion} = this.state
+    const tootFormContent = document.getElementsByClassName('tootForm-content')[0]
 
     if(suggestions.length === 0 || suggestionsHidden) {
       return null
     }
 
     return (
-      <div className="tootForm-autoSuggestions">
+      <div className="tootForm-autoSuggestions" style={{width: tootFormContent.clientWidth}}>
           {suggestions.map((account, i) => (
             <div
               role="button"
