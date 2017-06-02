@@ -1,8 +1,12 @@
-import update from 'immutability-helper'
+import {fromJS, Map} from 'immutable'
 
 import * as actions from 'src/actions'
 
-const DEFAULT_ACCT_SETTING = {
+const DEFAULT_GLOBALS = fromJS({
+  locale: null,
+})
+
+const DEFAULT_ACCT_SETTING = fromJS({
   notifications: {
     mention: {
       audio: true,
@@ -21,7 +25,7 @@ const DEFAULT_ACCT_SETTING = {
       desktop: true,
     },
   },
-}
+})
 
 
 export default class PreferenceState {
@@ -29,11 +33,11 @@ export default class PreferenceState {
    * @param {object} globals
    * @param {object} byAccts
    */
-  constructor(globals={}, byAccts={}) {
-    this._preferences = {
-      globals: globals,
-      byAccts: byAccts,
-    }
+  constructor(globals, byAccts) {
+    this._preferences = new Map({
+      globals: fromJS(globals),
+      byAccts: fromJS(byAccts),
+    })
   }
 
   reduce(payload) {
@@ -54,24 +58,27 @@ export default class PreferenceState {
   }
 
   get globals() {
-    return this._preferences.globals
+    return this._preferences.get('globals')
   }
 
   get byAccts() {
-    return this._preferences.byAccts
+    return this._preferences.get('byAccts')
   }
 
   byAcct(acct) {
-    return this._preferences.byAccts[acct] || DEFAULT_ACCT_SETTING
+    return this.byAccts.get(acct) || DEFAULT_ACCT_SETTING
   }
 
-  onPrefecencesLoaded({globals, byAccts}) {
-    globals = globals || {}
-    byAccts = byAccts || {}
+  onPrefecencesLoaded({globals, byAccts}={}) {
+    globals = DEFAULT_GLOBALS.mergeDeep(DEFAULT_GLOBALS, globals || {})
+    byAccts = new Map(Object.keys(byAccts || {}).map((acct) => {
+      const acctPref = fromJS(byAccts[acct])
+      return [acct, DEFAULT_ACCT_SETTING.mergeDeep(acctPref)]
+    }))
 
     // 初期値
-    if(!globals.locale)
-      globals.locale = window.navigator.language || 'en'
+    if(!globals.get('locale'))
+      globals = globals.set('locale', window.navigator.language || 'en')
 
     return new PreferenceState(globals, byAccts)
   }
@@ -81,37 +88,34 @@ export default class PreferenceState {
   }
 
   onTokenLoaded({tokens}) {
-    const {byAccts} = this
-    const up = {}
-
-    // add new acct
-    for(const token of tokens) {
-      if(token.acct && !byAccts[token.acct]) {
-        up[token.acct] = {$set: DEFAULT_ACCT_SETTING}
+    let byAccts = this.byAccts.withMutations((byAccts) => {
+      // add new acct
+      for(const token of tokens) {
+        if(token.acct && !byAccts.has(token.acct))
+          byAccts.set(token.acct, DEFAULT_ACCT_SETTING)
       }
-    }
-    // remove old acct
-    Object.keys(byAccts).forEach((acct) => {
-      if(!tokens.find((t) => t.acct === acct)) {
-        up[acct] = {$set: undefined}
+
+      // remove old acct
+      for(const acct of byAccts.keys()) {
+        if(!tokens.find((t) => t.acct === acct))
+          byAccts.delete(acct)
       }
     })
-    return new PreferenceState(
-      this.globals, update(byAccts, up)
-    )
+
+    return new PreferenceState(this.globals, byAccts)
   }
 
   onTokenAdded({token}) {
     return new PreferenceState(
       this.globals,
-      update(this.byAccts, {[token.acct]: {$set: DEFAULT_ACCT_SETTING}})
+      this.byAccts.set(token.acct, DEFAULT_ACCT_SETTING)
     )
   }
 
   onTokenRemoved({token}) {
     return new PreferenceState(
       this.globals,
-      update(this.byAccts, {[token.acct]: {$set: undefined}})
+      this.byAccts.delete(token.acct)
     )
   }
 }

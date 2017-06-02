@@ -196,7 +196,7 @@ export default class Dashboard extends React.Component {
    */
   async onLocaleUpdated() {
     const {preferenceState} = this.props.app.context.getState()
-    const newLocale = preferenceState.globals.locale
+    const newLocale = preferenceState.globals.get('locale')
 
     if(!newLocale || this.state.locale === newLocale)
       return

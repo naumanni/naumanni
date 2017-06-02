@@ -91,13 +91,11 @@
         color: $colorText;
         background: $colorAccentLightest;
         box-shadow: 0 2px 2px 1px rgba(0, 0, 0, 0.15);
-        
 
         &-item {
           position: relative;
           min-height: 37px;
           padding: 4px 8px;
-
 
           &.selected {
             background: $colorGray1;
