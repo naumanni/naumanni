@@ -201,7 +201,10 @@ export default class Dashboard extends React.Component {
     if(!newLocale || this.state.locale === newLocale)
       return
 
-    const {messages, localeData} = await import(`../locales/${newLocale}.es6`)
+    const {messages, localeData} = await import(
+      /* webpackChunkName: "locale/[request]", webpackMode: 'lazy-once' */
+      `../locales/${newLocale}.es6`
+    )
     moment.locale(newLocale)
     addLocaleData(localeData)
     this.setState({

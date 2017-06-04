@@ -9,7 +9,7 @@ import {
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
 import {NotificationRefPropType, OAuthTokenListPropType} from 'src/propTypes'
 import {IconFont, UserIconWithHost, UserDisplayName, UserAcct, CushionString} from '../parts'
-import TimelineStatus from './TimelineStatus'
+import {TimelineStatus} from '../uiComponents'
 
 
 // TODO: notificationRefと切り離してPureComponentにする

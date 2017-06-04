@@ -6,11 +6,10 @@ import {FormattedRelative, FormattedMessage as _FM} from 'react-intl'
 import {
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
-import TootForm from './TootForm'
 import {AcctPropType, AccountPropType, StatusPropType, OAuthTokenListPropType} from 'src/propTypes'
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
 import {isKeys, isKeysList} from 'src/utils'
-import {DropdownMenuButton, IconFont, UserIconWithHost, SafeContent, UserDisplayName, UserAcct} from '../parts'
+import * as uiComponents from '../uiComponents'
 
 
 const PANEL_REPLY = 'ReplyPanel'
@@ -18,7 +17,7 @@ const PANEL_REBLOG = 'ReblogPanel'
 const PANEL_FAVOURITE = 'FavouritePanel'
 
 
-class TimelineStatus extends React.Component {
+export default class TimelineStatus extends React.Component {
   static propTypes = {
     subject: AcctPropType,
     account: AccountPropType.isRequired,
@@ -27,22 +26,6 @@ class TimelineStatus extends React.Component {
     tokens: OAuthTokenListPropType,
     onLockStatus: PropTypes.func,
     ...TimelineActionPropTypes,
-  }
-
-  // propsの中でrendering対象のkey
-  static propDeepKeys = {
-    'account': new Set([
-      'acct',
-      ...UserIconWithHost.propDeepKeys.account,
-      ...UserDisplayName.propDeepKeys.account,
-      ...UserAcct.propDeepKeys.account,
-    ]),
-    'status': new Set([
-      'sensitive', 'spoiler_text', 'visibility', 'url', 'created_at', 'content', 'mentions',
-      'reblogged_by_acct', 'favourited_by_acct',
-      // 'media_attachments',   // deepに比べる
-    ]),
-    'media_attachments': new Set(['url', 'preview_url']),
   }
 
   /**
@@ -85,17 +68,12 @@ class TimelineStatus extends React.Component {
    * @override
    */
   render() {
+    const {
+      DropdownMenuButton, IconFont, UserIconWithHost, UserDisplayName, UserAcct,
+    } = uiComponents
     const {children, status, account, modifier} = this.props
-    const {isContentOpen, isShowReplyPanel} = this.state
-    const statusBodyClass = ['status-body']
+    const {isShowReplyPanel} = this.state
     const onClickAvatar = this.onClickAvatar.bind(this, account)
-
-    if(status.spoilerText.length) {
-      statusBodyClass.push(
-        'has-spoilerText',
-        isContentOpen ? 'is-contentOpen' : 'is-contentClose'
-      )
-    }
 
     return (
       <article className={`status ${modifier ? `status--${modifier}` : ''}`}>
@@ -125,18 +103,7 @@ class TimelineStatus extends React.Component {
               </a>
             </div>
 
-            <div className={statusBodyClass.join(' ')}>
-              {this.renderSpoilerText()}
-              {isContentOpen && (
-                <div className="status-content">
-                  <SafeContent
-                    parsedContent={status.parsedContent}
-                    onClickHashTag={::this.onClickHashTag}
-                    {...this.props} />
-                </div>
-              )}
-            </div>
-
+            {this.renderBody()}
             {this.renderMedia()}
 
             <div className="status-actions">
@@ -171,6 +138,36 @@ class TimelineStatus extends React.Component {
     )
   }
 
+  renderBody() {
+    const {
+      SafeContent,
+    } = require('../uiComponents')
+    const {status} = this.props
+    const {isContentOpen} = this.state
+    const statusBodyClass = ['status-body']
+
+    if(status.spoilerText.length) {
+      statusBodyClass.push(
+        'has-spoilerText',
+        isContentOpen ? 'is-contentOpen' : 'is-contentClose'
+      )
+    }
+
+    return (
+      <div className={statusBodyClass.join(' ')}>
+        {this.renderSpoilerText()}
+        {isContentOpen && (
+          <div className="status-content">
+            <SafeContent
+              parsedContent={status.parsedContent}
+              onClickHashTag={::this.onClickHashTag}
+              {...this.props} />
+          </div>
+        )}
+      </div>
+    )
+  }
+
   renderSpoilerText() {
     const {status} = this.props
     const {isContentOpen} = this.state
@@ -192,6 +189,7 @@ class TimelineStatus extends React.Component {
   }
 
   renderMedia() {
+    const {IconFont} = uiComponents
     const {status} = this.props
     const {isShowMediaCover} = this.state
     const mediaList = status.media_attachments
@@ -236,6 +234,7 @@ class TimelineStatus extends React.Component {
   }
 
   renderReblogButton() {
+    const {IconFont} = uiComponents
     const {status, tokens} = this.props
     const on = tokens.find((token) => status.isRebloggedAt(token.acct)) ? true : false
 
@@ -252,6 +251,7 @@ class TimelineStatus extends React.Component {
   }
 
   renderFavButton() {
+    const {IconFont} = uiComponents
     const {status, tokens} = this.props
     const on = tokens.find((token) => status.isFavouritedAt(token.acct)) ? true : false
 
@@ -268,6 +268,7 @@ class TimelineStatus extends React.Component {
   }
 
   renderReplyPanel() {
+    const {TootForm} = uiComponents
     const {account, tokens, subject, status: {visibility}} = this.props
     const {isAnimatedReplyPanel} = this.state
 
@@ -477,6 +478,8 @@ class TimelineStatus extends React.Component {
 
 
 function VisibilityIcon({visibility, className}) {
+  const {IconFont} = uiComponents
+
   let iconName
   switch(visibility) {
   case VISIBLITY_DIRECT:
@@ -507,6 +510,27 @@ function VisibilityIcon({visibility, className}) {
  * @return {bool}
  */
 function shouldComponentUpdateTimelineStatus(prevProps, prevState, nextProps, nextState) {
+  if(!TimelineStatus.propDeepKeys) {
+    // uiComponentsのimport順の関係で、遅延初期化
+    const {UserIconWithHost, UserDisplayName, UserAcct} = uiComponents
+
+    // propsの中でrendering対象のkey
+    TimelineStatus.propDeepKeys = {
+      'account': new Set([
+        'acct',
+        ...UserIconWithHost.propDeepKeys.account,
+        ...UserDisplayName.propDeepKeys.account,
+        ...UserAcct.propDeepKeys.account,
+      ]),
+      'status': new Set([
+        'sensitive', 'spoiler_text', 'visibility', 'url', 'created_at', 'content', 'mentions',
+        'reblogged_by_acct', 'favourited_by_acct',
+        // 'media_attachments',   // deepに比べる
+      ]),
+      'media_attachments': new Set(['url', 'preview_url']),
+    }
+  }
+
   if(
     !is(prevProps.subject, nextProps.subject) ||
     !isKeys(TimelineStatus.propDeepKeys.account, prevProps.account, nextProps.account) ||
@@ -521,80 +545,4 @@ function shouldComponentUpdateTimelineStatus(prevProps, prevState, nextProps, ne
     return true
   }
   return false
-}
-
-/**
- * Reblogはここで吸収
- * @return {React.Component}
- */
-export default class TimelineStatusContainer extends React.Component {
-  static propTypes = {
-    reblog: StatusPropType,
-    reblogAccount: AccountPropType,
-    ...TimelineStatus.propTypes,
-  }
-
-  /**
-   * @override
-   */
-  shouldComponentUpdate(nextProps, nextState) {
-    let {reblog, reblogAccount, ...prevProps} = this.props
-
-    if(reblog) {
-      const prevAcount = prevProps.account
-      const nextAccount = nextProps.account
-      prevProps = {
-        ...prevProps,
-        status: reblog,
-        account: reblogAccount,
-      }
-      nextProps = {
-        ...nextProps,
-        status: nextProps.reblog,
-        account: nextProps.reblogAccount,
-      }
-
-      if(!isKeys(UserDisplayName.propDeepKeys.account, prevAcount, nextAccount)) {
-        return true
-      }
-    }
-
-    return shouldComponentUpdateTimelineStatus(prevProps, {}, nextProps, {})
-  }
-
-  /**
-   * @override
-   */
-  render() {
-    let {reblog, reblogAccount, ...props} = this.props
-    let children = null
-
-    if(reblog || reblogAccount) {
-      require('assert')(reblog && reblogAccount)
-      const account = props.account
-      props = {
-        ...props,
-        status: reblog,
-        account: reblogAccount,
-      }
-
-      children = (
-        <div className="status-row status-reblogFrom">
-          <div className="status-rowLeft"><IconFont iconName="reblog" /></div>
-          <div className="status-rowRight">
-            <UserDisplayName
-              account={account}
-              onClick={(e) => {
-                e.preventDefault()
-                props.onAvatarClicked(account)
-              }} /> boosted
-          </div>
-        </div>
-      )
-    }
-
-    return (
-      <TimelineStatus {...props}>{children}</TimelineStatus>
-    )
-  }
 }

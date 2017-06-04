@@ -1,13 +1,15 @@
 {
   "presets": ["react", "es2015", "stage-1"],
   "plugins": [
-    "transform-function-bind",
     ["module-resolver", {
       "root": ["./src"],
       "alias": {
+        "naumanni": "./src/js",
         "src": "./src/js",
       }
-    }]
+    }],
+    "syntax-dynamic-import",
+    "transform-function-bind",
   ],
   "env": {
     "development": {

@@ -7,13 +7,13 @@ import {execSync} from 'child_process'
 
 const SOURCE_DIR = `${__dirname}/src/js`
 const DEST_DIR = `${__dirname}/static`
+
 let NAUMANNI_VERSION
 try {
   NAUMANNI_VERSION = process.env.NAUMANNI_VERSION || ('' + execSync('git describe')).trim()
 } catch(e) {
   NAUMANNI_VERSION = process.env.NAUMANNI_VERSION || 'dev'
 }
-
 
 class LoggerPlugin {
   apply(compiler) {
@@ -66,6 +66,7 @@ module.exports = {
   resolve: {
     alias: {
       naumanniConfig: path.resolve(__dirname, 'config.es6'),
+      naumanniPlugins: path.resolve(__dirname, 'plugin_entries.es6'),
     },
     extensions: ['.es6', '.js'],
     modules: [
