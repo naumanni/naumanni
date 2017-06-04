@@ -5,7 +5,7 @@
       "root": ["./src"],
       "alias": {
         "naumanni": "./src/js",
-        "src": "./src/js",
+        "src": "./src/js"
       }
     }],
     "syntax-dynamic-import",
