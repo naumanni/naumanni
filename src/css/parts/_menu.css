@@ -1,0 +1,59 @@
+/* ダッシュボードヘッダからのメニュー */
+.naumanniDashboard-header .naumanniDashboard-header-accounts .menu--header {
+  min-width: 200px;
+
+  .menu-description {
+    @mixin clearfix;
+    padding: $marginDefault;
+
+    .userIcon {
+      float: left;
+      display: block;
+    }
+
+    .userIcon-avatar {
+      width: $sizeAvatar;
+      height: $sizeAvatar;
+    }
+
+    .menu-descriptionNote {
+      margin-left: calc($sizeAvatar + $marginDefault);
+    }
+  }
+
+  .menu-item--message {
+    border-top-width: 2px;
+    border-top-style: solid;
+  }
+}
+
+
+/* ダッシュボードヘッダ、verifyエラーのアカウントメニュー用 */
+.naumanniDashboard-header .naumanniDashboard-header-accounts .menu-description--badAccount {
+/*  border-radius: 6px; */
+  background-color: #fdf4f4;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+  color: #d32f2f;
+  font-size: 14px;
+
+  strong {
+    font-weight: bold;
+  }
+}
+
+
+/* ダッシュボードヘッダ、右の設定メニュー */
+.naumanniDashboard-header .menu--global {
+  width: 10em;
+}
+
+
+/* TimelineStatusの…から出るメニュー */
+.dropdownMenuButton--statusActionMenu .dropdownMenuButton-menu {
+  left: 0;
+  right: initial;
+}
+
+.status .menu--status {
+  min-width: 240px;
+}

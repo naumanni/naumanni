@@ -133,33 +133,3 @@
     }
   }
 }
-
-
-.status-content {
-  color: $colorStatusText;
-  line-height: 1.3;
-  overflow: hidden;
-
-  > p {
-    margin: 0;
-    word-break: break-all;
-  }
-
-  /** なんかリンクにスタイル入ってる... */
-  a {
-    color: $colorStatusLink;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-
-    .invisible {
-      display: none;
-    }
-
-    .ellipsis::after {
-      content: "…";
-    }
-  }
-}

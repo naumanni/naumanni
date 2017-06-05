@@ -123,6 +123,7 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
 
       > p {
         margin: 0;
+        word-break: break-all;
       }
 
       /** なんかリンクにスタイル入ってる... */
@@ -291,7 +292,7 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
       }
     }
 
-    button {
+    > button {
       background: transparent;
       color: inherit;
       border: none;

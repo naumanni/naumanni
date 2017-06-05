@@ -44,11 +44,38 @@ export default class InitializeApplicationUseCase extends UseCase {
 }
 
 
-async function loadPlugin(pluginId, moduleloader) {
-  const {default: initializer} = await moduleloader
+// TODO: そのうち plugin.es6みたいなところにうつす
+async function loadPlugin(pluginId, module) {
+  const {default: initializer} = module
+  const api = new PluginAPI()
 
   const uiComponents = require('naumanni/pages/uiComponents')
   return initializer({
+    api,
     uiComponents,
   })
+}
+
+
+import request from 'superagent'
+
+import {getServerRoot} from 'src/config'
+
+
+class PluginAPI {
+  /**
+   * pluginのAPIへの呼び出しを作成する
+   * @param {string} method
+   * @param {string} plugin
+   * @param {string} api
+   * @return {Request}
+   */
+  makePluginRequest(method, plugin, api) {
+    if(!api.startsWith('/')) {
+      throw new Error('api must starts with /')
+    }
+
+    // TODO: apply server authorization
+    return request(method, `${getServerRoot()}/plugins/${plugin}${api}`)
+  }
 }

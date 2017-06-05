@@ -2,7 +2,7 @@
   "name": "naumanni",
   "version": "0.1.0",
   "main": "index.js",
-  "repository": "git@github.com:naumanni/naumanni.git",
+  "private": true,
   "author": "Shin ADACHI <shn@glucose.jp>",
   "license": "AGPL-3.0",
   "scripts": {

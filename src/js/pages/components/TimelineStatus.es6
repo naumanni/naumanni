@@ -68,9 +68,7 @@ export default class TimelineStatus extends React.Component {
    * @override
    */
   render() {
-    const {
-      DropdownMenuButton, IconFont, UserIconWithHost, UserDisplayName, UserAcct,
-    } = uiComponents
+    const {UserIconWithHost, UserDisplayName, UserAcct} = uiComponents
     const {children, status, account, modifier} = this.props
     const {isShowReplyPanel} = this.state
     const onClickAvatar = this.onClickAvatar.bind(this, account)
@@ -105,27 +103,7 @@ export default class TimelineStatus extends React.Component {
 
             {this.renderBody()}
             {this.renderMedia()}
-
-            <div className="status-actions">
-              <button
-                className={`status-actionReply ${isShowReplyPanel ? 'is-active' : ''}`}
-                onClick={::this.onClickToggleReply}>
-                <IconFont iconName="reply" />
-              </button>
-
-              {status.canReblog()
-                ? this.renderReblogButton()
-                : <VisibilityIcon visibility={status.visibility} className="is-inactive" />
-              }
-
-              {this.renderFavButton()}
-
-              <button className="status-actionMenu" style={{display: 'none'}}>
-                <DropdownMenuButton onRenderMenu={::this.onRenderStatusMenu}>
-                  <IconFont iconName="dot-3" />
-                </DropdownMenuButton>
-              </button>
-            </div>
+            {this.renderActions()}
 
           </div>
         </div>
@@ -229,6 +207,33 @@ export default class TimelineStatus extends React.Component {
             <IconFont iconName="eye-off" />
           </button>
         )}
+      </div>
+    )
+  }
+
+  renderActions() {
+    const {DropdownMenuButton, IconFont} = uiComponents
+    const {status} = this.props
+    const {isShowReplyPanel} = this.state
+
+    return (
+      <div className="status-actions">
+        <button
+          className={`status-actionReply ${isShowReplyPanel ? 'is-active' : ''}`}
+          onClick={::this.onClickToggleReply}>
+          <IconFont iconName="reply" />
+        </button>
+
+        {status.canReblog()
+          ? this.renderReblogButton()
+          : <VisibilityIcon visibility={status.visibility} className="is-inactive" />
+        }
+
+        {this.renderFavButton()}
+
+        <DropdownMenuButton modifier="statusActionMenu" onRenderMenu={::this.onRenderStatusMenu}>
+          <IconFont iconName="dot-3" />
+        </DropdownMenuButton>
       </div>
     )
   }
@@ -357,6 +362,10 @@ export default class TimelineStatus extends React.Component {
     )
   }
 
+  renderStatusMenuItems() {
+    return []
+  }
+
   // callbacks
   onClickAvatar(account, e) {
     e.preventDefault()
@@ -365,8 +374,23 @@ export default class TimelineStatus extends React.Component {
   }
 
   onRenderStatusMenu(entry) {
+    const menuItems = this.renderStatusMenuItems()
+
+    menuItems.sort((a, b) => {
+      const aw = a.weight || 100
+      const bw = b.weight || 100
+      if(aw > bw)
+        return 1
+      else if(aw < bw)
+        return -1
+      else
+        return 0
+    })
+
     return (
-      <div>hogehoge</div>
+      <ul className="menu menu--status">
+        {menuItems.map((menuItem) => menuItem.content || menuItem)}
+      </ul>
     )
   }
 

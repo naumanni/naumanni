@@ -6,6 +6,7 @@
 @import "_parts.css";
 @import "parts/_user_detail.css";
 @import "parts/_account_row.css";
+@import "parts/_menu.css";
 @import "components/_column_container.css";
 @import "components/_modal_dialog.css";
 @import "components/_timeline_column.css";
@@ -20,3 +21,4 @@
 @import "dialogs/_preferences_dialog.css";
 @import "dialogs/_welcome_dialog.css";
 @import "_dashboard.css";
+@import "../../plugin_entries.css";
