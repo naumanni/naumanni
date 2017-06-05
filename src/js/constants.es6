@@ -9,6 +9,7 @@ export const COLUMN_TIMELINE = 'timeline'
 export const COLUMN_FRIENDS = 'friends'
 export const COLUMN_TALK = 'talk'
 export const COLUMN_NOTIFICATIONS = 'notifications'
+export const COLUMN_TAG = 'hashtag'
 
 export const TIMELINE_FEDERATION = 'federation'
 export const TIMELINE_LOCAL = 'local'
@@ -46,6 +47,7 @@ export const MESSAGE_TAG_REX = /--NEM\.([0-9a-f]{8})\.(\d+)\/(\d+)--/
 export const STREAM_HOME = 'user'
 export const STREAM_LOCAL = 'public:local'
 export const STREAM_FEDERATION = 'public'
+export const STREAM_TAG = 'hashtag'
 
 // MastodonのWebsocketから送られてくるframeのevent types
 export const EVENT_UPDATE = 'update'

@@ -117,11 +117,24 @@ describe('SafeContent', () => {
   })
 
   describe('TOKEN_HASHTAG', () => {
-    beforeAll(() => {
+    const tag = 'naumanni'
+    let onClickHashTag
+
+    beforeEach(() => {
       parsedContent = [
-        {type: TOKEN_HASHTAG, tag: 'naumanni'},
+        {type: TOKEN_HASHTAG, tag},
       ]
-      component = <SafeContent parsedContent={parsedContent} />
+      onClickHashTag = jest.fn()
+      component = <SafeContent parsedContent={parsedContent} onClickHashTag={onClickHashTag} />
+    })
+    it('propagate link click to its onClickHashTag prop', () => {
+      const wrapper = shallow(component)
+      const link = wrapper.find('a')
+
+      link.simulate('click')
+
+      expect(onClickHashTag).toHaveBeenCalled()
+      expect(onClickHashTag).toHaveBeenCalledWith(tag)
     })
     it('match snapshot', () => {
       takeSnapshot(component)

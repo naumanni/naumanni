@@ -114,6 +114,24 @@ export class NotificationTimelineLoader extends TimelineLoader {
   }
 }
 
+export class HashtagTimelineLoader extends TimelineLoader {
+  constructor(tag, ...args) {
+    super(...args)
+
+    this._tag = tag
+  }
+
+  /**
+   * @override
+   */
+  fetch(query) {
+    return this._token.requester.listHashtagTimeline(
+      {...query, tag: this._tag},
+      {token: this._token}
+    )
+  }
+}
+
 
 export function makeTimelineLoader(timelineType, ...args) {
   let klass

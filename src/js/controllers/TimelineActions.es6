@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types'
 
 import {
+  COLUMN_TAG,
   DIALOG_MEDIA_VIEWER,
+  SUBJECT_MIXED,
 } from 'src/constants'
 import TimelineData, {postStatusManaged} from 'src/infra/TimelineData'
+import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import PushDialogUseCase from 'src/usecases/PushDialogUseCase'
 
 
@@ -32,6 +35,7 @@ export default class TimelineActions {
       onReblogStatus: ::this.onReblogStatus,
       onFavouriteStatus: ::this.onFavouriteStatus,
       onClickMedia: ::this.onClickMedia,
+      onClickHashTag: ::this.onClickHashTag,
     }
   }
 
@@ -97,6 +101,13 @@ export default class TimelineActions {
     this.context.useCase(
       new PushDialogUseCase()
     ).execute(DIALOG_MEDIA_VIEWER, {mediaList, initialIdx: idx})
+  }
+
+  onClickHashTag(tag) {
+    this.context.useCase(new AddColumnUseCase()).execute(COLUMN_TAG, {
+      subject: SUBJECT_MIXED,
+      tag,
+    })
   }
 
   /**

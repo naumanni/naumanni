@@ -5,8 +5,10 @@ import {findDOMNode} from 'react-dom'
 import {FormattedDate, FormattedMessage as _FM} from 'react-intl'
 
 import {
+  COLUMN_TAG,
   SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
   KEY_ENTER} from 'src/constants'
+import TimelineActions from 'src/controllers/TimelineActions'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener from 'src/controllers/TalkListener'
 import Column from './Column'
@@ -27,6 +29,7 @@ export default class TalkColumn extends Column {
     require('assert')(args[0].subject !== SUBJECT_MIXED)
     super(...args)
 
+    this.actionDelegate = new TimelineActions(this.context)
     this.listener = new TalkListener([this.props.to])
     // コードからスクロール量を変更している場合はtrue
     this.scrollChanging = false
@@ -191,7 +194,9 @@ export default class TalkColumn extends Column {
           {talkGroup.contents.map(({key, parsedContent, createdAt}) => {
             return (
               <li key={key}>
-                <div className="status-content"><SafeContent parsedContent={parsedContent} /></div>
+                <div className="status-content">
+                  <SafeContent parsedContent={parsedContent} onClickHashTag={::this.onClickHashTag} />
+                </div>
                 <div className="status-date">
                   <FormattedDate value={createdAt.toDate()}
                     year="numeric" month="2-digit" day="2-digit"
@@ -285,6 +290,11 @@ export default class TalkColumn extends Column {
       e.preventDefault()
       this.sendMessage()
     }
+  }
+
+  onClickHashTag(tag, e) {
+    e.preventDefault()
+    this.actionDelegate.onClickHashTag(tag)
   }
 }
 require('./').registerColumn(COLUMN_TALK, TalkColumn)
