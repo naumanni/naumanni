@@ -143,14 +143,9 @@ export default class AutoSuggestTextarea extends React.Component {
       suggestions: [],
     })
 
-    // this.refs.textareaStatus だと、<TextAreaAutosize>の参照取得になって、
-    // <textarea>ノードをターゲットとしたAPIを叩けないのでこうなってる
-    const node = document.getElementsByClassName('tootForm-status')[0]
+    const node = this.refs.textareaStatus
     if(node) {
-      const pos = suggestStart + account.acct.length + 1
-
       node.focus()
-      node.setSelectionRange(pos, pos)
     }
   }
 
