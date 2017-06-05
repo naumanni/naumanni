@@ -56,7 +56,7 @@ export default class AutoSuggestTextarea extends React.Component {
     const {statusContent} = this.props
 
     return (
-      <div className="tootForm-statusContainer">
+      <div className="tootForm-statusContainer" ref="statusContainer">
         <Textarea
           ref="textareaStatus"
           className="tootForm-status"
@@ -75,8 +75,8 @@ export default class AutoSuggestTextarea extends React.Component {
   // render
   renderSuggestions() {
     const {suggestions, suggestionsHidden, selectedSuggestion} = this.state
-    const tootFormContent = document.getElementsByClassName('tootForm-content')[0]
-    const width = tootFormContent ? tootFormContent.clientWidth : 0
+    const container = this.refs.statusContainer
+    const width = container ? container.clientWidth : 0
 
     if(suggestions.length === 0 || suggestionsHidden) {
       return null
