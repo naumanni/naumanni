@@ -178,20 +178,24 @@ export default class AutoSuggestTextarea extends React.Component {
     const {suggestions, selectedSuggestion, suggestionsHidden} = this.state
 
     if(e.keyCode == KEY_ESC && !suggestionsHidden) {
+      // ESCでサジェストを閉じたい
       e.preventDefault()
       this.setState({suggestionsHidden: true})
     } else if(e.keyCode == KEY_ARROW_DOWN) {
+      // ↓ で次のサジェストにフォーカスしたい
       if(suggestions.length > 0 && !suggestionsHidden) {
         e.preventDefault()
         this.setState({selectedSuggestion: Math.min(selectedSuggestion + 1, suggestions.length - 1)})
       }
     } else if(e.keyCode == KEY_ARROW_UP) {
       if(suggestions.length > 0 && !suggestionsHidden) {
+      // ↑ で前のサジェストにフォーカスしたい
         e.preventDefault()
         this.setState({selectedSuggestion: Math.max(selectedSuggestion - 1, 0)})
       }
     } else if(e.keyCode == KEY_TAB || e.keyCode == KEY_ENTER) {
       if(this.state.lastSuggestQuery !== null && suggestions.length > 0 && !suggestionsHidden) {
+        // TAB or ENTER でフォーカスしているサジェストを決定したい
         e.preventDefault()
         e.stopPropagation()
         this.onSuggestionSelected(suggestions[selectedSuggestion])
