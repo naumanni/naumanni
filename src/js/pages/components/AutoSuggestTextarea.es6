@@ -144,11 +144,12 @@ export default class AutoSuggestTextarea extends React.Component {
     })
 
     const node = document.getElementsByClassName('tootForm-status')[0]
-    const pos = suggestStart + account.acct.length + 1
-    setTimeout(() => {
+    if(node) {
+      const pos = suggestStart + account.acct.length + 1
+
       node.focus()
       node.setSelectionRange(pos, pos)
-    }, 10)  // needs delay after update statusContent
+    }
   }
 
   // cb
