@@ -298,11 +298,11 @@ export default class TimelineStatus extends React.Component {
   }
 
   renderReblogPanel() {
+    const {IconFont, UserIconWithHost} = uiComponents
     const {tokens, status} = this.props
     const {isAnimatedReblogPanel} = this.state
     // publicであればどのアカウントからでもFav/Boostできる
     const isPublic = status.canReblog()
-
 
     return (
       <div className={`status-reblogPanel ${isAnimatedReblogPanel ? 'off' : ''}`}>
@@ -331,6 +331,7 @@ export default class TimelineStatus extends React.Component {
   }
 
   renderFavPanel() {
+    const {IconFont, UserIconWithHost} = uiComponents
     const {tokens, status} = this.props
     const {isAnimatedFavouritePanel} = this.state
     // publicであればどのアカウントからでもFav/Boostできる

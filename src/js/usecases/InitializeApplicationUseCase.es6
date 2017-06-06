@@ -76,6 +76,6 @@ class PluginAPI {
     }
 
     // TODO: apply server authorization
-    return request(method, `${getServerRoot()}/plugins/${plugin}${api}`)
+    return request(method, `${getServerRoot()}api/plugins/${plugin}${api}`)
   }
 }
