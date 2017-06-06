@@ -19,6 +19,7 @@ export const DIALOG_ADD_ACCOUNT = 'addAccount'
 export const DIALOG_AUTHORIZE_ACCOUNT = 'authorizeAccount'
 export const DIALOG_MEDIA_VIEWER = 'mediaViewer'
 export const DIALOG_GLOBAL_PREFERENCES = 'preferences'
+export const DIALOG_SEARCH = 'search'
 export const DIALOG_USER_DETAIL = 'userDetail'
 export const DIALOG_WELCOME = 'welcome'
 
@@ -43,6 +44,7 @@ export const KEY_ARROW_DOWN = 40
 export const ACCT_PATTERN = '[a-zA-Z0-9_]+@[a-zA-Z0-9\.\-]+[a-zA-Z0-9]+'
 export const ACCT_REX = new RegExp(ACCT_PATTERN)
 export const MESSAGE_TAG_REX = /--NEM\.([0-9a-f]{8})\.(\d+)\/(\d+)--/
+export const SEARCH_PATH = '/search'
 
 export const STREAM_HOME = 'user'
 export const STREAM_LOCAL = 'public:local'

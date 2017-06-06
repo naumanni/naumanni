@@ -91,6 +91,8 @@ export default class BrowserHistory {
 
       for(let i = 1, len = m.length; i < len; ++i) {
         let key = keys[i - 1]
+        if(!m[i])
+          continue
         let val = decodeURIComponent(m[i].replace(/\+/g, ' '))
         if(val !== undefined || !(hasOwnProperty.call(params, key.name))) {
           params[key.name] = val

@@ -1,0 +1,107 @@
+.dialog--search {
+  padding: 0;
+
+  h2 {
+    font-size: $fontSizeSmall;
+    font-weight: bold;
+    font-family: sans-serif;
+    margin: $marginDefault 0 $marginHalf 0;
+  }
+
+  > .note {
+    margin: $marginDefault $marginDefault calc($marginDefault * 2);
+  }
+
+  .search-hashtagInput {
+    width: calc(100% - $marginDefault * 2);
+    box-sizing: border-box;
+    background: $colorWhite;
+    border-radius: $radiusDefault;
+    border: 1px solid $colorGray2;
+    padding: 0 $marginHalf;
+    font-size: 1.2rem;
+    line-height: 2;
+    box-sizing: border-box;
+    margin: $marginDefault;
+  }
+
+  .search-options {
+    > h2 {
+      margin: $marginDefault $marginDefault calc($marginDefault * 2);
+      cursor: pointer;
+    }
+
+    &-item {
+      border: 1px solid;
+      padding: $marginDefault;
+
+      .searchFor {
+
+        > ul {
+          @mixin clearfix;
+
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+
+        li {
+          display: block;
+          float: left;
+          border: 4px solid rgba(255, 255, 255, 0.2);
+          border-radius: $marginHalf;
+          margin: 0 $marginHalf $marginHalf 0;
+          padding: 0;
+          filter: grayscale(100%);
+
+          > * {
+            display: block;
+          }
+
+          &.is-selected {
+            border-color: #fff;
+            filter: none;
+          }
+        }
+      }
+
+      .searchFor-note {
+        margin: 0;
+        font-size: $fontSizeSmall;
+        color: $colorGray1;
+        text-align: right;
+      }
+    }
+  }
+
+  .search-results {
+    h2 {
+      margin: $marginDefault $marginDefault calc($marginDefault * 2);
+    }
+
+    &-hashtags {
+      > ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 40vh;
+        overflow-y: scroll;
+      }
+    }
+
+    &-accounts {
+      > ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 40vh;
+        overflow-y: scroll;
+      }
+
+      li {
+        padding: $marginDefault $marginTimeline;
+        border-bottom: 1px solid $colorFriendBorder;
+      }
+    }
+  }
+}

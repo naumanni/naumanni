@@ -111,6 +111,7 @@ export default class Dashboard extends React.Component {
               onStartAddAccount={::this.onStartAddAccount}
               onOpenColumn={::this.onOpenColumn}
               onGenKey={::this.onGenKey}
+              onShowSearch={::this.onShowSearch}
               onShowSettings={::this.onShowSettings}
               onSignOut={::this.onSignOut}
             />
@@ -228,6 +229,11 @@ export default class Dashboard extends React.Component {
     context.useCase(
       new GenerateKeypairUseCase()
     ).execute(token, account)
+  }
+
+  onShowSearch() {
+    const {history} = this.props.app
+    history.push(history.makeUrl('search'))
   }
 
   onShowSettings() {

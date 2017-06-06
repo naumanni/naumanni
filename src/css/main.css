@@ -19,4 +19,5 @@
 @import "dialogs/_userdetail_dialog.css";
 @import "dialogs/_preferences_dialog.css";
 @import "dialogs/_welcome_dialog.css";
+@import "dialogs/_search_dialog.css";
 @import "_dashboard.css";

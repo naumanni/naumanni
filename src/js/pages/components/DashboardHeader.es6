@@ -26,6 +26,7 @@ export default class DashboardHeader extends React.Component {
     onStartAddAccount: PropTypes.func.isRequired,
     onOpenColumn: PropTypes.func.isRequired,
     onGenKey: PropTypes.func.isRequired,
+    onShowSearch: PropTypes.func.isRequired,
     onShowSettings: PropTypes.func.isRequired,
     onSignOut: PropTypes.func.isRequired,
   }
@@ -85,6 +86,13 @@ export default class DashboardHeader extends React.Component {
 
         <span className="naumanniDashboard-header-spacer" />
 
+        <div className="naumanniDashboard-header-search">
+          <input
+            type="text"
+            placeholder={_({id: 'search_bar.placeholder'})}
+            onFocus={::this.onSearchFocus}
+          />
+        </div>
         <DropdownMenuButton onRenderMenu={::this.onRenderGlobalMenu}>
           <button className="naumanniDashboard-header-configButton">
             <IconFont iconName="cog" />
@@ -274,6 +282,10 @@ export default class DashboardHeader extends React.Component {
 
   onTootFocus(e) {
     this.setState({isShowTootWindow: true})
+  }
+
+  onSearchFocus(e) {
+    this.props.onShowSearch()
   }
 
   onTootWindowClose() {
