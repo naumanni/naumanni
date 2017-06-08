@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import update from 'immutability-helper'
 import {intlShape, FormattedMessage as _FM} from 'react-intl'
+import {getTweetLength} from 'twitter-text'
 
 import {
   MASTODON_MAX_CONTENT_SIZE,
@@ -69,14 +70,11 @@ export default class TootForm extends React.Component {
    */
   render() {
     const {formatMessage: _} = this.context.intl
-    const {tokens} = this.props
+    const {maxContentLength, tokens} = this.props
     let {error} = this.state
     const {
       showContentsWarning, sendFrom, statusContent, spoilerTextContent, visibility, mediaFiles, sensitive,
     } = this.state
-
-    const trimmedStatusLength = statusContent.trim().length
-    const textLength = trimmedStatusLength + (showContentsWarning ? spoilerTextContent.trim().length : 0)
 
     if(mediaFiles.length > MAX_MEDIA_FILES)
       error = _({id: 'toot_form.error.max_media_files'}, {mediaFileCount: MAX_MEDIA_FILES})
@@ -183,7 +181,7 @@ export default class TootForm extends React.Component {
         </ul>
 
         <div className="tootForm-send">
-          <span className="tootForm-charCount">{500 - textLength}</span>
+          <span className="tootForm-charCount">{maxContentLength - this.charactersCount}</span>
           <button
             className="button button--primary"
             disabled={!this.canSend()} type="button"
@@ -217,15 +215,21 @@ export default class TootForm extends React.Component {
     )
   }
 
+  get charactersCount() {
+    const {showContentsWarning, statusContent, spoilerTextContent} = this.state
+
+    return getTweetLength(statusContent) +
+      (showContentsWarning ? getTweetLength(spoilerTextContent) : 0)
+  }
+
   canSend() {
     const {maxContentLength} = this.props
-    const {isSending, showContentsWarning, sendFrom, statusContent, spoilerTextContent} = this.state
+    const {isSending, sendFrom, statusContent} = this.state
 
     const trimmedStatusLength = statusContent.trim().length
-    const textLength = trimmedStatusLength + (showContentsWarning ? spoilerTextContent.trim().length : 0)
 
     return !isSending && sendFrom.length &&
-      trimmedStatusLength > 0 && textLength < maxContentLength &&
+      trimmedStatusLength > 0 && this.charactersCount < maxContentLength &&
       this.state.mediaFiles.length <= MAX_MEDIA_FILES
   }
 
