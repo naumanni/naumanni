@@ -104,8 +104,13 @@ export default class TimelineActions {
   }
 
   onClickHashTag(tag) {
+    const {tokens} = this.context.getState().tokenState
+    const subject = tokens.reduce((prev, {acct}, i) => {
+      return i === 0 ? acct : `${prev},${acct}`
+    }, '')
+
     this.context.useCase(new AddColumnUseCase()).execute(COLUMN_TAG, {
-      subject: SUBJECT_MIXED,
+      subject,
       tag,
     })
   }

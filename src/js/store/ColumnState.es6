@@ -20,6 +20,8 @@ export default class ColumnState {
       return this.onColumnAddRequested(payload.column)
     case actions.COLUMN_REMOVE_REQUESTED:
       return this.onColumnRemoveRequested(payload.column)
+    case actions.COLUMN_REPLACE_REQUESTED:
+      return this.onColumnReplaceRequested(payload.target, payload.column)
     default:
       return this
     }
@@ -43,6 +45,17 @@ export default class ColumnState {
 
     const newcolumns = [...this.columns]
     newcolumns.splice(idx, 1)
+    return new ColumnState(newcolumns)
+  }
+
+  onColumnReplaceRequested(target, column) {
+    require('assert')(column)
+    const idx = this.columns.findIndex((x) => UIColumn.isEqual(x, target))
+    if(idx < 0)
+      return this
+
+    const newcolumns = [...this.columns]
+    newcolumns.splice(idx, 1, column)
     return new ColumnState(newcolumns)
   }
 
