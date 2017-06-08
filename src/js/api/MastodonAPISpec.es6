@@ -340,4 +340,24 @@ export default MastodonAPISpec.make({
     entity: result,
     method: 'get',
   },
+
+  muteAccount: {
+    endpoint: '/accounts/:id/mute',
+    method: 'post',
+  },
+
+  unmuteAccount: {
+    endpoint: '/accounts/:id/unmute',
+    method: 'post',
+  },
+
+  blockAccount: {
+    endpoint: '/accounts/:id/block',
+    method: 'post',
+  },
+
+  unblockAccount: {
+    endpoint: '/accounts/:id/unblock',
+    method: 'post',
+  },
 })

@@ -55,22 +55,55 @@ url(${account.header})`
       return
     }
 
-    const {disable, icon, text, doFollow} = this.getVisualForRelationship(token.acct)
+    const {
+      disable: muteDisable, text: muteText, doMute,
+    } = this.getVisualForMuteRelationship(token.acct)
+    const {
+      disable: blockDisable, text: blockText, doBlock,
+    } = this.getVisualForBlockRelationship(token.acct)
+    const {
+      disable: followDisable, icon: followIcon, text: followText, doFollow,
+    } = this.getVisualForRelationship(token.acct)
 
     return (
       <div className="userDetail-actions">
+        <button
+          disabled={muteDisable}
+          className="button button--primary"
+          onClick={() => this.props.onToggleMuteClicked(token, account, doMute)}
+        >
+          {/* TODO: IconFont */}{muteText}
+        </button>
+
+        <button
+          disabled={blockDisable}
+          className="button button--primary"
+          onClick={() => this.props.onToggleBlockClicked(token, account, doBlock)}
+        >
+          {/* TODO: IconFont */}{blockText}
+        </button>
+
+        <button
+          style={{display: 'none'}}
+          className="button button--primary"
+          onClick={() => this.props.onClickReport(token, account)}
+        >
+          <IconFont iconName="report" /> <_FM id="user_detail.label.report" />
+        </button>
+
         <button
           className="button"
           onClick={() => this.props.onOpenTalkClicked(token, account)}
         >
           <IconFont iconName="talk" /> <_FM id="user_detail.label.talk" />
         </button>
+
         <button
-          disabled={disable}
+          disabled={followDisable}
           className="button button--primary"
           onClick={() => this.props.onToggleFollowClicked(token, account, doFollow)}
         >
-          <IconFont iconName={icon} /> {text}
+          <IconFont iconName={followIcon} /> {followText}
         </button>
       </div>
     )
@@ -79,9 +112,24 @@ url(${account.header})`
   renderActionsMultiTokens() {
     return (
       <div className="userDetail-actions">
+        <DropdownMenuButton onRenderMenu={::this.onRenderMuteMenu}>
+          <button className="button button--primary"><_FM id="user_detail.label.mute" /></button>
+        </DropdownMenuButton>
+
+        <DropdownMenuButton onRenderMenu={::this.onRenderBlockMenu}>
+          <button className="button button--primary"><_FM id="user_detail.label.block" /></button>
+        </DropdownMenuButton>
+
+        {false &&  // TODO:
+          <DropdownMenuButton onRenderMenu={::this.onRenderReportMenu}>
+            <button className="button button--primary"><_FM id="user_detail.label.report" /></button>
+          </DropdownMenuButton>
+        }
+
         <DropdownMenuButton onRenderMenu={::this.onRenderTalkMenu}>
           <button className="button"><IconFont iconName="talk" /> <_FM id="user_detail.label.talk" /></button>
         </DropdownMenuButton>
+
         <DropdownMenuButton onRenderMenu={::this.onRenderFollowMenu}>
           <button className="button button--primary">
             <IconFont iconName="user-plus" /> <_FM id="user_detail.label.follow" />
@@ -89,6 +137,72 @@ url(${account.header})`
         </DropdownMenuButton>
       </div>
     )
+  }
+
+  onRenderMuteMenu() {
+    const {tokens} = this.props
+
+    return (
+      <ul className="menu menu--mute">
+        <li className="menu-item" onClick={::this.onClickMuteAll}>
+          <span className="menu-itemLabel">
+            <_FM id="user_detail.label.mute_all" />
+          </span>
+        </li>
+        {tokens.map((token) => {
+          const {account} = token
+          const {disable, text, doMute} = this.getVisualForMuteRelationship(account.acct)
+
+          return (
+            <li className={`menu-item ${disable ? 'is-disabled' : ''}`}
+              key={account.acct}
+              onClick={() => !disable && this.props.onToggleMuteClicked(token, this.props.account, doMute)}
+            >
+              {/* TODO: IconFont */}
+              <UserIconWithHost account={account} size="mini" />
+              <span className="menu-itemLabel">
+                {account.acct}<br />{text}
+              </span>
+            </li>
+          )
+        })}
+      </ul>
+    )
+  }
+
+  onRenderBlockMenu() {
+    const {tokens} = this.props
+
+    return (
+      <ul className="menu menu--block">
+        <li className="menu-item" onClick={::this.onClickBlockAll}>
+          <span className="menu-itemLabel">
+            <_FM id="user_detail.label.block_all" />
+          </span>
+        </li>
+        {tokens.map((token) => {
+          const {account} = token
+          const {disable, text, doBlock} = this.getVisualForBlockRelationship(account.acct)
+
+          return (
+            <li className={`menu-item ${disable ? 'is-disabled' : ''}`}
+              key={account.acct}
+              onClick={() => !disable && this.props.onToggleBlockClicked(token, this.props.account, doBlock)}
+            >
+              {/* TODO: IconFont */}
+              <UserIconWithHost account={account} size="mini" />
+              <span className="menu-itemLabel">
+                {account.acct}<br />{text}
+              </span>
+            </li>
+          )
+        })}
+      </ul>
+    )
+  }
+
+  onRenderReportMenu() {
+    // TODO:
   }
 
   onRenderTalkMenu() {
@@ -140,6 +254,54 @@ url(${account.header})`
     )
   }
 
+  getVisualForMuteRelationship(me) {
+    const {account} = this.props
+    const relationship = this.props.relationships[me]
+    const isMuting = relationship ? relationship.muting : false
+
+    let disable = false
+    // let icon  // TODO:
+    let text
+    let doMute
+
+    if(account.acct === me) {
+      disable = true
+      text = <_FM id="user_detail.label.is_you" />
+    } else if(isMuting) {
+      text = <_FM id="user_detail.label.unmute" />
+      doMute = false
+    } else {
+      text = <_FM id="user_detail.label.mute" />
+      doMute = true
+    }
+
+    return {disable, text, doMute}
+  }
+
+  getVisualForBlockRelationship(me) {
+    const {account} = this.props
+    const relationship = this.props.relationships[me]
+    const isBlocking = relationship ? relationship.blocking : false
+
+    let disable = false
+    // let icon  // TODO:
+    let text
+    let doBlock
+
+    if(account.acct === me) {
+      disable = true
+      text = <_FM id="user_detail.label.is_you" />
+    } else if(isBlocking) {
+      text = <_FM id="user_detail.label.unblock" />
+      doBlock = false
+    } else {
+      text = <_FM id="user_detail.label.block" />
+      doBlock = true
+    }
+
+    return {disable, text, doBlock}
+  }
+
   getVisualForRelationship(me) {
     const {account} = this.props
     const relationship = this.props.relationships[me]
@@ -173,5 +335,17 @@ url(${account.header})`
     }
 
     return {disable, icon, text, doFollow}
+  }
+
+  onClickMuteAll() {
+    const {account, tokens, onToggleMuteClicked} = this.props
+
+    tokens.forEach((token) => onToggleMuteClicked(token, account, true))
+  }
+
+  onClickBlockAll() {
+    const {account, tokens, onToggleBlockClicked} = this.props
+
+    tokens.forEach((token) => onToggleBlockClicked(token, account, true))
   }
 }
