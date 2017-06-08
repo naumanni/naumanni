@@ -82,8 +82,9 @@ $ yarn run build
 
 ```
 $ brew install nginx
-$ mkdir -p /usr/loca/var/run/nginx/proxy_temp
+$ mkdir -p /usr/local/var/run/nginx/proxy_temp
 $ echo '127.0.0.1 naumanniskine.localdev' >> /etc/hosts
+$ nginx -p `pwd` -c `pwd`/etc/dev/nginx/nginx.conf -g "daemon off;"
 ```
 
 #### project tree
