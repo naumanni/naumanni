@@ -17,7 +17,7 @@
   border-right: 1px solid $colorGray1;
   border-radius: $radiusDialog 0 0 $radiusDialog;
 
-  background-repeat: no-repeat;;
+  background-repeat: no-repeat;
   background-size: cover;
   display: flex;
   flex-direction: column;
