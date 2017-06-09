@@ -115,7 +115,7 @@ export default class PreferencesDialog extends HistoryBaseDialog {
   renderPreferencesTab(on) {
     return (
       <div className={`tabPane tabPane--preferences ${on ? 'on' : ''}`}>
-        <div className="formGroup formGroup--inline languageSetting">
+        <div className="formGroup languageSetting">
           <h3><_FM id="preferecens_dialog.label.language" /></h3>
           <select
             value={this.getPrefVal(['globals', 'locale'], true)}
