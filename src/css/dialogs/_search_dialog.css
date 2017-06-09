@@ -1,11 +1,27 @@
-.dialog--search {
-  padding: 0;
+.dialogSearch {
+  padding: 16px 16px 0;
+  box-sizing: border-box;
+  width: 400px;
+  
+  > * {
+    box-sizing: border-box;
+  }
 
   h2 {
-    font-size: $fontSizeSmall;
+    margin: $marginDefault 0;
+    font-size: $fontSizeNormal;
     font-weight: bold;
     font-family: sans-serif;
-    margin: $marginDefault 0 $marginHalf 0;
+  }
+  
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    color:$colorMainNormal;
   }
 
   > .note {
@@ -14,41 +30,37 @@
 
   .search-hashtagInput {
     width: calc(100% - $marginDefault * 2);
-    box-sizing: border-box;
-    background: $colorWhite;
+    width: 100%;
+    margin: 0 0 $marginDefault;
+    padding: 0 $marginHalf;
     border-radius: $radiusDefault;
     border: 1px solid $colorGray2;
-    padding: 0 $marginHalf;
+    background: $colorWhite;
     font-size: 1.2rem;
     line-height: 2;
-    box-sizing: border-box;
-    margin: $marginDefault;
   }
 
   .search-options {
     > h2 {
-      margin: $marginDefault $marginDefault calc($marginDefault * 2);
       cursor: pointer;
     }
 
     &-item {
-      border: 1px solid;
       padding: $marginDefault;
+      background: $colorMainLightest;
 
-      .searchFor {
-
-        > ul {
-          @mixin clearfix;
-
-          list-style: none;
-          margin: 0;
-          padding: 0;
-        }
+      .note {
+        margin: 0;
+        font-size: $fontSizeSmall;
+      }
+      
+      > ul {
+        @mixin clearfix;
 
         li {
           display: block;
           float: left;
-          border: 4px solid rgba(255, 255, 255, 0.2);
+          border: 4px solid rgba(0, 0, 0, 0.1);
           border-radius: $marginHalf;
           margin: 0 $marginHalf $marginHalf 0;
           padding: 0;
@@ -59,41 +71,44 @@
           }
 
           &.is-selected {
-            border-color: #fff;
+            border-color: $colorMainNormal;
             filter: none;
           }
         }
       }
+    }
 
-      .searchFor-note {
-        margin: 0;
-        font-size: $fontSizeSmall;
-        color: $colorGray1;
-        text-align: right;
-      }
+    .searchFor-note {
+      margin: 0;
+      font-size: $fontSizeSmall;
+      color: $colorGray3;
+      text-align: right;
     }
   }
 
   .search-results {
-    h2 {
-      margin: $marginDefault $marginDefault calc($marginDefault * 2);
-    }
-
+    
     &-hashtags {
       > ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
+        margin: -8px 0 $marginDefault;
+        padding: $marginDefault;
         max-height: 40vh;
         overflow-y: scroll;
+        background: $colorMainLightest;
+
+        li {
+          margin: 0 0 $marginDefault;
+
+          &:nth-last-child(1) {
+            margin: 0;
+          }
+        }
       }
     }
 
     &-accounts {
+
       > ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
         max-height: 40vh;
         overflow-y: scroll;
       }

@@ -73,7 +73,7 @@ export default class SearchDialog extends HistoryBaseDialog {
     const {optionVisible} = this.state
 
     return (
-      <div className="dialog--search">
+      <div className="dialogSearch">
         <input
           type="text" ref="search"
           className="search-hashtagInput"
@@ -101,27 +101,25 @@ export default class SearchDialog extends HistoryBaseDialog {
 
     return (
       <div className="search-options-item">
-        <div className="searchFor">
-          <p className="note">
-            <_FM id="search_dialog.note.search_for_accounts" />
-          </p>
-          <h2><_FM id="search_dialog.note.search_for" /></h2>
-          <ul>
-            {this.tokens.map((token) => {
-              const {account} = token
-              const isSelected = searchTargets.indexOf(account.acct) >= 0
+        <p className="note">
+          <_FM id="search_dialog.note.search_for_accounts" />
+        </p>
+        <h2><_FM id="search_dialog.note.search_for" /></h2>
+        <ul>
+          {this.tokens.map((token) => {
+            const {account} = token
+            const isSelected = searchTargets.indexOf(account.acct) >= 0
 
-              return (
-                <li className={isSelected && 'is-selected'}
-                    key={account.acct}
-                    onClick={this.onToggleSearchTarget.bind(this, account)}>
-                  <UserIconWithHost account={account} size="small" />
-                </li>
-              )
-            })}
-          </ul>
-          <p className="searchFor-note"><_FM id="search_dialog.note.select_multiple_author" /></p>
-        </div>
+            return (
+              <li className={isSelected && 'is-selected'}
+                  key={account.acct}
+                  onClick={this.onToggleSearchTarget.bind(this, account)}>
+                <UserIconWithHost account={account} size="small" />
+              </li>
+            )
+          })}
+        </ul>
+        <p className="searchFor-note"><_FM id="search_dialog.note.select_multiple_author" /></p>
       </div>
     )
   }
