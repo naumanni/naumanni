@@ -91,7 +91,6 @@
     &-hashtags {
       > ul {
         margin: -8px 0 $marginDefault;
-        padding: $marginDefault;
         max-height: 40vh;
         overflow-y: scroll;
         background: $colorMainLightest;
