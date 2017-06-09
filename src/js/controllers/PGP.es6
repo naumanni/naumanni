@@ -77,7 +77,7 @@ export async function decryptBlocks(encodedBlocks, privateKey) {
       throw new Error('Duplicated index of blocks.')
     }
 
-    const encoded = block.substr(match.index + match[0].length + 1)
+    const encoded = block.substr(match.index + match[0].length).trim()
     const decoded = base65536.decode(encoded)
     blocks[idx - 1] = decoded
     size += decoded.length

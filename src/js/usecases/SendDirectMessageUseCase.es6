@@ -33,20 +33,24 @@ export default class SendDirectMessageUseCase extends UseCase {
 
     // 鍵を集める
     for(const target of targets) {
+      console.log(target.acct, target.note)
       if(target.hasPublicKey)
         keyIds.push({keyId: target.publicKeyId, user: target.acct})
+      else
+        keyIds.push({user: target.acct})
     }
 
-    // TODO: 雑よね
+    const publicKeys = (await Promise.all(keyIds.map((query) => PublicKeyCache.fetchKey(query))))
+      .reduce((publicKeys, storedKey, idx) => {
+        publicKeys[targets[idx].acct] = storedKey
+        console.log(targets[idx].acct, '->', storedKey.primaryKey.fingerprint)
+        return publicKeys
+      }, {})
+
     let postedStatuses
 
-    if(keyIds.length == targets.length) {
+    if(targets.every((t) => publicKeys[t.acct])) {
       // 全員鍵をもっているので、暗号化して送る
-      const publicKeys = (await PublicKeyCache.fetchKeys(keyIds))
-        .reduce((publicKeys, storedKey) => {
-          publicKeys[storedKey.user] = storedKey.readArmored()[0]
-          return publicKeys
-        }, {})
       postedStatuses = await this.sendEncryptedMessage({token, self, message, in_reply_to_id, recipients, publicKeys})
     } else {
       // 鍵もってないのがいるので、plainに送る

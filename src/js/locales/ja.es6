@@ -53,6 +53,7 @@ export const messages = {
   'preferecens_dialog.tab.emergency': '緊急',
   'preferecens_dialog.tab.notifications': '通知',
   'preferecens_dialog.tab.preferences': '表示',
+  'preferecens_dialog.tab.privacy': 'プライバシー',
   'talk.form.placeholder': '何か入力してControl+Enter',
   'timeline_status.label.click_to_view': 'クリックして表示',
   'timeline_status.label.content_close': '隠す',

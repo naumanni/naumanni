@@ -57,6 +57,7 @@ export const messages = {
   'preferecens_dialog.tab.emergency': 'Emergency',
   'preferecens_dialog.tab.notifications': 'Notifications',
   'preferecens_dialog.tab.preferences': 'Preferences',
+  'preferecens_dialog.tab.privacy': 'Privacy',
   'talk.form.placeholder': 'Ctrl+Enter to send message',
   'timeline_status.label.click_to_view': 'Click to view',
   'timeline_status.label.content_close': 'SHOW LESS',

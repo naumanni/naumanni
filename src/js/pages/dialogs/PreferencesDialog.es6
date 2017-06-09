@@ -4,13 +4,17 @@ import {FormattedMessage as _FM} from 'react-intl'
 // import PropTypes from 'prop-types'
 
 import {LOCALES} from 'src/constants'
-import {UserAcct, UserIconWithHost} from 'src/pages/parts'
+import {UserAcct, UserIconWithHost} from 'src/pages/uiComponents'
 import UpdatePreferencesUseCase from 'src/usecases/UpdatePreferencesUseCase'
 import {HistoryBaseDialog} from './Dialog'
+
+import PublicKeyCache from 'src/infra/PublicKeyCache'
+import GenerateKeypairUseCase from 'src/usecases/GenerateKeypairUseCase'
 
 
 const TAB_PREFERENCES = 'TAB_PREFERENCES'
 const TAB_NOTIFICATIONS = 'TAB_NOTIFICATIONS'
+const TAB_PRIVACY = 'TAB_PRIVACY'
 const TAB_EMERGENCY = 'TAB_EMERGENCY'
 
 
@@ -18,6 +22,7 @@ const tabs = [
   // PreferencesDialogの中にPreferencesタブとはこれいかに？
   [TAB_PREFERENCES, <_FM id="preferecens_dialog.tab.preferences" />],
   [TAB_NOTIFICATIONS, <_FM id="preferecens_dialog.tab.notifications" />],
+  [TAB_PRIVACY, <_FM id="preferecens_dialog.tab.privacy" />],
   [TAB_EMERGENCY, <_FM id="preferecens_dialog.tab.emergency" />],
 ]
 
@@ -32,6 +37,8 @@ export default class PreferencesDialog extends HistoryBaseDialog {
     this.state = {
       ...this.state,
       currentTab: tabs[0][0],
+      currentPrivacyTab: null,
+      myPublicKeys: {},
       ...this.getStateFromContext(),
       ...this.makePrefsState(),
     }
@@ -85,6 +92,7 @@ export default class PreferencesDialog extends HistoryBaseDialog {
 
         {this.renderPreferencesTab(currentTab === TAB_PREFERENCES)}
         {this.renderNotificationTab(currentTab === TAB_NOTIFICATIONS)}
+        {this.renderPrivacyTab(currentTab === TAB_PRIVACY)}
         {this.renderEmergencyTab(currentTab === TAB_EMERGENCY)}
       </div>
     )
@@ -130,6 +138,7 @@ export default class PreferencesDialog extends HistoryBaseDialog {
       </div>
     )
   }
+
   renderNotificationTab(on) {
     const {tokens} = this.state
 
@@ -227,6 +236,72 @@ export default class PreferencesDialog extends HistoryBaseDialog {
     )
   }
 
+  renderPrivacyTab(on) {
+    const {tokens} = this.state
+    let {currentPrivacyTab} = this.state
+
+    if(!currentPrivacyTab && tokens.size) {
+      currentPrivacyTab = tokens.get(0).acct
+    }
+
+    let currentToken = tokens.find((t) => t.acct === currentPrivacyTab)
+
+    return (
+      <div className={`tabPane tabPane--privacy ${on ? 'on' : ''}`}>
+        <p className="note">
+          このタブでは、メッセージ暗号化機能に関する設定を行います。
+        </p>
+
+        <ul className="tabs">
+          {tokens.map((token) => {
+            return (
+              <li
+                className={token.acct === currentPrivacyTab ? 'on' : ''}
+                key={token.acct} onClick={this.onClickPrivacyTokenTab.bind(this, token)}>
+                <UserIconWithHost account={token.account} />
+              </li>
+            )
+          })}
+        </ul>
+
+        {currentToken && this.renderPrivacyTokenTab(currentToken)}
+      </div>
+    )
+  }
+
+  renderPrivacyTokenTab(token) {
+    let publickeyForToken = this.state.myPublicKeys[token.acct]
+
+    return (
+      <div className="tabPane tabPane--privacyToken on">
+        {token.acct}
+
+        {token.hasKeyPair ? (
+          <div>
+            <div>このアカウントには以下の鍵ペアが設定されています。</div>
+            <div>
+              <h4>公開鍵</h4>
+              {publickeyForToken
+                ? <textarea readOnly="readonly" value={publickeyForToken.armor()} />
+                : <div>読み込み中...</div>
+              }
+              <h4>秘密鍵</h4>
+              <textarea readOnly="readonly" value={token.privateKeyArmored} />
+            </div>
+          </div>
+        ) : (
+          <div>このアカウントには鍵ペアが設定されていません。</div>
+        )}
+        <div>
+          <button
+            className="button button--danger"
+            onClick={this.onClickRegenerateKeypair.bind(this, token)}
+          >鍵ペアを再生成</button>
+        </div>
+      </div>
+    )
+  }
+
   renderEmergencyTab(on) {
     return (
       <div className={`tabPane tabPane--emeregency ${on ? 'on' : ''}`}>
@@ -270,6 +345,41 @@ export default class PreferencesDialog extends HistoryBaseDialog {
   async onClickSaveAndClose() {
     await this.save()
     this.close()
+  }
+
+  onClickPrivacyTokenTab(token, e) {
+    this.setState({currentPrivacyTab: token.acct})
+    const account = token.account
+
+    console.log(account.note, '->', account.plainNote)
+    if(account.hasPublicKey) {
+      //
+      let publicKey = this.state.myPublicKeys[account.acct]
+      if(publicKey === undefined) {
+        this.setState({myPublicKeys: {
+          ...this.state.myPublicKeys,
+          [account.acct]: null,
+        }})
+        PublicKeyCache.fetchKey({keyId: account.publicKeyId, user: account.acct})
+          .then((publicKey) => {
+            this.setState({myPublicKeys: {
+              ...this.state.myPublicKeys,
+              [account.acct]: publicKey,
+            }})
+          })
+      }
+    }
+  }
+
+  onClickRegenerateKeypair(token) {
+    const context = this.context.context
+
+    context.useCase(
+      new GenerateKeypairUseCase()
+    ).execute(token, token.account)
+      .then(() => {
+        location.reload()
+      })
   }
 
   getPrefVal(keyPath, defaultValue) {

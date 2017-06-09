@@ -1,5 +1,7 @@
 import moment from 'moment'
 import {Record} from 'immutable'
+import {key as openpgpKey} from 'openpgp'
+
 
 const OAuthTokenRecord = Record({  // eslint-disable-line new-cap
   host: '',
@@ -113,5 +115,29 @@ export default class OAuthToken extends OAuthTokenRecord {
 
   toString() {
     return `<OAuthToken ${this.acct || this.host}:${this.accessToken}>`
+  }
+
+  // privacy
+  get hasKeyPair() {
+    return this.hasPrivateKey && this.account.hasPublicKey
+  }
+
+  get hasPrivateKey() {
+    return this.privateKeyArmored ? true : false
+  }
+
+  get privateKeyArmored() {
+    const keydata = localStorage.getItem(`pgp::privateKey::${this.acct}`)
+    return keydata
+  }
+
+  get privateKey() {
+    if(!this._privateKey) {
+      const data = this.privateKeyArmored
+      if(!data)
+        return null
+      this._privateKey = openpgpKey.readArmored(this.privateKeyArmored).keys[0]
+    }
+    return this._privateKey
   }
 }

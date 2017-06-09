@@ -1,6 +1,7 @@
 import {UseCase} from 'almin'
 import openpgp, {HKP} from 'openpgp'
 
+import config from 'src/config'
 import {REGEX_PGP_FINGERPRINT} from 'src/constants'
 
 
@@ -9,8 +10,8 @@ export default class GenerateKeypairUseCase extends UseCase {
     console.log(account.note)
     // generate new key pair
     const userIds = [{
-      name: account.acct.trim(),
-      email: `${account.acct}@${account.host}`,
+      name: account.acct,
+      email: account.acct,
     }]
     console.log('generateKey 1024bit, no pass pharase', userIds)
     const keypair = await openpgp.generateKey({
@@ -19,8 +20,6 @@ export default class GenerateKeypairUseCase extends UseCase {
       passphrase: '',
     })
     console.dir(keypair)
-    console.log(keypair.privateKeyArmored)
-    console.log(keypair.publicKeyArmored)
 
     const {fingerprint} = keypair.key.primaryKey
 
@@ -29,14 +28,13 @@ export default class GenerateKeypairUseCase extends UseCase {
     localStorage.setItem(`pgp::privateKey::${account.account}`, keypair.privateKeyArmored)
 
     // update profile
-    const note = account.note.replace(REGEX_PGP_FINGERPRINT, '').replace(/[\n\u21b5]+$/, '')
-    const response = await token.requester.updateCredentials({
+    const note = account.plainNote.replace(REGEX_PGP_FINGERPRINT, '').replace(/[\n\u21b5]+$/, '')
+    await token.requester.updateCredentials({
       note: `${note}\nPGP Key Fingerprint: ${fingerprint}`,
     })
-    console.log(response)
 
-    const hkp = new HKP('http://sks.oppai.tokyo')
-    const hkpResponse = await hkp.upload(keypair.publicKeyArmored)
-    console.dir(hkpResponse)
+    // upload public key
+    const hkp = new HKP(config.SKS_SERVER)
+    await hkp.upload(keypair.publicKeyArmored)
   }
 }
