@@ -48,7 +48,7 @@ class WebsocketConnection {
   }
 
   onError(e) {
-    // console.log('onError', e)
+    console.log('websocket onError', e)
     this.emit(WEBSOCKET_EVENT_ERROR, null, e)
   }
 
@@ -67,13 +67,19 @@ class WebsocketConnection {
   }
 
   onOpen(e) {
-    // console.log('onOpen', e)
+    console.log('websocket onOpen', e)
     this.emit(WEBSOCKET_EVENT_OPEN, null, e)
   }
 
   onClose(e) {
-    // console.log('onClose', e)
+    console.log('websocket onClose', e)
+    this.socket = null
     this.emit(WEBSOCKET_EVENT_CLOSE, null, e)
+
+    // adhoc 5秒後に再接続
+    setTimeout(() => {
+      this.conncetIfNeed()
+    }, 5000)
   }
 
   emit(type, payload, source) {
