@@ -212,30 +212,38 @@ export default class TimelineStatus extends React.Component {
   }
 
   renderActions() {
+    const buttons = this.renderActionButtons()
+
+    return React.createElement('div', {className: 'status-actions'}, ...buttons)
+  }
+
+  renderActionButtons() {
     const {DropdownMenuButton, IconFont} = uiComponents
     const {status} = this.props
     const {isShowReplyPanel} = this.state
 
-    return (
-      <div className="status-actions">
-        <button
-          className={`status-actionReply ${isShowReplyPanel ? 'is-active' : ''}`}
-          onClick={::this.onClickToggleReply}>
-          <IconFont iconName="reply" />
-        </button>
+    return [
+      <button
+        key="replyButton"
+        className={`status-actionReply ${isShowReplyPanel ? 'is-active' : ''}`}
+        onClick={::this.onClickToggleReply}>
+        <IconFont iconName="reply" />
+      </button>,
 
-        {status.canReblog()
-          ? this.renderReblogButton()
-          : <VisibilityIcon visibility={status.visibility} className="is-inactive" />
-        }
+      status.canReblog()
+        ? this.renderReblogButton()
+        : <VisibilityIcon visibility={status.visibility} className="is-inactive" />,
 
-        {this.renderFavButton()}
+      this.renderFavButton(),
 
-        <DropdownMenuButton modifier="statusActionMenu" onRenderMenu={::this.onRenderStatusMenu}>
-          <IconFont iconName="dot-3" />
-        </DropdownMenuButton>
-      </div>
-    )
+      <DropdownMenuButton
+        key="etcButton"
+        modifier="statusActionMenu" onRenderMenu={::this.onRenderStatusMenu}
+        style={{display: 'none'}}
+      >
+        <IconFont iconName="dot-3" />
+      </DropdownMenuButton>,
+    ]
   }
 
   renderReblogButton() {
