@@ -13,10 +13,12 @@ export default class GenerateKeypairUseCase extends UseCase {
       name: account.acct,
       email: account.acct,
     }]
-    console.log('generateKey 1024bit, no pass pharase', userIds)
+
+    const bits = window.crypto.webkitSubtle ? 4096 : 2048
+    console.log(`generateKey ${bits}bit, no pass pharase`, userIds)
     const keypair = await openpgp.generateKey({
       userIds,
-      numBits: 1024,
+      numBits: bits,
       passphrase: '',
     })
     console.dir(keypair)

@@ -43,7 +43,7 @@ export default class SendDirectMessageUseCase extends UseCase {
     const publicKeys = (await Promise.all(keyIds.map((query) => PublicKeyCache.fetchKey(query))))
       .reduce((publicKeys, storedKey, idx) => {
         publicKeys[targets[idx].acct] = storedKey
-        console.log(targets[idx].acct, '->', storedKey.primaryKey.fingerprint)
+        console.log(targets[idx].acct, '->', storedKey && storedKey.primaryKey.fingerprint)
         return publicKeys
       }, {})
 
