@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {intlShape, FormattedMessage as _FM} from 'react-intl'
+import classNames from 'classnames'
 
 import {OAuthTokenListPropType} from 'src/propTypes'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
@@ -57,10 +58,14 @@ export default class DashboardHeader extends React.Component {
         </DropdownMenuButton>
 
         <div className="naumanniDashboard-header-toot">
-          <input
-            className={`${isShowTootWindow ? 'is-hidden' : ''}`}
-            type="text" placeholder={_({id: 'toot_form.placeholder'})}
-            onFocus={::this.onTootFocus} />
+          <button
+            className={classNames(
+              'naumanniDashboard-header-toot',
+              {'is-hidden': isShowTootWindow},
+            )}
+            onClick={() => this.onTootFocus()}>
+            <IconFont iconName="toot" />
+          </button>
           {isShowTootWindow && <TootWindow onClose={::this.onTootWindowClose} />}
         </div>
 
