@@ -50,11 +50,14 @@ export default class SearchDialog extends HistoryBaseDialog {
   componentDidMount() {
     super.componentDidMount()
     const {q} = this.props
+    const {search} = this.refs
 
-    if(q)
+    if(q) {
+      search.value = q
       this.updateQuery(q)
+    }
 
-    this.refs.search.focus()
+    search.focus()
   }
 
   /**
