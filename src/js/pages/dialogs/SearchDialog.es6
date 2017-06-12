@@ -132,11 +132,11 @@ export default class SearchDialog extends HistoryBaseDialog {
         <h2><_FM id="search_dialog.results.label.hashtags" /></h2>
         <ul>
           {hashtags.map((tag) => (
-            <a href="#" onClick={this.onClickTag.bind(this, tag)}>
-              <li key={tag} className="search-results-hashtags-item">
-                {`#${tag}`}
-              </li>
-            </a>
+            <li key={tag} className="search-results-hashtags-item">
+              <a href="#" onClick={this.onClickTag.bind(this, tag)}>
+              {`#${tag}`}
+              </a>
+            </li>
           ))}
         </ul>
       </div>
