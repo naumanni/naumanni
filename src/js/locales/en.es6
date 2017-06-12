@@ -13,7 +13,7 @@ export const messages = {
   'authorize_account_dialog.progress.error_message': 'Authentication failed: {message}',
   'column.menu.accountts.for': 'for',
   'column.menu.accountts.select_multiple_author': 'Shift+Click to select multiple',
-  'column.menu.close': 'Close',
+  'column.menu.close': 'Close column',
   'column.title.notifications': 'Notifications',
   'column.title.united_notifications': 'United notifications',
   'column.title.message': 'Message',

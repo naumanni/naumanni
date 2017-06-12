@@ -12,7 +12,7 @@ export const messages = {
   'authorize_account_dialog.progress.error_message': '認証できませんでした: {message}',
   'column.menu.accountts.for': '対象',
   'column.menu.accountts.select_multiple_author': 'Shift+Clickで複数選択できます。',
-  'column.menu.close': '閉じる',
+  'column.menu.close': 'カラムを閉じる',
   'column.title.notifications': '通知',
   'column.title.united_notifications': '統合通知',
   'column.title.message': 'メッセージ',
