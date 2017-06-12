@@ -4,7 +4,6 @@ import {FormattedMessage as _FM} from 'react-intl'
 
 import {
   COLUMN_TAG, COLUMN_TALK,
-  SEARCH_PATH,
   SUBJECT_MIXED,
 } from 'src/constants'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
@@ -166,11 +165,9 @@ export default class SearchDialog extends HistoryBaseDialog {
 
   // private
   updateQuery(q) {
-    const path = `${SEARCH_PATH}/${q}`
+    const path = this.app.history.makeUrl('search')
 
-    if(path !== location.pathname)
-      history.replaceState(null, null, path)
-
+    history.replaceState(null, null, `${path}?q=${q}`)
     this.fetchEntities(q)
   }
 

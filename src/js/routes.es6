@@ -3,7 +3,6 @@ import {
   ACCT_PATTERN,
   DIALOG_ADD_ACCOUNT, DIALOG_AUTHORIZE_ACCOUNT, DIALOG_USER_DETAIL, DIALOG_GLOBAL_PREFERENCES,
   DIALOG_SEARCH, DIALOG_WELCOME,
-  SEARCH_PATH,
 } from 'src/constants'
 import config from 'src/config'
 import {parseQuery} from 'src/utils'
@@ -15,7 +14,7 @@ export default function installRoutes(history) {
   history.route('authorize', '/authorize', routeAuthorize)
   history.route('preferences', '/preferences', routePreferences)
   history.route('userDetail', `/user/@:acct(${ACCT_PATTERN})`, routeUserDetail)
-  history.route('search', `${SEARCH_PATH}/:q?`, routeSearch)
+  history.route('search', '/search', routeSearch)
 
   // welcomeダイアログの設定があれば
   if(config.WELCOME_DIALOG) {
@@ -70,8 +69,10 @@ function routeUserDetail(history, location, params, action) {
 }
 
 function routeSearch(history, location, params, action) {
+  const {q} = parseQuery(location.search)
+
   history.context.useCase(new ReplaceDialogsUseCase())
-    .execute([{type: DIALOG_SEARCH, params}])
+    .execute([{type: DIALOG_SEARCH, params: {q}}])
 }
 
 function routeWelcome(history, location, params, action) {

@@ -44,7 +44,6 @@ export const KEY_ARROW_DOWN = 40
 export const ACCT_PATTERN = '[a-zA-Z0-9_]+@[a-zA-Z0-9\.\-]+[a-zA-Z0-9]+'
 export const ACCT_REX = new RegExp(ACCT_PATTERN)
 export const MESSAGE_TAG_REX = /--NEM\.([0-9a-f]{8})\.(\d+)\/(\d+)--/
-export const SEARCH_PATH = '/search'
 
 export const STREAM_HOME = 'user'
 export const STREAM_LOCAL = 'public:local'
