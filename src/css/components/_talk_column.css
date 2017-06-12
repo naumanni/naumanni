@@ -11,21 +11,60 @@
     overflow-y: scroll;
   }
 
-  .talk-form {
-    border-top: 1px solid $colorTalkFormBorder;
-    box-sizing: border-box;
-    height: $sizeTalkFormHeight;
-    position: relative;
-
-    flex: 0 0 auto;
-
-    textarea {
-      border: none;
-      width: 100%;
-      height: 100%;
+  .talkForm-content {
+    .talkForm-status {
+      border-top: 1px solid $colorTalkFormBorder;
       box-sizing: border-box;
-      padding: $marginDefault;
-      font-size: 1rem;
+      height: $sizeTalkFormHeight;
+      position: relative;
+
+      flex: 0 0 auto;
+
+      textarea {
+        border: none;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        padding: $marginDefault;
+        font-size: 1rem;
+        resize: none;
+      }
+    }
+
+    .talkForm-mediaFiles {
+      display: flex;
+      flex-wrap: wrap;
+      width: calc(100% - 2px);
+      margin: 0 auto;
+
+      .mediaThumbnail {
+        height: 60px;
+        flex: 1 1 35%;
+        min-width: 35%;
+        margin: calc($marginHalf / 2);
+        border-radius: $marginHalf;
+      }
+    }
+
+    .talkForm-contentActions {
+      padding-left: 6px;
+
+      > * {
+        display: inline-block;
+        border: none;
+        background: transparent;
+        font-size: 1.2rem;
+        color: $colorGray3;
+
+        &.is-active {
+          color: $colorAccentNormal;
+        }
+
+        .icon::before {
+          width: auto;
+          margin: 0;
+        }
+      }
     }
   }
 }
