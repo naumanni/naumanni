@@ -1,3 +1,5 @@
+import {Context, Dispatcher, StoreGroup} from 'almin'
+
 import {MESSAGE_TAG_REX} from 'src/constants'
 import {Account, OAuthToken} from 'src/models'
 import PublicKeyCache, {StoredPublicKey} from 'src/infra/PublicKeyCache'
@@ -8,32 +10,29 @@ const TEST_TEXT = '寿限無、寿限無 五劫の擦り切れ 海砂利水魚�
 const TEST_KEYS = require('./test_keys.json')
 
 
+jest.mock('src/infra/PublicKeyCache')
 jest.mock('src/infra/TimelineData')
 
 
 beforeAll(() => {
   // init open pgp
   initOpenPGPTest()
-
-  // set mock function to PublicKeyCache.fetchKeys
-  PublicKeyCache.fetchKeys = async function(keyIds) {
-    return keyIds.reduce((result, {keyId, user}) => {
-      const keyArmored = TEST_KEYS.publicKeys[user]
-      result.push(new StoredPublicKey({
-        user,
-        keyId,
-        keyArmored,
-      }))
-      return result
-    }, [])
-  }
 })
 
 
-// TODO: UpdateLastTalkRecordUseCase's parent UseCase(SendDirectMessageUseCase) is already released のwarnを対処する
+function makeDummyContext() {
+  const dispatcher = new Dispatcher()
+  const store = new StoreGroup([])
+
+  return new Context({dispatcher, store})
+}
+
 
 describe('SendDirectMessageUseCase', () => {
   it('can send encrypted messge', async () => {
+    PublicKeyCache.setDummyKeys(TEST_KEYS.publicKeys)
+
+    const context = makeDummyContext()
     const mockToken = new OAuthToken({})
     const mockSelf = new Account({
       acct: 'alice@my.host',
@@ -48,14 +47,14 @@ describe('SendDirectMessageUseCase', () => {
 
     const mockPostStatus = require('src/infra/TimelineData').__postStatusManaged
     mockPostStatus.mockClear()
-    const usecase = new SendDirectMessageUseCase()
 
-    await usecase.execute({
-      token: mockToken,
-      self: mockSelf,
-      message: TEST_TEXT,
-      recipients: [mockRecipient],
-    })
+    await context.useCase(new SendDirectMessageUseCase())
+      .execute({
+        token: mockToken,
+        self: mockSelf,
+        message: TEST_TEXT,
+        recipients: [mockRecipient],
+      })
 
     // このテスト文だと2回ぐらいコールされるはず
     expect(mockPostStatus.mock.calls.length).toBe(2)
@@ -76,7 +75,9 @@ describe('SendDirectMessageUseCase', () => {
 
   it('can send plain messge', async () => {
     require('assert')(TEST_TEXT.length < 500)
+    PublicKeyCache.setDummyKeys({})
 
+    const context = makeDummyContext()
     const mockToken = new OAuthToken({})
     const mockSelf = new Account({
       acct: 'alice@my.host',
@@ -91,19 +92,21 @@ describe('SendDirectMessageUseCase', () => {
 
     const mockPostStatus = require('src/infra/TimelineData').__postStatusManaged
     mockPostStatus.mockClear()
-    const usecase = new SendDirectMessageUseCase()
 
-    await usecase.execute({
-      token: mockToken,
-      self: mockSelf,
-      message: TEST_TEXT,
-      recipients: [mockRecipient],
-    })
+    await context.useCase(new SendDirectMessageUseCase())
+      .execute({
+        token: mockToken,
+        self: mockSelf,
+        message: TEST_TEXT,
+        recipients: [mockRecipient],
+      })
 
     // このテスト文だと1回コールされるはず
     expect(mockPostStatus.mock.calls.length).toBe(1)
 
-    const [[token, {mediaFiles, message: {status, visibility}}]] = mockPostStatus.mock.calls
+    const [
+      [token, {mediaFiles, message: {status, visibility}}],
+    ] = mockPostStatus.mock.calls
 
     // status must begin with recipient's account
     expect.assertions(status.indexOf('@bob') >= 0)
