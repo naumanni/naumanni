@@ -236,6 +236,7 @@ export default class SearchDialog extends HistoryBaseDialog {
     }
 
     this.setState({searchTargets})
+    this.fetchEntities(this.refs.search.value)
   }
 
   onClickTag(tag, e) {
