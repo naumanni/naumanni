@@ -28,8 +28,8 @@ export default class TootWindow extends React.Component {
 
     this.state = {
       ...this.getStateFromContext(),
-      left: this.props.initialX || 60,
-      top: this.props.initialY || 60,
+      left: this.props.initialX || 8,
+      top: this.props.initialY || 48,
     }
     this.isOnDraggingWindow = false
   }
