@@ -2,8 +2,9 @@
 .icon-search:before { content: '\e800'; } /* '' */
 .icon-key:before { content: '\e801'; } /* '' */
 .icon-camera:before { content: '\e802'; } /* '' */
+.icon-volume-off:before { content: '\e803'; } /* '' */
 .icon-reblog:before { content: '\e804'; } /* '' */
-.icon-toot:before { content: '\e805'; } /* '' */
+.icon-mastodon:before { content: '\e805'; } /* '' */
 .icon-globe:before { content: '\e806'; } /* '' */
 .icon-lock:before { content: '\e807'; } /* '' */
 .icon-users:before { content: '\e808'; } /* '' */
@@ -29,6 +30,9 @@
 .icon-left-open:before { content: '\e81c'; } /* '' */
 .icon-logout:before { content: '\e81d'; } /* '' */
 .icon-nsfw:before { content: '\e81e'; } /* '' */
+.icon-block:before { content: '\e81f'; } /* '' */
+.icon-thumbs-down:before { content: '\e820'; } /* '' */
+.icon-toot:before { content: '\e821'; } /* '' */
 .icon-bell:before { content: '\f0f3'; } /* '' */
 .icon-meh:before { content: '\f11a'; } /* '' */
 .icon-user-secret:before { content: '\f21b'; } /* '' */
