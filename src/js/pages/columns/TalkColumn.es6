@@ -141,7 +141,7 @@ export default class TalkColumn extends Column {
               placeholder={_({id: 'talk.form.placeholder'})} />
           </div>
 
-          {this.renderMediaFiles()}
+          {this.renderMediaFilesInForm()}
 
           <div className="talkForm-contentActions">
             <label className="tootForm-addMedia">
@@ -222,11 +222,12 @@ export default class TalkColumn extends Column {
           </div>
         )}
         <ul className="talk-talkGroupStatuses">
-          {talkGroup.contents.map(({key, parsedContent, createdAt, encrypted}) => {
+          {talkGroup.contents.map(({key, parsedContent, mediaFiles, createdAt, encrypted}) => {
             return (
               <li key={key}>
                 <div className={`status-content ${encrypted ? 'is-encrypted' : ''}`}>
                   <SafeContent parsedContent={parsedContent} onClickHashTag={::this.onClickHashTag} />
+                  {this.renderMediaFilesInTalk(mediaFiles)}
                 </div>
                 <div className="status-date">
                   <FormattedDate value={createdAt.toDate()}
@@ -243,7 +244,29 @@ export default class TalkColumn extends Column {
     )
   }
 
-  renderMediaFiles() {
+  renderMediaFilesInTalk(files) {
+    if(!files.size)
+      return null
+
+    return (
+      <div className={classNames(
+        'status-mediaList',
+        `status-mediaList${files.size}`,
+      )}>
+        {files.map((media, idx) => (
+          <a key={media.preview_url}
+            className="status-media"
+            style={{backgroundImage: `url(${media.preview_url})`}}
+            target="_blank"
+            href={media.url}
+            onClick={this.onClickMedia.bind(this, files, idx)}
+            />
+        ))}
+      </div>
+    )
+  }
+
+  renderMediaFilesInForm() {
     const {mediaFiles} = this.state
 
     if(!mediaFiles) {
@@ -265,7 +288,6 @@ export default class TalkColumn extends Column {
     this.mediaFileKeys = new WeakMap()
     this.mediaFileCounter = 0
   }
-
 
   sendMessage() {
     const message = this.state.newMessage.trim()
@@ -384,6 +406,11 @@ export default class TalkColumn extends Column {
   onClickHashTag(tag, e) {
     e.preventDefault()
     this.actionDelegate.onClickHashTag(tag)
+  }
+
+  onClickMedia(mediaFiles, idx, e) {
+    e.preventDefault()
+    this.actionDelegate.onClickMedia(mediaFiles, idx)
   }
 }
 require('./').registerColumn(COLUMN_TALK, TalkColumn)
