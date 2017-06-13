@@ -1,7 +1,8 @@
 .dialogSearch {
   padding: 16px 16px 0;
+  max-height: 80vh;
+  overflow: hidden;
   box-sizing: border-box;
-  width: 400px;
   
   > * {
     box-sizing: border-box;
@@ -87,28 +88,29 @@
   }
 
   .search-results {
-    
+    max-height: calc(80vh - 200px);
+
     &-hashtags {
+      max-height: 28vh;
+
       > ul {
         margin: -8px 0 $marginDefault;
-        max-height: 40vh;
+        max-height: 26vh;
         overflow-y: scroll;
         background: $colorMainLightest;
 
         li {
-          margin: 0 0 $marginDefault;
+          margin: $marginDefault $marginDefault;
 
-          &:nth-last-child(1) {
-            margin: 0;
-          }
         }
       }
     }
 
     &-accounts {
+      max-height: 28vh;
 
       > ul {
-        max-height: 40vh;
+        max-height: 26vh;
         overflow-y: scroll;
       }
 
