@@ -86,10 +86,10 @@ export default class TootWindow extends React.Component {
     }
   }
 
-  async onSend(sendFrom, messageContent) {
+  async onSend(sendFrom, messageContent, tootProgress) {
     // とりまこっから送る
     await Promise.all(
-      sendFrom.map(async (token) => await postStatusManaged(token, messageContent))
+      sendFrom.map(async (token) => await postStatusManaged(token, messageContent, tootProgress))
     )
 
     this.saveSendFrom(sendFrom)
