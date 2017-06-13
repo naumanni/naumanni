@@ -23,6 +23,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  .menu {
+    .userIcon {
+      margin: 0 $marginHalf;
+    }
+    .icon {
+      font-size: 1.6rem;
+      width: 26px;
+    }
+  }
 }
 
 
@@ -77,15 +87,5 @@
 
   .timeline, .accountList {
     overflow-y: scroll;
-  }
-}
-
-.menu--talk, .menu--follow {
-  .userIcon {
-    margin: 0 $marginHalf;
-  }
-  .icon {
-    font-size: 1.6rem;
-    width: 26px;
   }
 }
