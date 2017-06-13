@@ -1,20 +1,8 @@
 .naumanniDashboard {
   background: url(/static/images/naumanni-bgLogo.svg) center center no-repeat;
   background-size: $sizeBackgroundLogo;
-
   width: 100vw;
   height: 100vh;
-
-  .naumanniDashboard-version {
-    position: absolute;
-    color: rgba(255, 255, 255, 0.3);
-    z-index: 11;
-    pointer-events: none;
-    top: 12px;
-    right: 40px;
-    pointer-events: none;
-  }
-
   animation: blurOut 300ms ease-out forwards;
 }
 
@@ -49,6 +37,10 @@
   text-align: center;
   color: $colorBackgroundWatermark;
   text-shadow: 0 1px 0px $colorBackgroundWatermarkShadow;
+
+  .naumanniDashboard-version {
+    margin-top: $marginHalf;
+  }
 }
 
 
@@ -64,24 +56,20 @@
     display: block;
     width: $sizeHeaderIcon;
     height: $sizeHeaderIcon;
-    margin: $marginDefault;
   }
 
-  .naumanniDashboard-header-toot {
-    height: 100%;
+  .naumanniDashboard-header-tootButton {
+    margin-left: $marginDefault;
 
-    > input[type=text] {
-      width: 100%;
-      height: $sizeHeaderIcon;
-      background: $colorWhite;
-      border-radius: $radiusDefault;
+    > button {
       border: none;
-      padding: $marginHalf;
-      box-sizing: border-box;
-      margin: $marginDefault 0;
+      background: $colorMainNormal;
+      border-radius: $marginHalf;
 
-      &.is-hidden {
-        visibility: hidden;
+      .icon {
+        display: block;
+        color: #fff;
+        font-size: $sizeHeaderIcon;
       }
     }
   }
@@ -142,10 +130,26 @@
     flex: 10 10 auto;
   }
 
+  .naumanniDashboard-header-version {
+    position: relative;
+    height: 100%;
+
+    > span {
+      position: absolute;
+      font-size: 10px;
+      right: 8px;
+      bottom: 6px;
+      width: 20em;
+      color: rgba(255, 255, 255, 0.3);
+      pointer-events: none;
+      text-align: right;
+    }
+  }
+
   .naumanniDashboard-header-search {
     position: relative;
     height: 100%;
-    flex: 3 1 200px;
+    flex: 1 1 100px;
 
     > input[type=text] {
       width: 100%;
@@ -156,10 +160,26 @@
       padding: $marginHalf;
       box-sizing: border-box;
       margin: $marginDefault 0;
+    }
 
-      &.is-hidden {
-        visibility: hidden;
-      }
+    &::before {
+      content: '\e800';
+      font-family: "naumanni";
+      font-style: normal;
+      font-weight: normal;
+      speak: none;
+      display: inline-block;
+      text-decoration: inherit;
+      width: 1em;
+      margin-right: .2em;
+      text-align: center;
+      font-variant: normal;
+      text-transform: none;
+
+      position: absolute;
+      line-height: 40px;
+      right: $marginHalf;
+      color: #888;
     }
   }
 
@@ -206,34 +226,39 @@
 }
 
 
-.naumanniDashboard-header .naumanniDashboard-header-accounts .menu--header {
-  min-width: 200px;
-
-  .menu-description {
-    @mixin clearfix;
-    padding: $marginDefault;
-
-    .userIcon {
-      float: left;
-      display: block;
-    }
-
-    .userIcon-avatar {
-      width: $sizeAvatar;
-      height: $sizeAvatar;
-    }
-
-    .menu-descriptionNote {
-      margin-left: calc($sizeAvatar + $marginDefault);
-    }
+.naumanniDashboard-header .naumanniDashboard-header-accounts {
+  .dropdownMenuButton-menu {
+    right: auto;
   }
 
-  .menu-item--message {
-    border-top-width: 2px;
-    border-top-style: solid;
+  .menu--header {
+    min-width: 200px;
+
+    .menu-description {
+      @mixin clearfix;
+      padding: $marginDefault;
+
+      .userIcon {
+        float: left;
+        display: block;
+      }
+
+      .userIcon-avatar {
+        width: $sizeAvatar;
+        height: $sizeAvatar;
+      }
+
+      .menu-descriptionNote {
+        margin-left: calc($sizeAvatar + $marginDefault);
+      }
+    }
+
+    .menu-item--message {
+      border-top-width: 2px;
+      border-top-style: solid;
+    }
   }
 }
-
 
 .naumanniDashboard-header .naumanniDashboard-header-accounts .menu-description--badAccount {
 /*  border-radius: 6px; */

@@ -1,4 +1,6 @@
-.naumanniDashboard-header-toot .tootWindow {
+.tootWindow {
+  position: relative;
+  color: #fff;
   background: $colorHeaderBackground;
   position: absolute;
   padding: $marginDefault;
@@ -7,12 +9,7 @@
   width: 430px;
   z-index: 200;
   box-sizing: border-box;
-}
 
-
-.tootWindow {
-  position: relative;
-  color: #fff;
 
   .tootWindow-close {
     position: absolute;

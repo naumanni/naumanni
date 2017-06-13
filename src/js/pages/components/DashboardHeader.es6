@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {intlShape, FormattedMessage as _FM} from 'react-intl'
 
+import {NAUMANNI_VERSION} from 'src/constants'
 import {OAuthTokenListPropType} from 'src/propTypes'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
 import {
@@ -73,6 +74,8 @@ export default class DashboardHeader extends React.Component {
         </ul>
 
         <span className="naumanniDashboard-header-spacer" />
+
+        <div className="naumanniDashboard-header-version"><span>naumanni {NAUMANNI_VERSION}</span></div>
 
         <div className="naumanniDashboard-header-search">
           <input

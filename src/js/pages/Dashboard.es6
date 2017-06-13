@@ -99,7 +99,6 @@ export default class Dashboard extends React.Component {
       >
         {initializing ? (
         <div className="naumanniDashboard">
-          <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
           <AppIntializer app={this.props.app} onInitialized={::this.onAppInitialized} />
         </div>
         ) : (
@@ -118,7 +117,6 @@ export default class Dashboard extends React.Component {
               onSignOut={::this.onSignOut}
               onCreateTootWindow={::this.onCreateTootWindow}
             />
-            <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
             <ColumnContainer ref="columnContainer" columns={columns} />
             {this.renderTootWindows()}
           </div>
@@ -329,7 +327,10 @@ class AppIntializer extends React.Component {
 
   render() {
     return (
-      <div className="naumanniDashboard-initializationProgress">{this.state.progress}</div>
+      <div className="naumanniDashboard-initializationProgress">
+        {this.state.progress}
+        <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
+      </div>
     )
   }
 }
