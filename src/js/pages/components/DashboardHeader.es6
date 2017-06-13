@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {intlShape, FormattedMessage as _FM} from 'react-intl'
-import classNames from 'classnames'
 
 import {OAuthTokenListPropType} from 'src/propTypes'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
@@ -10,7 +9,6 @@ import {
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
   TOOTFORM_PLACEHOLDER,
 } from 'src/constants'
-import TootWindow from '../TootWindow'
 
 
 /**
@@ -33,43 +31,28 @@ export default class DashboardHeader extends React.Component {
   }
 
   /**
-   * @constructor
-   */
-  constructor(...args) {
-    super(...args)
-
-    this.state = {
-      isShowTootWindow: false,
-    }
-  }
-
-  /**
    * @override
    */
   render() {
     const {formatMessage: _} = this.context.intl
-    const {isShowTootWindow} = this.state
     const {tokens} = this.props
 
     return (
       <header className="naumanniDashboard-header">
-        <DropdownMenuButton ref="mixedColumnMenu" modifier="mixedColumnMenu" onRenderMenu={::this.onRenderCompoundMenu}>
-          <img className="naumanniDashboard-header-logo" src="/static/images/naumanni-headerLogo.svg" />
-        </DropdownMenuButton>
 
-        <div className="naumanniDashboard-header-toot">
-          <button
-            className={classNames(
-              'naumanniDashboard-header-toot',
-              {'is-hidden': isShowTootWindow},
-            )}
-            onClick={() => this.onTootFocus()}>
+        <div className="naumanniDashboard-header-tootButton">
+          <button onClick={() => this.props.onCreateTootWindow()}>
             <IconFont iconName="toot" />
           </button>
-          {isShowTootWindow && <TootWindow onClose={::this.onTootWindowClose} />}
         </div>
 
         <ul className="naumanniDashboard-header-accounts">
+          <li ref="mixedColumnMenu">
+            <DropdownMenuButton modifier="mixedColumnMenu" onRenderMenu={::this.onRenderCompoundMenu}>
+              <img className="naumanniDashboard-header-logo" src="/static/images/naumanni-headerLogo.svg" />
+            </DropdownMenuButton>
+          </li>
+
           {tokens.map((token, idx) => {
             const props = {}
             if(idx === 0)
@@ -283,10 +266,6 @@ export default class DashboardHeader extends React.Component {
         </li>
       </ul>
     )
-  }
-
-  onTootFocus(e) {
-    this.setState({isShowTootWindow: true})
   }
 
   onSearchFocus(e) {

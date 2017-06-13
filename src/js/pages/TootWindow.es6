@@ -28,7 +28,10 @@ export default class TootWindow extends React.Component {
 
     this.state = {
       ...this.getStateFromContext(),
+      left: this.props.initialX || 60,
+      top: this.props.initialY || 60,
     }
+    this.isOnDraggingWindow = false
   }
 
   /**
@@ -57,9 +60,12 @@ export default class TootWindow extends React.Component {
    */
   render() {
     const {tokens} = this.state.tokenState
+    const {left, top} = this.state
 
     return (
-      <div className="tootWindow">
+      <div className="tootWindow" style={{left, top}}
+        onMouseDown={::this.onMouseDown}
+      >
         <div className="tootWindow-close">
           <button onClick={this.props.onClose}><IconFont iconName="cancel" /></button>
         </div>
@@ -98,6 +104,48 @@ export default class TootWindow extends React.Component {
 
   async onClose() {
     this.props.onClose()
+  }
+
+  /**
+   * 枠内でマウスが押されたら、DragでWindowの場所を動かす
+   * @param {SyntheticEvent} e
+   */
+  onMouseDown(e) {
+    if(this.isOnDraggingWindow)
+      return
+
+    e.stopPropagation()
+    e.preventDefault()
+
+    this.isOnDraggingWindow = true
+    this.lastCursorPosition = {
+      x: e.pageX,
+      y: e.pageY,
+    }
+
+    // install handlers
+    const onMouseMoveHandler = (e) => {
+      const currentPosition = {
+        x: e.pageX,
+        y: e.pageY,
+      }
+
+      let {left, top} = this.state
+      this.setState({
+        left: left + (currentPosition.x - this.lastCursorPosition.x),
+        top: top + (currentPosition.y - this.lastCursorPosition.y),
+      })
+
+      this.lastCursorPosition = currentPosition
+    }
+
+    const onMouseUpHandler = (e) => {
+      document.removeEventListener('mousemove', onMouseMoveHandler)
+      document.removeEventListener('mouseup', onMouseUpHandler)
+      this.isOnDraggingWindow = false
+    }
+    document.addEventListener('mousemove', onMouseMoveHandler)
+    document.addEventListener('mouseup', onMouseUpHandler)
   }
 
   saveTootVisibility(visibility) {
