@@ -102,6 +102,9 @@ export default class UserDetailDialog extends HistoryBaseDialog {
         {closeButton}
         <UserDetail
           account={account} tokens={tokens} relationships={relationships}
+          onToggleMuteClicked={::this.onToggleMuteClicked}
+          onToggleBlockClicked={::this.onToggleBlockClicked}
+          onClickReport={::this.onClickReport}
           onOpenTalkClicked={::this.onOpenTalkClicked}
           onToggleFollowClicked={::this.onToggleFollowClicked}
           />
@@ -354,9 +357,38 @@ export default class UserDetailDialog extends HistoryBaseDialog {
     }
   }
 
+  async toggleRelationship(token, account, relationshipMethod) {
+    const newRelationship = await this.actionDelegate.toggleRelationship(token, account, relationshipMethod)
+
+    if(newRelationship) {
+      this.setState({relationships: {
+        ...this.state.relationships,
+        [token.acct]: newRelationship},
+      })
+    }
+  }
+
   onClickListTab(newList) {
     this.setState({list: newList})
     this.loadingAccount.then(() => this.startLoadList(newList))
+  }
+
+  onToggleMuteClicked(token, account, doMute) {
+    const {requester: {muteAccount, unmuteAccount}} = token
+    const relationshipMethod = doMute ? muteAccount : unmuteAccount
+
+    this.toggleRelationship(token, account, relationshipMethod)
+  }
+
+  onToggleBlockClicked(token, account, doBlock) {
+    const {requester: {blockAccount, unblockAccount}} = token
+    const relationshipMethod = doBlock ? blockAccount : unblockAccount
+
+    this.toggleRelationship(token, account, relationshipMethod)
+  }
+
+  onClickReport(token, account) {
+    // TODO:
   }
 
   onOpenTalkClicked(token, account, e) {

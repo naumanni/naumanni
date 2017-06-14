@@ -39,6 +39,25 @@ export default class TimelineActions {
     }
   }
 
+  /**
+   * private
+   * @param {OAuthToken} token
+   * @param {Account} account
+   * @return {string} account id or null
+   */
+  async searchAccountId(token, account) {
+    const {requester} = token
+    const {acct} = account
+    const {entities, result} = await requester.searchAccount({q: acct})
+    const accounts = result.map((r) => entities.accounts[r])
+    const fetched = accounts.find((a) => a.acct === acct)
+    if(!fetched)
+      return null
+    account = account.checkMerge(fetched).merged
+
+    return account.getIdByHost(token.host)
+  }
+
   onAvatarClicked(accountOrAcct, e) {
     e && e.preventDefault()
     e && e.stopPropagation()
@@ -126,5 +145,21 @@ export default class TimelineActions {
     if(!entities.statuses || !entities.statuses[status.uri])
       return null
     return entities.statuses[status.uri]
+  }
+
+  /**
+   * relationship更新リクエストを投げる(e.g. followAccount, unfollowAccount, muteAccount, etc...)
+   * @param {OAuthToken} token
+   * @param {Account} account
+   * @param {function} relationshipMethod
+   * @return {Promise} newRelationship or Error
+   */
+  async toggleRelationship(token, account, relationshipMethod) {
+    const id = account.getIdByHost(token.host) || await this.searchAccountId(token, account)
+
+    if(!id)
+      return Promise.reject(new Error(`failed getting account id for:${account.acct}`))
+
+    return (await relationshipMethod({id})).result
   }
 }
