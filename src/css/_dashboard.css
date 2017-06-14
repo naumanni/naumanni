@@ -62,12 +62,15 @@
     margin-left: $marginDefault;
 
     > button {
+      width: 32px;
+      height: 32px;
       border: none;
       background: $colorMainNormal;
       border-radius: $marginHalf;
 
       .icon {
         display: block;
+        margin: -1px 0 0 -1px;
         color: #fff;
         font-size: $sizeHeaderIcon;
       }
