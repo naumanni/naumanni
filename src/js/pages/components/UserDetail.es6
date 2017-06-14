@@ -158,7 +158,7 @@ url(${account.header})`
     return (
       <ul className="menu menu--mute">
 
-        {this.renderAllToggleRelationshipsMenu(type)}
+        {this.renderToggleAllRelationshipsMenu(type)}
 
         {tokens.map((token) => {
           const {account} = token
@@ -182,7 +182,7 @@ url(${account.header})`
     )
   }
 
-  renderAllToggleRelationshipsMenu(type) {
+  renderToggleAllRelationshipsMenu(type) {
     const {formatMessage: _} = this.context.intl
     const {account, tokens} = this.props
     const {label} = RELATIONSHIP_MAP[type]
