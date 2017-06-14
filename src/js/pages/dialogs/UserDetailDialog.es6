@@ -357,8 +357,8 @@ export default class UserDetailDialog extends HistoryBaseDialog {
     }
   }
 
-  async toggleRelationShip(token, account, relationshipMethod) {
-    const newRelationship = await this.actionDelegate.toggleRelationShip(token, account, relationshipMethod)
+  async toggleRelationship(token, account, relationshipMethod) {
+    const newRelationship = await this.actionDelegate.toggleRelationship(token, account, relationshipMethod)
 
     if(newRelationship) {
       this.setState({relationships: {
@@ -377,14 +377,14 @@ export default class UserDetailDialog extends HistoryBaseDialog {
     const {requester: {muteAccount, unmuteAccount}} = token
     const relationshipMethod = doMute ? muteAccount : unmuteAccount
 
-    this.toggleRelationShip(token, account, relationshipMethod)
+    this.toggleRelationship(token, account, relationshipMethod)
   }
 
   onToggleBlockClicked(token, account, doBlock) {
     const {requester: {blockAccount, unblockAccount}} = token
     const relationshipMethod = doBlock ? blockAccount : unblockAccount
 
-    this.toggleRelationShip(token, account, relationshipMethod)
+    this.toggleRelationship(token, account, relationshipMethod)
   }
 
   onClickReport(token, account) {

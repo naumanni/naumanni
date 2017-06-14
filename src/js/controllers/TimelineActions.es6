@@ -154,7 +154,7 @@ export default class TimelineActions {
    * @param {function} relationshipMethod
    * @return {Promise} newRelationship or Error
    */
-  async toggleRelationShip(token, account, relationshipMethod) {
+  async toggleRelationship(token, account, relationshipMethod) {
     const id = account.getIdByHost(token.host) || await this.searchAccountId(token, account)
 
     if(!id)
