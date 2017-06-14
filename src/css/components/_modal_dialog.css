@@ -29,10 +29,10 @@
 
 .dialog {
   background: $colorDialogBackground;
+  box-shadow: 0 8px 8px 0 rgba(0, 0, 0, 0.2), 0 0 8px 0 rgba(0, 0, 0, 0.1);
 
   .dialog-header {
     padding: $marginDefault;
-    border-bottom: 1px solid $colorGray1;
 
     h1 {
       margin: 0;
@@ -47,7 +47,6 @@
 
   .dialog-footer {
     padding: $marginDefault;
-    border-top: 1px solid $colorGray1;
 
     .dialog-footerButtons {
       text-align: right;

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import {
   DIALOG_ADD_ACCOUNT, DIALOG_AUTHORIZE_ACCOUNT, DIALOG_MEDIA_VIEWER, DIALOG_USER_DETAIL, DIALOG_GLOBAL_PREFERENCES,
-  DIALOG_WELCOME,
+  DIALOG_SEARCH, DIALOG_WELCOME,
 } from 'src/constants'
 import {UIDialogPropType} from 'src/propTypes'
 
@@ -51,6 +51,7 @@ export default class ModalDialogContainer extends React.Component {
     case DIALOG_MEDIA_VIEWER: return require('src/pages/dialogs/MediaViewerDialog').default
     case DIALOG_USER_DETAIL: return require('src/pages/dialogs/UserDetailDialog').default
     case DIALOG_GLOBAL_PREFERENCES: return require('src/pages/dialogs/PreferencesDialog').default
+    case DIALOG_SEARCH: return require('src/pages/dialogs/SearchDialog').default
     case DIALOG_WELCOME: return require('src/pages/dialogs/WelcomeDialog').default
     default: require('assert')(0, 'invalid dialog type')
     }

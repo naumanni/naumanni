@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {intlShape, FormattedMessage as _FM} from 'react-intl'
 
+import {NAUMANNI_VERSION} from 'src/constants'
 import {OAuthTokenListPropType} from 'src/propTypes'
 import {DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
 import {
@@ -9,7 +10,6 @@ import {
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
   TOOTFORM_PLACEHOLDER,
 } from 'src/constants'
-import TootWindow from '../TootWindow'
 
 
 /**
@@ -26,19 +26,9 @@ export default class DashboardHeader extends React.Component {
     onStartAddAccount: PropTypes.func.isRequired,
     onOpenColumn: PropTypes.func.isRequired,
     onGenKey: PropTypes.func.isRequired,
+    onShowSearch: PropTypes.func.isRequired,
     onShowSettings: PropTypes.func.isRequired,
     onSignOut: PropTypes.func.isRequired,
-  }
-
-  /**
-   * @constructor
-   */
-  constructor(...args) {
-    super(...args)
-
-    this.state = {
-      isShowTootWindow: false,
-    }
   }
 
   /**
@@ -46,24 +36,24 @@ export default class DashboardHeader extends React.Component {
    */
   render() {
     const {formatMessage: _} = this.context.intl
-    const {isShowTootWindow} = this.state
     const {tokens} = this.props
 
     return (
       <header className="naumanniDashboard-header">
-        <DropdownMenuButton ref="mixedColumnMenu" modifier="mixedColumnMenu" onRenderMenu={::this.onRenderCompoundMenu}>
-          <img className="naumanniDashboard-header-logo" src="/static/images/naumanni-headerLogo.svg" />
-        </DropdownMenuButton>
 
-        <div className="naumanniDashboard-header-toot">
-          <input
-            className={`${isShowTootWindow ? 'is-hidden' : ''}`}
-            type="text" placeholder={_({id: 'toot_form.placeholder'})}
-            onFocus={::this.onTootFocus} />
-          {isShowTootWindow && <TootWindow onClose={::this.onTootWindowClose} />}
+        <div className="naumanniDashboard-header-tootButton">
+          <button onClick={() => this.props.onCreateTootWindow()}>
+            <IconFont iconName="toot" />
+          </button>
         </div>
 
         <ul className="naumanniDashboard-header-accounts">
+          <li ref="mixedColumnMenu">
+            <DropdownMenuButton modifier="mixedColumnMenu" onRenderMenu={::this.onRenderCompoundMenu}>
+              <img className="naumanniDashboard-header-logo" src="/static/images/naumanni-headerLogo.svg" />
+            </DropdownMenuButton>
+          </li>
+
           {tokens.map((token, idx) => {
             const props = {}
             if(idx === 0)
@@ -85,6 +75,15 @@ export default class DashboardHeader extends React.Component {
 
         <span className="naumanniDashboard-header-spacer" />
 
+        <div className="naumanniDashboard-header-version"><span>naumanni {NAUMANNI_VERSION}</span></div>
+
+        <div className="naumanniDashboard-header-search">
+          <input
+            type="text"
+            placeholder={_({id: 'search_bar.placeholder'})}
+            onFocus={::this.onSearchFocus}
+          />
+        </div>
         <DropdownMenuButton onRenderMenu={::this.onRenderGlobalMenu}>
           <button className="naumanniDashboard-header-configButton">
             <IconFont iconName="cog" />
@@ -272,8 +271,8 @@ export default class DashboardHeader extends React.Component {
     )
   }
 
-  onTootFocus(e) {
-    this.setState({isShowTootWindow: true})
+  onSearchFocus(e) {
+    this.props.onShowSearch()
   }
 
   onTootWindowClose() {

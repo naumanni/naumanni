@@ -18,6 +18,7 @@ import ColumnContainer from './components/ColumnContainer'
 import DashboardHeader from './components/DashboardHeader'
 import ModalDialogContainer from './components/ModalDialogContainer'
 import {TooltipContainer} from './components/TooltipContainer'
+import TootWindow from './TootWindow'
 
 
 export default class Dashboard extends React.Component {
@@ -34,6 +35,7 @@ export default class Dashboard extends React.Component {
     this.state = {
       initializing: true,
       locale: 'en',   // 初期ロケールはen
+      tootwindows: [],
       ...this.getStateFromContext(),
     }
     this.state.messages = enMessages
@@ -97,7 +99,6 @@ export default class Dashboard extends React.Component {
       >
         {initializing ? (
         <div className="naumanniDashboard">
-          <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
           <AppIntializer app={this.props.app} onInitialized={::this.onAppInitialized} />
         </div>
         ) : (
@@ -111,17 +112,32 @@ export default class Dashboard extends React.Component {
               onStartAddAccount={::this.onStartAddAccount}
               onOpenColumn={::this.onOpenColumn}
               onGenKey={::this.onGenKey}
+              onShowSearch={::this.onShowSearch}
               onShowSettings={::this.onShowSettings}
               onSignOut={::this.onSignOut}
+              onCreateTootWindow={::this.onCreateTootWindow}
             />
-            <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
             <ColumnContainer ref="columnContainer" columns={columns} />
+            {this.renderTootWindows()}
           </div>
           <ModalDialogContainer dialogs={dialogs} />
           <TooltipContainer tooltips={tooltips} />
         </div>
         )}
       </IntlProvider>
+    )
+  }
+
+  renderTootWindows() {
+    const {tootwindows} = this.state
+
+    if(!tootwindows.length)
+      return null
+
+    return (
+      <div className="naumanniDashboard-tootwindows">
+        {tootwindows}
+      </div>
     )
   }
 
@@ -230,6 +246,11 @@ export default class Dashboard extends React.Component {
     ).execute(token, account)
   }
 
+  onShowSearch() {
+    const {history} = this.props.app
+    history.push(history.makeUrl('search'))
+  }
+
   onShowSettings() {
     const {history} = this.props.app
     history.push(history.makeUrl('preferences'))
@@ -253,6 +274,22 @@ export default class Dashboard extends React.Component {
       context.useCase(new RemoveTooltipUseCase()).execute(this.tooltips)
       this.tooltips = null
     }
+  }
+
+  onCreateTootWindow() {
+    const now = new Date()
+    const key = `${now.getTime()}.${now.getMilliseconds}`
+
+    this.setState({tootwindows: [
+      ...this.state.tootwindows,
+      <TootWindow
+        key={key}
+        onClose={() => {
+          const tootwindows = this.state.tootwindows.filter((c) => c.key !== key)
+          this.setState({tootwindows})
+        }}
+      />,
+    ]})
   }
 }
 
@@ -290,7 +327,10 @@ class AppIntializer extends React.Component {
 
   render() {
     return (
-      <div className="naumanniDashboard-initializationProgress">{this.state.progress}</div>
+      <div className="naumanniDashboard-initializationProgress">
+        {this.state.progress}
+        <div className="naumanniDashboard-version">naumanni {NAUMANNI_VERSION}</div>
+      </div>
     )
   }
 }
