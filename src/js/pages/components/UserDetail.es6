@@ -187,10 +187,9 @@ url(${account.header})`
     const {account, tokens} = this.props
     const {label} = RELATIONSHIP_MAP[type]
     const exceptMeTokens = tokens
-      .filter(({account: {acct: me}}) => account.acct !== me)
+      .filter(({acct: me}) => account.acct !== me)
     const actives = exceptMeTokens
-      .filter((token) => {
-        const {account: {acct}} = token
+      .filter(({acct}) => {
         const {activate} = this.getVisualForRelationship(type, acct)
 
         return !activate
@@ -200,12 +199,12 @@ url(${account.header})`
     let text
 
     if(actives.size === exceptMeTokens.size) {
-      // 全垢でMuteなりBlockなりしてる
+      // Muted or Blocked from all of accounts
       handler = this.onToggleRelationships.bind(this, type, actives, false)
       text = _({id: `user_detail.label.un${label}_all`})
     } else {
       const inactives = exceptMeTokens
-        .filter((token) => !actives.find(({account: {acct}}) => token.account.acct === acct))
+        .filter(({acct}) => !actives.find(({acct: activeAcct}) => acct === activeAcct))
 
       handler = this.onToggleRelationships.bind(this, type, inactives, true)
       text = _({id: `user_detail.label.${label}_all`})
