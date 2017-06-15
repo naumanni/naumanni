@@ -6,7 +6,7 @@ import classNames from 'classnames'
 import {intlShape, FormattedMessage as _FM} from 'react-intl'
 
 import {UIColumn} from 'src/models'
-import {ColumnHeaderMenu, DropdownMenuButton, IconFont, NowLoading} from 'src/pages/parts'
+import {ColumnHeaderMenu, IconFont, NowLoading} from 'src/pages/parts'
 import {AppPropType, ContextPropType} from 'src/propTypes'
 import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 
@@ -96,9 +96,9 @@ export default class Column extends React.Component {
       >
         {title}
         <div className="column-headerMenu">
-          <DropdownMenuButton onRenderMenu={::this.onRenderColumnMenu}>
-            <button className="column-headerMenuButton"><IconFont iconName="cog" /></button>
-          </DropdownMenuButton>
+          <button className="column-headerMenuButton" onClick={::this.onClickMenuButton}>
+            <IconFont iconName="cog" />
+          </button>
         </div>
       </header>
     )
@@ -106,7 +106,11 @@ export default class Column extends React.Component {
 
   renderMenuContent() {
     return (
-        <ColumnHeaderMenu />
+      <ColumnHeaderMenu>
+        <div className="menu-item--close" onClick={::this.onClickCloseColumn}>
+          <_FM id="column.menu.close" />
+        </div>
+      </ColumnHeaderMenu>
     )
   }
 
@@ -132,17 +136,8 @@ export default class Column extends React.Component {
     return context.getState()
   }
 
-  onRenderColumnMenu() {
-    return (
-      <ul className="menu menu--column">
-        <li className="menu-item"
-          onClick={::this.onClickCloseColumn}
-          >
-          <span className="menu-itemLabel"><_FM id="column.menu.close" /></span>
-        </li>
-
-      </ul>
-    )
+  onClickMenuButton() {
+    this.setState({menuVisible: !this.state.menuVisible})
   }
 
   onClickCloseColumn() {
