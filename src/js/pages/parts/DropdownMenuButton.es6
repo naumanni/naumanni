@@ -10,10 +10,10 @@ export default class DropdownMenuButton extends React.Component {
     modifier: PropTypes.string,
     // children
     onRenderMenu: PropTypes.func.isRequired,
-    onClick: PropTypes.func,
   }
 
   state = {
+    enteredMenu: false,
     menuVisible: false,
   }
 
@@ -34,7 +34,11 @@ export default class DropdownMenuButton extends React.Component {
           {this.props.children}
         </div>
         {this.state.menuVisible && (
-          <div className="dropdownMenuButton-menu" onClick={::this.onClickMenu}>
+          <div
+            className="dropdownMenuButton-menu"
+            onClick={::this.onClickMenu}
+            onMouseEnter={::this.onEnteredMenu}
+          >
             {this.props.onRenderMenu()}
           </div>
         )}
@@ -42,18 +46,27 @@ export default class DropdownMenuButton extends React.Component {
     )
   }
 
+  reset() {
+    this.setState({
+      enteredMenu: false,
+      menuVisible: false,
+    })
+  }
+
   onClickButton(e) {
     e.preventDefault()
-    this.props.onClick
-      ? this.props.onClick(e)
-      : this.setState({menuVisible: !this.state.menuVisible})
+    this.setState({menuVisible: !this.state.menuVisible})
   }
 
   onClickMenu() {
-    this.setState({menuVisible: false})
+    this.reset()
+  }
+
+  onEnteredMenu() {
+    this.setState({enteredMenu: true})
   }
 
   onMouseLeave() {
-    this.setState({menuVisible: false})
+    this.state.enteredMenu && this.reset()
   }
 }
