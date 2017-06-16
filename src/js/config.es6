@@ -16,3 +16,12 @@ const config = (function() {
   })
 })()
 export default config
+
+
+export function getServerRoot() {
+  return `${window.location.origin}/`
+}
+
+export function getApiRoot() {
+  return `${getServerRoot()}api/`
+}

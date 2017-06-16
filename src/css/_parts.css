@@ -68,6 +68,10 @@
     padding: $marginDefault;
     border-top: 1px dotted $colorMenuBorder;
 
+    &:first-child {
+      border-top: none;
+    }
+
     > .menu-itemIcon {
       display: inline-block;
       width: 1.5em;
@@ -167,6 +171,17 @@ $loaderVMargin: 2rem;
     }
   }
 
+  &.button--warning {
+    border-color: $colorWarningButtonBorder;
+    color: $colorWarningButtonText;
+    background: $colorWarningButtonBackground;
+
+    &:hover {
+      color: $colorWarningButtonHoverText;
+      background: $colorWarningButtonHoverBackground;
+    }
+  }
+
   &.button--danger {
     border-color: $colorDangerButtonBorder;
     color: $colorDangerButtonText;
@@ -182,6 +197,13 @@ $loaderVMargin: 2rem;
     border-color: transparent;
     color: #bdbdbd;
     background: #e0e0e0;
+  }
+
+  &.button--mini {
+    font-size: 0.8rem;
+    line-height: 1.5rem;
+    min-width: initial;
+    padding: 0 1em;
   }
 }
 

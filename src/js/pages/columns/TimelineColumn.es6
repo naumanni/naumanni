@@ -9,10 +9,10 @@ import {
   AUTO_PAGING_MARGIN, MAX_STATUSES,
 } from 'src/constants'
 import TimelineListener from 'src/controllers/TimelineListener'
-import TimelineStatus from '../components/TimelineStatus'
 import {makeTimelineLoader} from 'src/controllers/TimelineLoader'
 import {StatusTimeline} from 'src/models/Timeline'
 import PagingColumn from './PagingColumn'
+import TimelineStatusContainer from '../components/TimelineStatusContainer'
 
 
 /**
@@ -66,7 +66,7 @@ export default class TimelineColumn extends PagingColumn {
 
     return (
       <li key={ref.uri}>
-        <TimelineStatus
+        <TimelineStatusContainer
           subject={subject !== SUBJECT_MIXED ? subject : null}
           tokens={tokens}
           onLockStatus={() => this.scrollLockCounter.increment()}

@@ -12,6 +12,8 @@ machine:
 dependencies:
   override:
     - yarn
+    - cp plugin_entries.ci.es6 plugin_entries.es6
+    - touch plugin_entries.css
   cache_directories:
     - ~/.cache/yarn
 

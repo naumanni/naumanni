@@ -55,8 +55,8 @@ class DummyAPIRequester extends APIRequester.APIRequester {
         try{
           const response = APIRequester.__scenario[scenarioKey]
           if(!response) {
-            console.error(`${scenarioKey} not found`)
-            reject(new Error(`${scenarioKey} not found`))
+            console.error(`${scenarioKey} not foundin in API scenario`)
+            reject(new Error(`${scenarioKey} not found in API scenario`))
           }
           resolve({header: {}, body: JSON.parse(response)})
         } catch(e) {
@@ -67,6 +67,7 @@ class DummyAPIRequester extends APIRequester.APIRequester {
     req.catch = function(cb) {
       return this.then(undefined, cb)
     }
+    req.prefix = this.prefix
 
     return {spec, req}
   }

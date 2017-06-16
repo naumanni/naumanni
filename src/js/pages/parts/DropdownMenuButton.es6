@@ -27,8 +27,9 @@ export default class DropdownMenuButton extends React.Component {
     if(modifier) {
       className += ` dropdownMenuButton--${modifier}`
     }
+
     return (
-      <div className={className} onMouseLeave={::this.onMouseLeave}>
+      <div className={className} onMouseLeave={::this.onMouseLeave} style={this.props.style || {}}>
         <div className="dropdownMenuButton-button" onClick={::this.onClickButton}>
           {this.props.children}
         </div>

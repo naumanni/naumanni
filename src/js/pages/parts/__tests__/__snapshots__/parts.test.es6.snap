@@ -4,6 +4,7 @@ exports[`DropdownMenuButton can render button 1`] = `
 <div
   className="dropdownMenuButton"
   onMouseLeave={[Function]}
+  style={Object {}}
 >
   <div
     className="dropdownMenuButton-button"
@@ -20,6 +21,7 @@ exports[`DropdownMenuButton can show and hide menu : button and menu are visible
 <div
   className="dropdownMenuButton"
   onMouseLeave={[Function]}
+  style={Object {}}
 >
   <div
     className="dropdownMenuButton-button"
@@ -48,6 +50,7 @@ exports[`DropdownMenuButton can show and hide menu : button and menu are visible
 <div
   className="dropdownMenuButton"
   onMouseLeave={[Function]}
+  style={Object {}}
 >
   <div
     className="dropdownMenuButton-button"
@@ -76,6 +79,7 @@ exports[`DropdownMenuButton can show and hide menu : only button is visible 1`] 
 <div
   className="dropdownMenuButton"
   onMouseLeave={[Function]}
+  style={Object {}}
 >
   <div
     className="dropdownMenuButton-button"
@@ -92,6 +96,7 @@ exports[`DropdownMenuButton can show and hide menu : only button is visible 2`] 
 <div
   className="dropdownMenuButton"
   onMouseLeave={[Function]}
+  style={Object {}}
 >
   <div
     className="dropdownMenuButton-button"
@@ -108,6 +113,7 @@ exports[`DropdownMenuButton can show and hide menu : only button is visible 3`] 
 <div
   className="dropdownMenuButton"
   onMouseLeave={[Function]}
+  style={Object {}}
 >
   <div
     className="dropdownMenuButton-button"

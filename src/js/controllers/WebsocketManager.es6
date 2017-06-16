@@ -1,3 +1,4 @@
+import config, {getApiRoot} from 'src/config'
 import {
   WEBSOCKET_EVENT_ERROR, WEBSOCKET_EVENT_OPEN, WEBSOCKET_EVENT_MESSAGE, WEBSOCKET_EVENT_CLOSE,
 } from 'src/constants'
@@ -33,7 +34,11 @@ class WebsocketConnection {
     if(this.socket)
       return
 
-    const socket = new WebSocket(this.url)
+    const socket = new WebSocket(
+      config.PROXY_ENABLED
+        ? `${getApiRoot().replace(/^http/, 'ws')}ws/${this.url}`
+        : this.url
+    )
 
     this.socket = socket
     socket.onopen = ::this.onOpen
@@ -43,7 +48,7 @@ class WebsocketConnection {
   }
 
   onError(e) {
-    // console.log('onError', e)
+    console.log('websocket onError', e)
     this.emit(WEBSOCKET_EVENT_ERROR, null, e)
   }
 
@@ -62,13 +67,19 @@ class WebsocketConnection {
   }
 
   onOpen(e) {
-    // console.log('onOpen', e)
+    console.log('websocket onOpen', e)
     this.emit(WEBSOCKET_EVENT_OPEN, null, e)
   }
 
   onClose(e) {
-    // console.log('onClose', e)
+    console.log('websocket onClose', e)
+    this.socket = null
     this.emit(WEBSOCKET_EVENT_CLOSE, null, e)
+
+    // adhoc 5秒後に再接続
+    setTimeout(() => {
+      this.conncetIfNeed()
+    }, 5000)
   }
 
   emit(type, payload, source) {

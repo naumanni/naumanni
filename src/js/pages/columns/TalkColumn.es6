@@ -12,7 +12,7 @@ import TimelineActions from 'src/controllers/TimelineActions'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener from 'src/controllers/TalkListener'
 import Column from './Column'
-import {UserIconWithHost, SafeContent} from '../parts'
+import {UserIconWithHost, SafeContent, IconFont} from '../parts'
 
 
 /**
@@ -182,7 +182,7 @@ export default class TalkColumn extends Column {
       <div className={`talk-talkGroup ${isMyTalk ? 'is-me' : 'is-member'}`} key={key}>
         {showName && (
           <div className="talk-speakerName">
-            {talkGroup.account.display_name || talkGroup.account.account}
+            {talkGroup.account.display_name || talkGroup.account.acct}
           </div>
         )}
         {showAvatar && (
@@ -191,10 +191,10 @@ export default class TalkColumn extends Column {
           </div>
         )}
         <ul className="talk-talkGroupStatuses">
-          {talkGroup.contents.map(({key, parsedContent, createdAt}) => {
+          {talkGroup.contents.map(({key, parsedContent, createdAt, encrypted}) => {
             return (
               <li key={key}>
-                <div className="status-content">
+                <div className={`status-content ${encrypted ? 'is-encrypted' : ''}`}>
                   <SafeContent parsedContent={parsedContent} onClickHashTag={::this.onClickHashTag} />
                 </div>
                 <div className="status-date">
@@ -203,6 +203,7 @@ export default class TalkColumn extends Column {
                     hour="2-digit" minute="2-digit" second="2-digit"
                   />
                 </div>
+                {encrypted && <div className="status-isEncrypted"><IconFont iconName="lock" /></div>}
               </li>
             )
           })}

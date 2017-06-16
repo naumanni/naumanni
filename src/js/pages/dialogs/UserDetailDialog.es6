@@ -8,7 +8,7 @@ import TimelineData from 'src/infra/TimelineData'
 import {StatusTimeline} from 'src/models/Timeline'
 import AccountRow from 'src/pages/components/AccountRow'
 import UserDetail from 'src/pages/components/UserDetail'
-import TimelineStatus from 'src/pages/components/TimelineStatus'
+import TimelineStatusContainer from 'src/pages/components/TimelineStatusContainer'
 import {IconFont, NowLoading} from 'src/pages/parts'
 import {AcctPropType} from 'src/propTypes'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
@@ -171,7 +171,7 @@ export default class UserDetailDialog extends HistoryBaseDialog {
         {timeline.map((statusRef) => {
           return (
             <li key={statusRef.uri}>
-              <TimelineStatus
+              <TimelineStatusContainer
                 subject={null}
                 tokens={tokens}
                 {...statusRef.expand()}

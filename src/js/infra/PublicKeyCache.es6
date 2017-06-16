@@ -1,7 +1,7 @@
 import {Record} from 'immutable'
-import {key as openpgpKey} from 'openpgp'
+import {key as openpgpKey, HKP} from 'openpgp'
 
-import {HKP} from 'openpgp'
+import config from 'src/config'
 
 
 const StoredPublicKeyRecord = Record({  // eslint-disable-line new-cap
@@ -13,7 +13,7 @@ const StoredPublicKeyRecord = Record({  // eslint-disable-line new-cap
 
 
 /**
- * OAuthでのApp登録を表すModel
+ *
  */
 export /* default */class StoredPublicKey extends StoredPublicKeyRecord {
   static storeName = 'pulbic_key_cache'
@@ -48,22 +48,19 @@ export /* default */class StoredPublicKey extends StoredPublicKeyRecord {
 class PublicKeyCache {
   /**
    * KeyIdの配列から、Keyを得る
-   * @param {Object[]} keyIds {keyId, user}の配列
+   * @param {string} keyId fingerprintの先頭24文字?
+   * @param {string} user user name(== acct)
+   * @return {openpgp.Key}
    */
-  async fetchKeys(keyIds) {
-    // keyIdは重複していないでほしい
-    require('assert')(
-      (new Set(keyIds.map(({keyId}) => keyId))).length === keyIds.length
-    )
-
+  async fetchKey({keyId, user}) {
     // HKPする
-    const hkp = new HKP('http://sks.oppai.tokyo')
-    const responses = await Promise.all(
-      keyIds.map(({keyId, user}) => hkp.lookup({keyId, query: user}))
-    )
+    const hkp = new HKP(config.SKS_SERVER)
+    const response = await hkp.lookup({keyId, query: user})
+    if(!response)
+      return null
 
-    console.log(responses)
-    require('assert')(0, 'not implemented yet')
+    const key = openpgpKey.readArmored(response).keys[0]
+    return key
   }
 }
 

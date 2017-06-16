@@ -10,6 +10,7 @@ import WebsocketManager from 'src/controllers/WebsocketManager'
 import TimelineData from 'src/infra/TimelineData'
 import {makeWebsocketUrl} from 'src/utils'
 
+import {decryptBlocks} from 'src/controllers/PGP'
 
 const _STATE_INITIAL = 'initial'
 const _STATE_LOADING = 'loading'
@@ -19,31 +20,98 @@ const _STATE_WATCHING = 'watching'
 class EncryptedMessage {
   constructor(checksum, total) {
     checksum = checksum.toLowerCase()
-    require('assert')(checksum.match(/^[0-9a-f]{16}$/))
-    require('assert')(0 < total < 99)
+    require('assert')(checksum.match(/^[0-9a-f]{8}$/), 'invalid checksum')
+    require('assert')(0 < total < 99, 'invalid totalnumber')
 
     this.checksum = checksum
     this.total = total
     this.blocks = new Array(this.total)
 
+    this.decrypting = false
+    this.decrypted = null
+
     require('assert')(!this.hasAllBlocks())
   }
 
-  set(index, encodedBlock) {
+  set(index, statusRef) {
+    require('assert')(statusRef)
     if(index < 1 || index >= self.total)
       throw new Error('invalid index')
-    this.blocks[index - 1] = encodedBlock
+    this.blocks[index - 1] = statusRef
   }
 
   hasAllBlocks() {
-    return this.blocks.every((b) => b)
+    for(let idx=0; idx < this.total; ++idx) {
+      if(!this.blocks[idx])
+        return false
+    }
+    return true
+  }
+
+  async decrypt(privateKey) {
+    console.log('decrypt', this)
+    if(this.decrypting)
+      return
+    this.decrypting = true
+    const blocks = this.blocks.map((statusRef) => statusRef.resolve().content)
+      .map((content) => content
+        .replace('</p>', '\n\n')
+        .replace('<br(\s+\/)?>', '\n')
+        .replace(/<\/?[^>]+(>|$)/g, '')
+      )
+
+    try {
+      const decrypted = await decryptBlocks(blocks, privateKey)
+      this.decrypted = decrypted
+      return decrypted
+    } catch(e) {
+      console.error('decription failed', e)
+    }
+  }
+
+  get isDecrypted() {
+    return this.decrypted
   }
 }
 
 
 class EncryptedStatus {
-  constructor() {
-    require('assert')(0, 'not implemented')
+  constructor(encryptedMessage) {
+    this.encryptedMessage = encryptedMessage
+    this.primary = this.encryptedMessage.blocks[0].expand()
+  }
+
+  get account() {
+    const {account} = this.primary
+    return account
+  }
+
+  get createdAt() {
+    const {status} = this.primary
+    return status.createdAt
+  }
+
+  get fetchedAt() {
+    const {status} = this.primary
+    return status.fetchedAt
+  }
+
+  get uri() {
+    const {status} = this.primary
+    return status.uri
+  }
+
+  getIdByHost(...args) {
+    const {status} = this.primary
+    return status.getIdByHost(...args)
+  }
+
+  get parsedContent() {
+    if(!this.encryptedMessage.isDecrypted) {
+      return [{type: 'text', text: '復号中...'}]
+    } else {
+      return [{type: 'text', text: this.encryptedMessage.decrypted}]
+    }
   }
 }
 
@@ -62,9 +130,6 @@ class TalkBlock {
   }
 
   isMatch(newStatus) {
-    if(newStatus instanceof EncryptedStatus) {
-      require('assert')(0, 'not implemented')
-    }
     // 発言者が違えば違うBlock
     if(newStatus.account !== this.account.uri)
       return false
@@ -200,7 +265,7 @@ export default class TalkListener extends EventEmitter {
   async loadStatuses(member) {
     const {host, requester} = this.token
 
-    for(let loop = 0; loop < 5; ++loop) {
+    for(let loop = 0; loop < 3; ++loop) {
       const maxId = this.statusesMaxId[member.acct]
       if(maxId === 0)
         break
@@ -264,7 +329,6 @@ export default class TalkListener extends EventEmitter {
     // rebuild talks
     this.decryptStatuses()
     this.rebuildTalk()
-
     this.emitChange()
 
     return true
@@ -273,19 +337,25 @@ export default class TalkListener extends EventEmitter {
   /**
    */
   decryptStatuses() {
-    for(const status of this.statuses) {
+    for(const statusRef of this.statuses) {
+      let status = statusRef.resolve()
       const blockInfo = status.messageBlockInfo
 
       if(blockInfo) {
         let encryptedMessage = this.encryptedMessages[blockInfo.checksum]
-        if(!encryptedMessage)
+        if(!encryptedMessage) {
           encryptedMessage = this.encryptedMessages[blockInfo.checksum] =
             new EncryptedMessage(blockInfo.checksum, blockInfo.total)
-        encryptedMessage.set(blockInfo.index, status.encoded)
+        }
+        encryptedMessage.set(blockInfo.index, statusRef)
 
         if(encryptedMessage.hasAllBlocks()) {
           // decrypt status
-          console.log('decrypt', encryptedMessage)
+          encryptedMessage.decrypt(this.token.privateKey)
+            .then(() => {
+              this.rebuildTalk()
+              this.emitChange()
+            })
         }
       }
     }
@@ -307,7 +377,7 @@ export default class TalkListener extends EventEmitter {
           continue
 
         const encryptedMessage = this.encryptedMessages[blockInfo.checksum]
-        require('assert')(encryptedMessage)
+        require('assert')(encryptedMessage, 'no encrypt message')
         pushedEncryptedMessages.add(blockInfo.checksum)
         status = new EncryptedStatus(encryptedMessage)
       }
@@ -329,7 +399,12 @@ export default class TalkListener extends EventEmitter {
     for(const talkBlock of talk) {
       talkBlock.contents = talkBlock.statuses.map((status) => {
         if(status instanceof EncryptedStatus) {
-          require('assert')(0, 'not implemented')
+          return {
+            key: status.uri,
+            parsedContent: status.parsedContent,
+            createdAt: status.createdAt,
+            encrypted: true,
+          }
         } else {
           // 冒頭のmentionだけ省く
           let isHead = true
@@ -360,7 +435,7 @@ export default class TalkListener extends EventEmitter {
   }
 
   startWatching() {
-    require('assert')(this.state === _STATE_LOADING)
+    require('assert')(this.state === _STATE_LOADING, 'startWatching(): invalid state')
     this.state = _STATE_WATCHING
     this.emitChange()
   }

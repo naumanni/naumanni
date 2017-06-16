@@ -1,5 +1,5 @@
 import moment from 'moment'
-import {is, List, Map, Record} from 'immutable'
+import {is, fromJS, List, Map, Record} from 'immutable'
 
 import {
   MESSAGE_TAG_REX,
@@ -50,6 +50,7 @@ const StatusRecord = Record({  // eslint-disable-line new-cap
 
   // naumanni
   fetched_at: null,  // WebSocketから取得した日付
+  extended: new Map(),  // pluginが追加する値
 })
 
 const NOT_SET = {}
@@ -76,6 +77,7 @@ export default class Status extends StatusRecord {
       tags: new List((raw.tags || []).map((obj) => new TagRecord(obj))),
       mentions: new List((raw.mentions || []).map((obj) => new MentionRecord(obj))),
       application: new ApplicationRecord(raw.application),  // TODO: Recordにする
+      extended: fromJS(raw.extended || {}),
     }
 
     super(raw)
@@ -217,5 +219,9 @@ export default class Status extends StatusRecord {
       index: +match[2],
       total: +match[3],
     }
+  }
+
+  getExtended(key) {
+    return this.extended.get(key)
   }
 }

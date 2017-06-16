@@ -195,7 +195,7 @@ class MastodonAPISpec extends APISpec {
     }
 
     // reqからhostを得る
-    const host = (new URL(req.url)).hostname
+    const host = (new URL(req.prefix)).hostname
     const acct = options.token && options.token.acct
     return {...result, ...normalizeResponse(entity, result, host, acct)}
   }

@@ -36,8 +36,19 @@ export default class Dashboard extends React.Component {
       locale: 'en',   // 初期ロケールはen
       ...this.getStateFromContext(),
     }
-    this.state.messages = enMessages
+
     this.initialized = false
+
+    // enのLocaleはハードリンクする
+    let messages = enMessages
+    const loadPluginDefaultLocales = (require('naumanniPlugins') || {}).loadPluginDefaultLocales
+    if(loadPluginDefaultLocales) {
+      messages = loadPluginDefaultLocales()
+        .reduce((messages, {messages: pluginMessages}) => {
+          return {...messages, ...pluginMessages}
+        }, messages)
+    }
+    this.state.messages = messages
   }
 
   /**
@@ -201,7 +212,19 @@ export default class Dashboard extends React.Component {
     if(!newLocale || this.state.locale === newLocale)
       return
 
-    const {messages, localeData} = await import(`../locales/${newLocale}.es6`)
+    let {messages, localeData} = await import(
+      /* webpackChunkName: "locales/[request]", webpackMode: 'lazy-once' */
+      `../locales/${newLocale}.es6`
+    )
+
+    const loadPluginLocales = (require('naumanniPlugins') || {}).loadPluginLocales
+    if(loadPluginLocales) {
+      messages = (await Promise.all(loadPluginLocales(newLocale)))
+        .reduce((messages, {messages: pluginMessages}) => {
+          return {...messages, ...pluginMessages}
+        }, messages)
+    }
+
     moment.locale(newLocale)
     addLocaleData(localeData)
     this.setState({

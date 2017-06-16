@@ -2,7 +2,7 @@ import React from 'react'
 import {FormattedMessage as _FM} from 'react-intl'
 // import PropTypes from 'prop-types'
 
-import config from 'src/config'
+import config, {getServerRoot} from 'src/config'
 import {NAUMANNI_PREFERRED_INSTANCES} from 'src/constants'
 import {makeAPIRequester} from 'src/api/APIRequester'
 import MastodonAPISpec from 'src/api/MastodonAPISpec'
@@ -135,13 +135,13 @@ export default class AddAccountDialog extends HistoryBaseDialog {
       // const redirectUri = history.makeUrl('top', null, {external: true})
       const redirectUri =
         history.useHash
-          ? `${window.location.origin}/`
+          ? getServerRoot()
           : history.makeUrl('authorize', null, {external: true})
       const {result: rawAppData} = await requester.postApp({
         client_name: 'naumanni',
         scopes: scopes.join(' '),
         redirect_uris: redirectUri,
-        website: `${window.location.origin}/`,
+        website: getServerRoot(),
       })
       app = new OAuthApp({
         host: host,

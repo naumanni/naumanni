@@ -51,6 +51,10 @@
         padding: $marginHalf $marginDefault;
         margin: 0;
         flex: 1 1 auto;
+
+        p {
+          margin: 0;
+        }
       }
 
       .status-date {
@@ -59,6 +63,13 @@
         color: $colorStatusInfo;
         font-size: $fontSizeStatusInfo;
         visibility: hidden;
+      }
+
+      .status-isEncrypted {
+        font-size: $fontSizeStatusInfo;
+        color: #d8b924;
+        padding-top: 0.6rem;
+        margin: 0 $marginHalf;
       }
 
       &:first-child {
@@ -100,12 +111,15 @@
       margin-left: auto;
 
       .status-content {
+        order: 3;
         background: $colorTalkReceiverStatus;
-        order: 2;
       }
       .status-date {
         order: 1;
         text-align: right;
+      }
+      .status-isEncrypted {
+        order: 2;
       }
     }
   }
@@ -130,36 +144,12 @@
       .status-content {
         background: $colorTalkSenderStatus;
       }
-    }
-  }
-}
-
-
-.status-content {
-  color: $colorStatusText;
-  line-height: 1.3;
-  overflow: hidden;
-
-  > p {
-    margin: 0;
-    word-break: break-all;
-  }
-
-  /** なんかリンクにスタイル入ってる... */
-  a {
-    color: $colorStatusLink;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-
-    .invisible {
-      display: none;
-    }
-
-    .ellipsis::after {
-      content: "…";
+      .status-isEncrypted {
+        order: 2;
+      }
+      .status-date {
+        order: 3;
+      }
     }
   }
 }

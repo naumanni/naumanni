@@ -62,18 +62,18 @@ export default class Account extends AccountRecord {
   }
 
   get address() {
-    console.warn('deprecated function')
+    console.warn('deprecated function: Account.address()')
     // acctは@を含んでないことが有る
     return this.account
   }
 
   get account() {
-    console.warn('deprecated function')
+    console.warn('deprecated function: Account.account()')
     return this.acct
   }
 
   get id() {
-    console.error('deprecated attribute')
+    console.error('deprecated attribute: Account.id()')
     require('assert')(0)
   }
 
@@ -87,33 +87,6 @@ export default class Account extends AccountRecord {
 
   getIdByHost(host) {
     return this.id_by_host.get(host)
-  }
-
-  get hasKeypair() {
-    return this.hasPublicKey && this.hasPrivateKey
-  }
-
-  get hasPublicKey() {
-    return this.note.match(REGEX_PGP_FINGERPRINT) ? true : false
-  }
-
-  get hasPrivateKey() {
-    return this.privateKeyArmored ? true : false
-  }
-
-  get publicKeyId() {
-    const match = this.note.match(REGEX_PGP_FINGERPRINT)
-    if(!match)
-      return null
-    const fingerprint = match[1]
-    if(fingerprint.length != 40)
-      return null
-    return fingerprint.substring(24)
-  }
-
-  get privateKeyArmored() {
-    const keydata = localStorage.getItem(`pgp::privateKey::${this.acct}`)
-    return keydata
   }
 
   get instance() {
@@ -168,5 +141,27 @@ export default class Account extends AccountRecord {
       this._parsedNote = new List(parseMastodonHtml(this.note))
     }
     return this._parsedNote
+  }
+
+  get plainNote() {
+    return this.note
+      .replace('</p>', '\n\n')
+      .replace('<br(\s+\/)?>', '\n')
+      .replace(/<\/?[^>]+(>|$)/g, '').trim()
+  }
+
+  // privacy
+  get hasPublicKey() {
+    return REGEX_PGP_FINGERPRINT.test(this.note) ? true : false
+  }
+
+  get publicKeyId() {
+    const match = this.note.match(REGEX_PGP_FINGERPRINT)
+    if(!match)
+      return null
+    const fingerprint = match[1]
+    if(fingerprint.length != 40)
+      return null
+    return fingerprint.substring(24)
   }
 }
