@@ -286,7 +286,8 @@ export default class PagingColumn extends Column {
    */
   onTimelineScrolled(e) {
     const node = e.target
-    const scrollTop = node.scrollTop
+    const {clientHeight, scrollHeight, scrollTop} = node
+    const loadMoreThreshold = scrollHeight - AUTO_PAGING_MARGIN
 
     // Scroll位置がちょっとでもTopから動いたらLockしちゃう
     if(!this.unlockScrollLock && scrollTop > 0) {
@@ -299,8 +300,11 @@ export default class PagingColumn extends Column {
       this.unlockScrollLock = undefined
     }
 
+    if(loadMoreThreshold <= clientHeight)
+      return
+
     // Scroll位置がBottomまであとちょっとになれば、次を読み込む
-    if(scrollTop + node.clientHeight > node.scrollHeight - AUTO_PAGING_MARGIN) {
+    if(scrollTop + clientHeight > loadMoreThreshold) {
       //
       if(!this.state.isTailLoading) {
         this.loadMoreStatuses()
