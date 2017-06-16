@@ -2,51 +2,7 @@ import React from 'react'
 import renderer from 'react-test-renderer'
 
 import {Account} from 'src/models'
-import {DropdownMenuButton, IconFont, NowLoading, UserIconWithHost} from '../'
-
-
-describe('DropdownMenuButton', () => {
-  it('can render button', () => {
-    const tree = renderer.create(
-      <DropdownMenuButton onRenderMenu={() => <div>menu!!</div>}>
-        <div>child!!</div>
-      </DropdownMenuButton>
-    ).toJSON()
-    expect(tree).toMatchSnapshot()
-  })
-
-  it('can show and hide menu', () => {
-    const component = renderer.create(
-      <DropdownMenuButton onRenderMenu={() => <div><a href="http://goo.gl">NiceLink</a></div>}>
-        <div>child!!</div>
-      </DropdownMenuButton>
-    )
-    let tree = component.toJSON()
-    expect(tree).toMatchSnapshot('DropdownMenuButton can show and hide menu : only button is visible')
-
-    // menu was showed
-    expect(tree.children[0].props.className).toBe('dropdownMenuButton-button')
-    tree.children[0].props.onClick({preventDefault: jest.fn(), stopPropagation: jest.fn()})
-    tree = component.toJSON();
-    expect(tree).toMatchSnapshot('DropdownMenuButton can show and hide menu : button and menu are visible')
-
-    // menu was hidden
-    tree.props.onMouseLeave()
-    tree = component.toJSON()
-    expect(tree).toMatchSnapshot('DropdownMenuButton can show and hide menu : only button is visible')
-
-    // menu was showed
-    tree.children[0].props.onClick({preventDefault: jest.fn(), stopPropagation: jest.fn()})
-    tree = component.toJSON()
-    expect(tree).toMatchSnapshot('DropdownMenuButton can show and hide menu : button and menu are visible')
-
-    // menu was closed after link click
-    expect(tree.children[1].props.className).toBe('dropdownMenuButton-menu')
-    tree.children[1].props.onClick({preventDefault: jest.fn(), stopPropagation: jest.fn()})
-    tree = component.toJSON()
-    expect(tree).toMatchSnapshot('DropdownMenuButton can show and hide menu : only button is visible')
-  })
-})
+import {IconFont, NowLoading, UserIconWithHost} from '../'
 
 
 test('IconFont', () => {
