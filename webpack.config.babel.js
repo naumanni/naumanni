@@ -12,7 +12,9 @@ let NAUMANNI_VERSION
 try {
   NAUMANNI_VERSION = process.env.NAUMANNI_VERSION || ('' + execSync('git describe')).trim()
 } catch(e) {
-  NAUMANNI_VERSION = process.env.NAUMANNI_VERSION || 'dev'
+  NAUMANNI_VERSION = require('./package.json').version
+  if(process.env.NODE_ENV !== 'production')
+    NAUMANNI_VERSION += 'dev'
 }
 
 class LoggerPlugin {
