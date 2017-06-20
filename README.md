@@ -39,11 +39,10 @@ Naumanni is a collaborative project between UEI Corporation. and glucose inc.
 
 ## Dependency
 
-* yarn >= 0.23.4
-* node >= v7.5.0
-* docker >= 17.03
+* docker >= 17.0.5
 
 ## Docker
+
 
 ```
 $ docker pull naumanni/naumanni-standalone
@@ -51,6 +50,8 @@ $ docker run -it -p 8080:80 naumanni/naumanni-standalone
 ```
 
 Now you can access to http://localhost:8080/ via web browser.
+
+See [naumanni/naumanni-docker](https://github.com/naumanni/naumanni-docker) more details.
 
 
 # Setup for Developer
