@@ -318,7 +318,7 @@ export default _TimelineData
 export async function postStatusManaged(token, {mediaFiles, message}) {
   const {requester} = token
 
-  if(mediaFiles) {
+  if(mediaFiles && mediaFiles.length > 0) {
     const mediaFileResponses = await Promise.all(
       mediaFiles.map((file) => {
         return requester.createMedia({file}, {onprogress: (e) => {

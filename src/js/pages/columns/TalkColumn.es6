@@ -1,6 +1,7 @@
 // import update from 'immutability-helper'
 import PropTypes from 'prop-types'
 import React from 'react'
+import update from 'immutability-helper'
 import {findDOMNode} from 'react-dom'
 import {FormattedDate, FormattedMessage as _FM} from 'react-intl'
 
@@ -12,7 +13,8 @@ import TimelineActions from 'src/controllers/TimelineActions'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener from 'src/controllers/TalkListener'
 import Column from './Column'
-import {UserIconWithHost, SafeContent, IconFont} from '../parts'
+import {IconFont, UserIconWithHost, SafeContent} from '../parts'
+import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
 
 
 /**
@@ -35,11 +37,13 @@ export default class TalkColumn extends Column {
     this.scrollChanging = false
     this.state = {
       ...this.state,
-      loading: true,
-      sendingMessage: false,
-      newMessage: '',
       keepAtBottom: true,
+      loading: true,
+      mediaFiles: [],
+      newMessage: '',
+      sendingMessage: false,
     }
+    this.setUpMediaCounter()
   }
 
   /**
@@ -126,12 +130,26 @@ export default class TalkColumn extends Column {
         <ul className="talk-talkGroups" ref="talkGroups" onScroll={::this.onScrollTalkGroups}>
           {(talk || []).map((talkGroup, idx, talk) => this.renderTalkGroup(talkGroup, talk[idx - 1], talk[idx + 1]))}
         </ul>
-        <div className="talk-form">
-          <textarea
-            value={this.state.newMessage}
-            onChange={::this.onChangeMessage}
-            onKeyDown={::this.onKeyDownMessage}
-            placeholder={_({id: 'talk.form.placeholder'})} />
+        <div className="talkForm-content">
+          <div className="talkForm-status">
+            <textarea
+              value={this.state.newMessage}
+              onChange={::this.onChangeMessage}
+              onKeyDown={::this.onKeyDownMessage}
+              placeholder={_({id: 'talk.form.placeholder'})} />
+          </div>
+
+          {this.renderMediaFiles()}
+
+          <div className="talkForm-contentActions">
+            <label className="tootForm-addMedia">
+              <IconFont iconName="camera" />
+              <input
+                type="file"
+                multiple="multiple"
+                style={{display: 'none'}} ref="fileInput" onChange={::this.onChangeMediaFile} />
+            </label>
+          </div>
         </div>
       </div>
     )
@@ -212,6 +230,30 @@ export default class TalkColumn extends Column {
     )
   }
 
+  renderMediaFiles() {
+    const {mediaFiles} = this.state
+
+    if(!mediaFiles) {
+      return null
+    }
+
+    return (
+      <div className="talkForm-mediaFiles">
+        {mediaFiles.map((file) => {
+          return <MediaFileThumbnail
+            key={this.mediaFileKeys.get(file)} mediaFile={file} showClose={true}
+            onClose={this.onRemoveMediaFile.bind(this, file)} />
+        })}
+      </div>
+    )
+  }
+
+  setUpMediaCounter() {
+    this.mediaFileKeys = new WeakMap()
+    this.mediaFileCounter = 0
+  }
+
+
   sendMessage() {
     const message = this.state.newMessage.trim()
     if(!message) {
@@ -236,14 +278,18 @@ export default class TalkColumn extends Column {
         await context.useCase(new SendDirectMessageUseCase()).execute({
           token,
           self: me,
-          message: message,
+          message,
+          mediaFiles: this.state.mediaFiles,
           in_reply_to_id: lastStatusId,
           recipients: Object.values(members),
         })
 
         this.setState({
+          mediaFiles: [],
           newMessage: '',
           sendingMessage: false,
+        }, () => {
+          this.setUpMediaCounter()
         })
       } catch(e) {
         console.dir(e)
@@ -282,6 +328,28 @@ export default class TalkColumn extends Column {
 
   onChangeMessage(e) {
     this.setState({newMessage: e.target.value})
+  }
+
+  onChangeMediaFile(e) {
+    let files = Array.from(e.target.files)
+
+    for(const file of files) {
+      this.mediaFileKeys.set(file, ++this.mediaFileCounter)
+    }
+
+    this.setState(update(this.state, {mediaFiles: {$push: files}}))
+    e.target.value = null
+  }
+
+  onRemoveMediaFile(file) {
+    const idx = this.state.mediaFiles.indexOf(file)
+    if(idx >= 0) {
+      const newState = update(this.state, {mediaFiles: {$splice: [[idx, 1]]}})
+      this.setState({
+        ...newState,
+        sensitive: newState.mediaFiles.length === 0 ? false : newState.sensitive,
+      })
+    }
   }
 
   onKeyDownMessage(e) {
