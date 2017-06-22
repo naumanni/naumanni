@@ -1,12 +1,11 @@
 import React from 'react'
-import classNames from 'classnames'
 import {FormattedMessage as _FM} from 'react-intl'
 
 import {COLUMN_TAG, STREAM_TAG} from 'src/constants'
 import {makeWebsocketUrl} from 'src/utils'
 import {HashtagTimelineLoader} from 'src/controllers/TimelineLoader'
 import TimelineListener from 'src/controllers/TimelineListener'
-import {ColumnHeaderMenu, DropdownMenuButton, IconFont, UserIconWithHost} from 'src/pages/parts'
+import {ColumnHeaderMenu, UserIconWithHost} from 'src/pages/parts'
 import ReplaceColumnUseCase from 'src/usecases/ReplaceColumnUseCase'
 import PagingColumn from './PagingColumn'
 import TimelineColumn from './TimelineColumn'
@@ -30,33 +29,6 @@ export default class HashTagColumn extends TimelineColumn {
       <h1 className="column-headerTitle">
         <_FM id="column.title.hashtag" values={{tag}} />
       </h1>
-    )
-  }
-
-  /**
-   * @override
-   */
-  renderHeader() {
-    let title = this.renderTitle()
-
-    if(typeof title === 'string')
-      title = <h1 className="column-headerTitle">{title}</h1>
-
-    return (
-      <header
-        className={classNames(
-          'column-header',
-          {'column-header-private': this.isPrivate()}
-        )}
-        onClick={::this.onClickHeader}
-      >
-        {title}
-        <div className="column-headerMenu">
-          <DropdownMenuButton onRenderMenu={::this.onRenderColumnMenu} onClick={::this.onClickMenuButton} >
-            <button className="column-headerMenuButton"><IconFont iconName="cog" /></button>
-          </DropdownMenuButton>
-        </div>
-      </header>
     )
   }
 
@@ -127,11 +99,6 @@ export default class HashTagColumn extends TimelineColumn {
   }
 
   // cb
-  onClickMenuButton(e) {
-    // TODO: make this header menu as common style
-    this.setState({menuVisible: !this.state.menuVisible})
-  }
-
   onToggleAccount({acct}, e) {
     let subjects = this.props.subject.split(',')
 

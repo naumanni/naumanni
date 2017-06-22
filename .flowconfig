@@ -1,0 +1,17 @@
+[ignore]
+.*/static/.*
+.*/__mocks__/.*
+.*/__stories__/.*
+.*/__tests__/.*
+
+[include]
+
+[libs]
+./src/decls
+
+[options]
+esproposal.class_static_fields=enable
+module.file_ext=.es6
+module.file_ext=.js
+munge_underscores=true
+module.name_mapper='^src\/\(.*\)$' -> '<PROJECT_ROOT>/src/js/\1'
