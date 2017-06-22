@@ -29,12 +29,6 @@ export default class GenerateKeypairUseCase extends UseCase {
     localStorage.setItem(`pgp::fingerprint::${account.account}`, fingerprint)
     localStorage.setItem(`pgp::privateKey::${account.account}`, keypair.privateKeyArmored)
 
-    // update profile
-    const note = account.plainNote.replace(REGEX_PGP_FINGERPRINT, '').replace(/[\n\u21b5]+$/, '')
-    await token.requester.updateCredentials({
-      note: `${note}\nPGP Key Fingerprint: ${fingerprint}`,
-    })
-
     // upload public key
     const hkp = new HKP(config.SKS_SERVER)
     await hkp.upload(keypair.publicKeyArmored)
