@@ -9,7 +9,6 @@ exports[`SafeContent TOKEN_BREAK match snapshot 1`] = `
 exports[`SafeContent TOKEN_HASHTAG match snapshot 1`] = `
 <p>
   <a
-    href="#"
     onClick={[Function]}
   >
     #
