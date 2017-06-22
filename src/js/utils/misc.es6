@@ -169,7 +169,7 @@ export const raq = (function() {
 
   // Other
   if(typeof setTimeout === 'function') {
-    return function nextTick(handler: Function) {
+    return function nextTick(handler) {
       setTimeout(handler, 0)
     }
   }
