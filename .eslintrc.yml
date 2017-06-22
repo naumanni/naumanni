@@ -4,6 +4,7 @@ env:
   es6: true
 extends:
   - eslint:recommended
+  - plugin:flowtype/recommended
   - google
 globals:
   process: false
@@ -17,6 +18,7 @@ parserOptions:
 plugins:
   - react
   - import
+  - flowtype
 rules:
   indent:
     - error

@@ -1,3 +1,4 @@
+/* @flow */
 import React from 'react'
 import PropTypes from 'prop-types'
 import {is} from 'immutable'
@@ -5,10 +6,18 @@ import {is} from 'immutable'
 import {AccountPropType} from 'src/propTypes'
 import {makeFaviconUrl} from 'src/utils'
 
+
+type Props = {
+  account: any,
+  size: string,
+  onClick: (e: SyntheticUIEvent) => void
+};
+
+
 /**
  * ユーザーの顔アイコン with ホスト
  */
-export class UserIconWithHost extends React.Component {
+export class UserIconWithHost extends React.Component<void, Props, void> {
   static propTypes = {
     account: AccountPropType.isRequired,
     size: PropTypes.string,
@@ -16,13 +25,13 @@ export class UserIconWithHost extends React.Component {
 
   // propsの中でrendering対象のkey
   static propDeepKeys = {
-    'account': new Set('acct', 'avatar', 'avatar_static'),
+    'account': new Set(['acct', 'avatar', 'avatar_static']),
   }
 
   /**
    * @override
    */
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps: Props, nextState: void) {
     return (
       this.props.size === nextProps.size &&
       is(this.props.account, nextProps.account)

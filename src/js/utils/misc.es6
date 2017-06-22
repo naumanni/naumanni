@@ -169,7 +169,7 @@ export const raq = (function() {
 
   // Other
   if(typeof setTimeout === 'function') {
-    return function nextTick(handler: Function) {
+    return function nextTick(handler) {
       setTimeout(handler, 0)
     }
   }
@@ -229,6 +229,7 @@ export function compareDateForTL(a, b) {
     return -1
   return 0
 }
+
 
 /**
  * Parse input text for building autosuggestion query
