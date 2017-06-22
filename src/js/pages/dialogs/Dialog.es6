@@ -78,8 +78,9 @@ export default class Dialog extends React.Component {
   get dialogClassName() {
     const dialogClassName = ['dialog']
 
-    if(this.props.visible)
-      dialogClassName.push('is-visible')
+    this.props.visible
+      ? dialogClassName.push('is-visible')
+      : dialogClassName.push('is-hidden')
 
     return dialogClassName.join(' ')
   }
