@@ -5,3 +5,4 @@ static/*.map
 static/*.LICENSE
 static/*.gz
 /config.es6
+.eslintcache

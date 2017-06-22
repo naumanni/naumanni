@@ -1,3 +1,4 @@
+/* @flow */
 import PropTypes from 'prop-types'
 import ImmutablePropTypes from 'react-immutable-proptypes'
 import {Context} from 'almin'
