@@ -230,6 +230,7 @@ export function compareDateForTL(a, b) {
   return 0
 }
 
+
 /**
  * Parse input text for building autosuggestion query
  * @param {string} str
