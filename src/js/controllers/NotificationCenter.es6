@@ -3,7 +3,6 @@ import {
   EVENT_NOTIFICATION, STREAM_HOME, WEBSOCKET_EVENT_MESSAGE,
   NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
 } from 'src/constants'
-import {makeWebsocketUrl} from 'src/utils'
 import TokenListener from './TokenListener'
 import WebsocketManager from './WebsocketManager'
 import UpdateLastTalkRecordUseCase from 'src/usecases/UpdateLastTalkRecordUseCase'
@@ -49,7 +48,7 @@ export default class NotificationCenter {
   // private
   addListener(token) {
     console.log('addListener')
-    const websocketUrl = makeWebsocketUrl(token, STREAM_HOME)
+    const websocketUrl = token.instance.makeStreamingAPIUrl(token, STREAM_HOME)
     this.listeners[token.acct] = WebsocketManager.listen(
       websocketUrl, this.onWebsocketMessage.bind(this, token)
     )

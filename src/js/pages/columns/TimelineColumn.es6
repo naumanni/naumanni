@@ -14,6 +14,12 @@ import {StatusTimeline} from 'src/models/Timeline'
 import PagingColumn from './PagingColumn'
 import TimelineStatusContainer from '../components/TimelineStatusContainer'
 
+const TIMELINE_TO_STREAM_MAP = {
+  [TIMELINE_HOME]: STREAM_HOME,
+  [TIMELINE_LOCAL]: STREAM_LOCAL,
+  [TIMELINE_FEDERATION]: STREAM_FEDERATION,
+}
+
 
 /**
  * タイムラインのカラム
@@ -92,7 +98,10 @@ export default class TimelineColumn extends PagingColumn {
 
     class _TimelineListener extends TimelineListener {
       addListener(key, token) {
-        const websocketUrl = makeWebsocketUrlByTimelineType(timelineType, token)
+        const websocketUrl = token.instance.makeStreamingAPIUrl(
+          token,
+          TIMELINE_TO_STREAM_MAP[timelineType]
+        )
         super.addListener(key, token, websocketUrl)
       }
     }
@@ -110,26 +119,3 @@ export default class TimelineColumn extends PagingColumn {
   }
 }
 require('./').registerColumn(COLUMN_TIMELINE, TimelineColumn)
-
-
-//
-import {makeWebsocketUrl} from 'src/utils'
-
-function makeWebsocketUrlByTimelineType(timelineType, token) {
-  let url
-
-  switch(timelineType) {
-  case TIMELINE_HOME:
-    url = makeWebsocketUrl(token, STREAM_HOME)
-    break
-
-  case TIMELINE_LOCAL:
-    url = makeWebsocketUrl(token, STREAM_LOCAL)
-    break
-
-  case TIMELINE_FEDERATION:
-    url = makeWebsocketUrl(token, STREAM_FEDERATION)
-    break
-  }
-  return url
-}

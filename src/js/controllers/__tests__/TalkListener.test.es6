@@ -1,4 +1,4 @@
-import {OAuthToken, Account} from 'src/models'
+import {OAuthToken, Account, Instance} from 'src/models'
 import TalkListener from '../TalkListener'
 
 jest.mock('src/api/APIRequester')
@@ -20,6 +20,8 @@ describe('TalkListener', () => {
     const mockToken = new OAuthToken({
       host: 'dummy',
     })
+    const mockInstance = new Instance(mockToken.host, {})
+    mockToken.attachInstance(mockInstance)
     const mockSelf = new Account({
       id_by_host: {'dummy': 1},
       acct: 'shn@oppai.tokyo',

@@ -8,7 +8,6 @@ import {
 import {Status} from 'src/models'
 import WebsocketManager from 'src/controllers/WebsocketManager'
 import TimelineData from 'src/infra/TimelineData'
-import {makeWebsocketUrl} from 'src/utils'
 
 import {decryptBlocks} from 'src/controllers/PGP'
 
@@ -291,7 +290,7 @@ export default class TalkListener extends EventEmitter {
 
   async listenWebsocket() {
     this.removeWebsocketListenerHandler = WebsocketManager.listen(
-      makeWebsocketUrl(this.token, STREAM_HOME),
+      this.token.instance.makeStreamingAPIUrl(this.token, STREAM_HOME),
       ::this.onNewMessageReceived
     )
   }

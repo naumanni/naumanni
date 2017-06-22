@@ -1,13 +1,12 @@
 import {
   EVENT_NOTIFICATION, STREAM_HOME, WEBSOCKET_EVENT_MESSAGE,
 } from 'src/constants'
-import {makeWebsocketUrl} from 'src/utils'
 import TimelineListener from './TimelineListener'
 
 
 export default class NotificationListener extends TimelineListener {
   addListener(key, token) {
-    const websocketUrl = makeWebsocketUrl(token, STREAM_HOME)
+    const websocketUrl = token.instance.makeStreamingAPIUrl(token, STREAM_HOME)
 
     super.addListener(key, token, websocketUrl)
   }
