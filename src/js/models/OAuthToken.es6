@@ -105,12 +105,20 @@ export default class OAuthToken extends OAuthTokenRecord {
     this._account = newAccount
   }
 
+  attachInstance(newInstance) {
+    this._instance = newInstance
+  }
+
   get account() {
     return this._account
   }
 
   get acct() {
     return this._account ? this._account.acct : null
+  }
+
+  get instance() {
+    return this._instance
   }
 
   toString() {

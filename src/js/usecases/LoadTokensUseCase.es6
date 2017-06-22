@@ -1,6 +1,7 @@
+/* @flow */
 import {UseCase} from 'almin'
 
-import {OAuthToken} from 'src/models'
+import {Instance, OAuthToken} from 'src/models'
 import * as actions from 'src/actions'
 
 
@@ -13,21 +14,34 @@ export default class LoadTokensUseCase extends UseCase {
     let tokens = await OAuthToken.query.getAll()
 
     tokens = await Promise.all(
-      tokens.map(async (token) => {
-        try {
-          const {entities, result} = await token.requester.verifyCredentials({})
-          token.attachAccount(entities.accounts[result])
-        } catch(e) {
-          token.markFailed(true)
-          console.error(`verifyTokenFailed Token(${token.accessToken}@${token.host}): ${e}`)
-        }
-        return token
-      })
+      tokens.map(this.verifyToken.bind(this))
     )
 
     this.dispatch({
       type: actions.TOKEN_LOADED,
       tokens,
     })
+  }
+
+  async verifyToken(token: OAuthToken) {
+    const {requester} = token
+
+    try {
+      // verify credential
+      const {entities, result} = await requester.verifyCredentials({})
+      token.attachAccount(entities.accounts[result])
+    } catch(e) {
+      token.markFailed(true)
+      console.error(`verifyTokenFailed Token(${token.accessToken}@${token.host}): ${e}`)
+    }
+
+    // get instance information
+    const instance = new Instance(
+      token.host,
+      (await requester.instance()).result
+    )
+    token.attachInstance(instance)
+
+    return token
   }
 }

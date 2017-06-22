@@ -4,7 +4,7 @@ import {Request} from 'superagent'
 import * as actions from 'src/actions'
 import {makeOAuthAPIRequester} from 'src/api/APIRequester'
 import MastodonAPISpec from 'src/api/MastodonAPISpec'
-import {OAuthApp, OAuthToken} from 'src/models'
+import {Instance, OAuthApp, OAuthToken} from 'src/models'
 import Database from 'src/infra/Database'
 
 /**
@@ -47,6 +47,7 @@ export default class AuthorizeAccountUseCase extends UseCase {
     })
     Database.save(token)
 
+    // TODO: LoadTokenUseCaseと被っているので合体させる
     // get my info
     const requester = makeOAuthAPIRequester(
       MastodonAPISpec, {
@@ -56,6 +57,14 @@ export default class AuthorizeAccountUseCase extends UseCase {
     const {entities, result} = await requester.verifyCredentials()
     token.attachAccount(entities.accounts[result])
 
+    // get instance information
+    const instance = new Instance(
+      token.host,
+      (await requester.instance()).result
+    )
+    token.attachInstance(instance)
+
+    // dispatch
     this.dispatch({
       type: actions.TOKEN_ADDED,
       token,

@@ -360,4 +360,9 @@ export default MastodonAPISpec.make({
     endpoint: '/accounts/:id/unblock',
     method: 'post',
   },
+
+  instance: {
+    endpoint: '/instance',
+    method: 'get',
+  },
 })
