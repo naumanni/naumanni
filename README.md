@@ -339,6 +339,12 @@ http {
 
 </details>
 
+### Lint
+
+```
+$ yarn run lint
+$ yarn run flow
+```
 
 ### Test
 
