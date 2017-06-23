@@ -136,7 +136,8 @@ export default class Column extends React.Component {
     return context.getState()
   }
 
-  onClickMenuButton() {
+  onClickMenuButton(e) {
+    e.stopPropagation()
     this.setState({menuVisible: !this.state.menuVisible})
   }
 
