@@ -1,43 +1,106 @@
+/* @flow */
 import React from 'react'
-import PropTypes from 'prop-types'
 import Textarea from 'react-textarea-autosize'
-import classNames from 'classnames'
+import {List} from 'immutable'
 
 import {
   KEY_TAB, KEY_ENTER, KEY_ESC, KEY_ARROW_UP, KEY_ARROW_DOWN, TOOTFORM_PLACEHOLDER,
 } from 'src/constants'
-import {OAuthTokenListPropType} from 'src/propTypes'
+import {OAuthToken, Account} from 'src/models'
 import {textAtCursorMatchesToken} from 'src/utils'
-import {UserIconWithHost} from 'src/pages/parts'
+import TootSuggest from './TootSuggest'
+import type {Suggestion} from './types'
 
 
+const SUGGEST_PREFIX_ACCOUNT = '@'
+const SUGGEST_PREFIX_HASHTAG = '#'
 const MAX_SUGGESTIONS = 6
 const MIN_ROWS = 3
 const LINE_HEIGHT = 20
 const getMaxTootRows = () => {
   const staticHeightExceptTootTextArea = 400  // really rongh estimate...
-  return Math.floor((document.body.clientHeight - staticHeightExceptTootTextArea) / LINE_HEIGHT)
+
+  if(document.body != null) {
+    return Math.floor((document.body.clientHeight - staticHeightExceptTootTextArea) / LINE_HEIGHT)
+  }
+  return 0
+}
+const fetchSuggestFunctionMap = {
+  [SUGGEST_PREFIX_ACCOUNT]: fetchAccountSuggestions,
+  [SUGGEST_PREFIX_HASHTAG]: fetchHashtagSuggestions,
+}
+
+async function fetchAccountSuggestions(tokens: List<OAuthToken>, q: string, limit: number = MAX_SUGGESTIONS) {
+  const results = await Promise.all(
+    tokens
+      .map(async ({requester}) => await requester.searchAccount({q, limit}))
+  )
+  let accounts = {}
+  let keys = []
+  results.forEach(({entities, result}) => {
+    accounts = {...accounts, ...entities.accounts}
+    keys = [...keys, ...result]
+  })
+
+  return keys
+    .filter((k, i) => keys.indexOf(k) === i)
+    .map((k) => accounts[k])
+    .slice(0, MAX_SUGGESTIONS)
+}
+
+async function fetchHashtagSuggestions(tokens: List<OAuthToken>, q: string) {
+  let suggestions = []
+
+  const results = await Promise.all(
+    tokens
+      .map(async ({requester: {search}}) => await search({q, resolve: 'true'}))
+      .toJS()
+  )
+
+  results
+    .map((r) => r.entities)
+    .forEach(({hashtags}) => {
+      hashtags.forEach((hashtag) => {
+        if(suggestions.indexOf(hashtag) < 0) {
+          suggestions.push(hashtag)
+        }
+      })
+    })
+
+  return suggestions
 }
 
 
+type Props = {
+  statusContent: string,
+  tokens: List<OAuthToken>,
+  onChangeStatus: (string) => void,
+  onKeyDown: (SyntheticKeyboardEvent) => void,
+}
+
+type State = {
+  lastSuggestQuery: ?string,
+  selectedSuggestion: number,
+  suggestions: Array<Suggestion>,
+  suggestStart: ?number,
+  suggestionsHidden: boolean,
+}
+
 export default class AutoSuggestTextarea extends React.Component {
-  static propTypes = {
-    statusContent: PropTypes.string.isRequired,
-    tokens: OAuthTokenListPropType.isRequired,
-    onChangeStatus: PropTypes.func.isRequired,
-    onKeyDown: PropTypes.func.isRequired,
-  }
+  props: Props
+  state: State
 
   /**
    * @constructor
    */
-  constructor(...args) {
+  constructor(...args: any[]) {
     super(...args)
 
     this.state = {
       lastSuggestQuery: null,
       selectedSuggestion: 0,
       suggestions: [],
+      suggestStart: null,
       suggestionsHidden: false,
     }
   }
@@ -62,8 +125,8 @@ export default class AutoSuggestTextarea extends React.Component {
           className="tootForm-status"
           value={statusContent}
           placeholder={TOOTFORM_PLACEHOLDER}
-          onKeyDown={::this.onKeyDown}
-          onChange={::this.onChange}
+          onKeyDown={this.onKeyDown.bind(this)}
+          onChange={this.onChange.bind(this)}
           minRows={MIN_ROWS}
           maxRows={getMaxTootRows()}></Textarea>
 
@@ -75,73 +138,43 @@ export default class AutoSuggestTextarea extends React.Component {
   // render
   renderSuggestions() {
     const {suggestions, suggestionsHidden, selectedSuggestion} = this.state
-    const container = this.refs.statusContainer
-    const width = container ? container.clientWidth : 0
 
     if(suggestions.length === 0 || suggestionsHidden) {
       return null
     }
 
-    return (
-      <div className="tootForm-autoSuggestions" style={{width}}>
-          {suggestions.map((account, i) => (
-            <div
-              role="button"
-              key={account.uri}
-              className={classNames(
-                'tootForm-autoSuggestions-item',
-                {'selected': i === selectedSuggestion},
-              )}
-              onClick={this.onClickSuggestion.bind(this, account)}
-            >
-              <UserIconWithHost account={account} size="mini" />
-              <div className="tootForm-autoSuggestions-namebox">
-                <p className="tootForm-autoSuggestions-name">
-                  {account.display_name && ` ${account.display_name}`}
-                </p>
-                <p className="tootForm-autoSuggestions-account">
-                  {`@${account.acct}`}
-                </p>
-              </div>
-            </div>
-            ))
-          }
-      </div>
-    )
+    const container = this.refs.statusContainer
+
+    return <TootSuggest
+      width={container ? container.clientWidth : 0}
+      suggestions={suggestions}
+      selectedSuggestion={selectedSuggestion}
+      onClickSuggest={this.onSuggestionSelected.bind(this)}
+    />
   }
 
   // private
-  async fetchSuggestions(q, limit=MAX_SUGGESTIONS) {
-    const results = await Promise.all(
-      this.props.tokens
-        .map(async ({requester}) => await requester.searchAccount({q, limit}))
-    )
-    let accounts = {}
-    let keys = []
-    results.forEach(({entities, result}) => {
-      accounts = {...accounts, ...entities.accounts}
-      keys = [...keys, ...result]
-    })
-    const suggestions = keys
-      .filter((k, i) => keys.indexOf(k) === i)
-      .map((k) => accounts[k])
-      .slice(0, MAX_SUGGESTIONS)
+  async fetchSuggestions(tokens: List<OAuthToken>, prefix: string, q: string) {
+    const suggestions = await fetchSuggestFunctionMap[prefix](tokens, q)
 
     this.setState({suggestions})
   }
 
-  onSuggestionSelected(account) {
+  onSuggestionSelected(suggestion: Suggestion) {
+    // exists only 2 types(account or hashtag) for now
+    const selected = suggestion instanceof Account ? suggestion.acct : suggestion
     const {value: currentStatus} = this.refs.textareaStatus
     const {suggestStart, lastSuggestQuery} = this.state
-    const statusContent =
-      `${currentStatus.slice(0, suggestStart)}${account.acct}` +
-      ' ' +
-      `${currentStatus.slice(suggestStart + lastSuggestQuery.length)}`
-
-    this.props.onChangeStatus(statusContent)
-    this.setState({
-      suggestions: [],
-    })
+    if(lastSuggestQuery != null) {
+      const statusContent =
+        `${currentStatus.slice(0, suggestStart)}${selected}` +
+        ' ' +
+        `${currentStatus.slice(suggestStart + lastSuggestQuery.length)}`
+      this.props.onChangeStatus(statusContent)
+      this.setState({
+        suggestions: [],
+      })
+    }
 
     const node = this.refs.textareaStatus
     if(node) {
@@ -150,28 +183,34 @@ export default class AutoSuggestTextarea extends React.Component {
   }
 
   // cb
-  onChange(e) {
-    const [suggestStart, suggestQuery] = textAtCursorMatchesToken(e.target.value, e.target.selectionStart)
+  onChange(e: SyntheticInputEvent) {
+    const {target: {value: str, selectionStart: caretPosition}} = e
+    let lastSuggestQuery
 
-    if(suggestQuery !== null && this.state.lastSuggestQuery !== suggestQuery) {
-      this.setState({
-        suggestStart,
-        lastSuggestQuery: suggestQuery,
-        selectedSuggestion: 0,
-        suggestionsHidden: false,
-      })
-      this.fetchSuggestions(suggestQuery)
-    } else if(suggestQuery === null) {
+    for(const prefix of Object.keys(fetchSuggestFunctionMap)) {
+      const [suggestStart, suggestQuery] = textAtCursorMatchesToken(prefix, str, caretPosition)
+
+      if(suggestQuery !== null && this.state.lastSuggestQuery !== suggestQuery) {
+        lastSuggestQuery = suggestQuery
+        this.setState({
+          suggestStart,
+          lastSuggestQuery: suggestQuery,
+          selectedSuggestion: 0,
+          suggestionsHidden: false,
+        })
+        this.fetchSuggestions(this.props.tokens, prefix, suggestQuery)
+      }
+    }
+    if(!lastSuggestQuery) {
       this.setState({
         lastSuggestQuery: null,
         suggestions: [],
       })
     }
-
     this.props.onChangeStatus(e.target.value)
   }
 
-  onKeyDown(e) {
+  onKeyDown(e: SyntheticKeyboardEvent) {
     this.props.onKeyDown(e)
     const {suggestions, selectedSuggestion, suggestionsHidden} = this.state
 
@@ -199,9 +238,5 @@ export default class AutoSuggestTextarea extends React.Component {
         this.onSuggestionSelected(suggestions[selectedSuggestion])
       }
     }
-  }
-
-  onClickSuggestion(account) {
-    this.onSuggestionSelected(account)
   }
 }

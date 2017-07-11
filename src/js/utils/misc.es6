@@ -203,11 +203,12 @@ export function compareDateForTL(a, b) {
 
 /**
  * Parse input text for building autosuggestion query
+ * @param {string} prefix(@ or #)
  * @param {string} str
  * @param {number} caretPosition
  * @return {[number, string]} a tuple of (query start position) and (suggestion query)
  */
-export function textAtCursorMatchesToken(str, caretPosition) {
+export function textAtCursorMatchesToken(prefix, str, caretPosition) {
   let word
 
   const left = str.slice(0, caretPosition).search(/\S+$/)
@@ -219,7 +220,7 @@ export function textAtCursorMatchesToken(str, caretPosition) {
     word = str.slice(left, right + caretPosition)
   }
 
-  if(!word || word.trim().length < 2 || !word.startsWith('@')) {
+  if(!word || word.trim().length < 2 || !word.startsWith(prefix)) {
     return [null, null]
   }
 
