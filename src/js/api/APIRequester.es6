@@ -109,7 +109,7 @@ export class APIRequester {
     }
 
     let endpoint = spec.endpoint
-    const queryFunc = (method === 'patch' || method === 'post' || method === 'put')
+    const queryFunc = (method === 'patch' || method === 'post' || method === 'put' || method === 'delete')
       ? 'send'
       : 'query'
 

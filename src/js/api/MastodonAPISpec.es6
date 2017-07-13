@@ -310,6 +310,11 @@ export default MastodonAPISpec.make({
     method: 'post',
   },
 
+  deleteStatus: {
+    endpoint: '/statuses/:id',
+    method: 'delete',
+  },
+
   createMedia: {
     endpoint: '/media',
     method: 'post',
