@@ -37,6 +37,11 @@ export class TimelineData extends EventEmitter {
     return statusUris.map((uri) => new StatusRef(this, uri))
   }
 
+  deleteStatus(uri) {
+    this.timelines.forEach((timeline) => timeline.delete(uri))
+    this.decrement([uri])
+  }
+
   mergeNotifications(entities, notificationUris) {
     this.mergeEntities(entities)
     const notificatonRefs = notificationUris.map((uri) => new NotificationRef(this, entities.notifications[uri]))

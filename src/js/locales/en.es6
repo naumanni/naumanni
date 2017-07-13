@@ -64,6 +64,7 @@ export const messages = {
   'timeline_status.label.click_to_view': 'Click to view',
   'timeline_status.label.content_close': 'SHOW LESS',
   'timeline_status.label.content_more': 'SHOW MORE',
+  'timeline_status.label.menu_delete': 'Delete',
   'timeline_status.label.sensitive_content': 'Sensitive Content',
   'tooltip.header.united_timeline': 'United timeline',
   'tooltip.header.timeline': '{hostname} timeline',

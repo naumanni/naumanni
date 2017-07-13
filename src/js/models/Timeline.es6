@@ -86,6 +86,19 @@ class Timeline extends ChangeEventEmitter {
     return refs
   }
 
+  /**
+   * TimelineからStatusを削除する
+   * @param {string} uri
+   */
+  delete(uri) {
+    const idx = this.timeline.findIndex((ref) => ref.resolve().uri === uri)
+
+    if(idx >= 0) {
+      this._timeline = this.timeline.delete(idx)
+      this.emitChange()
+    }
+  }
+
   get timeline() {
     return this._timeline || new List()
   }
@@ -230,5 +243,3 @@ function mergeTimeline(list, iter, comparator, max) {
     merged, appends, removes,
   }
 }
-
-

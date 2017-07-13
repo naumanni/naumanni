@@ -36,6 +36,7 @@ export default class TimelineActions {
       onFavouriteStatus: ::this.onFavouriteStatus,
       onClickMedia: ::this.onClickMedia,
       onClickHashTag: ::this.onClickHashTag,
+      onDeleteStatus: ::this.onDeleteStatus,
     }
   }
 
@@ -161,5 +162,20 @@ export default class TimelineActions {
       return Promise.reject(new Error(`failed getting account id for:${account.acct}`))
 
     return (await relationshipMethod({id})).result
+  }
+
+  async onDeleteStatus(token, status) {
+    require('assert')(token.account.uri === status.account)
+    if(!status.getIdByHost(token.host)) {
+      status = await this.resolveStatus(token, status)
+      if(!status)
+        throw new Error('status not found')
+    }
+
+    await token.requester.deleteStatus({
+      id: status.getIdByHost(token.host),
+    }, {token})
+
+    TimelineData.deleteStatus(status.uri)
   }
 }

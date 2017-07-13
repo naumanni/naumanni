@@ -60,6 +60,7 @@ export const messages = {
   'timeline_status.label.click_to_view': 'クリックして表示',
   'timeline_status.label.content_close': '隠す',
   'timeline_status.label.content_more': 'もっと見る…',
+  'timeline_status.label.menu_delete': '削除する',
   'timeline_status.label.sensitive_content': '閲覧注意',
   'tooltip.header.united_timeline': '統合タイムライン',
   'tooltip.header.timeline': '{hostname} タイムライン',
