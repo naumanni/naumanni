@@ -15,6 +15,9 @@ export const TIMELINE_FEDERATION = 'federation'
 export const TIMELINE_LOCAL = 'local'
 export const TIMELINE_HOME = 'home'
 
+export const TIMELINE_FILTER_BOOST = 'timeline_filter_boost'
+export const TIMELINE_FILTER_REPLY = 'timeline_filter_reply'
+
 export const DIALOG_ADD_ACCOUNT = 'addAccount'
 export const DIALOG_AUTHORIZE_ACCOUNT = 'authorizeAccount'
 export const DIALOG_MEDIA_VIEWER = 'mediaViewer'
