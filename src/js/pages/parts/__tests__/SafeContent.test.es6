@@ -4,7 +4,7 @@ import renderer from 'react-test-renderer'
 import {spy} from 'sinon'
 
 import {
-  TOKEN_TEXT, TOKEN_BREAK, TOKEN_URL, TOKEN_MENTION, TOKEN_HASHTAG,
+  TOKEN_TEXT, TOKEN_BREAK, TOKEN_URL, TOKEN_MENTION, TOKEN_HASHTAG, TOKEN_EMOJI,
 } from 'src/constants'
 import {SafeContent} from '../SafeParts'
 
@@ -135,6 +135,22 @@ describe('SafeContent', () => {
 
       expect(onClickHashTag).toHaveBeenCalled()
       expect(onClickHashTag).toHaveBeenCalledWith(tag)
+    })
+    it('match snapshot', () => {
+      takeSnapshot(component)
+    })
+  })
+
+  describe('TOKEN_EMOJI', () => {
+    beforeAll(() => {
+      parsedContent = [{
+        type: TOKEN_EMOJI,
+        draggable: false,
+        alt: '🙏',
+        title: ':pray:',
+        src: '/static/images/emoji/1f606.svg',
+      }]
+      component = <SafeContent parsedContent={parsedContent} />
     })
     it('match snapshot', () => {
       takeSnapshot(component)

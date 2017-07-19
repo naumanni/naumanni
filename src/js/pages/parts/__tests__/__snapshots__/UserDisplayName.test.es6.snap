@@ -3,9 +3,32 @@
 exports[`UserDisplayName default match snapshot 1`] = `
 <a
   className="user-displayName"
+  dangerouslySetInnerHTML={
+    Object {
+      "__html": "<img
+          draggable=\\"false\\"
+          class=\\"emojione\\"
+          alt=\\"🎨\\"
+          title=\\":art:\\"
+          src=\\"/static/images/emoji/1f3a8.svg\\" /><img
+          draggable=\\"false\\"
+          class=\\"emojione\\"
+          alt=\\"🐙\\"
+          title=\\":octopus:\\"
+          src=\\"/static/images/emoji/1f419.svg\\" /><img
+          draggable=\\"false\\"
+          class=\\"emojione\\"
+          alt=\\"🐚\\"
+          title=\\":shell:\\"
+          src=\\"/static/images/emoji/1f41a.svg\\" /><img
+          draggable=\\"false\\"
+          class=\\"emojione\\"
+          alt=\\"🔞\\"
+          title=\\":underage:\\"
+          src=\\"/static/images/emoji/1f51e.svg\\" />Shin Adachi",
+    }
+  }
   href={null}
   target="_blank"
->
-  Shin Adachi
-</a>
+/>
 `;

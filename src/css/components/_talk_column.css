@@ -94,6 +94,11 @@
         p {
           margin: 0;
         }
+
+        .emojione {
+          width: $sizeEmoji;
+          height: $sizeEmoji;
+        }
       }
 
       .status-date {

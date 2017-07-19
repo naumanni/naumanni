@@ -143,6 +143,11 @@ $statusBodyMarginLeft: calc($sizeAvatar + $marginDefault);
           content: "…";
         }
       }
+
+      .emojione {
+        width: $sizeEmoji;
+        height: $sizeEmoji;
+      }
     }
 
     &.has-spoilerText.is-contentOpen {
