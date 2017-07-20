@@ -3,6 +3,7 @@
  */
 import {EventEmitter} from 'events'
 import {Set} from 'immutable'
+import {shortnameToUnicode} from 'emojione'
 
 
 /**
@@ -328,6 +329,7 @@ export async function postStatusManaged(token, {mediaFiles, message}) {
     )
     message.media_ids = mediaFileResponses.map((a) => a.result.id)
   }
+  message.status = shortnameToUnicode(message.status)
 
   const {entities, result} = await requester.postStatus(message, {token})
   return _TimelineData.mergeStatuses(entities, [result])[0]
