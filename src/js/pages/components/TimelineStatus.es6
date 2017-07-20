@@ -10,6 +10,7 @@ import {AcctPropType, AccountPropType, StatusPropType, OAuthTokenListPropType} f
 import {TimelineActionPropTypes} from 'src/controllers/TimelineActions'
 import {isKeys, isKeysList} from 'src/utils'
 import * as uiComponents from '../uiComponents'
+import {IconButton} from 'src/pages/parts'
 
 
 const PANEL_REPLY = 'ReplyPanel'
@@ -247,37 +248,25 @@ export default class TimelineStatus extends React.Component {
   }
 
   renderReblogButton() {
-    const {IconFont} = uiComponents
     const {status, tokens} = this.props
     const on = tokens.find((token) => status.isRebloggedAt(token.acct)) ? true : false
 
-    const onClickHandler =
-      tokens.size === 1
-        ? this.props.onReblogStatus.bind(this, tokens.get(0), status, !on)
-        : ::this.onClickToggleReblogPanel
-
-    return (
-      <button className="status-actionReblog" onClick={onClickHandler}>
-        <IconFont iconName="reblog" className={on ? 'is-active' : ''} />
-      </button>
-    )
+    return <IconButton
+      active={on}
+      className={'status-actionReblog'}
+      iconName={'reblog'}
+      onClick={this.onClickReblog.bind(this, on)} />
   }
 
   renderFavButton() {
-    const {IconFont} = uiComponents
     const {status, tokens} = this.props
     const on = tokens.find((token) => status.isFavouritedAt(token.acct)) ? true : false
 
-    const onClickHandler =
-      tokens.size === 1
-        ? this.props.onFavouriteStatus.bind(this, tokens.get(0), status, !on)
-        : ::this.onClickToggleFavouritePanel
-
-    return (
-      <button className="status-actionFavorite" onClick={onClickHandler}>
-        <IconFont iconName="star-filled" className={on ? 'is-active' : ''} />
-      </button>
-    )
+    return <IconButton
+      active={on}
+      className={'status-actionFavorite'}
+      iconName={'star-filled'}
+      onClick={this.onClickFav.bind(this, on)} />
   }
 
   renderReplyPanel() {
@@ -506,6 +495,22 @@ export default class TimelineStatus extends React.Component {
   onClickHashTag(tag, e) {
     e.preventDefault()
     this.props.onClickHashTag(tag)
+  }
+
+  onClickReblog(on, e) {
+    const {status, tokens} = this.props
+
+    tokens.size === 1
+      ? this.props.onReblogStatus(this, tokens.get(0), status, !on)
+      : this.onClickToggleReblogPanel(e)
+  }
+
+  onClickFav(on, e) {
+    const {status, tokens} = this.props
+
+    tokens.size === 1
+      ? this.props.onFavouriteStatus(this, tokens.get(0), status, !on)
+      : this.onClickToggleFavouritePanel(e)
   }
 }
 
