@@ -120,12 +120,14 @@ export default class Column extends React.Component {
 
   renderMenuContent() {
     return (
-      <ColumnHeaderMenu>
-        <div className="menu-item--close" onClick={this.onClickCloseColumn.bind(this)}>
-          <_FM id="column.menu.close" />
-        </div>
+      <ColumnHeaderMenu onClickClose={this.onClickCloseColumn.bind(this)}>
+        {this.columnMenus()}
       </ColumnHeaderMenu>
     )
+  }
+
+  columnMenus() {
+    return null
   }
 
   columnBodyClassName() {
