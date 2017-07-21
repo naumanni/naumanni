@@ -7,7 +7,8 @@ import classNames from 'classnames'
 import {intlShape, FormattedMessage as _FM} from 'react-intl'
 
 import {UIColumn} from 'src/models'
-import {ColumnHeaderMenu, IconFont, NowLoading} from 'src/pages/parts'
+import {IconFont, NowLoading} from 'src/pages/parts'
+import {ColumnHeaderMenu} from 'src/pages/uiComponents'
 import {AppPropType, ContextPropType} from 'src/propTypes'
 import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 
