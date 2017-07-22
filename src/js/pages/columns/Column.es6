@@ -1,7 +1,8 @@
+/* @flow */
+import {Store} from 'almin'
 import React from 'react'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 import {findDOMNode} from 'react-dom'
-import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import {intlShape, FormattedMessage as _FM} from 'react-intl'
 
@@ -11,25 +12,38 @@ import {AppPropType, ContextPropType} from 'src/propTypes'
 import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 
 
+type Props = {
+  column: UIColumn,
+  onClickHeader: (string) => void,
+}
+
+type State = {
+  loading: boolean,
+  menuVisible: boolean,
+}
+
+
 /**
  * カラムのベースクラス
  */
 export default class Column extends React.Component {
+  props: Props
+  state: State
+  listenerRemovers: Array<() => void> = []
+  renderBody: () => React.Element<any>
+  renderTitle: () => React.Element<any>
+
   static contextTypes = {
     app: AppPropType,
     context: ContextPropType,
     intl: intlShape,
   }
 
-  static propTypes = {
-    column: PropTypes.instanceOf(UIColumn).isRequired,
-  }
-
   isPrivate() {
     return false
   }
 
-  constructor(...args) {
+  constructor(...args: Array<any>) {
     super(...args)
 
     this.state = {
@@ -46,7 +60,7 @@ export default class Column extends React.Component {
     const {context} = this.context
 
     this.listenerRemovers = [
-      context.onChange(::this.onChangeContext),
+      context.onChange(this.onChangeContext.bind(this)),
     ]
   }
 
@@ -92,11 +106,11 @@ export default class Column extends React.Component {
           'column-header',
           {'column-header-private': this.isPrivate()}
         )}
-        onClick={::this.onClickHeader}
+        onClick={this.onClickHeader.bind(this)}
       >
         {title}
         <div className="column-headerMenu">
-          <button className="column-headerMenuButton" onClick={::this.onClickMenuButton}>
+          <button className="column-headerMenuButton" onClick={this.onClickMenuButton.bind(this)}>
             <IconFont iconName="cog" />
           </button>
         </div>
@@ -107,7 +121,7 @@ export default class Column extends React.Component {
   renderMenuContent() {
     return (
       <ColumnHeaderMenu>
-        <div className="menu-item--close" onClick={::this.onClickCloseColumn}>
+        <div className="menu-item--close" onClick={this.onClickCloseColumn.bind(this)}>
           <_FM id="column.menu.close" />
         </div>
       </ColumnHeaderMenu>
@@ -127,7 +141,7 @@ export default class Column extends React.Component {
     return null
   }
 
-  onChangeContext(changingStores) {
+  onChangeContext(changingStores: [Store]) {
     this.setState(this.getStateFromContext())
   }
 
@@ -136,7 +150,8 @@ export default class Column extends React.Component {
     return context.getState()
   }
 
-  onClickMenuButton() {
+  onClickMenuButton(e: SyntheticEvent) {
+    e.stopPropagation()
     this.setState({menuVisible: !this.state.menuVisible})
   }
 
@@ -146,18 +161,22 @@ export default class Column extends React.Component {
   }
 
   onClickHeader() {
-    const columnBounds = findDOMNode(this).getBoundingClientRect()
+    const node = findDOMNode(this)
 
-    if(columnBounds.right > window.innerWidth || columnBounds.left < 0) {
-      // if the column is out of the window, adjusts horizontal scroll
-      this.props.onClickHeader(this.props.column.key)
-    } else {
-      // if the column is in the window, reset its scroll offset
-      let scrollNode = this.scrollNode()
-      if(!scrollNode) {
-        return
+    if(node instanceof HTMLElement) {
+      const columnBounds = node.getBoundingClientRect()
+
+      if(columnBounds.right > window.innerWidth || columnBounds.left < 0) {
+        // if the column is out of the window, adjusts horizontal scroll
+        this.props.onClickHeader(this.props.column.key)
+      } else {
+        // if the column is in the window, reset its scroll offset
+        let scrollNode = this.scrollNode()
+        if(!scrollNode) {
+          return
+        }
+        scrollNode.scrollTop = 0
       }
-      scrollNode.scrollTop = 0
     }
   }
 }
