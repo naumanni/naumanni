@@ -36,11 +36,15 @@ export default class LoadTokensUseCase extends UseCase {
     }
 
     // get instance information
-    const instance = new Instance(
-      token.host,
-      (await requester.instance()).result
-    )
-    token.attachInstance(instance)
+    try {
+      const instance = new Instance(
+        token.host,
+        (await requester.instance()).result
+      )
+      token.attachInstance(instance)
+    } catch(e) {
+      console.error(`${token.host}: instance api failed: ${e}`)
+    }
 
     return token
   }
