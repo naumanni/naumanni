@@ -4,6 +4,7 @@ import React from 'react'
 import update from 'immutability-helper'
 import {findDOMNode} from 'react-dom'
 import {FormattedDate, FormattedMessage as _FM} from 'react-intl'
+import classNames from 'classnames'
 
 import {
   COLUMN_TAG,
@@ -42,6 +43,7 @@ export default class TalkColumn extends Column {
       mediaFiles: [],
       newMessage: '',
       sendingMessage: false,
+      sensitive: false,
     }
     this.setUpMediaCounter()
   }
@@ -123,7 +125,7 @@ export default class TalkColumn extends Column {
       return <NowLoading />
     }
 
-    const {talk} = this.state
+    const {mediaFiles, sensitive, talk} = this.state
 
     return (
       <div className={this.columnBodyClassName()}>
@@ -149,6 +151,17 @@ export default class TalkColumn extends Column {
                 multiple="multiple"
                 style={{display: 'none'}} ref="fileInput" onChange={::this.onChangeMediaFile} />
             </label>
+            {mediaFiles.length > 0 &&
+              <button
+                className={classNames(
+                  'tootForm-toggleNsfw',
+                  {'is-active': sensitive},
+                )}
+                type="button"
+                onClick={::this.onClickToggleNsfw}>
+                <IconFont iconName="nsfw" />
+              </button>
+            }
           </div>
         </div>
       </div>
@@ -271,7 +284,7 @@ export default class TalkColumn extends Column {
 
     this.setState({sendingMessage: true}, async () => {
       const {context} = this.context
-      const {token, me, members} = this.state
+      const {sensitive, token, me, members} = this.state
 
       try {
         // TODO: SendDirectMessageUseCase SendTalkUseCaseに名前を変える?
@@ -282,6 +295,7 @@ export default class TalkColumn extends Column {
           mediaFiles: this.state.mediaFiles,
           in_reply_to_id: lastStatusId,
           recipients: Object.values(members),
+          sensitive,
         })
 
         this.setState({
@@ -350,6 +364,12 @@ export default class TalkColumn extends Column {
         sensitive: newState.mediaFiles.length === 0 ? false : newState.sensitive,
       })
     }
+  }
+
+  onClickToggleNsfw() {
+    this.setState({
+      sensitive: !this.state.sensitive,
+    })
   }
 
   onKeyDownMessage(e) {
