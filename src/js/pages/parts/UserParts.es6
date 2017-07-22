@@ -1,10 +1,15 @@
 import React from 'react'
 
+import {emojify} from 'src/utils'
+
 const nbsp = String.fromCharCode(0xA0)
 
 
-export function UserLink({account, className, children, ...props}) {
-  return <a className={className} href={account.url} target="_blank" {...props}>{children}</a>
+export function UserLink({account, className, html, children, ...props}) {
+  return html
+    ? <a className={className} href={account.url} target="_blank"
+      dangerouslySetInnerHTML={{__html: html}} {...props} />
+    : <a className={className} href={account.url} target="_blank" {...props}>{children}</a>
 }
 // propsの中でrendering対象のkey
 UserLink.propDeepKeys = {
@@ -13,7 +18,9 @@ UserLink.propDeepKeys = {
 
 
 export function UserDisplayName({account, ...props}) {
-  return <UserLink account={account} className="user-displayName" {...props}>{account.displayName}</UserLink>
+  const html = emojify(account.displayName)
+
+  return <UserLink account={account} className="user-displayName" html={html} {...props} />
 }
 // propsの中でrendering対象のkey
 UserDisplayName.propDeepKeys = {
