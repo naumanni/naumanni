@@ -1,7 +1,7 @@
 import React from 'react'
 
 import {
-  TOKEN_TEXT, TOKEN_BREAK, TOKEN_URL, TOKEN_MENTION, TOKEN_HASHTAG,
+  TOKEN_TEXT, TOKEN_BREAK, TOKEN_URL, TOKEN_MENTION, TOKEN_HASHTAG, TOKEN_EMOJI,
 } from 'src/constants'
 
 
@@ -74,6 +74,16 @@ export function SafeContent({parsedContent, onClickHashTag, ...props}) {
         return <a href={_urlFromAcct(acct)} onClick={(e) => props.onAvatarClicked(acct, e)}>@{acct}</a>
       } else if(type === TOKEN_HASHTAG) {
         return <a onClick={onClickHashTag.bind(this, token.tag)}>#{token.tag}</a>
+      } else if(type === TOKEN_EMOJI) {
+        const {
+          draggable = false,
+          class: className = '',
+          alt = '',
+          title = '',
+          src,
+        } = token
+        const props = {className, draggable, alt, title, src}
+        return <img {...props} />
       } else {
         console.error(token)
       }

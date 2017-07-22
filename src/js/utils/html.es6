@@ -2,7 +2,7 @@ import twitter from 'twitter-text'
 import htmlparser from 'htmlparser2'
 
 import {
-  TOKEN_TEXT, TOKEN_BREAK, TOKEN_URL, TOKEN_MENTION, TOKEN_HASHTAG,
+  TOKEN_TEXT, TOKEN_BREAK, TOKEN_URL, TOKEN_MENTION, TOKEN_HASHTAG, TOKEN_EMOJI,
 } from 'src/constants'
 
 
@@ -53,6 +53,7 @@ twitter.extractMentionsOrListsWithIndices = function(text) {
 
 const TAG_A = 'a'
 const TAG_BR = 'br'
+const TAG_IMG = 'img'
 const TAG_P = 'p'
 const TAG_SPAN = 'span'
 
@@ -124,6 +125,8 @@ function _expandMastodonStatus(content) {
         tokens.push(..._processAnchorTag(tag.attributes.href, tag.text))
       } else if(name === TAG_SPAN) {
         // ignore span
+      } else if(name === TAG_IMG) {
+        _push(TOKEN_EMOJI, tag.attributes)
       } else {
         console.warn('clostag ignored', tag, ':', content)
       }
