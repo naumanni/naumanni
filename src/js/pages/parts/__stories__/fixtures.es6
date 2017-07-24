@@ -66,4 +66,59 @@ const statusA = new Status({
   },
 })
 
-export {accountA, statusA}
+const statusB = new Status({
+    reblog: null,
+    id: 24829125,
+    created_at: '2017-07-20T02:19:12.554Z',
+    in_reply_to_id: null,
+    in_reply_to_account_id: null,
+    sensitive: false,
+    spoiler_text: '',
+    visibility: 'unlisted',
+    language: 'ja',
+    application: {
+      name: 'naumanni',
+      website: 'http://naumanniskine.localdev:7654/'
+    },
+    account: {
+      id: 111166,
+      username: 'glpt',
+      acct: 'glpt',
+      display_name: '',
+      locked: false,
+      created_at: '2017-05-15T08:06:48.470Z',
+      followers_count: 6,
+      following_count: 3,
+      statuses_count: 107,
+      note: '<p></p>',
+      url: 'https://friends.nico/@glpt',
+      avatar: '/avatars/original/missing.png',
+      avatar_static: '/avatars/original/missing.png',
+      header: '/headers/original/missing.png',
+      header_static: '/headers/original/missing.png',
+      nico_url: null
+    },
+    media_attachments: [],
+    mentions: [],
+    tags: [],
+    uri: 'tag:friends.nico,2017-07-20:objectId=24829125:objectType=Status',
+    content: '<p>やったぜ✨🎉</p>',
+    url: 'https://friends.nico/@glpt/24829125',
+    reblogs_count: 0,
+    favourites_count: 0,
+    favourited: null,
+    reblogged: null,
+    muted: null,
+    plainContent: 'やったぜ✨🎉',
+    urls: [],
+    extended: {
+      spamfilter: {
+        uri: 'tag:friends.nico,2017-07-20:objectId=24829125:objectType=Status',
+        bad_score: 0.08223853032113487,
+        good_score: 0.5017670372443336,
+        is_spam: false
+      }
+    }
+})
+
+export {accountA, statusA, statusB}

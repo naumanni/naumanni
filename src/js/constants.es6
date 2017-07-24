@@ -65,6 +65,7 @@ export const TOKEN_BREAK = 'break'
 export const TOKEN_URL = 'url'
 export const TOKEN_MENTION = 'mention'
 export const TOKEN_HASHTAG = 'hashtag'
+export const TOKEN_EMOJI = 'emoji'
 
 // 最下部からこの位置に来たら、AutoPagingを開始する
 export const AUTO_PAGING_MARGIN = 300

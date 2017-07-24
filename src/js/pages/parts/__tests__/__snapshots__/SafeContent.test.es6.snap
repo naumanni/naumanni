@@ -6,6 +6,18 @@ exports[`SafeContent TOKEN_BREAK match snapshot 1`] = `
 </p>
 `;
 
+exports[`SafeContent TOKEN_EMOJI match snapshot 1`] = `
+<p>
+  <img
+    alt="🙏"
+    className=""
+    draggable={false}
+    src="/static/images/emoji/1f606.svg"
+    title=":pray:"
+  />
+</p>
+`;
+
 exports[`SafeContent TOKEN_HASHTAG match snapshot 1`] = `
 <p>
   <a
