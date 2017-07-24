@@ -20,6 +20,7 @@ const LINE_HEIGHT = 20
 const getMaxTootRows = () => {
   const staticHeightExceptTootTextArea = 400  // really rough estimate...
 
+  // depends on Browser API for calculating
   if(document.body != null) {
     return Math.floor((document.body.clientHeight - staticHeightExceptTootTextArea) / LINE_HEIGHT)
   }
