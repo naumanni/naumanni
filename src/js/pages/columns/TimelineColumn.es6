@@ -1,16 +1,20 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import Toggle from 'react-toggle'
+import {FormattedMessage as _FM} from 'react-intl'
 
 import {
   COLUMN_TIMELINE,
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
+  TIMELINE_FILTER_BOOST, TIMELINE_FILTER_REPLY,
   STREAM_HOME, STREAM_LOCAL, STREAM_FEDERATION,
   AUTO_PAGING_MARGIN, MAX_STATUSES,
 } from 'src/constants'
 import TimelineListener from 'src/controllers/TimelineListener'
 import {makeTimelineLoader} from 'src/controllers/TimelineLoader'
 import {StatusTimeline} from 'src/models/Timeline'
+import {ColumnHeaderMenu} from 'src/pages/parts'
 import PagingColumn from './PagingColumn'
 import TimelineStatusContainer from '../components/TimelineStatusContainer'
 
@@ -19,6 +23,15 @@ const TIMELINE_TO_STREAM_MAP = {
   [TIMELINE_LOCAL]: STREAM_LOCAL,
   [TIMELINE_FEDERATION]: STREAM_FEDERATION,
 }
+
+const TIMELINE_FILTER_TEXT_MAP = {
+  [TIMELINE_FILTER_BOOST]: 'column.menu.show_boosts',
+  [TIMELINE_FILTER_REPLY]: 'column.menu.show_reply',
+}
+
+const storageKeyForFilter = (type, subject, timelineType) => (
+  `naumanni::${type}:${subject}-${timelineType}`
+)
 
 
 /**
@@ -33,10 +46,28 @@ export default class TimelineColumn extends PagingColumn {
   constructor(...args) {
     super(...args)
 
+    const {subject, timelineType} = this.props
+
     this.state = {
       ...this.state,
       loading: true,
+      filters: new Map([
+        [TIMELINE_FILTER_BOOST, localStorage.getItem(storageKeyForFilter(TIMELINE_FILTER_BOOST, subject, timelineType))
+          ? JSON.parse(localStorage.getItem(storageKeyForFilter(TIMELINE_FILTER_BOOST, subject, timelineType)))
+          : true],
+        [TIMELINE_FILTER_REPLY, localStorage.getItem(storageKeyForFilter(TIMELINE_FILTER_REPLY, subject, timelineType))
+          ? JSON.parse(localStorage.getItem(storageKeyForFilter(TIMELINE_FILTER_REPLY, subject, timelineType)))
+          : true],
+      ]),
     }
+  }
+
+  /**
+   * @override
+   */
+  componentDidMount() {
+    super.componentDidMount()
+    this.timeline.updateFilter(this.state.filters)
   }
 
   /**
@@ -61,6 +92,33 @@ export default class TimelineColumn extends PagingColumn {
         </h1>
       )
     }
+  }
+
+  /**
+   * @override
+   */
+  renderMenuContent() {
+    return (
+      <ColumnHeaderMenu>
+
+        {this.renderFilterMenus()}
+
+        <div className="menu-item--close" onClick={this.onClickCloseColumn.bind(this)}>
+          <_FM id="column.menu.close" />
+        </div>
+      </ColumnHeaderMenu>
+    )
+  }
+
+  renderFilterMenus() {
+    return [...this.state.filters.entries()].map(([type, toggle]) => (
+      <div className="menu-item menu-item--toggle" key={`${type}:${toggle}`}>
+        <Toggle
+          checked={toggle}
+          onChange={this.onChangeTimelineFilter.bind(this, type)} />
+        <label htmlFor={`${type}-visibility`}><_FM id={TIMELINE_FILTER_TEXT_MAP[type]} /></label>
+      </div>
+    ))
   }
 
   /**
@@ -116,6 +174,22 @@ export default class TimelineColumn extends PagingColumn {
 
     // load timeline
     return makeTimelineLoader(timelineType, timeline, token, this.db)
+  }
+
+  // cb
+  onChangeTimelineFilter(type) {
+    const {filters} = this.state
+    const newValue = !filters.get(type)
+
+    filters.set(type, newValue)
+    this.setState({filters})
+
+    this.timeline.updateFilter(filters)
+    this.subtimeline && this.subtimeline.updateFilter(filters)
+
+    localStorage.setItem(
+      storageKeyForFilter(type, this.props.subject, this.props.timelineType),
+      newValue)
   }
 }
 require('./').registerColumn(COLUMN_TIMELINE, TimelineColumn)
