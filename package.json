@@ -20,7 +20,7 @@
     "watch:js": "webpack --progress --colors --watch",
     "watch:css": "postcss src/css/main.css -d static -w",
     "watch:storybook_css": "postcss src/css/storybook.css -d static -w",
-    "start-storybook": "start-storybook -s ./static -p 6006",
+    "start-storybook": "start-storybook -s ./static,./ -p 6006",
     "storybook": "npm-run-all -p watch:storybook_css start-storybook",
     "build-storybook": "build-storybook"
   },
@@ -30,6 +30,7 @@
     "bezier-easing": "^2.0.3",
     "classnames": "^2.2.5",
     "crc-32": "^1.0.2",
+    "emojione": "^2.2.7",
     "exif-js": "^2.2.1",
     "gsap": "^1.19.1",
     "history": "^4.6.1",

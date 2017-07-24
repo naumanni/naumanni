@@ -5,7 +5,7 @@ import {
   MESSAGE_TAG_REX,
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
-import {compareDateForTL, parseMastodonHtml, parsedHtmlToText} from 'src/utils'
+import {compareDateForTL, emojify, parseMastodonHtml, parsedHtmlToText} from 'src/utils'
 import Attachment from './Attachment'
 
 
@@ -105,7 +105,8 @@ export default class Status extends StatusRecord {
   get parsedContent() {
     if(!this._parsedContent) {
       const mentions = this.mentions
-      this._parsedContent = new List(parseMastodonHtml(this.content, mentions))
+      const content = emojify(this.content)
+      this._parsedContent = new List(parseMastodonHtml(content, mentions))
     }
     return this._parsedContent
   }

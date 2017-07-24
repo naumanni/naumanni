@@ -1,0 +1,115 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TootSuggest Account suggestions match snapshot 1`] = `
+<div
+  className="tootForm-autoSuggestions"
+  style={
+    Object {
+      "width": 100,
+    }
+  }
+>
+  <div
+    className="tootForm-autoSuggestions-item selected"
+    onClick={[Function]}
+    role="button"
+  >
+    <div
+      className="tootForm-autoSuggestions-namebox"
+    >
+      <p
+        className="tootForm-autoSuggestions-account"
+      >
+        #spam
+      </p>
+    </div>
+  </div>
+  <div
+    className="tootForm-autoSuggestions-item"
+    onClick={[Function]}
+    role="button"
+  >
+    <div
+      className="tootForm-autoSuggestions-namebox"
+    >
+      <p
+        className="tootForm-autoSuggestions-account"
+      >
+        #ham
+      </p>
+    </div>
+  </div>
+  <div
+    className="tootForm-autoSuggestions-item"
+    onClick={[Function]}
+    role="button"
+  >
+    <div
+      className="tootForm-autoSuggestions-namebox"
+    >
+      <p
+        className="tootForm-autoSuggestions-account"
+      >
+        #egg
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TootSuggest Hashtag suggestions match snapshot 1`] = `
+<div
+  className="tootForm-autoSuggestions"
+  style={
+    Object {
+      "width": 100,
+    }
+  }
+>
+  <div
+    className="tootForm-autoSuggestions-item selected"
+    onClick={[Function]}
+    role="button"
+  >
+    <div
+      className="tootForm-autoSuggestions-namebox"
+    >
+      <p
+        className="tootForm-autoSuggestions-account"
+      >
+        #spam
+      </p>
+    </div>
+  </div>
+  <div
+    className="tootForm-autoSuggestions-item"
+    onClick={[Function]}
+    role="button"
+  >
+    <div
+      className="tootForm-autoSuggestions-namebox"
+    >
+      <p
+        className="tootForm-autoSuggestions-account"
+      >
+        #ham
+      </p>
+    </div>
+  </div>
+  <div
+    className="tootForm-autoSuggestions-item"
+    onClick={[Function]}
+    role="button"
+  >
+    <div
+      className="tootForm-autoSuggestions-namebox"
+    >
+      <p
+        className="tootForm-autoSuggestions-account"
+      >
+        #egg
+      </p>
+    </div>
+  </div>
+</div>
+`;

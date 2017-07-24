@@ -22,7 +22,7 @@ export default class SendDirectMessageUseCase extends UseCase {
    * @param {string} message
    * @param {Account[]} recipients
    */
-  async execute({token, self, message, mediaFiles, in_reply_to_id, recipients}) {
+  async execute({token, self, message, mediaFiles, in_reply_to_id, recipients, sensitive}) {
     if(message.length >= MASTODON_MAX_CONTENT_SIZE) {
       // encryptedの場合分割して送るから、ContentSizeはもはや関係ないはずなんだけど...
       throw new Error('__TODO_ERROR_MESSAGE__')
@@ -52,11 +52,11 @@ export default class SendDirectMessageUseCase extends UseCase {
     if(targets.every((t) => publicKeys[t.acct])) {
       // 全員鍵をもっているので、暗号化して送る
       postedStatuses = await this.sendEncryptedMessage({
-        token, self, message, mediaFiles, in_reply_to_id, recipients, publicKeys})
+        token, self, message, mediaFiles, in_reply_to_id, recipients, sensitive, publicKeys})
     } else {
       // 鍵もってないのがいるので、plainに送る
       postedStatuses = [(await this.sendPlainMessage(
-        {token, self, message, mediaFiles, in_reply_to_id, recipients}))]
+        {token, self, message, mediaFiles, in_reply_to_id, recipients, sensitive}))]
     }
 
     // TalkRecordを更新する
@@ -78,7 +78,7 @@ export default class SendDirectMessageUseCase extends UseCase {
       })
   }
 
-  async sendPlainMessage({token, self, message, mediaFiles, in_reply_to_id, recipients}) {
+  async sendPlainMessage({token, self, message, mediaFiles, in_reply_to_id, recipients, sensitive}) {
     require('assert')(message.length < MASTODON_MAX_CONTENT_SIZE)
     const status = recipients.map((r) => `@${r.acct}`).join(' ') + ' ' + message
     if(status.length >= MASTODON_MAX_CONTENT_SIZE) {
@@ -88,11 +88,12 @@ export default class SendDirectMessageUseCase extends UseCase {
     return await postStatusManaged(token, {mediaFiles, message: {
       status,
       in_reply_to_id,
+      sensitive,
       visibility: 'direct',
     }})
   }
 
-  async sendEncryptedMessage({token, self, message, mediaFiles, in_reply_to_id, recipients, publicKeys}) {
+  async sendEncryptedMessage({token, self, message, mediaFiles, in_reply_to_id, recipients, sensitive, publicKeys}) {
     const encryptedBlocks = await encryptText({
       content: message,
       addresses: recipients.reduce((addresses, recipient) => {
@@ -108,6 +109,7 @@ export default class SendDirectMessageUseCase extends UseCase {
         const query = {message: {
           status: block,
           in_reply_to_id,
+          sensitive,
           visibility: 'direct',
         }}
 

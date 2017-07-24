@@ -2,7 +2,7 @@ import React from 'react'
 import {storiesOf} from '@kadira/storybook'
 
 import {SafeContent} from '../SafeParts'
-import {statusA} from './fixtures'
+import {statusA, statusB} from './fixtures'
 
 
 storiesOf('SafeContent', module)
@@ -14,4 +14,8 @@ storiesOf('SafeContent', module)
 
   .add('default', () => (
     <SafeContent parsedContent={statusA.parsedContent} />
+  ))
+
+  .add('emoji', () => (
+    <SafeContent parsedContent={statusB.parsedContent} />
   ))
