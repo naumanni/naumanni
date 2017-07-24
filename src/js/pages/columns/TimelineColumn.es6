@@ -46,8 +46,6 @@ export default class TimelineColumn extends PagingColumn {
   constructor(...args) {
     super(...args)
 
-    this._originalTimeline = this.timeline
-
     const {subject, timelineType} = this.props
 
     this.state = {
