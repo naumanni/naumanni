@@ -4,7 +4,7 @@ import {FormattedMessage as _FM} from 'react-intl'
 import {COLUMN_TAG, STREAM_TAG} from 'src/constants'
 import {HashtagTimelineLoader} from 'src/controllers/TimelineLoader'
 import TimelineListener from 'src/controllers/TimelineListener'
-import {ColumnHeaderMenu, UserIconWithHost} from 'src/pages/parts'
+import {UserIconWithHost} from 'src/pages/parts'
 import ReplaceColumnUseCase from 'src/usecases/ReplaceColumnUseCase'
 import PagingColumn from './PagingColumn'
 import TimelineColumn from './TimelineColumn'
@@ -34,34 +34,29 @@ export default class HashTagColumn extends TimelineColumn {
   /**
    * @override
    */
-  renderMenuContent() {
+  columnMenus() {
     const {tokens} = this.state.tokenState
     const subjects = this.props.subject.split(',')
 
     return (
-      <ColumnHeaderMenu>
-        <div className="menu-item">
-          <h2><_FM id="column.menu.accountts.for" /></h2>
-          <ul className="menu-accounts">
-            {tokens.map((token) => {
-              const {account} = token
-              const isSelected = subjects.indexOf(account.acct) >= 0
+      <div className="menu-item">
+        <h2><_FM id="column.menu.accountts.for" /></h2>
+        <ul className="menu-accounts">
+          {tokens.map((token) => {
+            const {account} = token
+            const isSelected = subjects.indexOf(account.acct) >= 0
 
-              return (
-                <li className={isSelected && 'is-selected'}
-                    key={account.acct}
-                    onClick={this.onToggleAccount.bind(this, account)}>
-                  <UserIconWithHost account={account} size="small" />
-                </li>
-              )
-            })}
-          </ul>
-          <p className="menu-note"><_FM id="column.menu.accountts.select_multiple_author" /></p>
-        </div>
-        <div className="menu-item--close" onClick={::this.onClickCloseColumn}>
-          <_FM id="column.menu.close" />
-        </div>
-      </ColumnHeaderMenu>
+            return (
+              <li className={isSelected && 'is-selected'}
+                  key={account.acct}
+                  onClick={this.onToggleAccount.bind(this, account)}>
+                <UserIconWithHost account={account} size="small" />
+              </li>
+            )
+          })}
+        </ul>
+        <p className="menu-note"><_FM id="column.menu.accountts.select_multiple_author" /></p>
+      </div>
     )
   }
 
