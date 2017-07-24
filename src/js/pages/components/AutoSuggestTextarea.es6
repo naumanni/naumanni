@@ -9,7 +9,7 @@ import {
 import {OAuthToken, Account} from 'src/models'
 import {textAtCursorMatchesToken} from 'src/utils'
 import TootSuggest from './TootSuggest'
-import type {Suggestion} from './types'
+import type {Hashtag, Suggestion} from './types'
 
 
 const SUGGEST_PREFIX_ACCOUNT = '@'
@@ -31,7 +31,17 @@ const fetchSuggestFunctionMap = {
   [SUGGEST_PREFIX_HASHTAG]: fetchHashtagSuggestions,
 }
 
-async function fetchAccountSuggestions(tokens: List<OAuthToken>, q: string, limit: number = MAX_SUGGESTIONS) {
+/**
+ * アカウントのサジェストを取得
+ * @param {List<OAuthToken>>} tokens
+ * @param {string} q
+ * @param {number} limit
+ * @return {Promise<Array<Account>>} サジェストアカウントのリスト
+ */
+async function fetchAccountSuggestions(
+  tokens: List<OAuthToken>,
+  q: string,
+  limit: number = MAX_SUGGESTIONS): Promise<Array<Account>> {
   const results = await Promise.all(
     tokens
       .map(async ({requester}) => await requester.searchAccount({q, limit}))
@@ -49,7 +59,15 @@ async function fetchAccountSuggestions(tokens: List<OAuthToken>, q: string, limi
     .slice(0, MAX_SUGGESTIONS)
 }
 
-async function fetchHashtagSuggestions(tokens: List<OAuthToken>, q: string) {
+/**
+ * hashtagのサジェストを取得
+ * @param {List<OAuthToken>} tokens
+ * @param {string} q
+ * @return {Promise<Array<Hashtag>>} サジェストhashtagのリスト
+ */
+async function fetchHashtagSuggestions(
+  tokens: List<OAuthToken>,
+  q: string): Promise<Array<Hashtag>> {
   let suggestions = []
 
   const results = await Promise.all(
