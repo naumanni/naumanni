@@ -15,10 +15,11 @@ const notification = new schema.Entity('notifications', {
   account: account,
   status: status,
 })
+const hashtag = new schema.Entity('hashtag')
 const result = new schema.Entity('results', {
   accounts: [account],
   statuses: [status],
-  hashtags: new schema.Entity('hashtags'),
+  hashtags: [hashtag],
 })
 
 
@@ -148,8 +149,10 @@ export function normalizeResponse(entity, {result: responseBody, ...response}, h
     )
   }
 
-  if(entities.hashtags) {
-    entitiesByUrl.hashtags = Object.values(Object.values(entities.hashtags)[0])
+  if(entities.results && 'hashtags' in Object.values(entities.results)[0]) {
+    const hashtags = Object.values(entities.results)[0]['hashtags']
+
+    entitiesByUrl.hashtags = hashtags
   }
 
   if(Array.isArray(result))
