@@ -1,0 +1,118 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DropdownMenuButton :after menu shown - menu is invisible after menu button clicked again 1`] = `
+<div
+  className="dropdownMenuButton"
+  onMouseLeave={[Function]}
+  style={Object {}}
+>
+  <div
+    className="dropdownMenuButton-button"
+    onClick={[Function]}
+  >
+    <button
+      className="testbutton"
+    >
+      button
+    </button>
+  </div>
+</div>
+`;
+
+exports[`DropdownMenuButton :after menu shown - menu is invisible when detect mouseleave from component after detect mouseenter from menu element 1`] = `
+<div
+  className="dropdownMenuButton"
+  onMouseLeave={[Function]}
+  style={Object {}}
+>
+  <div
+    className="dropdownMenuButton-button"
+    onClick={[Function]}
+  >
+    <button
+      className="testbutton"
+    >
+      button
+    </button>
+  </div>
+</div>
+`;
+
+exports[`DropdownMenuButton :after menu shown - menu is still visible when detect mouseleave from component 1`] = `
+<div
+  className="dropdownMenuButton"
+  onMouseLeave={[Function]}
+  style={Object {}}
+>
+  <div
+    className="dropdownMenuButton-button"
+    onClick={[Function]}
+  >
+    <button
+      className="testbutton"
+    >
+      button
+    </button>
+  </div>
+  <div
+    className="dropdownMenuButton-menu"
+    onClick={[Function]}
+    onMouseEnter={[Function]}
+  >
+    <div
+      className="testmenu"
+    >
+      menu
+    </div>
+  </div>
+</div>
+`;
+
+exports[`DropdownMenuButton menu is visible after button clicked 1`] = `
+<div
+  className="dropdownMenuButton"
+  onMouseLeave={[Function]}
+  style={Object {}}
+>
+  <div
+    className="dropdownMenuButton-button"
+    onClick={[Function]}
+  >
+    <button
+      className="testbutton"
+    >
+      button
+    </button>
+  </div>
+  <div
+    className="dropdownMenuButton-menu"
+    onClick={[Function]}
+    onMouseEnter={[Function]}
+  >
+    <div
+      className="testmenu"
+    >
+      menu
+    </div>
+  </div>
+</div>
+`;
+
+exports[`DropdownMenuButton only button children is visible as default 1`] = `
+<div
+  className="dropdownMenuButton"
+  onMouseLeave={[Function]}
+  style={Object {}}
+>
+  <div
+    className="dropdownMenuButton-button"
+    onClick={[Function]}
+  >
+    <button
+      className="testbutton"
+    >
+      button
+    </button>
+  </div>
+</div>
+`;
