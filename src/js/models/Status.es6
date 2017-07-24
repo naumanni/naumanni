@@ -69,7 +69,7 @@ export default class Status extends StatusRecord {
       ...raw,
       id_by_host: new Map(raw.id_by_host),
       in_reply_to_id_by_host: new Map(raw.in_reply_to_id_by_host),
-      in_reply_to_account_id_by_host: new Map(raw.in_reply_to_id_by_host),
+      in_reply_to_account_id_by_host: new Map(raw.in_reply_to_account_id_by_host),
       reblogged_by_acct: new Map(raw.reblogged_by_acct),
       favourited_by_acct: new Map(raw.favourited_by_acct),
       sensitive: !!raw.sensitive,

@@ -14,6 +14,8 @@ export const messages = {
   'column.menu.accountts.for': 'for',
   'column.menu.accountts.select_multiple_author': 'Shift+Click to select multiple',
   'column.menu.close': 'Close column',
+  'column.menu.show_boosts': 'Show boosts',
+  'column.menu.show_reply': 'Show reply',
   'column.title.notifications': 'Notifications',
   'column.title.united_notifications': 'United notifications',
   'column.title.message': 'Message',

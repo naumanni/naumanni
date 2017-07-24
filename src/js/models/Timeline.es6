@@ -1,5 +1,7 @@
 import {List} from 'immutable'
-
+import {
+  TIMELINE_FILTER_BOOST, TIMELINE_FILTER_REPLY,
+} from 'src/constants'
 import Notification from './Notification'
 import Status from './Status'
 import ChangeEventEmitter from 'src/utils/EventEmitter'
@@ -16,7 +18,8 @@ class Timeline extends ChangeEventEmitter {
     this._max = max
     // this._timeline = new List()
     // null means non loaded timeline, empty List means empty timeline
-    this._timeline = null
+    this._originalTimeline = this._timeline = null
+    this._filters = new Map()
   }
 
   /**
@@ -34,11 +37,53 @@ class Timeline extends ChangeEventEmitter {
 
     result = removes
     if(!merged.equals(this._timeline)) {
-      this._timeline = merged
-      this.emitChange()
+      this._update(merged)
     }
 
     return result
+  }
+
+  /**
+   * Statusフィルタをupdate
+   * @param {Map<string, boolean>} filters
+   */
+  updateFilter(filters) {
+    this._filters = filters
+    this._originalTimeline && this._update(this._originalTimeline)
+  }
+
+  _update(newRefs) {
+    if(!newRefs.equals(this._originalTimeline)) {
+      this._originalTimeline = newRefs
+    }
+    this._timeline = this._filtered(newRefs)
+    this.emitChange()
+  }
+
+  /**
+   * Statusをフィルタする
+   * @param {List<Ref>} refs
+   * @return {List<Ref>} フィルタされたrefs
+   */
+  _filtered(refs) {
+    for(const [type, toggle] of this._filters.entries()) {
+      if(toggle)
+        continue
+
+      if(type === TIMELINE_FILTER_BOOST) {
+        refs = refs.filter((ref) => (
+          ![...ref.resolve().reblogged_by_acct.values()]
+            .includes(true))
+        )
+      } else if(type === TIMELINE_FILTER_REPLY) {
+        refs = refs.filter((ref) => (
+          ![...ref.resolve().in_reply_to_account_id_by_host.values()]
+            .reduce((prev, id) => prev && id != null, true)
+        ))
+      }
+    }
+
+    return refs
   }
 
   get timeline() {
@@ -70,7 +115,7 @@ class Timeline extends ChangeEventEmitter {
   clone() {
     const newTL = new this.constructor(this._max)
 
-    newTL._timeline = this._timeline
+    newTL._originalTimeline = newTL._timeline = this._timeline
     return newTL
   }
 
