@@ -7,7 +7,8 @@ import classNames from 'classnames'
 import {intlShape, FormattedMessage as _FM} from 'react-intl'
 
 import {UIColumn} from 'src/models'
-import {ColumnHeaderMenu, IconFont, NowLoading} from 'src/pages/parts'
+import {IconFont, NowLoading} from 'src/pages/parts'
+import {ColumnHeaderMenu} from 'src/pages/uiComponents'
 import {AppPropType, ContextPropType} from 'src/propTypes'
 import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 
@@ -120,12 +121,14 @@ export default class Column extends React.Component {
 
   renderMenuContent() {
     return (
-      <ColumnHeaderMenu>
-        <div className="menu-item--close" onClick={this.onClickCloseColumn.bind(this)}>
-          <_FM id="column.menu.close" />
-        </div>
+      <ColumnHeaderMenu onClickClose={this.onClickCloseColumn.bind(this)}>
+        {this.columnMenus()}
       </ColumnHeaderMenu>
     )
+  }
+
+  columnMenus() {
+    return null
   }
 
   columnBodyClassName() {
