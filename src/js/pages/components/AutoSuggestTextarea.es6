@@ -18,7 +18,7 @@ const MAX_SUGGESTIONS = 6
 const MIN_ROWS = 3
 const LINE_HEIGHT = 20
 const getMaxTootRows = () => {
-  const staticHeightExceptTootTextArea = 400  // really rongh estimate...
+  const staticHeightExceptTootTextArea = 400  // really rough estimate...
 
   if(document.body != null) {
     return Math.floor((document.body.clientHeight - staticHeightExceptTootTextArea) / LINE_HEIGHT)
