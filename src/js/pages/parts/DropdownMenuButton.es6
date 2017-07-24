@@ -29,7 +29,7 @@ export default class DropdownMenuButton extends React.Component {
     }
 
     return (
-      <div className={className} onMouseLeave={::this.onMouseLeave} style={this.props.style || {}}>
+      <div className={className} onMouseLeave={::this.onMouseLeaved} style={this.props.style || {}}>
         <div className="dropdownMenuButton-button" onClick={::this.onClickButton}>
           {this.props.children}
         </div>
@@ -37,7 +37,7 @@ export default class DropdownMenuButton extends React.Component {
           <div
             className="dropdownMenuButton-menu"
             onClick={::this.onClickMenu}
-            onMouseEnter={::this.onEnteredMenu}
+            onMouseEnter={::this.onMouseEntered}
           >
             {this.props.onRenderMenu()}
           </div>
@@ -62,11 +62,11 @@ export default class DropdownMenuButton extends React.Component {
     this.reset()
   }
 
-  onEnteredMenu() {
+  onMouseEntered() {
     this.setState({isEnteredMenu: true})
   }
 
-  onMouseLeave() {
+  onMouseLeaved() {
     this.state.isEnteredMenu && this.reset()
   }
 }
