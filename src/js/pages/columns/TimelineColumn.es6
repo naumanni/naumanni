@@ -14,7 +14,6 @@ import {
 import TimelineListener from 'src/controllers/TimelineListener'
 import {makeTimelineLoader} from 'src/controllers/TimelineLoader'
 import {StatusTimeline} from 'src/models/Timeline'
-import {ColumnHeaderMenu} from 'src/pages/parts'
 import PagingColumn from './PagingColumn'
 import TimelineStatusContainer from '../components/TimelineStatusContainer'
 
@@ -97,20 +96,7 @@ export default class TimelineColumn extends PagingColumn {
   /**
    * @override
    */
-  renderMenuContent() {
-    return (
-      <ColumnHeaderMenu>
-
-        {this.renderFilterMenus()}
-
-        <div className="menu-item--close" onClick={this.onClickCloseColumn.bind(this)}>
-          <_FM id="column.menu.close" />
-        </div>
-      </ColumnHeaderMenu>
-    )
-  }
-
-  renderFilterMenus() {
+  columnMenus() {
     return [...this.state.filters.entries()].map(([type, toggle]) => (
       <div className="menu-item menu-item--toggle" key={`${type}:${toggle}`}>
         <Toggle
