@@ -96,6 +96,15 @@
         text-align: right;
       }
 
+      .menu-filterRegexInput {
+        border: none;
+        border-bottom: 2px solid $colorColumnHeaderBackground;
+        display: block;
+        margin-bottom: $marginDefault;
+        padding: $marginDefault 0;
+        width: 100%;
+      }
+
       &--toggle {
         display: flex;
         align-items: center;

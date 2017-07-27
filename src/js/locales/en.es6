@@ -14,6 +14,7 @@ export const messages = {
   'column.menu.accountts.for': 'for',
   'column.menu.accountts.select_multiple_author': 'Shift+Click to select multiple',
   'column.menu.close': 'Close column',
+  'column.menu.filter_regex': 'Filter out by regular expressions',
   'column.menu.show_boosts': 'Show boosts',
   'column.menu.show_reply': 'Show reply',
   'column.title.notifications': 'Notifications',

@@ -13,6 +13,7 @@ export const messages = {
   'column.menu.accountts.for': '対象',
   'column.menu.accountts.select_multiple_author': 'Shift+Clickで複数選択できます。',
   'column.menu.close': 'カラムを閉じる',
+  'column.menu.filter_regex': '正規表現でフィルター',
   'column.menu.show_boosts': 'ブースト表示',
   'column.menu.show_reply': '返信表示',
   'column.title.notifications': '通知',
