@@ -240,7 +240,6 @@ export default class TimelineStatus extends React.Component {
       <DropdownMenuButton
         key="etcButton"
         modifier="statusActionMenu" onRenderMenu={::this.onRenderStatusMenu}
-        style={{display: 'none'}}
       >
         <IconFont iconName="dot-3" />
       </DropdownMenuButton>,
@@ -361,7 +360,26 @@ export default class TimelineStatus extends React.Component {
   }
 
   renderStatusMenuItems() {
-    return []
+    return [
+      ...this.renderStatusMenuDelete(),
+    ]
+  }
+
+  renderStatusMenuDelete() {
+    const {status, tokens} = this.props
+    const ownToken = tokens.find((t) => t.account.uri === status.account)
+
+    return ownToken
+      ? [
+        <li
+          className="menu-item"
+          key={`${status.uri}`}
+          onClick={this.props.onDeleteStatus.bind(this, ownToken, status)}
+        >
+          <_FM id="timeline_status.label.menu_delete" />
+        </li>,
+      ]
+      : []
   }
 
   // callbacks
