@@ -89,6 +89,14 @@
     .menu-item {
       margin: 0 0 $marginDefault;
 
+      &--default {
+        cursor: pointer;
+        line-height: 40px;
+        text-align: center;
+        border: 1px solid $colorGray1;
+        border-radius: $radiusButton;
+      }
+
       .menu-note {
         margin: 0;
         font-size: $fontSizeSmall;
@@ -112,14 +120,6 @@
         label {
           margin-left: $marginDefault;
         }
-      }
-
-      &--close {
-        cursor: pointer;
-        line-height: 40px;
-        text-align: center;
-        border: 1px solid $colorGray1;
-        border-radius: $radiusButton;
       }
     }
 
