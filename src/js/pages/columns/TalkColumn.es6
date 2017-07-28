@@ -61,12 +61,6 @@ export default class TalkColumn extends Column {
     this.setUpMediaCounter()
   }
 
-  /**
-   * @override
-   */
-  isPrivate() {
-    return true
-  }
 
   /**
    * @override
@@ -140,10 +134,7 @@ export default class TalkColumn extends Column {
 
     return (
       <header
-        className={classNames(
-          'column-header',
-          {'column-header-private': this.isPrivate()}
-        )}
+        className="column-header column-header-private"
         onClick={this.onClickHeader.bind(this)}
       >
         {title}
