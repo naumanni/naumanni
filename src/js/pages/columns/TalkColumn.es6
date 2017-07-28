@@ -2,7 +2,7 @@
 import React from 'react'
 import update from 'immutability-helper'
 import {findDOMNode} from 'react-dom'
-import {FormattedDate, FormattedMessage as _FM} from 'react-intl'
+import {FormattedMessage as _FM} from 'react-intl'
 import classNames from 'classnames'
 import {intlShape} from 'react-intl'
 
@@ -16,7 +16,7 @@ import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 import TimelineActions from 'src/controllers/TimelineActions'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener, {TalkBlock} from 'src/controllers/TalkListener'
-import {ColumnHeader, ColumnHeaderMenu, IconFont, NowLoading, UserIconWithHost, SafeContent} from '../parts'
+import {ColumnHeader, ColumnHeaderMenu, IconFont, NowLoading, TalkBubble, UserIconWithHost} from '../parts'
 import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
 
 
@@ -271,22 +271,15 @@ export default class TalkColumn extends React.Component {
           </div>
         )}
         <ul className="talk-talkGroupStatuses">
-          {talkGroup.contents.map(({key, parsedContent, createdAt, encrypted}) => {
-            return (
-              <li key={key}>
-                <div className={`status-content ${encrypted ? 'is-encrypted' : ''}`}>
-                  <SafeContent parsedContent={parsedContent} onClickHashTag={this.onClickHashTag.bind(this)} />
-                </div>
-                <div className="status-date">
-                  <FormattedDate value={createdAt.toDate()}
-                    year="numeric" month="2-digit" day="2-digit"
-                    hour="2-digit" minute="2-digit" second="2-digit"
-                  />
-                </div>
-                {encrypted && <div className="status-isEncrypted"><IconFont iconName="lock" /></div>}
-              </li>
-            )
-          })}
+          {talkGroup.contents.map(({key, parsedContent, createdAt, encrypted}) => (
+            <TalkBubble
+              key={key}
+              createdAt={createdAt.toDate()}
+              isEncrypted={encrypted}
+              parsedContent={parsedContent}
+              onClickHashTag={this.onClickHashTag.bind(this)}
+            />
+          ))}
         </ul>
       </div>
     )

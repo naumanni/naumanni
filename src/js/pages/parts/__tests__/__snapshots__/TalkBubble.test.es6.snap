@@ -1,0 +1,186 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TalkBubble snapshot isEncrypted == false 1`] = `
+<TalkBubble
+  createdAt={2017-08-27T15:00:00.000Z}
+  intl={
+    Object {
+      "defaultFormats": Object {},
+      "defaultLocale": "en",
+      "formatDate": [Function],
+      "formatHTMLMessage": [Function],
+      "formatMessage": [Function],
+      "formatNumber": [Function],
+      "formatPlural": [Function],
+      "formatRelative": [Function],
+      "formatTime": [Function],
+      "formats": Object {},
+      "formatters": Object {
+        "getDateTimeFormat": [Function],
+        "getMessageFormat": [Function],
+        "getNumberFormat": [Function],
+        "getPluralFormat": [Function],
+        "getRelativeFormat": [Function],
+      },
+      "locale": "en",
+      "messages": Object {},
+      "now": [Function],
+      "textComponent": "span",
+    }
+  }
+  isEncrypted={false}
+  onClickHashTag={[Function]}
+  parsedContent={
+    Array [
+      Object {
+        "tag": "naumanni",
+        "type": "hashtag",
+        "url": "https://friends.nico/tags/naumanni",
+      },
+    ]
+  }
+>
+  <li>
+    <div
+      className="status-content "
+    >
+      <SafeContent
+        onClickHashTag={[Function]}
+        parsedContent={
+          Array [
+            Object {
+              "tag": "naumanni",
+              "type": "hashtag",
+              "url": "https://friends.nico/tags/naumanni",
+            },
+          ]
+        }
+      >
+        <p>
+          <a
+            onClick={[Function]}
+          >
+            #
+            naumanni
+          </a>
+        </p>
+      </SafeContent>
+    </div>
+    <div
+      className="status-date"
+    >
+      <FormattedDate
+        day="2-digit"
+        hour="2-digit"
+        minute="2-digit"
+        month="2-digit"
+        second="2-digit"
+        value={2017-08-27T15:00:00.000Z}
+        year="numeric"
+      >
+        <span>
+          08/28/2017, 12:00:00 AM
+        </span>
+      </FormattedDate>
+    </div>
+  </li>
+</TalkBubble>
+`;
+
+exports[`TalkBubble snapshot isEncrypted == true 1`] = `
+<TalkBubble
+  createdAt={2017-08-27T15:00:00.000Z}
+  intl={
+    Object {
+      "defaultFormats": Object {},
+      "defaultLocale": "en",
+      "formatDate": [Function],
+      "formatHTMLMessage": [Function],
+      "formatMessage": [Function],
+      "formatNumber": [Function],
+      "formatPlural": [Function],
+      "formatRelative": [Function],
+      "formatTime": [Function],
+      "formats": Object {},
+      "formatters": Object {
+        "getDateTimeFormat": [Function],
+        "getMessageFormat": [Function],
+        "getNumberFormat": [Function],
+        "getPluralFormat": [Function],
+        "getRelativeFormat": [Function],
+      },
+      "locale": "en",
+      "messages": Object {},
+      "now": [Function],
+      "textComponent": "span",
+    }
+  }
+  isEncrypted={true}
+  onClickHashTag={[Function]}
+  parsedContent={
+    Array [
+      Object {
+        "tag": "naumanni",
+        "type": "hashtag",
+        "url": "https://friends.nico/tags/naumanni",
+      },
+    ]
+  }
+>
+  <li>
+    <div
+      className="status-content is-encrypted"
+    >
+      <SafeContent
+        onClickHashTag={[Function]}
+        parsedContent={
+          Array [
+            Object {
+              "tag": "naumanni",
+              "type": "hashtag",
+              "url": "https://friends.nico/tags/naumanni",
+            },
+          ]
+        }
+      >
+        <p>
+          <a
+            onClick={[Function]}
+          >
+            #
+            naumanni
+          </a>
+        </p>
+      </SafeContent>
+    </div>
+    <div
+      className="status-date"
+    >
+      <FormattedDate
+        day="2-digit"
+        hour="2-digit"
+        minute="2-digit"
+        month="2-digit"
+        second="2-digit"
+        value={2017-08-27T15:00:00.000Z}
+        year="numeric"
+      >
+        <span>
+          08/28/2017, 12:00:00 AM
+        </span>
+      </FormattedDate>
+    </div>
+    <div
+      className="status-isEncrypted"
+    >
+      <IconFont
+        iconName="lock"
+      >
+        <span
+          className="icon icon-lock"
+        />
+      </IconFont>
+    </div>
+  </li>
+</TalkBubble>
+`;
