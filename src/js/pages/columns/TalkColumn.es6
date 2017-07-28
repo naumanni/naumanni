@@ -18,7 +18,7 @@ import TimelineActions from 'src/controllers/TimelineActions'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener from 'src/controllers/TalkListener'
 import Column from './Column'
-import {IconFont, UserIconWithHost, SafeContent} from '../parts'
+import {IconFont, NowLoading, UserIconWithHost, SafeContent} from '../parts'
 import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
 
 
@@ -186,10 +186,14 @@ export default class TalkColumn extends Column {
       return <NowLoading />
     }
 
-    const {mediaFiles, sensitive, talk} = this.state
+    const {loading, mediaFiles, sensitive, talk} = this.state
 
     return (
-      <div className={this.columnBodyClassName()}>
+      <div className={classNames(
+        'column-body',
+        'column-body--talk',
+        {'is-loading': loading},
+      )}>
         <ul className="talk-talkGroups" ref="talkGroups" onScroll={::this.onScrollTalkGroups}>
           {(talk || []).map((talkGroup, idx, talk) => this.renderTalkGroup(talkGroup, talk[idx - 1], talk[idx + 1]))}
         </ul>
@@ -227,13 +231,6 @@ export default class TalkColumn extends Column {
         </div>
       </div>
     )
-  }
-
-  /**
-   * @override
-   */
-  columnBodyClassName() {
-    return super.columnBodyClassName() + ' column-body--talk'
   }
 
   /**
