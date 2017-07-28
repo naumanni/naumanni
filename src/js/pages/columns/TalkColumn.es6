@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'
+/* @flow */
 import React from 'react'
 import update from 'immutability-helper'
 import {findDOMNode} from 'react-dom'
@@ -11,32 +11,62 @@ import {
   COLUMN_TAG,
   SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
   KEY_ENTER} from 'src/constants'
+import {Account, OAuthToken, UIColumn} from 'src/models'
 import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 import TimelineActions from 'src/controllers/TimelineActions'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
-import TalkListener from 'src/controllers/TalkListener'
+import TalkListener, {TalkBlock} from 'src/controllers/TalkListener'
 import {ColumnHeader, ColumnHeaderMenu, IconFont, NowLoading, UserIconWithHost, SafeContent} from '../parts'
 import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
 
+
+type Props = {
+  column: UIColumn,
+  from: string,
+  key: string,
+  ref: string,
+  to: string,
+  onClickHeader: (string) => void,
+}
+
+
+type State = {
+  token: OAuthToken,
+  keepAtBottom: boolean,
+  loading: boolean,
+  me: Account,
+  mediaFiles: File[],
+  members: {[acct: string]: Account},
+  isMenuVisible: boolean,
+  newMessage: string,
+  sendingMessage: boolean,
+  sensitive: boolean,
+  talk: TalkBlock[],
+}
 
 /**
  * タイムラインのカラム
  */
 export default class TalkColumn extends React.Component {
-  listenerRemovers = []
+  props: Props
+  state: State
 
   static contextTypes = {
     context: ContextPropType,
     intl: intlShape,
   }
 
-  static propTypes = {
-    to: PropTypes.string.isRequired,
-    from: PropTypes.string.isRequired,
-    onClickHeader: PropTypes.func.isRequired,
-  }
+  actionDelegate: TimelineActions
+  listener: TalkListener
+  listenerRemovers = []
+  mediaFileKeys: WeakMap<File, number>
+  mediaFileCounter: number
+  scrollChanging: boolean
 
-  constructor(...args) {
+  /**
+   * @constructor
+   */
+  constructor(...args: any[]) {
     // mixed timeline not allowed
     require('assert')(args[0].subject !== SUBJECT_MIXED)
     super(...args)
@@ -50,7 +80,7 @@ export default class TalkColumn extends React.Component {
       keepAtBottom: true,
       loading: true,
       mediaFiles: [],
-      menuVisible: false,
+      isMenuVisible: false,
       newMessage: '',
       sendingMessage: false,
       sensitive: false,
@@ -66,7 +96,7 @@ export default class TalkColumn extends React.Component {
 
     this.listenerRemovers.push(
       context.onChange(this.onChangeContext.bind(this)),
-      this.listener.onChange(::this.onChangeTalk),
+      this.listener.onChange(this.onChangeTalk.bind(this)),
     )
 
     // make event listener
@@ -81,7 +111,6 @@ export default class TalkColumn extends React.Component {
       remover()
     }
 
-    clearInterval(this.timer)
     this.listener.close()
     delete this.listener
   }
@@ -89,7 +118,7 @@ export default class TalkColumn extends React.Component {
   /**
    * @override
    */
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps: Props, prevState: State) {
     if(this.state.keepAtBottom) {
       const node = this.refs.talkGroups
       if(node) {
@@ -133,7 +162,8 @@ export default class TalkColumn extends React.Component {
       return <_FM id="column.title.talk" />
     }
 
-    const memberNames = Object.values(members).map((a) => a.display_name || a.acct)
+    const memberNames = Object.values(members)
+      .map((a: Account) => a.displayName || a.acct)
 
     return (
       <h1 className="column-headerTitle">
@@ -147,7 +177,7 @@ export default class TalkColumn extends React.Component {
 
   renderMenuContent() {
     return <ColumnHeaderMenu
-      isCollapsed={!this.state.menuVisible}
+      isCollapsed={!this.state.isMenuVisible}
       onClickClose={this.onClickCloseColumn.bind(this)} />
   }
 
@@ -166,15 +196,15 @@ export default class TalkColumn extends React.Component {
         'column-body--talk',
         {'is-loading': loading},
       )}>
-        <ul className="talk-talkGroups" ref="talkGroups" onScroll={::this.onScrollTalkGroups}>
+        <ul className="talk-talkGroups" ref="talkGroups" onScroll={this.onScrollTalkGroups.bind(this)}>
           {(talk || []).map((talkGroup, idx, talk) => this.renderTalkGroup(talkGroup, talk[idx - 1], talk[idx + 1]))}
         </ul>
         <div className="talkForm-content">
           <div className="talkForm-status">
             <textarea
               value={this.state.newMessage}
-              onChange={::this.onChangeMessage}
-              onKeyDown={::this.onKeyDownMessage}
+              onChange={this.onChangeMessage.bind(this)}
+              onKeyDown={this.onKeyDownMessage.bind(this)}
               placeholder={_({id: 'talk.form.placeholder'})} />
           </div>
 
@@ -186,7 +216,7 @@ export default class TalkColumn extends React.Component {
               <input
                 type="file"
                 multiple="multiple"
-                style={{display: 'none'}} ref="fileInput" onChange={::this.onChangeMediaFile} />
+                style={{display: 'none'}} ref="fileInput" onChange={this.onChangeMediaFile.bind(this)} />
             </label>
             {mediaFiles.length > 0 &&
               <button
@@ -195,7 +225,7 @@ export default class TalkColumn extends React.Component {
                   {'is-active': sensitive},
                 )}
                 type="button"
-                onClick={::this.onClickToggleNsfw}>
+                onClick={this.onClickToggleNsfw.bind(this)}>
                 <IconFont iconName="nsfw" />
               </button>
             }
@@ -219,7 +249,7 @@ export default class TalkColumn extends React.Component {
     this.listener.updateToken(this.state.token)
   }
 
-  renderTalkGroup(talkGroup, prevTalkGroup, nextTalkGroup) {
+  renderTalkGroup(talkGroup: TalkBlock, prevTalkGroup: TalkBlock, nextTalkGroup: TalkBlock) {
     const isMyTalk = talkGroup.account.isEqual(this.state.me)
     // memberのtalkgroupは、前のTalkGroupが自分であれば名前を表示しない
     const showName = !isMyTalk && !(prevTalkGroup && prevTalkGroup.account.isEqual(talkGroup.account))
@@ -245,7 +275,7 @@ export default class TalkColumn extends React.Component {
             return (
               <li key={key}>
                 <div className={`status-content ${encrypted ? 'is-encrypted' : ''}`}>
-                  <SafeContent parsedContent={parsedContent} onClickHashTag={::this.onClickHashTag} />
+                  <SafeContent parsedContent={parsedContent} onClickHashTag={this.onClickHashTag.bind(this)} />
                 </div>
                 <div className="status-date">
                   <FormattedDate value={createdAt.toDate()}
@@ -345,14 +375,16 @@ export default class TalkColumn extends React.Component {
       } else {
         // if the column is in the window, reset its scroll offset
         const scrollNode = findDOMNode(this.refs.talkGroups)
-        scrollNode.scrollTop = 0
+        if(scrollNode instanceof HTMLElement) {
+          scrollNode.scrollTop = 0
+        }
       }
     }
   }
 
-  onClickMenuButton(e) {
+  onClickMenuButton(e: SyntheticEvent) {
     e.stopPropagation()
-    this.setState({menuVisible: !this.state.menuVisible})
+    this.setState({isMenuVisible: !this.state.isMenuVisible})
   }
 
   onClickCloseColumn() {
@@ -371,7 +403,7 @@ export default class TalkColumn extends React.Component {
     })
   }
 
-  onScrollTalkGroups(e) {
+  onScrollTalkGroups(e: SyntheticEvent) {
     // コードから変更された場合は何もしない
     if(this.scrollChanging) {
       this.scrollChanging = false
@@ -379,19 +411,22 @@ export default class TalkColumn extends React.Component {
     }
 
     const node = e.target
-    const atBottom = node.scrollTop + node.clientHeight >= node.scrollHeight ? true : false
 
-    if(!atBottom && this.state.keepAtBottom)
-      this.setState({keepAtBottom: false})
-    else if(atBottom && !this.state.keepAtBottom)
-      this.setState({keepAtBottom: true})
+    if(node instanceof HTMLElement) {
+      const atBottom = node.scrollTop + node.clientHeight >= node.scrollHeight ? true : false
+
+      if(!atBottom && this.state.keepAtBottom)
+        this.setState({keepAtBottom: false})
+      else if(atBottom && !this.state.keepAtBottom)
+        this.setState({keepAtBottom: true})
+    }
   }
 
-  onChangeMessage(e) {
+  onChangeMessage(e: SyntheticInputEvent) {
     this.setState({newMessage: e.target.value})
   }
 
-  onChangeMediaFile(e) {
+  onChangeMediaFile(e: SyntheticInputEvent) {
     let files = Array.from(e.target.files)
 
     for(const file of files) {
@@ -399,10 +434,9 @@ export default class TalkColumn extends React.Component {
     }
 
     this.setState(update(this.state, {mediaFiles: {$push: files}}))
-    e.target.value = null
   }
 
-  onRemoveMediaFile(file) {
+  onRemoveMediaFile(file: File) {
     const idx = this.state.mediaFiles.indexOf(file)
     if(idx >= 0) {
       const newState = update(this.state, {mediaFiles: {$splice: [[idx, 1]]}})
@@ -419,7 +453,7 @@ export default class TalkColumn extends React.Component {
     })
   }
 
-  onKeyDownMessage(e) {
+  onKeyDownMessage(e: SyntheticKeyboardEvent) {
     require('assert')(!this.state.loading)
 
     if((e.ctrlKey || e.metaKey) && e.keyCode == KEY_ENTER) {
@@ -428,7 +462,7 @@ export default class TalkColumn extends React.Component {
     }
   }
 
-  onClickHashTag(tag, e) {
+  onClickHashTag(tag: string, e: SyntheticEvent) {
     e.preventDefault()
     this.actionDelegate.onClickHashTag(tag)
   }
