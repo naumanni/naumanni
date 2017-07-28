@@ -1,0 +1,176 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TalkForm snapshot has mediaFiles has no sensitive content  1`] = `
+<div
+  className="talkForm-content"
+>
+  <div
+    className="talkForm-status"
+  >
+    <textarea
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="placeholder"
+      value="test"
+    />
+  </div>
+  <div
+    className="talkForm-mediaFiles"
+  >
+    <MediaFileThumbnail
+      mediaFile={
+        File {
+          Symbol(impl): FileImpl {
+            "_buffer": Buffer [],
+            "isClosed": false,
+            "lastModified": 1504105200000,
+            "name": "image1.jpg",
+            "type": "image/jpg",
+            Symbol(wrapper): [Circular],
+          },
+        }
+      }
+      onClose={[Function]}
+      showClose={true}
+    />
+  </div>
+  <div
+    className="talkForm-contentActions"
+  >
+    <label
+      className="tootForm-addMedia"
+    >
+      <IconFont
+        iconName="camera"
+      />
+      <input
+        multiple="multiple"
+        onChange={[Function]}
+        style={
+          Object {
+            "display": "none",
+          }
+        }
+        type="file"
+      />
+    </label>
+    <button
+      className="tootForm-toggleNsfw"
+      onClick={[Function]}
+      type="button"
+    >
+      <IconFont
+        iconName="nsfw"
+      />
+    </button>
+  </div>
+</div>
+`;
+
+exports[`TalkForm snapshot has mediaFiles has sensitive content  1`] = `
+<div
+  className="talkForm-content"
+>
+  <div
+    className="talkForm-status"
+  >
+    <textarea
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="placeholder"
+      value="test"
+    />
+  </div>
+  <div
+    className="talkForm-mediaFiles"
+  >
+    <MediaFileThumbnail
+      mediaFile={
+        File {
+          Symbol(impl): FileImpl {
+            "_buffer": Buffer [],
+            "isClosed": false,
+            "lastModified": 1504105200000,
+            "name": "image1.jpg",
+            "type": "image/jpg",
+            Symbol(wrapper): [Circular],
+          },
+        }
+      }
+      onClose={[Function]}
+      showClose={true}
+    />
+  </div>
+  <div
+    className="talkForm-contentActions"
+  >
+    <label
+      className="tootForm-addMedia"
+    >
+      <IconFont
+        iconName="camera"
+      />
+      <input
+        multiple="multiple"
+        onChange={[Function]}
+        style={
+          Object {
+            "display": "none",
+          }
+        }
+        type="file"
+      />
+    </label>
+    <button
+      className="tootForm-toggleNsfw is-active"
+      onClick={[Function]}
+      type="button"
+    >
+      <IconFont
+        iconName="nsfw"
+      />
+    </button>
+  </div>
+</div>
+`;
+
+exports[`TalkForm snapshot has no mediaFiles  1`] = `
+<div
+  className="talkForm-content"
+>
+  <div
+    className="talkForm-status"
+  >
+    <textarea
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="placeholder"
+      value="test"
+    />
+  </div>
+  <div
+    className="talkForm-mediaFiles"
+  />
+  <div
+    className="talkForm-contentActions"
+  >
+    <label
+      className="tootForm-addMedia"
+    >
+      <IconFont
+        iconName="camera"
+      />
+      <input
+        multiple="multiple"
+        onChange={[Function]}
+        style={
+          Object {
+            "display": "none",
+          }
+        }
+        type="file"
+      />
+    </label>
+  </div>
+</div>
+`;
