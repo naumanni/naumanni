@@ -5,7 +5,9 @@ import update from 'immutability-helper'
 import {findDOMNode} from 'react-dom'
 import {FormattedDate, FormattedMessage as _FM} from 'react-intl'
 import classNames from 'classnames'
+import {intlShape} from 'react-intl'
 
+import {AppPropType, ContextPropType} from 'src/propTypes'
 import {
   COLUMN_TAG,
   SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
@@ -22,6 +24,14 @@ import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
  * タイムラインのカラム
  */
 export default class TalkColumn extends Column {
+  listenerRemovers = []
+
+  static contextTypes = {
+    app: AppPropType,
+    context: ContextPropType,
+    intl: intlShape,
+  }
+
   static propTypes = {
     to: PropTypes.string.isRequired,
     from: PropTypes.string.isRequired,
@@ -59,9 +69,10 @@ export default class TalkColumn extends Column {
    * @override
    */
   componentDidMount() {
-    super.componentDidMount()
+    const {context} = this.context
 
     this.listenerRemovers.push(
+      context.onChange(this.onChangeContext.bind(this)),
       this.listener.onChange(::this.onChangeTalk),
     )
 
