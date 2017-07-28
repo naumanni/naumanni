@@ -1,0 +1,54 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ColumnHeader snapshot canShowMenuContent == false, isPrivate == false 1`] = `
+<div>
+  <header
+    className="column-header"
+    onClick={[Function]}
+  >
+    <div>
+      title
+    </div>
+    <div
+      className="column-headerMenu"
+    >
+      <button
+        className="column-headerMenuButton"
+        onClick={[Function]}
+      >
+        <span
+          className="icon icon-cog"
+        />
+      </button>
+    </div>
+  </header>
+</div>
+`;
+
+exports[`ColumnHeader snapshot canShowMenuContent == true, isPrivate == true 1`] = `
+<div>
+  <header
+    className="column-header column-header-private"
+    onClick={[Function]}
+  >
+    <div>
+      title
+    </div>
+    <div
+      className="column-headerMenu"
+    >
+      <button
+        className="column-headerMenuButton"
+        onClick={[Function]}
+      >
+        <span
+          className="icon icon-cog"
+        />
+      </button>
+    </div>
+  </header>
+  <div>
+    menu
+  </div>
+</div>
+`;
