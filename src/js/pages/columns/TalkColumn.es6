@@ -49,7 +49,7 @@ export default class TalkColumn extends Column {
     // コードからスクロール量を変更している場合はtrue
     this.scrollChanging = false
     this.state = {
-      ...this.state,
+      ...this.getStateFromContext(),
       keepAtBottom: true,
       loading: true,
       mediaFiles: [],
@@ -233,12 +233,12 @@ export default class TalkColumn extends Column {
     )
   }
 
-  /**
-   * @override
-   */
   getStateFromContext() {
-    const state = super.getStateFromContext()
+    const {context} = this.context
+    const state = context.getState()
+
     state.token = state.tokenState.getTokenByAcct(this.props.from)
+
     return state
   }
 
