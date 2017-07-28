@@ -105,12 +105,12 @@ export default class TalkColumn extends React.Component {
    * @override
    */
   render() {
-    const {loading, menuVisible} = this.state
+    const {loading} = this.state
 
     return (
       <div className="column">
         <ColumnHeader
-          isMenuVisible={menuVisible}
+          canShowMenuContent={!loading}
           isPrivate={true}
           menuContent={this.renderMenuContent()}
           title={this.renderTitle()}
@@ -148,7 +148,9 @@ export default class TalkColumn extends React.Component {
   }
 
   renderMenuContent() {
-    return <ColumnHeaderMenu onClickClose={this.onClickCloseColumn.bind(this)} />
+    return <ColumnHeaderMenu
+      isCollapsed={!this.state.menuVisible}
+      onClickClose={this.onClickCloseColumn.bind(this)} />
   }
 
   renderBody() {

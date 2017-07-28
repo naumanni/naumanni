@@ -1,13 +1,12 @@
 /* @flow */
 import React from 'react'
-import TransitionGroup from 'react-transition-group/TransitionGroup'
 import classNames from 'classnames'
 
 import {IconFont} from 'src/pages/parts'
 
 
 type Props = {
-  isMenuVisible: boolean,
+  canShowMenuContent: boolean,
   isPrivate: boolean,
   menuContent: React.Element<any>,
   title: React.Element<any>,
@@ -20,7 +19,7 @@ export default class ColumnHeader extends React.PureComponent {
 
   render() {
     const {
-      isMenuVisible, isPrivate, menuContent, title,
+      canShowMenuContent, isPrivate, menuContent, title,
       onClickHeader, onClickMenu} = this.props
 
     return (
@@ -39,9 +38,7 @@ export default class ColumnHeader extends React.PureComponent {
             </button>
           </div>
         </header>
-        <TransitionGroup>
-          {isMenuVisible && menuContent}
-        </TransitionGroup>
+        {canShowMenuContent && menuContent}
       </div>
     )
   }
