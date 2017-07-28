@@ -37,6 +37,7 @@ export default class TalkColumn extends Column {
   static propTypes = {
     to: PropTypes.string.isRequired,
     from: PropTypes.string.isRequired,
+    onClickHeader: PropTypes.func.isRequired,
   }
 
   constructor(...args) {
@@ -60,7 +61,6 @@ export default class TalkColumn extends Column {
     }
     this.setUpMediaCounter()
   }
-
 
   /**
    * @override
@@ -233,20 +233,9 @@ export default class TalkColumn extends Column {
     return state
   }
 
-  /**
-   * @override
-   */
   onChangeContext() {
-    super.onChangeContext()
-
+    this.setState(this.getStateFromContext())
     this.listener.updateToken(this.state.token)
-  }
-
-  /**
-   * @override
-   */
-  scrollNode() {
-    return findDOMNode(this.refs.talkGroups)
   }
 
   renderTalkGroup(talkGroup, prevTalkGroup, nextTalkGroup) {
@@ -362,6 +351,23 @@ export default class TalkColumn extends Column {
   }
 
   // cb
+
+  onClickHeader() {
+    const node = findDOMNode(this)
+
+    if(node instanceof HTMLElement) {
+      const columnBounds = node.getBoundingClientRect()
+
+      if(columnBounds.right > window.innerWidth || columnBounds.left < 0) {
+        // if the column is out of the window, adjusts horizontal scroll
+        this.props.onClickHeader(this.props.column.key)
+      } else {
+        // if the column is in the window, reset its scroll offset
+        const scrollNode = findDOMNode(this.refs.talkGroups)
+        scrollNode.scrollTop = 0
+      }
+    }
+  }
 
   onClickMenuButton(e) {
     e.stopPropagation()
