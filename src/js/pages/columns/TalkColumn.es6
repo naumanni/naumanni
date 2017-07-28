@@ -17,7 +17,7 @@ import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 import TimelineActions from 'src/controllers/TimelineActions'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener from 'src/controllers/TalkListener'
-import {IconFont, NowLoading, UserIconWithHost, SafeContent} from '../parts'
+import {ColumnHeader, ColumnHeaderMenu, IconFont, NowLoading, UserIconWithHost, SafeContent} from '../parts'
 import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
 
 
@@ -110,7 +110,12 @@ export default class TalkColumn extends React.Component {
 
     return (
       <div className="column">
-        {this.renderHeader()}
+        <ColumnHeader
+          isPrivate={true}
+          title={this.renderTitle()}
+          onClickHeader={this.onClickHeader.bind(this)}
+          onClickMenu={this.onClickMenuButton.bind(this)}
+        />
         <TransitionGroup>
           {menuVisible && this.renderMenuContent()}
         </TransitionGroup>
@@ -124,27 +129,6 @@ export default class TalkColumn extends React.Component {
   }
 
   // render private
-
-  renderHeader() {
-    let title = this.renderTitle()
-
-    if(typeof title === 'string')
-      title = <h1 className="column-headerTitle">{title}</h1>
-
-    return (
-      <header
-        className="column-header column-header-private"
-        onClick={this.onClickHeader.bind(this)}
-      >
-        {title}
-        <div className="column-headerMenu">
-          <button className="column-headerMenuButton" onClick={this.onClickMenuButton.bind(this)}>
-            <IconFont iconName="cog" />
-          </button>
-        </div>
-      </header>
-    )
-  }
 
   renderTitle() {
     const {me, members} = this.state
