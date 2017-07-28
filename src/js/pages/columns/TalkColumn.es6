@@ -1,6 +1,7 @@
 // import update from 'immutability-helper'
 import PropTypes from 'prop-types'
 import React from 'react'
+import TransitionGroup from 'react-transition-group/TransitionGroup'
 import update from 'immutability-helper'
 import {findDOMNode} from 'react-dom'
 import {FormattedDate, FormattedMessage as _FM} from 'react-intl'
@@ -12,6 +13,7 @@ import {
   COLUMN_TAG,
   SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
   KEY_ENTER} from 'src/constants'
+import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 import TimelineActions from 'src/controllers/TimelineActions'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener from 'src/controllers/TalkListener'
@@ -51,6 +53,7 @@ export default class TalkColumn extends Column {
       keepAtBottom: true,
       loading: true,
       mediaFiles: [],
+      menuVisible: false,
       newMessage: '',
       sendingMessage: false,
       sensitive: false,
@@ -109,6 +112,50 @@ export default class TalkColumn extends Column {
   /**
    * @override
    */
+  render() {
+    const {loading, menuVisible} = this.state
+
+    return (
+      <div className="column">
+        {this.renderHeader()}
+        <TransitionGroup>
+          {menuVisible && this.renderMenuContent()}
+        </TransitionGroup>
+
+        {loading
+          ? <div className="column-body is-loading"><NowLoading /></div>
+          : this.renderBody()
+        }
+      </div>
+    )
+  }
+
+  // render private
+
+  renderHeader() {
+    let title = this.renderTitle()
+
+    if(typeof title === 'string')
+      title = <h1 className="column-headerTitle">{title}</h1>
+
+    return (
+      <header
+        className={classNames(
+          'column-header',
+          {'column-header-private': this.isPrivate()}
+        )}
+        onClick={this.onClickHeader.bind(this)}
+      >
+        {title}
+        <div className="column-headerMenu">
+          <button className="column-headerMenuButton" onClick={this.onClickMenuButton.bind(this)}>
+            <IconFont iconName="cog" />
+          </button>
+        </div>
+      </header>
+    )
+  }
+
   renderTitle() {
     const {me, members} = this.state
 
@@ -128,9 +175,10 @@ export default class TalkColumn extends Column {
     )
   }
 
-  /**
-   * @override
-   */
+  renderMenuContent() {
+    return <ColumnHeaderMenu onClickClose={this.onClickCloseColumn.bind(this)} />
+  }
+
   renderBody() {
     const {formatMessage: _} = this.context.intl
 
@@ -326,6 +374,17 @@ export default class TalkColumn extends Column {
   }
 
   // cb
+
+  onClickMenuButton(e) {
+    e.stopPropagation()
+    this.setState({menuVisible: !this.state.menuVisible})
+  }
+
+  onClickCloseColumn() {
+    const {context} = this.context
+    context.useCase(new CloseColumnUseCase()).execute(this.props.column)
+  }
+
   onChangeTalk() {
     const {me, members, talk} = this.listener
 
