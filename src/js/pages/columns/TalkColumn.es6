@@ -1,7 +1,6 @@
 // import update from 'immutability-helper'
 import PropTypes from 'prop-types'
 import React from 'react'
-import TransitionGroup from 'react-transition-group/TransitionGroup'
 import update from 'immutability-helper'
 import {findDOMNode} from 'react-dom'
 import {FormattedDate, FormattedMessage as _FM} from 'react-intl'
@@ -111,14 +110,13 @@ export default class TalkColumn extends React.Component {
     return (
       <div className="column">
         <ColumnHeader
+          isMenuVisible={menuVisible}
           isPrivate={true}
+          menuContent={this.renderMenuContent()}
           title={this.renderTitle()}
           onClickHeader={this.onClickHeader.bind(this)}
           onClickMenu={this.onClickMenuButton.bind(this)}
         />
-        <TransitionGroup>
-          {menuVisible && this.renderMenuContent()}
-        </TransitionGroup>
 
         {loading
           ? <div className="column-body is-loading"><NowLoading /></div>
