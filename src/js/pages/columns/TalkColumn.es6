@@ -7,7 +7,7 @@ import {FormattedDate, FormattedMessage as _FM} from 'react-intl'
 import classNames from 'classnames'
 import {intlShape} from 'react-intl'
 
-import {AppPropType, ContextPropType} from 'src/propTypes'
+import {ContextPropType} from 'src/propTypes'
 import {
   COLUMN_TAG,
   SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
@@ -27,7 +27,6 @@ export default class TalkColumn extends React.Component {
   listenerRemovers = []
 
   static contextTypes = {
-    app: AppPropType,
     context: ContextPropType,
     intl: intlShape,
   }
