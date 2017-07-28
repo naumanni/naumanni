@@ -17,7 +17,6 @@ import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 import TimelineActions from 'src/controllers/TimelineActions'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener from 'src/controllers/TalkListener'
-import Column from './Column'
 import {IconFont, NowLoading, UserIconWithHost, SafeContent} from '../parts'
 import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
 
@@ -25,7 +24,7 @@ import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
 /**
  * タイムラインのカラム
  */
-export default class TalkColumn extends Column {
+export default class TalkColumn extends React.Component {
   listenerRemovers = []
 
   static contextTypes = {
