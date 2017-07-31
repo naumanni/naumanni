@@ -9,7 +9,6 @@ import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
 export default class TalkForm extends React.PureComponent {
   props: {
     mediaFiles: File[],
-    mediaFileCounter: number,
     mediaFileKeys: WeakMap<File, number>,
     placeholder: string,
     sensitive: boolean,

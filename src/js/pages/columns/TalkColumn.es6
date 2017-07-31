@@ -202,7 +202,6 @@ export default class TalkColumn extends React.Component {
         </ul>
         <TalkForm
           mediaFiles={mediaFiles}
-          mediaFileCounter={this.mediaFileCounter}
           mediaFileKeys={this.mediaFileKeys}
           placeholder={_({id: 'talk.form.placeholder'})}
           sensitive={sensitive}
