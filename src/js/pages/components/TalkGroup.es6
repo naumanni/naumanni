@@ -55,7 +55,7 @@ export default class TalkGroup extends React.PureComponent {
     showAvatar: boolean,
     showName: boolean,
     talkGroup: TalkBlock,
-    onClickHashTag: (SyntheticEvent) => void,
+    onClickHashTag: (string, SyntheticEvent) => void,
   }
 
   render() {

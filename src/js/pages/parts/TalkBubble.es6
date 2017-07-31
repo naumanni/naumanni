@@ -10,7 +10,7 @@ type Props = {
   createdAt: Date,
   isEncrypted: boolean,
   parsedContent: List<{[type: string]: {[string]: any}}>,
-  onClickHashTag: (SyntheticEvent) => void,
+  onClickHashTag: (string, SyntheticEvent) => void,
 }
 
 export default class TalkBubble extends React.PureComponent {
