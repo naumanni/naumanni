@@ -10,8 +10,8 @@ import {TalkBubble, UserIconWithHost} from '../parts'
 export class TalkGroupModel {
   _me: Account
   _talkGroup: TalkBlock
-  _prevTalkGroup: TalkBlock
-  _nextTalkGroup: TalkBlock
+  _prevTalkGroup: ?TalkBlock
+  _nextTalkGroup: ?TalkBlock
 
   /**
    * @constructor
@@ -20,7 +20,7 @@ export class TalkGroupModel {
    * @param{TalkBlock} prevTalkGroup
    * @param{TalkBlock} nextTalkGroup
    */
-  constructor(me: Account, talkGroup: TalkBlock, prevTalkGroup: TalkBlock, nextTalkGroup: TalkBlock) {
+  constructor(me: Account, talkGroup: TalkBlock, prevTalkGroup: ?TalkBlock, nextTalkGroup: ?TalkBlock) {
     this._me = me
     this._talkGroup = talkGroup
     this._prevTalkGroup = prevTalkGroup
