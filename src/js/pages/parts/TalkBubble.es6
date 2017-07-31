@@ -3,7 +3,7 @@ import React from 'react'
 import {List} from 'immutable'
 import {FormattedDate} from 'react-intl'
 
-import {IconFont, SafeContent} from '../parts'
+import {IconFont, SafeContent} from './'
 
 
 type Props = {

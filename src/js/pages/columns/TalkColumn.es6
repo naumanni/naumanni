@@ -16,7 +16,8 @@ import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 import TimelineActions from 'src/controllers/TimelineActions'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener, {TalkBlock} from 'src/controllers/TalkListener'
-import {ColumnHeader, ColumnHeaderMenu, IconFont, NowLoading, TalkBubble, UserIconWithHost} from '../parts'
+import TalkGroup, {TalkGroupModel} from 'src/pages/components/TalkGroup'
+import {ColumnHeader, ColumnHeaderMenu, IconFont, NowLoading} from '../parts'
 import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
 
 
@@ -250,39 +251,17 @@ export default class TalkColumn extends React.Component {
   }
 
   renderTalkGroup(talkGroup: TalkBlock, prevTalkGroup: TalkBlock, nextTalkGroup: TalkBlock) {
-    const isMyTalk = talkGroup.account.isEqual(this.state.me)
-    // memberのtalkgroupは、前のTalkGroupが自分であれば名前を表示しない
-    const showName = !isMyTalk && !(prevTalkGroup && prevTalkGroup.account.isEqual(talkGroup.account))
-    // memberのtalkgroupは、次のTalkGroupが自分であればアバターを表示しない
-    const showAvatar = !isMyTalk && !(nextTalkGroup && nextTalkGroup.account.isEqual(talkGroup.account))
+    const model = new TalkGroupModel(this.state.me, talkGroup, prevTalkGroup, nextTalkGroup)
+    const {key, isMyTalk, showName, showAvatar} = model
+    const props = {
+      isMyTalk,
+      showName,
+      showAvatar,
+      talkGroup,
+      onClickHashTag: this.onClickHashTag.bind(this),
+    }
 
-    const key = `speak-${talkGroup.account.acct}-${talkGroup.statuses[0].uri}`
-
-    return (
-      <div className={`talk-talkGroup ${isMyTalk ? 'is-me' : 'is-member'}`} key={key}>
-        {showName && (
-          <div className="talk-speakerName">
-            {talkGroup.account.display_name || talkGroup.account.acct}
-          </div>
-        )}
-        {showAvatar && (
-          <div className="talk-speakerAvatar">
-            <UserIconWithHost account={talkGroup.account} />
-          </div>
-        )}
-        <ul className="talk-talkGroupStatuses">
-          {talkGroup.contents.map(({key, parsedContent, createdAt, encrypted}) => (
-            <TalkBubble
-              key={key}
-              createdAt={createdAt.toDate()}
-              isEncrypted={encrypted}
-              parsedContent={parsedContent}
-              onClickHashTag={this.onClickHashTag.bind(this)}
-            />
-          ))}
-        </ul>
-      </div>
-    )
+    return <TalkGroup key={key} {...props} />
   }
 
   renderMediaFiles() {

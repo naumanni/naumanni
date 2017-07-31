@@ -15,3 +15,4 @@ module.file_ext=.es6
 module.file_ext=.js
 munge_underscores=true
 module.name_mapper='^src\/\(.*\)$' -> '<PROJECT_ROOT>/src/js/\1'
+unsafe.enable_getters_and_setters=true
