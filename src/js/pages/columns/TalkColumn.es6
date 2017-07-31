@@ -209,7 +209,7 @@ export default class TalkColumn extends React.Component {
           onChange={this.onChangeMessage.bind(this)}
           onChangeMediaFile={this.onChangeMediaFile.bind(this)}
           onClickToggleNsfw={this.onClickToggleNsfw.bind(this)}
-          onKeydown={this.onKeyDownMessage.bind(this)}
+          onKeyDown={this.onKeyDownMessage.bind(this)}
           onRemoveMediaFile={this.onRemoveMediaFile.bind(this)}
         />
       </div>

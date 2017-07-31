@@ -16,7 +16,7 @@ export default class TalkForm extends React.PureComponent {
     onChange: (SyntheticInputEvent) => void,
     onChangeMediaFile: (SyntheticInputEvent) => void,
     onClickToggleNsfw: (SyntheticEvent) => void,
-    onKeydown: (SyntheticKeyboardEvent) => void,
+    onKeyDown: (SyntheticKeyboardEvent) => void,
     onRemoveMediaFile: (File) => void,
   }
 
@@ -25,7 +25,7 @@ export default class TalkForm extends React.PureComponent {
    */
   render() {
     const {
-      text, onChange, onKeydown, placeholder,
+      text, onChange, onKeyDown, placeholder,
       mediaFiles, onChangeMediaFile,
       sensitive, onClickToggleNsfw,
     } = this.props
@@ -36,7 +36,7 @@ export default class TalkForm extends React.PureComponent {
           <textarea
             value={text}
             onChange={onChange}
-            onKeyDown={onKeydown}
+            onKeyDown={onKeyDown}
             placeholder={placeholder} />
         </div>
 
