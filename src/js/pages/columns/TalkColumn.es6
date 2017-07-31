@@ -17,8 +17,8 @@ import TimelineActions from 'src/controllers/TimelineActions'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener, {TalkBlock} from 'src/controllers/TalkListener'
 import TalkGroup, {TalkGroupModel} from 'src/pages/components/TalkGroup'
-import {ColumnHeader, ColumnHeaderMenu, IconFont, NowLoading} from '../parts'
-import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
+import TalkForm from 'src/pages/components/TalkForm'
+import {ColumnHeader, ColumnHeaderMenu, NowLoading} from '../parts'
 
 
 type Props = {
@@ -189,7 +189,7 @@ export default class TalkColumn extends React.Component {
       return <NowLoading />
     }
 
-    const {loading, mediaFiles, sensitive, talk} = this.state
+    const {loading, mediaFiles, newMessage, sensitive, talk} = this.state
 
     return (
       <div className={classNames(
@@ -200,38 +200,19 @@ export default class TalkColumn extends React.Component {
         <ul className="talk-talkGroups" ref="talkGroups" onScroll={this.onScrollTalkGroups.bind(this)}>
           {(talk || []).map((talkGroup, idx, talk) => this.renderTalkGroup(talkGroup, talk[idx - 1], talk[idx + 1]))}
         </ul>
-        <div className="talkForm-content">
-          <div className="talkForm-status">
-            <textarea
-              value={this.state.newMessage}
-              onChange={this.onChangeMessage.bind(this)}
-              onKeyDown={this.onKeyDownMessage.bind(this)}
-              placeholder={_({id: 'talk.form.placeholder'})} />
-          </div>
-
-          {this.renderMediaFiles()}
-
-          <div className="talkForm-contentActions">
-            <label className="tootForm-addMedia">
-              <IconFont iconName="camera" />
-              <input
-                type="file"
-                multiple="multiple"
-                style={{display: 'none'}} ref="fileInput" onChange={this.onChangeMediaFile.bind(this)} />
-            </label>
-            {mediaFiles.length > 0 &&
-              <button
-                className={classNames(
-                  'tootForm-toggleNsfw',
-                  {'is-active': sensitive},
-                )}
-                type="button"
-                onClick={this.onClickToggleNsfw.bind(this)}>
-                <IconFont iconName="nsfw" />
-              </button>
-            }
-          </div>
-        </div>
+        <TalkForm
+          mediaFiles={mediaFiles}
+          mediaFileCounter={this.mediaFileCounter}
+          mediaFileKeys={this.mediaFileKeys}
+          placeholder={_({id: 'talk.form.placeholder'})}
+          sensitive={sensitive}
+          text={newMessage}
+          onChange={this.onChangeMessage.bind(this)}
+          onChangeMediaFile={this.onChangeMediaFile.bind(this)}
+          onClickToggleNsfw={this.onClickToggleNsfw.bind(this)}
+          onKeydown={this.onKeyDownMessage.bind(this)}
+          onRemoveMediaFile={this.onRemoveMediaFile.bind(this)}
+        />
       </div>
     )
   }
@@ -264,29 +245,10 @@ export default class TalkColumn extends React.Component {
     return <TalkGroup key={key} {...props} />
   }
 
-  renderMediaFiles() {
-    const {mediaFiles} = this.state
-
-    if(!mediaFiles) {
-      return null
-    }
-
-    return (
-      <div className="talkForm-mediaFiles">
-        {mediaFiles.map((file) => {
-          return <MediaFileThumbnail
-            key={this.mediaFileKeys.get(file)} mediaFile={file} showClose={true}
-            onClose={this.onRemoveMediaFile.bind(this, file)} />
-        })}
-      </div>
-    )
-  }
-
   setUpMediaCounter() {
     this.mediaFileKeys = new WeakMap()
     this.mediaFileCounter = 0
   }
-
 
   sendMessage() {
     const message = this.state.newMessage.trim()
