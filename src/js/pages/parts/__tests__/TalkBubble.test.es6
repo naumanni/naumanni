@@ -1,10 +1,8 @@
 import React from 'react'
-import {IntlProvider} from 'react-intl'
 import {mountWithIntl} from 'enzyme-react-intl'
 import serializer from 'enzyme-to-json/serializer'
 import {List} from 'immutable'
 
-import {intlContext} from 'src/testUtils'
 import {TOKEN_HASHTAG} from 'src/constants'
 import TalkBubble from '../TalkBubble'
 
@@ -12,9 +10,6 @@ import TalkBubble from '../TalkBubble'
 expect.addSnapshotSerializer(serializer)
 
 describe('TalkBubble', () => {
-  const context = {
-    ...intlContext,
-  }
   let defaultProps = {
     createdAt: new Date(2017, 7, 28),
     isEncrypted: false,
