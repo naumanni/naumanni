@@ -22,8 +22,8 @@ export default class ColumnHeaderMenu extends React.PureComponent {
     return (
       <div className={classNames(
         'column-menuContent',
-        {'collapsed': isCollapsed}
-      )} ref="container">
+        {'collapsed': isCollapsed})}
+      >
         {children}
         <div className="menu-item--close" onClick={onClickClose}>
           <_FM id="column.menu.close" />
