@@ -38,7 +38,6 @@ tokens[0].attachAccount(accountA)
 tokens[1].attachAccount(accountB)
 
 
-// TODO:
 const talkAccountA = new Account({
   "id_by_host": {
     "friends.nico": 111166
