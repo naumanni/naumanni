@@ -11,6 +11,7 @@ import {getColumnClassForType} from 'src/pages/columns'
 import TalkListenerManager from 'src/controllers/TalkListenerManager'
 import TimelineActions from 'src/controllers/TimelineActions'
 import TalkColumn, {TalkColumnModel} from 'src/pages/columns/TalkColumn'
+import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 
 
 type Props = {
@@ -130,6 +131,7 @@ export default class ColumnContainer extends React.Component {
       ...columnModel.toProps(),
       onClickHashTag: (tag) => this.actionDelegate.onClickHashTag(tag),
       onClickHeader: this.scrollToColumn.bind(this),
+      onClose: this.onCloseColumn.bind(this),
       onSubscribeListener: (...args) => TalkListenerManager.onSubscribeListener(...args),
       onUnsubscribeListener: (...args) => TalkListenerManager.onUnsubscribeListener(...args),
     }
@@ -149,6 +151,12 @@ export default class ColumnContainer extends React.Component {
         const token = tokenState.getTokenByAcct(column.params.from)
         token && TalkListenerManager.updateTokenIfNeed(token, column)
       })
+  }
+
+  onCloseColumn(column: UIColumn) {
+    const {context} = this.context
+
+    context.useCase(new CloseColumnUseCase()).execute(column)
   }
 
   onChangeTalk(columnKey: string, model: TalkColumnModel) {

@@ -12,7 +12,6 @@ import {
   SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
   KEY_ENTER} from 'src/constants'
 import {Account, OAuthToken, UIColumn} from 'src/models'
-import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 import TimelineActions from 'src/controllers/TimelineActions'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import TalkListener, {TalkBlock} from 'src/controllers/TalkListener'
@@ -62,6 +61,7 @@ type Props = {
   talk: ?TalkBlock[],
   onClickHashTag: (string) => void,
   onClickHeader: (string) => void,
+  onClose: (UIColumn) => void,
   onSubscribeListener: (OAuthToken, UIColumn) => void,
   onUnsubscribeListener: (UIColumn) => void,
 }
@@ -195,9 +195,11 @@ export default class TalkColumn extends React.Component {
   }
 
   renderMenuContent() {
+    const {column, onClose} = this.props
+
     return <ColumnHeaderMenu
       isCollapsed={!this.state.isMenuVisible}
-      onClickClose={this.onClickCloseColumn.bind(this)} />
+      onClickClose={onClose.bind(this, column)} />
   }
 
   renderBody() {
@@ -325,11 +327,6 @@ export default class TalkColumn extends React.Component {
   onClickMenuButton(e: SyntheticEvent) {
     e.stopPropagation()
     this.setState({isMenuVisible: !this.state.isMenuVisible})
-  }
-
-  onClickCloseColumn() {
-    const {context} = this.context
-    context.useCase(new CloseColumnUseCase()).execute(this.props.column)
   }
 
   onScrollTalkGroups(e: SyntheticEvent) {
