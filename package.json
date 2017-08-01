@@ -15,7 +15,6 @@
     "lint:fix": "eslint --fix --ext=es6 --config .eslintrc.yml src/",
     "test": "run-s build test:js test:flow",
     "test:js": "jest --coverage",
-    "test:TalkBubble": "jest --watch src/js/pages/parts/__tests__/TalkBubble.test.es6",
     "test:flow": "$(npm bin)/flow",
     "watch": "npm-run-all -p watch:*",
     "watch:js": "webpack --progress --colors --watch",
