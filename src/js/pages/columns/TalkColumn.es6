@@ -23,16 +23,33 @@ import {ColumnHeader, ColumnHeaderMenu, NowLoading} from '../parts'
 
 export class TalkColumnModel {
   isLoading: boolean
-  me: Account
-  members: {[acct: string]: Account}
-  talk: TalkBlock
+  me: ?Account
+  members: ?{[acct: string]: Account}
+  talk: ?TalkBlock[]
 
-  constructor(isLoading: boolean, me: Account, members: {[acct: string]: Account}, talk: TalkBlock) {
+  constructor(
+    isLoading: boolean = true,
+    me: Account = undefined,
+    members: {[acct: string]: Account} = {},
+    talk: ?TalkBlock[] = []
+  ) {
     this.isLoading = isLoading
     this.me = me
     this.members = members
     this.talk = talk
   }
+
+  // public
+
+  toProps() {
+    return {
+      isLoading: this.isLoading,
+      me: this.me,
+      members: this.members,
+      talk: this.talk,
+    }
+  }
+
 }
 
 
@@ -43,21 +60,32 @@ type Props = {
   ref: string,
   to: string,
   onClickHeader: (string) => void,
+
+  token: OAuthToken,
+  loading: boolean,
+  me: Account,
+  members: {[acct: string]: Account},
+  talk: TalkBlock[],
+
+  onClickHashTag: (string) => void,
+
+  onSubscribeListener: (OAuthToken, UIColumn) => void,
+  onUnsubscribeListener: (UIColumn) => void,
 }
 
 
 type State = {
-  token: OAuthToken,
+  // token: OAuthToken,
   keepAtBottom: boolean,
-  loading: boolean,
-  me: Account,
+  // loading: boolean,
+  // me: Account,
   mediaFiles: File[],
-  members: {[acct: string]: Account},
+  // members: {[acct: string]: Account},
   isMenuVisible: boolean,
   newMessage: string,
   sendingMessage: boolean,
   sensitive: boolean,
-  talk: TalkBlock[],
+  // talk: TalkBlock[],
 }
 
 /**
@@ -87,12 +115,13 @@ export default class TalkColumn extends React.Component {
     require('assert')(args[0].subject !== SUBJECT_MIXED)
     super(...args)
 
-    this.actionDelegate = new TimelineActions(this.context)
-    this.listener = new TalkListener([this.props.to])
+    // TODO: propsとして渡す
+    // this.actionDelegate = new TimelineActions(this.context)
+    // this.listener = new TalkListener([this.props.to])
     // コードからスクロール量を変更している場合はtrue
     this.scrollChanging = false
     this.state = {
-      ...this.getStateFromContext(),
+      // ...this.getStateFromContext(),
       keepAtBottom: true,
       loading: true,
       mediaFiles: [],
@@ -108,28 +137,44 @@ export default class TalkColumn extends React.Component {
    * @override
    */
   componentDidMount() {
-    const {context} = this.context
+    const {token, column, onSubscribeListener} = this.props
 
-    this.listenerRemovers.push(
-      context.onChange(this.onChangeContext.bind(this)),
-      this.listener.onChange(this.onChangeTalk.bind(this)),
-    )
-
-    // make event listener
-    this.listener.updateToken(this.state.token)
+    onSubscribeListener(token, column)
   }
+  /**
+   * @override
+   */
+  // componentDidMount() {
+    // const {context} = this.context
+
+    // this.listenerRemovers.push(
+      // context.onChange(this.onChangeContext.bind(this)),
+      // this.listener.onChange(this.onChangeTalk.bind(this)),
+    // )
+
+    // // make event listener
+    // this.listener.updateToken(this.state.token)
+  // }
 
   /**
    * @override
    */
   componentWillUnmount() {
-    for(const remover of this.listenerRemovers) {
-      remover()
-    }
+    const {column, onUnsubscribeListener} = this.props
 
-    this.listener.close()
-    delete this.listener
+    onUnsubscribeListener(column)
   }
+  /**
+   * @override
+   */
+  // componentWillUnmount() {
+    // for(const remover of this.listenerRemovers) {
+      // remover()
+    // }
+
+    // this.listener.close()
+    // delete this.listener
+  // }
 
   /**
    * @override
@@ -148,7 +193,8 @@ export default class TalkColumn extends React.Component {
    * @override
    */
   render() {
-    const {loading} = this.state
+    // const {loading} = this.state
+    const {loading} = this.props
 
     return (
       <div className="column">
@@ -172,7 +218,8 @@ export default class TalkColumn extends React.Component {
   // render private
 
   renderTitle() {
-    const {me, members} = this.state
+    // const {me, members} = this.state
+    const {me, members} = this.props
 
     if(!me || !members) {
       return <_FM id="column.title.talk" />
@@ -204,7 +251,9 @@ export default class TalkColumn extends React.Component {
       return <NowLoading />
     }
 
-    const {loading, mediaFiles, newMessage, sensitive, talk} = this.state
+    const {loading, talk} = this.props
+    const {mediaFiles, newMessage, sensitive} = this.state
+    // const {loading, mediaFiles, newMessage, sensitive, talk} = this.state
 
     return (
       <div className={classNames(
@@ -231,22 +280,23 @@ export default class TalkColumn extends React.Component {
     )
   }
 
-  getStateFromContext() {
-    const {context} = this.context
-    const state = context.getState()
+  // getStateFromContext() {
+    // const {context} = this.context
+    // const state = context.getState()
 
-    state.token = state.tokenState.getTokenByAcct(this.props.from)
+    // state.token = state.tokenState.getTokenByAcct(this.props.from)
 
-    return state
-  }
+    // return state
+  // }
 
-  onChangeContext() {
-    this.setState(this.getStateFromContext())
-    this.listener.updateToken(this.state.token)
-  }
+  // onChangeContext() {
+    // this.setState(this.getStateFromContext())
+    // this.listener.updateToken(this.state.token)
+  // }
 
   renderTalkGroup(talkGroup: TalkBlock, prevTalkGroup: TalkBlock, nextTalkGroup: TalkBlock) {
-    const model = new TalkGroupModel(this.state.me, talkGroup, prevTalkGroup, nextTalkGroup)
+    // const model = new TalkGroupModel(this.state.me, talkGroup, prevTalkGroup, nextTalkGroup)
+    const model = new TalkGroupModel(this.props.me, talkGroup, prevTalkGroup, nextTalkGroup)
     const {key, isMyTalk, showName, showAvatar} = model
     const props = {
       isMyTalk,
@@ -273,15 +323,21 @@ export default class TalkColumn extends React.Component {
 
     // get latest status id
     let lastStatusId = null
-    if(this.state.talk.length) {
-      const lastTalkGroup = this.state.talk[this.state.talk.length - 1]
+    if(this.props.talk.length) {
+    // if(this.state.talk.length) {
+      const lastTalkGroup = this.props.talk[this.props.talk.length - 1]
+      // const lastTalkGroup = this.state.talk[this.state.talk.length - 1]
       const lastStatus = lastTalkGroup.statuses[lastTalkGroup.statuses.length - 1]
-      lastStatusId = lastStatus.getIdByHost(this.state.token.host)
+      lastStatusId = lastStatus.getIdByHost(this.props.token.host)
+      // lastStatusId = lastStatus.getIdByHost(this.state.token.host)
     }
 
     this.setState({sendingMessage: true}, async () => {
       const {context} = this.context
-      const {sensitive, token, me, members} = this.state
+      // const {token, me, members} = this.state
+      const {token, me, members} = this.props
+      const {sensitive} = this.state
+      // const {sensitive, token, me, members} = this.state
 
       try {
         // TODO: SendDirectMessageUseCase SendTalkUseCaseに名前を変える?
@@ -340,16 +396,16 @@ export default class TalkColumn extends React.Component {
     context.useCase(new CloseColumnUseCase()).execute(this.props.column)
   }
 
-  onChangeTalk() {
-    const {me, members, talk} = this.listener
+  // onChangeTalk() {
+    // const {me, members, talk} = this.listener
 
-    this.setState({
-      me,
-      members,
-      talk,
-      loading: this.listener.isLoading(),
-    })
-  }
+    // this.setState({
+      // me,
+      // members,
+      // talk,
+      // loading: this.listener.isLoading(),
+    // })
+  // }
 
   onScrollTalkGroups(e: SyntheticEvent) {
     // コードから変更された場合は何もしない
@@ -402,7 +458,8 @@ export default class TalkColumn extends React.Component {
   }
 
   onKeyDownMessage(e: SyntheticKeyboardEvent) {
-    require('assert')(!this.state.loading)
+    require('assert')(!this.props.loading)
+    // require('assert')(!this.state.loading)
 
     if((e.ctrlKey || e.metaKey) && e.keyCode == KEY_ENTER) {
       e.preventDefault()
@@ -412,7 +469,8 @@ export default class TalkColumn extends React.Component {
 
   onClickHashTag(tag: string, e: SyntheticEvent) {
     e.preventDefault()
-    this.actionDelegate.onClickHashTag(tag)
+    this.props.onClickHashTag(tag)
+    // this.actionDelegate.onClickHashTag(tag)
   }
 }
 require('./').registerColumn(COLUMN_TALK, TalkColumn)

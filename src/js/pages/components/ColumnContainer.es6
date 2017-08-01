@@ -1,24 +1,58 @@
 /* @flow */
 import React from 'react'
 import {findDOMNode} from 'react-dom'
+import {Map} from 'immutable'
 
+import {COLUMN_TALK} from 'src/constants'
+import {ContextPropType} from 'src/propTypes'
 import {UIColumn} from 'src/models'
 import {niceScrollLeft} from 'src/utils'
 import {getColumnClassForType} from 'src/pages/columns'
+import TalkListenerManager from 'src/controllers/TalkListenerManager'
+import TimelineActions from 'src/controllers/TimelineActions'
+import TalkColumn, {TalkColumnModel} from 'src/pages/columns/TalkColumn'
 
 
 type Props = {
   columns: UIColumn[],
 }
 
+type State = {
+  talkColumnModels: Map<string, TalkColumnModel>
+}
+
 /**
  * カラムのコンテナ
  */
 export default class ColumnContainer extends React.Component {
+  static contextTypes = {
+    context: ContextPropType,
+  }
+
   props: Props
+  state: State
+  actionDelegate: TimelineActions
+  listenerRemovers: Function[] = []
 
   constructor(...args: any[]) {
     super(...args)
+
+    this.actionDelegate = new TimelineActions(this.context)
+    this.state = {
+      talkColumnModels: new Map(),
+    }
+  }
+
+  /**
+   * @override
+   */
+  componentDidMount() {
+    const {context} = this.context
+
+    this.listenerRemovers.push(
+      context.onChange(this.onChangeContext.bind(this)),
+      TalkListenerManager.onChange(this.onChangeTalk.bind(this)),
+    )
   }
 
   /**
@@ -65,6 +99,10 @@ export default class ColumnContainer extends React.Component {
   }
 
   renderColumn(column: UIColumn) {
+    if(column.type === COLUMN_TALK) {
+      return this.renderTalkColumn(column)
+    }
+
     const klass = getColumnClassForType(column.type)
     return React.createElement(
       klass, {
@@ -74,5 +112,51 @@ export default class ColumnContainer extends React.Component {
         onClickHeader: this.scrollToColumn.bind(this),
         ...column.params,
       })
+  }
+
+  renderTalkColumn(column: UIColumn) {
+    const {key, params: {from}} = column
+    let columnModel = this.state.talkColumnModels.get(key)
+    if(!columnModel) {
+      columnModel = new TalkColumnModel()
+    }
+    const {context} = this.context
+    const {tokenState} = context.getState()
+    const token = tokenState.getTokenByAcct(from)
+
+    const props = {
+      ref: column.key,  // TODO: 必要なのか...??
+      key: column.key,  // TODO: 必要なのか...??
+      column,  // TODO: 必要なのか...??
+      ...column.params,
+      token,
+      ...columnModel.toProps(),
+      onClickHashTag: (tag) => this.actionDelegate.onClickHashTag(tag),
+      onClickHeader: this.scrollToColumn.bind(this),
+      onSubscribeListener: (...args) => TalkListenerManager.onSubscribeListener(...args),
+      onUnsubscribeListener: (...args) => TalkListenerManager.onUnsubscribeListener(...args),
+    }
+
+    return <TalkColumn {...props} />
+  }
+
+  // cb
+  onChangeContext() {
+    const {context} = this.context
+    const {tokenState} = context.getState()
+    const {columns} = this.props
+
+    columns
+      .filter(({type}) => type === COLUMN_TALK)
+      .forEach((column) => {
+        const token = tokenState.getTokenByAcct(column.params.from)
+        token && TalkListenerManager.updateTokenIfNeed(token, column)
+      })
+  }
+
+  onChangeTalk(columnKey: string, model: TalkColumnModel) {
+    this.setState({
+      talkColumnModels: this.state.talkColumnModels.set(columnKey, model),
+    })
   }
 }

@@ -24,6 +24,9 @@ class TalkListenerManager extends ChangeEventEmitter {
     )
     listener.updateToken(token)
     this.listeners.set(key, listener)
+
+    // initial load
+    this.emitChange(key)
   }
 
   onUnsubscribeListener(column: UIColumn) {
@@ -40,6 +43,13 @@ class TalkListenerManager extends ChangeEventEmitter {
     this.listeners.delete(key)
   }
 
+  updateTokenIfNeed(token: OAuthToken, column: UIColumn) {
+    const {key, type} = column
+    require('assert')(type === COLUMN_TALK)
+    const listener = this.listeners.get(key)
+    listener && listener.updateToken(token)
+  }
+
   // private
 
   /**
@@ -53,7 +63,7 @@ class TalkListenerManager extends ChangeEventEmitter {
       const isLoading = listener.isLoading()
       const model = new TalkColumnModel(isLoading, me, members, talk)
 
-      this.emit(this.EVENT_CHANGE, model)
+      this.emit(this.EVENT_CHANGE, columnKey, model)
     }
   }
 
