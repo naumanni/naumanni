@@ -80,12 +80,14 @@
     max-height: 70vh;
     opacity: 1;
     padding: $marginDefault;
+    visibility: visible;
     transition: max-height 200ms ease-in-out, opacity 200ms linear, padding 200ms linear;
 
     &.collapsed {
       max-height: 0;
       opacity: 0.5;
       padding: 0;
+      visibility: hidden;
     }
 
     h2 {
@@ -96,6 +98,7 @@
     }
 
     .menu-item {
+      display: flex;
       margin: 0 0 $marginDefault;
 
       .menu-note {
@@ -115,7 +118,6 @@
       }
 
       &--toggle {
-        display: flex;
         align-items: center;
 
         label {
