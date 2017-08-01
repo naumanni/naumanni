@@ -125,10 +125,7 @@ export default class ColumnContainer extends React.Component {
     const token = tokenState.getTokenByAcct(from)
 
     const props = {
-      ref: column.key,  // TODO: 必要なのか...??
-      key: column.key,  // TODO: 必要なのか...??
-      column,  // TODO: 必要なのか...??
-      ...column.params,
+      column,
       token,
       ...columnModel.toProps(),
       onClickHashTag: (tag) => this.actionDelegate.onClickHashTag(tag),
