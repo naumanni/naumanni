@@ -14,7 +14,7 @@
     "lint": "eslint --config .eslintrc.yml --cache ./src/js/**/*.es6",
     "lint:fix": "eslint --fix --ext=es6 --config .eslintrc.yml src/",
     "test": "run-s build test:js test:flow",
-    "test:js": "jest --coverage",
+    "test:js": "jest --runInBand --coverage",
     "test:flow": "$(npm bin)/flow",
     "watch": "npm-run-all -p watch:*",
     "watch:js": "webpack --progress --colors --watch",
