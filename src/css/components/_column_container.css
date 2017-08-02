@@ -73,11 +73,22 @@
   }
 
   .column-menuContent {
-    padding: $marginDefault;
+    background: $colorMainLightest;
     border: 1px solid $colorGray1;
     border-top: none;
-    background: $colorMainLightest;
     box-sizing: border-box;
+    max-height: 70vh;
+    opacity: 1;
+    padding: $marginDefault;
+    visibility: visible;
+    transition: max-height 200ms ease-in-out, opacity 200ms linear, padding 200ms linear, visibility 200ms linear;
+
+    &.collapsed {
+      max-height: 0;
+      opacity: 0.5;
+      padding: 0;
+      visibility: hidden;
+    }
 
     h2 {
       margin: 0 0 $marginDefault;
