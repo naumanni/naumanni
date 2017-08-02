@@ -59,6 +59,13 @@ export default class ColumnContainer extends React.Component {
   /**
    * @override
    */
+  componentWillUnmount() {
+    this.listenerRemovers.forEach((remover) => remover())
+  }
+
+  /**
+   * @override
+   */
   componentDidUpdate(prevProps: Props) {
     // 新しく追加されたカラムをFocusさせる
     const columnShouldFocus = this.props.columns.find(
