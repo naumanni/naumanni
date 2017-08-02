@@ -12,9 +12,8 @@ import {
   SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
   KEY_ENTER} from 'src/constants'
 import {Account, OAuthToken, UIColumn} from 'src/models'
-import TimelineActions from 'src/controllers/TimelineActions'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
-import TalkListener, {TalkBlock} from 'src/controllers/TalkListener'
+import {TalkBlock} from 'src/controllers/TalkListener'
 import TalkGroup, {TalkGroupModel} from 'src/pages/components/TalkGroup'
 import TalkForm from 'src/pages/components/TalkForm'
 import {ColumnHeader, ColumnHeaderMenu, NowLoading} from '../parts'
@@ -88,9 +87,6 @@ export default class TalkColumn extends React.Component {
     intl: intlShape,
   }
 
-  actionDelegate: TimelineActions
-  listener: TalkListener
-  listenerRemovers = []
   mediaFileKeys: WeakMap<File, number>
   mediaFileCounter: number
   scrollChanging: boolean
