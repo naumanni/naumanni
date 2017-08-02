@@ -47,7 +47,6 @@ export class TalkColumnModel {
       talk: this.talk,
     }
   }
-
 }
 
 
@@ -64,7 +63,6 @@ type Props = {
   onSubscribeListener: (OAuthToken, UIColumn) => void,
   onUnsubscribeListener: (UIColumn) => void,
 }
-
 
 type State = {
   keepAtBottom: boolean,
