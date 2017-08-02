@@ -137,7 +137,7 @@ export default class ColumnContainer extends React.Component {
       token,
       ...columnModel.toProps(),
       onClickHashTag: (tag) => this.actionDelegate.onClickHashTag(tag),
-      onClickHeader: this.scrollToColumn.bind(this),
+      onClickHeader: this.onClickColumnHeader.bind(this),
       onClose: this.onCloseColumn.bind(this),
       onSubscribeListener: (...args) => TalkListenerManager.onSubscribeListener(...args),
       onUnsubscribeListener: (...args) => TalkListenerManager.onUnsubscribeListener(...args),
@@ -158,6 +158,18 @@ export default class ColumnContainer extends React.Component {
         const token = tokenState.getTokenByAcct(column.params.from)
         token && TalkListenerManager.updateTokenIfNeed(token, column)
       })
+  }
+
+  onClickColumnHeader(column: UIColumn, columnNode: HTMLElement, columnScrollNode: ?HTMLElement) {
+    const columnBounds = columnNode.getBoundingClientRect()
+
+    if(columnBounds.right > window.innerWidth || columnBounds.left < 0) {
+      // if the column is out of the window, adjusts horizontal scroll
+      this.scrollToColumn(column.key)
+    } else if(columnScrollNode != null) {
+      // if the column is in the window, reset its scroll offset
+      columnScrollNode.scrollTop = 0
+    }
   }
 
   onCloseColumn(column: UIColumn) {

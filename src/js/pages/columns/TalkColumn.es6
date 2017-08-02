@@ -27,7 +27,7 @@ type Props = {
   members: ?{[acct: string]: Account},
   talk: ?TalkBlock[],
   onClickHashTag: (string) => void,
-  onClickHeader: (string) => void,
+  onClickHeader: (UIColumn, HTMLElement, ?HTMLElement) => void,
   onClose: (UIColumn) => void,
   onSubscribeListener: (OAuthToken, UIColumn) => void,
   onUnsubscribeListener: (UIColumn) => void,
@@ -269,20 +269,15 @@ export default class TalkColumn extends React.Component {
   // cb
 
   onClickHeader() {
+    const {column, onClickHeader} = this.props
     const node = findDOMNode(this)
+    const scrollNode = findDOMNode(this.refs.talkGroups)
 
     if(node instanceof HTMLElement) {
-      const columnBounds = node.getBoundingClientRect()
-
-      if(columnBounds.right > window.innerWidth || columnBounds.left < 0) {
-        // if the column is out of the window, adjusts horizontal scroll
-        this.props.onClickHeader(this.props.column.key)
+      if(scrollNode && scrollNode instanceof HTMLElement) {
+        onClickHeader(column, node, scrollNode)
       } else {
-        // if the column is in the window, reset its scroll offset
-        const scrollNode = findDOMNode(this.refs.talkGroups)
-        if(scrollNode instanceof HTMLElement) {
-          scrollNode.scrollTop = 0
-        }
+        onClickHeader(column, node, undefined)
       }
     }
   }
