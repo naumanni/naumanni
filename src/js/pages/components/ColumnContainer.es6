@@ -8,9 +8,9 @@ import {ContextPropType} from 'src/propTypes'
 import {UIColumn} from 'src/models'
 import {niceScrollLeft} from 'src/utils'
 import {getColumnClassForType} from 'src/pages/columns'
-import TalkListenerManager from 'src/controllers/TalkListenerManager'
+import TalkListenerManager, {TalkModel} from 'src/controllers/TalkListenerManager'
 import TimelineActions from 'src/controllers/TimelineActions'
-import TalkColumn, {TalkColumnModel} from 'src/pages/columns/TalkColumn'
+import TalkColumn from 'src/pages/columns/TalkColumn'
 import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 
 
@@ -19,7 +19,7 @@ type Props = {
 }
 
 type State = {
-  talkColumnModels: Map<string, TalkColumnModel>
+  talkColumnModels: Map<string, TalkModel>
 }
 
 /**
@@ -119,7 +119,7 @@ export default class ColumnContainer extends React.Component {
     const {key, params: {from}} = column
     let columnModel = this.state.talkColumnModels.get(key)
     if(!columnModel) {
-      columnModel = new TalkColumnModel()
+      columnModel = new TalkModel()
     }
     const {context} = this.context
     const {tokenState} = context.getState()
@@ -159,7 +159,7 @@ export default class ColumnContainer extends React.Component {
     context.useCase(new CloseColumnUseCase()).execute(column)
   }
 
-  onChangeTalk(columnKey: string, model: TalkColumnModel) {
+  onChangeTalk(columnKey: string, model: TalkModel) {
     this.setState({
       talkColumnModels: this.state.talkColumnModels.set(columnKey, model),
     })

@@ -19,37 +19,6 @@ import TalkForm from 'src/pages/components/TalkForm'
 import {ColumnHeader, ColumnHeaderMenu, NowLoading} from '../parts'
 
 
-export class TalkColumnModel {
-  isLoading: boolean
-  me: ?Account
-  members: ?{[acct: string]: Account}
-  talk: ?TalkBlock[]
-
-  constructor(
-    isLoading: boolean = true,
-    me: Account = undefined,
-    members: {[acct: string]: Account} = {},
-    talk: ?TalkBlock[] = []
-  ) {
-    this.isLoading = isLoading
-    this.me = me
-    this.members = members
-    this.talk = talk
-  }
-
-  // public
-
-  toProps() {
-    return {
-      isLoading: this.isLoading,
-      me: this.me,
-      members: this.members,
-      talk: this.talk,
-    }
-  }
-}
-
-
 type Props = {
   column: UIColumn,
   token: OAuthToken,

@@ -1,9 +1,38 @@
 /* @flow */
 import {COLUMN_TALK} from 'src/constants'
-import {OAuthToken, UIColumn} from 'src/models'
+import {Account, OAuthToken, UIColumn} from 'src/models'
 import ChangeEventEmitter from 'src/utils/EventEmitter'
-import TalkListener from './TalkListener'
-import {TalkColumnModel} from 'src/pages/columns/TalkColumn'
+import TalkListener, {TalkBlock} from './TalkListener'
+
+
+export class TalkModel {
+  isLoading: boolean
+  me: ?Account
+  members: ?{[acct: string]: Account}
+  talk: ?TalkBlock[]
+
+  constructor(
+    isLoading: boolean = true,
+    me: Account = undefined,
+    members: {[acct: string]: Account} = {},
+    talk: ?TalkBlock[] = []
+  ) {
+    this.isLoading = isLoading
+    this.me = me
+    this.members = members
+    this.talk = talk
+  }
+
+  toProps() {
+    return {
+      isLoading: this.isLoading,
+      me: this.me,
+      members: this.members,
+      talk: this.talk,
+    }
+  }
+}
+
 
 /**
  * TalkColumn(s)がsubscribeするTalkListenerをまとめて管理するレイヤ
@@ -61,7 +90,7 @@ class TalkListenerManager extends ChangeEventEmitter {
     if(listener != null) {
       const {me, members, talk} = listener
       const isLoading = listener.isLoading()
-      const model = new TalkColumnModel(isLoading, me, members, talk)
+      const model = new TalkModel(isLoading, me, members, talk)
 
       this.emit(this.EVENT_CHANGE, columnKey, model)
     }
