@@ -28,9 +28,9 @@ type Props = {
   talk: ?TalkBlock[],
   onClickHashTag: (string) => void,
   onClickHeader: (UIColumn, HTMLElement, ?HTMLElement) => void,
-  onClose: (UIColumn) => void,
-  onSubscribeListener: (OAuthToken, UIColumn) => void,
-  onUnsubscribeListener: (UIColumn) => void,
+  onClose: () => void,
+  onSubscribeListener: () => void,
+  onUnsubscribeListener: () => void,
 }
 
 type State = {
@@ -83,18 +83,14 @@ export default class TalkColumn extends React.Component {
    * @override
    */
   componentDidMount() {
-    const {token, column, onSubscribeListener} = this.props
-
-    onSubscribeListener(token, column)
+    this.props.onSubscribeListener()
   }
 
   /**
    * @override
    */
   componentWillUnmount() {
-    const {column, onUnsubscribeListener} = this.props
-
-    onUnsubscribeListener(column)
+    this.props.onUnsubscribeListener()
   }
 
   /**
@@ -158,11 +154,7 @@ export default class TalkColumn extends React.Component {
   }
 
   renderMenuContent() {
-    const {column, onClose} = this.props
-
-    return <ColumnHeaderMenu
-      isCollapsed={!this.state.isMenuVisible}
-      onClickClose={onClose.bind(this, column)} />
+    return <ColumnHeaderMenu isCollapsed={!this.state.isMenuVisible} onClickClose={this.props.onClose} />
   }
 
   renderBody() {

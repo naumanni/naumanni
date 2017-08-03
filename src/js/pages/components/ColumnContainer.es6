@@ -3,13 +3,15 @@ import React from 'react'
 import {findDOMNode} from 'react-dom'
 import {Map} from 'immutable'
 
-import {COLUMN_TALK} from 'src/constants'
+import {COLUMN_FRIENDS, COLUMN_TALK} from 'src/constants'
 import {ContextPropType} from 'src/propTypes'
 import {UIColumn} from 'src/models'
 import {niceScrollLeft} from 'src/utils'
 import {getColumnClassForType} from 'src/pages/columns'
+import FriendsListenerManager, {FriendsModel} from 'src/controllers/FriendsListenerManager'
 import TalkListenerManager, {TalkModel} from 'src/controllers/TalkListenerManager'
 import TimelineActions from 'src/controllers/TimelineActions'
+import FriendsColumn from 'src/pages/columns/FriendsColumn'
 import TalkColumn from 'src/pages/columns/TalkColumn'
 import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 
@@ -19,7 +21,8 @@ type Props = {
 }
 
 type State = {
-  talkColumnModels: Map<string, TalkModel>
+  friendsColumnModels: Map<string, FriendsModel>,
+  talkColumnModels: Map<string, TalkModel>,
 }
 
 /**
@@ -40,6 +43,7 @@ export default class ColumnContainer extends React.Component {
 
     this.actionDelegate = new TimelineActions(this.context)
     this.state = {
+      friendsColumnModels: new Map(),
       talkColumnModels: new Map(),
     }
   }
@@ -52,6 +56,7 @@ export default class ColumnContainer extends React.Component {
 
     this.listenerRemovers.push(
       context.onChange(this.onChangeContext.bind(this)),
+      FriendsListenerManager.onChange(this.onChangeFriends.bind(this)),
       TalkListenerManager.onChange(this.onChangeTalk.bind(this)),
     )
   }
@@ -107,19 +112,41 @@ export default class ColumnContainer extends React.Component {
   }
 
   renderColumn(column: UIColumn) {
-    if(column.type === COLUMN_TALK) {
+    const {type} = column
+
+    switch(type) {
+    case COLUMN_FRIENDS:
+      return this.renderFriendsColumn(column)
+    case COLUMN_TALK:
       return this.renderTalkColumn(column)
+    default:
+      return React.createElement(
+        getColumnClassForType(type), {
+          ref: column.key,
+          key: column.key,
+          column: column,
+          onClickHeader: this.scrollToColumn.bind(this),
+          ...column.params,
+        })
+    }
+  }
+
+  renderFriendsColumn(column: UIColumn) {
+    const {context} = this.context
+    const {key, params: {subject}} = column
+    const columnModel = this.state.friendsColumnModels.get(key) || new FriendsModel()
+    const token = context.getState().tokenState.getTokenByAcct(subject)
+    const props = {
+      column: column,
+      ...columnModel.toProps(),
+      token,
+      onClickHeader: this.onClickColumnHeader.bind(this),
+      onClose: this.onCloseColumn.bind(this, column),
+      onSubscribeListener: () => FriendsListenerManager.onSubscribeListener(token, column),
+      onUnsubscribeListener: () => FriendsListenerManager.onUnsubscribeListener(column),
     }
 
-    const klass = getColumnClassForType(column.type)
-    return React.createElement(
-      klass, {
-        ref: column.key,
-        key: column.key,
-        column: column,
-        onClickHeader: this.scrollToColumn.bind(this),
-        ...column.params,
-      })
+    return <FriendsColumn key={column.key} {...props} />
   }
 
   renderTalkColumn(column: UIColumn) {
@@ -138,12 +165,12 @@ export default class ColumnContainer extends React.Component {
       ...columnModel.toProps(),
       onClickHashTag: (tag) => this.actionDelegate.onClickHashTag(tag),
       onClickHeader: this.onClickColumnHeader.bind(this),
-      onClose: this.onCloseColumn.bind(this),
-      onSubscribeListener: (...args) => TalkListenerManager.onSubscribeListener(...args),
-      onUnsubscribeListener: (...args) => TalkListenerManager.onUnsubscribeListener(...args),
+      onClose: this.onCloseColumn.bind(this, column),
+      onSubscribeListener: () => TalkListenerManager.onSubscribeListener(token, column),
+      onUnsubscribeListener: () => TalkListenerManager.onUnsubscribeListener(column),
     }
 
-    return <TalkColumn {...props} />
+    return <TalkColumn key={column.key} {...props} />
   }
 
   // cb
@@ -151,6 +178,13 @@ export default class ColumnContainer extends React.Component {
     const {context} = this.context
     const {tokenState} = context.getState()
     const {columns} = this.props
+
+    columns
+      .filter(({type}) => type === COLUMN_FRIENDS)
+      .forEach((column) => {
+        const token = tokenState.getTokenByAcct(column.params.subject)
+        token && FriendsListenerManager.updateTokenIfNeed(token, column)
+      })
 
     columns
       .filter(({type}) => type === COLUMN_TALK)
@@ -176,6 +210,12 @@ export default class ColumnContainer extends React.Component {
     const {context} = this.context
 
     context.useCase(new CloseColumnUseCase()).execute(column)
+  }
+
+  onChangeFriends(columnKey: string, model: FriendsModel) {
+    this.setState({
+      friendsColumnModels: this.state.friendsColumnModels.set(columnKey, model),
+    })
   }
 
   onChangeTalk(columnKey: string, model: TalkModel) {
