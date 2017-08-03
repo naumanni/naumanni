@@ -3,7 +3,7 @@ import React from 'react'
 import {findDOMNode} from 'react-dom'
 import {Map} from 'immutable'
 
-import {COLUMN_FRIENDS, COLUMN_TALK} from 'src/constants'
+import {COLUMN_FRIENDS, COLUMN_NOTIFICATIONS, COLUMN_TALK} from 'src/constants'
 import {ContextPropType} from 'src/propTypes'
 import {UIColumn} from 'src/models'
 import {niceScrollLeft} from 'src/utils'
@@ -12,6 +12,7 @@ import FriendsListenerManager, {FriendsModel} from 'src/controllers/FriendsListe
 import TalkListenerManager, {TalkModel} from 'src/controllers/TalkListenerManager'
 import TimelineActions from 'src/controllers/TimelineActions'
 import FriendsColumn from 'src/pages/columns/FriendsColumn'
+import NotificationColumn from 'src/pages/columns/NotificationsColumn'
 import TalkColumn from 'src/pages/columns/TalkColumn'
 import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 
@@ -117,6 +118,8 @@ export default class ColumnContainer extends React.Component {
     switch(type) {
     case COLUMN_FRIENDS:
       return this.renderFriendsColumn(column)
+    case COLUMN_NOTIFICATIONS:
+      return this.renderNotificationColumn(column)
     case COLUMN_TALK:
       return this.renderTalkColumn(column)
     default:
@@ -147,6 +150,19 @@ export default class ColumnContainer extends React.Component {
     }
 
     return <FriendsColumn key={column.key} {...props} />
+  }
+
+  renderNotificationColumn(column: UIColumn) {
+    const props = {
+      ref: column.key,
+      key: column.key,
+      column: column,
+      onClickHeader: this.onClickColumnHeader.bind(this),
+      onClose: this.onCloseColumn.bind(this, column),
+      ...column.params,
+    }
+
+    return <NotificationColumn {...props} />
   }
 
   renderTalkColumn(column: UIColumn) {
