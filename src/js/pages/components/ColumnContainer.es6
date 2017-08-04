@@ -10,6 +10,7 @@ import {niceScrollLeft} from 'src/utils'
 import {getColumnClassForType} from 'src/pages/columns'
 import FriendsListenerManager, {FriendsModel} from 'src/controllers/FriendsListenerManager'
 import TalkListenerManager, {TalkModel} from 'src/controllers/TalkListenerManager'
+import TimelineListenerManager, {TimelineModel} from 'src/controllers/TimelineListenerManager'
 import TimelineActions from 'src/controllers/TimelineActions'
 import FriendsColumn from 'src/pages/columns/FriendsColumn'
 import NotificationColumn from 'src/pages/columns/NotificationsColumn'
@@ -24,6 +25,7 @@ type Props = {
 type State = {
   friendsColumnModels: Map<string, FriendsModel>,
   talkColumnModels: Map<string, TalkModel>,
+  timelineColumnModels: Map<string, TimelineModel>,
 }
 
 /**
@@ -42,10 +44,19 @@ export default class ColumnContainer extends React.Component {
   constructor(...args: any[]) {
     super(...args)
 
+/**
+ * 必要か..?(TimelineListenerManager側で_tokensがないとonSubscribeしてもtokenListenerイベントが呼ばれない可能性がある)
+ *     const {context} = this.context
+ *     const {tokenState: {tokens}} = context.getState()
+ *
+ *     TimelineListenerManager.updateTokens(tokens)
+ */
+
     this.actionDelegate = new TimelineActions(this.context)
     this.state = {
       friendsColumnModels: new Map(),
       talkColumnModels: new Map(),
+      timelineColumnModels: new Map(),
     }
   }
 
@@ -59,6 +70,7 @@ export default class ColumnContainer extends React.Component {
       context.onChange(this.onChangeContext.bind(this)),
       FriendsListenerManager.onChange(this.onChangeFriends.bind(this)),
       TalkListenerManager.onChange(this.onChangeTalk.bind(this)),
+      TimelineListenerManager.onChange(this.onChangeTimeline.bind(this)),
     )
   }
 
@@ -114,23 +126,23 @@ export default class ColumnContainer extends React.Component {
 
   renderColumn(column: UIColumn) {
     const {type} = column
+    const klass = getColumnClassForType(type)
 
     switch(type) {
     case COLUMN_FRIENDS:
-      return this.renderFriendsColumn(column)
+      return this.renderFriendsColumn(column)  // TODO: Reafactor
     case COLUMN_NOTIFICATIONS:
-      return this.renderNotificationColumn(column)
+      return React.createElement(klass, this.propsForTimelineColumn(column))
     case COLUMN_TALK:
-      return this.renderTalkColumn(column)
+      return this.renderTalkColumn(column)  // TODO: Reafactor
     default:
-      return React.createElement(
-        getColumnClassForType(type), {
-          ref: column.key,
-          key: column.key,
-          column: column,
-          onClickHeader: this.scrollToColumn.bind(this),
-          ...column.params,
-        })
+      return React.createElement(klass, {
+        ref: column.key,
+        key: column.key,
+        column: column,
+        onClickHeader: this.scrollToColumn.bind(this),
+        ...column.params,
+      })
     }
   }
 
@@ -189,8 +201,44 @@ export default class ColumnContainer extends React.Component {
     return <TalkColumn key={column.key} {...props} />
   }
 
+  defaultPropsForColumn(column: UIColumn) {
+    return {
+      column,
+      ...this.handlerPropsForColumn(column),
+    }
+  }
+
+  handlerPropsForColumn(column: UIColumn) {
+    return {
+      onClickHeader: this.onClickColumnHeader.bind(this),
+      onClose: this.onCloseColumn.bind(this, column),
+    }
+  }
+
+  propsForTimelineColumn(column: UIColumn) {
+    const {key} = column
+    const columnModel = this.state.timelineColumnModels.get(key) || new TimelineModel()
+    const {context} = this.context
+    const {tokenState: {tokens}} = context.getState()
+    const props = {
+      ...columnModel.toProps(),
+      tokens,
+      onLoadMoreStatuses: () => TimelineListenerManager.onLoadMoreStatuses(column),
+      onSubscribeListener: () => TimelineListenerManager.onSubscribeListener(column),
+      onUnsubscribeListener: () => TimelineListenerManager.onUnsubscribeListener(column),
+      ...this.defaultPropsForColumn(column),
+    }
+
+    return props
+  }
+
   // cb
   onChangeContext() {
+    /*
+     * debug
+     */
+    console.log('onChangeContext')  // TimelineListenerManager側のthis._tokensがonSubscribeListenerされる前に存在することを確認
+
     const {context} = this.context
     const {tokenState} = context.getState()
     const {columns} = this.props
@@ -208,6 +256,8 @@ export default class ColumnContainer extends React.Component {
         const token = tokenState.getTokenByAcct(column.params.from)
         token && TalkListenerManager.updateTokenIfNeed(token, column)
       })
+
+    TimelineListenerManager.updateTokens(tokenState.tokens)
   }
 
   onClickColumnHeader(column: UIColumn, columnNode: HTMLElement, columnScrollNode: ?HTMLElement) {
@@ -237,6 +287,12 @@ export default class ColumnContainer extends React.Component {
   onChangeTalk(columnKey: string, model: TalkModel) {
     this.setState({
       talkColumnModels: this.state.talkColumnModels.set(columnKey, model),
+    })
+  }
+
+  onChangeTimeline(columnKey: string, model: TimelineModel) {
+    this.setState({
+      timelineColumnModels: this.state.timelineColumnModels.set(columnKey, model),
     })
   }
 }
