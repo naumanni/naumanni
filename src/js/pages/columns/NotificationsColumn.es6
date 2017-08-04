@@ -5,19 +5,18 @@ import classNames from 'classnames'
 import {intlShape} from 'react-intl'
 import {List} from 'immutable'
 
-import {AppPropType, ContextPropType} from 'src/propTypes'
+import {ContextPropType} from 'src/propTypes'
 import {
-  COLUMN_NOTIFICATIONS, SUBJECT_MIXED, MAX_STATUSES, AUTO_PAGING_MARGIN,
+  COLUMN_NOTIFICATIONS, SUBJECT_MIXED, MAX_STATUSES,
 } from 'src/constants'
 import {NotificationTimeline} from 'src/models/Timeline'
 import NotificationListener from 'src/controllers/NotificationListener'
-import TimelineNotification from 'src/pages/components/TimelineNotification'
 import {NotificationTimelineLoader} from 'src/controllers/TimelineLoader'
 import TimelineData from 'src/infra/TimelineData'
-import TimelineActions from 'src/controllers/TimelineActions'
 import TokenListener from 'src/controllers/TokenListener'
 import {ColumnHeader, ColumnHeaderMenu, NowLoading} from 'src/pages/parts'
-import {RefCounter} from 'src/utils'
+import PagingColumnContent from 'src/pages/components/PagingColumnContent'
+
 
 /**
  * 通知カラム
@@ -25,7 +24,6 @@ import {RefCounter} from 'src/utils'
  */
 export default class NotificationColumn extends React.Component {
   static contextTypes = {
-    app: AppPropType,
     context: ContextPropType,
     intl: intlShape,
   }
@@ -33,10 +31,6 @@ export default class NotificationColumn extends React.Component {
   constructor(...args) {
     super(...args)
     this.db = TimelineData
-    this.scrollLockCounter = new RefCounter({
-      onLocked: ::this.onLocked,
-      onUnlocked: ::this.onUnlocked,
-    })
     this.timeline = new NotificationTimeline(MAX_STATUSES)  // eslint-disable-line new-cap
     this.tokenListener = new TokenListener(this.props.subject, {
       onTokenAdded: ::this.onTokenAdded,
@@ -45,8 +39,7 @@ export default class NotificationColumn extends React.Component {
     })
     this.timelineListener = new NotificationListener(this.timeline, this.db)  // eslint-disable-line new-cap
     this.timelineLoaders = null
-    this.actionDelegate = new TimelineActions(this.context)
-    this.unlockScrollLock = null
+    this.scrollNode = null
     this.state = {
       ...this.getStateFromContext(),
       isMenuVisible: false,
@@ -152,35 +145,25 @@ export default class NotificationColumn extends React.Component {
   }
 
   renderBody() {
-    const {timeline, loading, isTailLoading} = this.state
+    const {timeline, loading, isTailLoading, subject} = this.state
+    const {tokens} = this.state.tokenState
 
     return (
       <div className={classNames(
         'column-body',
         {'is-loading': loading}
       )}>
-        <ul className="timeline" onScroll={::this.onTimelineScrolled} ref="timeline">
-          {timeline.map((ref) => this.renderTimelineRow(ref))}
-          {isTailLoading && <li className="timeline-loading"><NowLoading /></li>}
-        </ul>
-      </div>
-    )
-  }
-
-  renderTimelineRow(ref) {
-    const {subject} = this.props
-    const {tokens} = this.state.tokenState
-
-    return (
-      <li key={ref.uri}>
-        <TimelineNotification
-          subject={subject !== SUBJECT_MIXED ? subject : null}
-          notificationRef={ref}
+        <PagingColumnContent
+          isTailLoading={isTailLoading}
+          subjcet={subject}
+          timeline={timeline}
           tokens={tokens}
-          onLockStatus={() => this.scrollLockCounter.increment()}
-          {...this.actionDelegate.props}
+          onLoadMoreStatuses={this.onLoadMoreStatuses.bind(this)}
+          onLockedPaging={this.onLocked.bind(this)}
+          onScrollNodeLoaded={this.onScrollNodeLoaded.bind(this)}
+          onUnlockedPaging={this.onUnlocked.bind(this)}
         />
-      </li>
+      </div>
     )
   }
 
@@ -258,6 +241,14 @@ export default class NotificationColumn extends React.Component {
     })
   }
 
+  onScrollNodeLoaded(el) {
+    this.scrollNode = el
+  }
+
+  onLoadMoreStatuses() {
+    this.loadMoreStatuses()
+  }
+
   /**
    * Timelineが更新されたら呼ばれる
    */
@@ -290,6 +281,10 @@ export default class NotificationColumn extends React.Component {
 
   // TokenListener callbacks
   onTokenAdded(newToken) {
+    /*
+     * debug
+     */
+    console.log('onTokenAdded')
     // install listener
     this.timelineListener.addListener(newToken.acct, newToken)
 
@@ -324,47 +319,14 @@ export default class NotificationColumn extends React.Component {
       this.setState({token: this.tokenListener.getSubjectToken()})
   }
 
-  // dom events
-  /**
-   * Timelineがスクロールしたら呼ばれる。Lockとかを管理
-   * @param {Event} e
-   */
-  onTimelineScrolled(e) {
-    const node = e.target
-    const {clientHeight, scrollHeight, scrollTop} = node
-    const loadMoreThreshold = scrollHeight - AUTO_PAGING_MARGIN
-
-    // Scroll位置がちょっとでもTopから動いたらLockしちゃう
-    if(!this.unlockScrollLock && scrollTop > 0) {
-      // Scrollが上部以外になったのでScrollをLockする
-      require('assert')(!this.unlockScrollLock)
-      this.unlockScrollLock = this.scrollLockCounter.increment()
-    } else if(this.unlockScrollLock && scrollTop <= 0) {
-      // Scrollが上部になったのでScrollをUnlockする
-      this.unlockScrollLock()
-      this.unlockScrollLock = undefined
-    }
-
-    if(loadMoreThreshold <= clientHeight)
-      return
-
-    // Scroll位置がBottomまであとちょっとになれば、次を読み込む
-    if(scrollTop + clientHeight > loadMoreThreshold) {
-      //
-      if(!this.state.isTailLoading) {
-        this.loadMoreStatuses()
-      }
-    }
-  }
-
   onClickHeader() {
     const {column, onClickHeader} = this.props
     const node = findDOMNode(this)
-    const scrollNode = findDOMNode(this.refs.timeline)
+    // const scrollNode = findDOMNode(this.refs.timeline)
 
     if(node instanceof HTMLElement) {
-      if(scrollNode && scrollNode instanceof HTMLElement) {
-        onClickHeader(column, node, scrollNode)
+      if(this.scrollNode && this.scrollNode instanceof HTMLElement) {
+        onClickHeader(column, node, this.scrollNode)
       } else {
         onClickHeader(column, node, undefined)
       }
