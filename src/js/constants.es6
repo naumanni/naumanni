@@ -17,6 +17,7 @@ export const TIMELINE_HOME = 'home'
 
 export const TIMELINE_FILTER_BOOST = 'timeline_filter_boost'
 export const TIMELINE_FILTER_REPLY = 'timeline_filter_reply'
+export const TIMELINE_FILTER_REGEX = 'timeline_filter_regex'
 
 export const DIALOG_ADD_ACCOUNT = 'addAccount'
 export const DIALOG_AUTHORIZE_ACCOUNT = 'authorizeAccount'

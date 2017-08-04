@@ -7,16 +7,16 @@ import {FormattedMessage as _FM} from 'react-intl'
 import {
   COLUMN_TIMELINE,
   TIMELINE_FEDERATION, TIMELINE_LOCAL, TIMELINE_HOME, SUBJECT_MIXED,
-  TIMELINE_FILTER_BOOST, TIMELINE_FILTER_REPLY,
+  TIMELINE_FILTER_BOOST, TIMELINE_FILTER_REPLY, TIMELINE_FILTER_REGEX,
   STREAM_HOME, STREAM_LOCAL, STREAM_FEDERATION,
   AUTO_PAGING_MARGIN, MAX_STATUSES,
 } from 'src/constants'
 import TimelineListener from 'src/controllers/TimelineListener'
 import {makeTimelineLoader} from 'src/controllers/TimelineLoader'
 import {StatusTimeline} from 'src/models/Timeline'
-import {ColumnHeaderMenu} from 'src/pages/parts'
 import PagingColumn from './PagingColumn'
 import TimelineStatusContainer from '../components/TimelineStatusContainer'
+import {ColumnFilterText} from 'src/pages/parts'
 
 const TIMELINE_TO_STREAM_MAP = {
   [TIMELINE_HOME]: STREAM_HOME,
@@ -59,6 +59,9 @@ export default class TimelineColumn extends PagingColumn {
           ? JSON.parse(localStorage.getItem(storageKeyForFilter(TIMELINE_FILTER_REPLY, subject, timelineType)))
           : true],
       ]),
+      filterRegex: localStorage.getItem(storageKeyForFilter(TIMELINE_FILTER_REGEX, subject, timelineType))
+        ? localStorage.getItem(storageKeyForFilter(TIMELINE_FILTER_REGEX, subject, timelineType))
+        : '',
     }
   }
 
@@ -97,20 +100,14 @@ export default class TimelineColumn extends PagingColumn {
   /**
    * @override
    */
-  renderMenuContent() {
-    return (
-      <ColumnHeaderMenu>
-
-        {this.renderFilterMenus()}
-
-        <div className="menu-item--close" onClick={this.onClickCloseColumn.bind(this)}>
-          <_FM id="column.menu.close" />
-        </div>
-      </ColumnHeaderMenu>
-    )
+  columnMenus() {
+    return [
+      ...this.toggleFilterMenus(),
+      ...this.regexFilterMenu(),
+    ]
   }
 
-  renderFilterMenus() {
+  toggleFilterMenus() {
     return [...this.state.filters.entries()].map(([type, toggle]) => (
       <div className="menu-item menu-item--toggle" key={`${type}:${toggle}`}>
         <Toggle
@@ -121,12 +118,34 @@ export default class TimelineColumn extends PagingColumn {
     ))
   }
 
+  regexFilterMenu() {
+    const {formatMessage} = this.context.intl
+    const {filterRegex} = this.state
+
+    return [
+      <ColumnFilterText
+        onChange={this.onChangeFilterRegex.bind(this)}
+        placeholder={formatMessage({id: 'column.menu.filter_regex'})}
+        value={filterRegex}
+      />,
+    ]
+  }
+
   /**
    * @override
    */
   renderTimelineRow(ref) {
     const {subject} = this.props
     const {tokens} = this.state.tokenState
+    const {filterRegex} = this.state
+
+    if(filterRegex.trim().length > 0) {
+      const regex = new RegExp(filterRegex.trim(), 'i')
+
+      if(regex.test(ref.resolve().plainContent)) {
+        return null
+      }
+    }
 
     return (
       <li key={ref.uri}>
@@ -191,5 +210,14 @@ export default class TimelineColumn extends PagingColumn {
       storageKeyForFilter(type, this.props.subject, this.props.timelineType),
       newValue)
   }
+
+  onChangeFilterRegex(filterRegex) {
+    this.setState({filterRegex})
+
+    localStorage.setItem(
+      storageKeyForFilter(TIMELINE_FILTER_REGEX, this.props.subject, this.props.timelineType),
+      filterRegex)
+  }
+
 }
 require('./').registerColumn(COLUMN_TIMELINE, TimelineColumn)
