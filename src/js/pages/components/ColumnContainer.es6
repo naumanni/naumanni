@@ -44,14 +44,6 @@ export default class ColumnContainer extends React.Component {
   constructor(...args: any[]) {
     super(...args)
 
-/**
- * 必要か..?(TimelineListenerManager側で_tokensがないとonSubscribeしてもtokenListenerイベントが呼ばれない可能性がある)
- *     const {context} = this.context
- *     const {tokenState: {tokens}} = context.getState()
- *
- *     TimelineListenerManager.updateTokens(tokens)
- */
-
     this.actionDelegate = new TimelineActions(this.context)
     this.state = {
       friendsColumnModels: new Map(),
@@ -125,14 +117,17 @@ export default class ColumnContainer extends React.Component {
   }
 
   renderColumn(column: UIColumn) {
-    const {type} = column
+    const {type, key} = column
     const klass = getColumnClassForType(type)
 
     switch(type) {
     case COLUMN_FRIENDS:
       return this.renderFriendsColumn(column)  // TODO: Reafactor
     case COLUMN_NOTIFICATIONS:
-      return React.createElement(klass, this.propsForTimelineColumn(column))
+      return React.createElement(klass, {
+        key,
+        ...this.propsForTimelineColumn(column),
+      })
     case COLUMN_TALK:
       return this.renderTalkColumn(column)  // TODO: Reafactor
     default:
@@ -216,13 +211,18 @@ export default class ColumnContainer extends React.Component {
   }
 
   propsForTimelineColumn(column: UIColumn) {
-    const {key} = column
+    const {key, params: {subject}} = column
     const columnModel = this.state.timelineColumnModels.get(key) || new TimelineModel()
     const {context} = this.context
-    const {tokenState: {tokens}} = context.getState()
+    const {tokenState} = context.getState()
+    const token = tokenState.getTokenByAcct(subject)
+    const tokens = tokenState.tokens
     const props = {
       ...columnModel.toProps(),
+      token,
       tokens,
+      onLockedPaging: () => TimelineListenerManager.onLocked(column),
+      onUnlockedPaging: () => TimelineListenerManager.onUnlocked(column),
       onLoadMoreStatuses: () => TimelineListenerManager.onLoadMoreStatuses(column),
       onSubscribeListener: () => TimelineListenerManager.onSubscribeListener(column),
       onUnsubscribeListener: () => TimelineListenerManager.onUnsubscribeListener(column),
@@ -234,11 +234,6 @@ export default class ColumnContainer extends React.Component {
 
   // cb
   onChangeContext() {
-    /*
-     * debug
-     */
-    console.log('onChangeContext')  // TimelineListenerManager側のthis._tokensがonSubscribeListenerされる前に存在することを確認
-
     const {context} = this.context
     const {tokenState} = context.getState()
     const {columns} = this.props
