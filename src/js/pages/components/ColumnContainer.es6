@@ -12,9 +12,6 @@ import FriendsListenerManager, {FriendsModel} from 'src/controllers/FriendsListe
 import TalkListenerManager, {TalkModel} from 'src/controllers/TalkListenerManager'
 import TimelineListenerManager, {TimelineModel} from 'src/controllers/TimelineListenerManager'
 import TimelineActions from 'src/controllers/TimelineActions'
-import FriendsColumn from 'src/pages/columns/FriendsColumn'
-import NotificationColumn from 'src/pages/columns/NotificationsColumn'
-import TalkColumn from 'src/pages/columns/TalkColumn'
 import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
 
 
@@ -99,6 +96,107 @@ export default class ColumnContainer extends React.Component {
     )
   }
 
+  // render
+
+  renderColumn(column: UIColumn) {
+    const {type} = column
+    const klass = getColumnClassForType(type)
+
+    switch(type) {
+    case COLUMN_FRIENDS:
+      return React.createElement(klass, this.propsForFriendsColumn(column))
+    // case COLUMN_TIMELINE:
+    // case COLUMN_TAG:
+    case COLUMN_NOTIFICATIONS:
+      return React.createElement(klass, this.propsForTimelineColumn(column))
+    case COLUMN_TALK:
+      return React.createElement(klass, this.propsForTalkColumn(column))
+    default:
+      return React.createElement(klass, {
+        ref: column.key,
+        key: column.key,
+        column: column,
+        onClickHeader: this.scrollToColumn.bind(this),
+        ...column.params,
+      })
+    }
+  }
+
+  // props
+
+  defaultPropsForColumn(column: UIColumn) {
+    return {
+      key: column.key,
+      column,
+      ...this.handlerPropsForColumn(column),
+    }
+  }
+
+  handlerPropsForColumn(column: UIColumn) {
+    return {
+      onClickHeader: this.onClickColumnHeader.bind(this),
+      onClose: this.onCloseColumn.bind(this, column),
+    }
+  }
+
+  propsForFriendsColumn(column: UIColumn) {
+    const {context} = this.context
+    const {key, params: {subject}} = column
+    const columnModel = this.state.friendsColumnModels.get(key) || new FriendsModel()
+    const token = context.getState().tokenState.getTokenByAcct(subject)
+    const props = {
+      ...this.defaultPropsForColumn(column),
+      ...columnModel.toProps(),
+      token,
+      onSubscribeListener: () => FriendsListenerManager.onSubscribeListener(token, column),
+      onUnsubscribeListener: () => FriendsListenerManager.onUnsubscribeListener(column),
+    }
+
+    return props
+  }
+
+  propsForTalkColumn(column: UIColumn) {
+    const {key, params: {from}} = column
+    const columnModel = this.state.talkColumnModels.get(key) || new TalkModel()
+    const {context} = this.context
+    const {tokenState} = context.getState()
+    const token = tokenState.getTokenByAcct(from)
+    const props = {
+      ...this.defaultPropsForColumn(column),
+      token,
+      ...columnModel.toProps(),
+      onClickHashTag: (tag) => this.actionDelegate.onClickHashTag(tag),
+      onSubscribeListener: () => TalkListenerManager.onSubscribeListener(token, column),
+      onUnsubscribeListener: () => TalkListenerManager.onUnsubscribeListener(column),
+    }
+
+    return props
+  }
+
+  propsForTimelineColumn(column: UIColumn) {
+    const {key, params: {subject}} = column
+    const columnModel = this.state.timelineColumnModels.get(key) || new TimelineModel()
+    const {context} = this.context
+    const {tokenState} = context.getState()
+    const token = tokenState.getTokenByAcct(subject)
+    const tokens = tokenState.tokens
+    const props = {
+      ...this.defaultPropsForColumn(column),
+      ...columnModel.toProps(),
+      token,
+      tokens,
+      onLockedPaging: () => TimelineListenerManager.onLocked(column),
+      onUnlockedPaging: () => TimelineListenerManager.onUnlocked(column),
+      onLoadMoreStatuses: () => TimelineListenerManager.onLoadMoreStatuses(column),
+      onSubscribeListener: () => TimelineListenerManager.onSubscribeListener(column),
+      onUnsubscribeListener: () => TimelineListenerManager.onUnsubscribeListener(column),
+    }
+
+    return props
+  }
+
+  // private
+
   scrollToColumn(columnKey: string) {
     const columnNode = findDOMNode(this.refs[columnKey])
     if(!columnNode) {
@@ -116,123 +214,8 @@ export default class ColumnContainer extends React.Component {
     }
   }
 
-  renderColumn(column: UIColumn) {
-    const {type, key} = column
-    const klass = getColumnClassForType(type)
-
-    switch(type) {
-    case COLUMN_FRIENDS:
-      return this.renderFriendsColumn(column)  // TODO: Reafactor
-    case COLUMN_NOTIFICATIONS:
-      return React.createElement(klass, {
-        key,
-        ...this.propsForTimelineColumn(column),
-      })
-    case COLUMN_TALK:
-      return this.renderTalkColumn(column)  // TODO: Reafactor
-    default:
-      return React.createElement(klass, {
-        ref: column.key,
-        key: column.key,
-        column: column,
-        onClickHeader: this.scrollToColumn.bind(this),
-        ...column.params,
-      })
-    }
-  }
-
-  renderFriendsColumn(column: UIColumn) {
-    const {context} = this.context
-    const {key, params: {subject}} = column
-    const columnModel = this.state.friendsColumnModels.get(key) || new FriendsModel()
-    const token = context.getState().tokenState.getTokenByAcct(subject)
-    const props = {
-      column: column,
-      ...columnModel.toProps(),
-      token,
-      onClickHeader: this.onClickColumnHeader.bind(this),
-      onClose: this.onCloseColumn.bind(this, column),
-      onSubscribeListener: () => FriendsListenerManager.onSubscribeListener(token, column),
-      onUnsubscribeListener: () => FriendsListenerManager.onUnsubscribeListener(column),
-    }
-
-    return <FriendsColumn key={column.key} {...props} />
-  }
-
-  renderNotificationColumn(column: UIColumn) {
-    const props = {
-      ref: column.key,
-      key: column.key,
-      column: column,
-      onClickHeader: this.onClickColumnHeader.bind(this),
-      onClose: this.onCloseColumn.bind(this, column),
-      ...column.params,
-    }
-
-    return <NotificationColumn {...props} />
-  }
-
-  renderTalkColumn(column: UIColumn) {
-    const {key, params: {from}} = column
-    let columnModel = this.state.talkColumnModels.get(key)
-    if(!columnModel) {
-      columnModel = new TalkModel()
-    }
-    const {context} = this.context
-    const {tokenState} = context.getState()
-    const token = tokenState.getTokenByAcct(from)
-
-    const props = {
-      column,
-      token,
-      ...columnModel.toProps(),
-      onClickHashTag: (tag) => this.actionDelegate.onClickHashTag(tag),
-      onClickHeader: this.onClickColumnHeader.bind(this),
-      onClose: this.onCloseColumn.bind(this, column),
-      onSubscribeListener: () => TalkListenerManager.onSubscribeListener(token, column),
-      onUnsubscribeListener: () => TalkListenerManager.onUnsubscribeListener(column),
-    }
-
-    return <TalkColumn key={column.key} {...props} />
-  }
-
-  defaultPropsForColumn(column: UIColumn) {
-    return {
-      column,
-      ...this.handlerPropsForColumn(column),
-    }
-  }
-
-  handlerPropsForColumn(column: UIColumn) {
-    return {
-      onClickHeader: this.onClickColumnHeader.bind(this),
-      onClose: this.onCloseColumn.bind(this, column),
-    }
-  }
-
-  propsForTimelineColumn(column: UIColumn) {
-    const {key, params: {subject}} = column
-    const columnModel = this.state.timelineColumnModels.get(key) || new TimelineModel()
-    const {context} = this.context
-    const {tokenState} = context.getState()
-    const token = tokenState.getTokenByAcct(subject)
-    const tokens = tokenState.tokens
-    const props = {
-      ...columnModel.toProps(),
-      token,
-      tokens,
-      onLockedPaging: () => TimelineListenerManager.onLocked(column),
-      onUnlockedPaging: () => TimelineListenerManager.onUnlocked(column),
-      onLoadMoreStatuses: () => TimelineListenerManager.onLoadMoreStatuses(column),
-      onSubscribeListener: () => TimelineListenerManager.onSubscribeListener(column),
-      onUnsubscribeListener: () => TimelineListenerManager.onUnsubscribeListener(column),
-      ...this.defaultPropsForColumn(column),
-    }
-
-    return props
-  }
-
   // cb
+
   onChangeContext() {
     const {context} = this.context
     const {tokenState} = context.getState()
