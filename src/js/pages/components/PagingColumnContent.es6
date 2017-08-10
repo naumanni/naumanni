@@ -9,10 +9,12 @@ import {OAuthToken} from 'src/models'
 import TimelineActions from 'src/controllers/TimelineActions'
 import {RefCounter} from 'src/utils'
 import TimelineNotification from 'src/pages/components/TimelineNotification'
+import TimelineStatusContainer from 'src/pages/components/TimelineStatusContainer'
 import {NowLoading} from 'src/pages/parts'
 
 
 type Props = {
+  filterRegex?: string,
   isTailLoading: boolean,
   subject: string,
   timeline: List<NotificationRef | StatusRef>,
@@ -70,23 +72,37 @@ export default class PagingColumnContent extends React.PureComponent {
 
   renderTimelineRow(ref: NotificationRef | StatusRef) {
     const {subject, tokens} = this.props
+    let component: React.Element<TimelineStatusContainer | TimelineNotification>
 
     if(ref instanceof NotificationRef) {
-      return (
-        <li key={ref.uri}>
-          <TimelineNotification
-            subject={subject !== SUBJECT_MIXED ? subject : null}
-            notificationRef={ref}
-            tokens={tokens}
-            onLockStatus={() => this.scrollLockCounter.increment()}
-            {...this.actionDelegate.props}
-          />
-        </li>
-      )
+      component = <TimelineNotification
+        subject={subject !== SUBJECT_MIXED ? subject : null}
+        notificationRef={ref}
+        tokens={tokens}
+        onLockStatus={() => this.scrollLockCounter.increment()}
+        {...this.actionDelegate.props}
+      />
+    } else {
+      const {filterRegex} = this.props
+
+      if(filterRegex != null && filterRegex.trim().length > 0) {
+        const regex = new RegExp(filterRegex.trim(), 'i')
+
+        if(regex.test(ref.resolve().plainContent)) {
+          return null
+        }
+      }
+
+      component = <TimelineStatusContainer
+        subject={subject !== SUBJECT_MIXED ? subject : null}
+        tokens={tokens}
+        onLockStatus={() => this.scrollLockCounter.increment()}
+        {...ref.expand()}
+        {...this.actionDelegate.props}
+      />
     }
 
-    // TODO: for StatusRef
-    return null
+    return <li key={ref.uri}>{component}</li>
   }
 
   // cb

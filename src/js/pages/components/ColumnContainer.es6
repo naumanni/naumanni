@@ -3,7 +3,7 @@ import React from 'react'
 import {findDOMNode} from 'react-dom'
 import {Map} from 'immutable'
 
-import {COLUMN_FRIENDS, COLUMN_NOTIFICATIONS, COLUMN_TALK} from 'src/constants'
+import {COLUMN_FRIENDS, COLUMN_NOTIFICATIONS, COLUMN_TALK, COLUMN_TIMELINE} from 'src/constants'
 import {ContextPropType} from 'src/propTypes'
 import {UIColumn} from 'src/models'
 import {niceScrollLeft} from 'src/utils'
@@ -105,9 +105,9 @@ export default class ColumnContainer extends React.Component {
     switch(type) {
     case COLUMN_FRIENDS:
       return React.createElement(klass, this.propsForFriendsColumn(column))
-    // case COLUMN_TIMELINE:
-    // case COLUMN_TAG:
+    case COLUMN_TIMELINE:
     case COLUMN_NOTIFICATIONS:
+    // TODO: case COLUMN_TAG:
       return React.createElement(klass, this.propsForTimelineColumn(column))
     case COLUMN_TALK:
       return React.createElement(klass, this.propsForTalkColumn(column))
@@ -190,6 +190,8 @@ export default class ColumnContainer extends React.Component {
       onLoadMoreStatuses: () => TimelineListenerManager.onLoadMoreStatuses(column),
       onSubscribeListener: () => TimelineListenerManager.onSubscribeListener(column),
       onUnsubscribeListener: () => TimelineListenerManager.onUnsubscribeListener(column),
+      onUpdateTimelineFilter: TimelineListenerManager.onUpdateTimelineFilter.bind(
+        TimelineListenerManager, column),
     }
 
     return props
