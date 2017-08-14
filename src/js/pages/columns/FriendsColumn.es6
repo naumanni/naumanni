@@ -231,4 +231,3 @@ export default class FriendsColumn extends React.Component {
     this.setState({filter, sortedFriends})
   }
 }
-require('./').registerColumn(COLUMN_FRIENDS, FriendsColumn)

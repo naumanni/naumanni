@@ -188,4 +188,3 @@ export default class NotificationColumn extends React.Component {
     this.setState({isMenuVisible: !this.state.isMenuVisible})
   }
 }
-require('./').registerColumn(COLUMN_NOTIFICATIONS, NotificationColumn)

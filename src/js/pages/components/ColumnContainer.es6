@@ -7,12 +7,17 @@ import {COLUMN_FRIENDS, COLUMN_NOTIFICATIONS, COLUMN_TAG, COLUMN_TALK, COLUMN_TI
 import {ContextPropType} from 'src/propTypes'
 import {UIColumn} from 'src/models'
 import {niceScrollLeft} from 'src/utils'
-import {getColumnClassForType} from 'src/pages/columns'
+import ColumnFactory from 'src/pages/columns'
 import FriendsListenerManager, {FriendsModel} from 'src/controllers/FriendsListenerManager'
 import TalkListenerManager, {TalkModel} from 'src/controllers/TalkListenerManager'
 import TimelineListenerManager, {TimelineModel} from 'src/controllers/TimelineListenerManager'
 import TimelineActions from 'src/controllers/TimelineActions'
 import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
+import FriendsColumn from 'src/pages/columns/FriendsColumn'
+import HashTagColumn from 'src/pages/columns/HashTagColumn'
+import NotificationsColumn from 'src/pages/columns/NotificationsColumn'
+import TalkColumn from 'src/pages/columns/TalkColumn'
+import TimelineColumn from 'src/pages/columns/TimelineColumn'
 
 
 type Props = {
@@ -42,6 +47,11 @@ export default class ColumnContainer extends React.Component {
     super(...args)
 
     this.actionDelegate = new TimelineActions(this.context)
+    ColumnFactory.register(COLUMN_FRIENDS, this.makeFriendsColumn.bind(this))
+    ColumnFactory.register(COLUMN_TAG, this.makeHashtagColumn.bind(this))
+    ColumnFactory.register(COLUMN_NOTIFICATIONS, this.makeNotificationsColumn.bind(this))
+    ColumnFactory.register(COLUMN_TALK, this.makeTalkColumn.bind(this))
+    ColumnFactory.register(COLUMN_TIMELINE, this.makeTimelineColumn.bind(this))
     this.state = {
       friendsColumnModels: new Map(),
       talkColumnModels: new Map(),
@@ -91,55 +101,14 @@ export default class ColumnContainer extends React.Component {
 
     return (
       <div className="columnContainer" ref="container">
-        {columns.map((column) => this.renderColumn(column))}
+        {columns.map((column) => ColumnFactory.create(column))}
       </div>
     )
   }
 
-  // render
+  // column factories
 
-  renderColumn(column: UIColumn) {
-    const {type} = column
-    const klass = getColumnClassForType(type)
-
-    switch(type) {
-    case COLUMN_FRIENDS:
-      return React.createElement(klass, this.propsForFriendsColumn(column))
-    case COLUMN_NOTIFICATIONS:
-    case COLUMN_TAG:
-    case COLUMN_TIMELINE:
-      return React.createElement(klass, this.propsForTimelineColumn(column))
-    case COLUMN_TALK:
-      return React.createElement(klass, this.propsForTalkColumn(column))
-    default:
-      return React.createElement(klass, {
-        ref: column.key,
-        key: column.key,
-        column: column,
-        onClickHeader: this.scrollToColumn.bind(this),
-        ...column.params,
-      })
-    }
-  }
-
-  // props
-
-  defaultPropsForColumn(column: UIColumn) {
-    return {
-      key: column.key,
-      column,
-      ...this.handlerPropsForColumn(column),
-    }
-  }
-
-  handlerPropsForColumn(column: UIColumn) {
-    return {
-      onClickHeader: this.onClickColumnHeader.bind(this),
-      onClose: this.onCloseColumn.bind(this, column),
-    }
-  }
-
-  propsForFriendsColumn(column: UIColumn) {
+  makeFriendsColumn(column: UIColumn): React.Element<any> {
     const {context} = this.context
     const {key, params: {subject}} = column
     const columnModel = this.state.friendsColumnModels.get(key) || new FriendsModel()
@@ -152,10 +121,18 @@ export default class ColumnContainer extends React.Component {
       onUnsubscribeListener: () => FriendsListenerManager.onUnsubscribeListener(column),
     }
 
-    return props
+    return <FriendsColumn {...props} />
   }
 
-  propsForTalkColumn(column: UIColumn) {
+  makeHashtagColumn(column: UIColumn): React.Element<any> {
+    return <HashTagColumn {...this.propsForTimelineColumn(column)} />
+  }
+
+  makeNotificationsColumn(column: UIColumn): React.Element<any> {
+    return <NotificationsColumn {...this.propsForTimelineColumn(column)} />
+  }
+
+  makeTalkColumn(column: UIColumn): React.Element<any> {
     const {key, params: {from}} = column
     const columnModel = this.state.talkColumnModels.get(key) || new TalkModel()
     const {context} = this.context
@@ -170,7 +147,28 @@ export default class ColumnContainer extends React.Component {
       onUnsubscribeListener: () => TalkListenerManager.onUnsubscribeListener(column),
     }
 
-    return props
+    return <TalkColumn {...props} />
+  }
+
+  makeTimelineColumn(column: UIColumn): React.Element<any> {
+    return <TimelineColumn {...this.propsForTimelineColumn(column)} />
+  }
+
+  // column props
+
+  defaultPropsForColumn(column: UIColumn) {
+    return {
+      key: column.key,
+      column,
+      ...this.handlerPropsForColumn(column),
+    }
+  }
+
+  handlerPropsForColumn(column: UIColumn) {
+    return {
+      onClickHeader: this.onClickColumnHeader.bind(this),
+      onClose: this.onCloseColumn.bind(this, column),
+    }
   }
 
   propsForTimelineColumn(column: UIColumn) {

@@ -1,14 +1,34 @@
-const COLUMN_CLASS_MAP = {}
+/* @flow */
+import React from 'react'
+import {UIColumn} from 'src/models'
+import FriendsColumn from './FriendsColumn'
+import HashTagColumn from './HashTagColumn'
+import NotificationsColumn from './NotificationsColumn'
+import TalkColumn from './TalkColumn'
+import TimelineColumn from './TimelineColumn'
 
-export function registerColumn(type, klass) {
-  COLUMN_CLASS_MAP[type] = klass
+type Column =
+  | FriendsColumn
+  | HashTagColumn
+  | NotificationsColumn
+  | TalkColumn
+  | TimelineColumn
+
+type FactoryFunction = (column: UIColumn) => React.Element<Column>
+
+
+class ColumnFactory {
+  _factories: Map<string, FactoryFunction> = new Map()
+
+  register(type: string, f: FactoryFunction) {
+    this._factories.set(type, f)
+  }
+
+  create(column: UIColumn): ?React.Element<Column> {
+    const f = this._factories.get(column.type)
+
+    return f != null ? f(column) : null
+  }
 }
 
-export function getColumnClassForType(type) {
-  require('assert')(COLUMN_CLASS_MAP[type])
-  return COLUMN_CLASS_MAP[type]
-}
-
-// load all columns
-const context = require.context('./', false, /.+Column.es6$/)
-context.keys().map(context)
+export default new ColumnFactory()

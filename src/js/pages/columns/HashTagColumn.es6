@@ -284,4 +284,3 @@ export default class HashTagColumn extends React.Component {
     this.setState({isMenuVisible: !this.state.isMenuVisible})
   }
 }
-require('./').registerColumn(COLUMN_TAG, HashTagColumn)

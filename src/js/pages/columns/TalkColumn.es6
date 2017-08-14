@@ -343,4 +343,3 @@ export default class TalkColumn extends React.Component {
     this.props.onClickHashTag(tag)
   }
 }
-require('./').registerColumn(COLUMN_TALK, TalkColumn)
