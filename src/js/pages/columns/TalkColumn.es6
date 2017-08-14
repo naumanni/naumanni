@@ -5,32 +5,30 @@ import {findDOMNode} from 'react-dom'
 import {FormattedMessage as _FM} from 'react-intl'
 import classNames from 'classnames'
 import {intlShape} from 'react-intl'
+import {DragSource, DropTarget} from 'react-dnd'
+import flow from 'lodash.flow'
 
 import {ContextPropType} from 'src/propTypes'
 import {
   COLUMN_TAG,
+  DRAG_SOURCE_COLUMN,
   SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
   KEY_ENTER} from 'src/constants'
-import {Account, OAuthToken, UIColumn} from 'src/models'
+import {Account} from 'src/models'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import {TalkBlock} from 'src/controllers/TalkListener'
 import TalkGroup, {TalkGroupModel} from 'src/pages/components/TalkGroup'
 import TalkForm from 'src/pages/components/TalkForm'
 import {ColumnHeader, ColumnHeaderMenu, NowLoading} from '../parts'
+import {columnDragSource, columnDragTarget} from './'
+import type {ColumnProps} from './types'
 
 
-type Props = {
-  column: UIColumn,
-  token: OAuthToken,
-  isLoading: boolean,
+type Props = ColumnProps & {
   me: ?Account,
   members: ?{[acct: string]: Account},
   talk: ?TalkBlock[],
   onClickHashTag: (string) => void,
-  onClickHeader: (UIColumn, HTMLElement, ?HTMLElement) => void,
-  onClose: () => void,
-  onSubscribeListener: () => void,
-  onUnsubscribeListener: () => void,
 }
 
 type State = {
@@ -45,7 +43,7 @@ type State = {
 /**
  * タイムラインのカラム
  */
-export default class TalkColumn extends React.Component {
+class TalkColumn extends React.Component {
   props: Props
   state: State
 
@@ -110,10 +108,15 @@ export default class TalkColumn extends React.Component {
    * @override
    */
   render() {
-    const {isLoading} = this.props
+    const {
+      isDragging, connectDragSource, connectDropTarget,
+      isLoading,
+    } = this.props
 
-    return (
-      <div className="column">
+    const opacity = isDragging ? 0 : 1
+
+    return connectDragSource(connectDropTarget(
+      <div className="column" style={{opacity}}>
         <ColumnHeader
           canShowMenuContent={!isLoading}
           isPrivate={true}
@@ -128,7 +131,7 @@ export default class TalkColumn extends React.Component {
           : this.renderBody()
         }
       </div>
-    )
+    ))
   }
 
   // render private
@@ -343,3 +346,13 @@ export default class TalkColumn extends React.Component {
     this.props.onClickHashTag(tag)
   }
 }
+
+export default flow(
+  DragSource(DRAG_SOURCE_COLUMN, columnDragSource, (connect, monitor) => ({  // eslint-disable-line new-cap
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
+  })),
+  DropTarget(DRAG_SOURCE_COLUMN, columnDragTarget, (connect) => ({  // eslint-disable-line new-cap
+    connectDropTarget: connect.dropTarget(),
+  }))
+)(TalkColumn)

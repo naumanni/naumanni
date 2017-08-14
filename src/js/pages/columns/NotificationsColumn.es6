@@ -1,36 +1,25 @@
 /* @flow */
 import React from 'react'
-import {List} from 'immutable'
 import {findDOMNode} from 'react-dom'
 import {FormattedMessage as _FM} from 'react-intl'
 import classNames from 'classnames'
 import {intlShape} from 'react-intl'
+import {DragSource, DropTarget} from 'react-dnd'
+import flow from 'lodash.flow'
+
 import {ContextPropType} from 'src/propTypes'
 import {
-  COLUMN_NOTIFICATIONS, SUBJECT_MIXED, MAX_STATUSES,
+  DRAG_SOURCE_COLUMN,
+  SUBJECT_MIXED,
 } from 'src/constants'
 import {NotificationRef} from 'src/infra/TimelineData'
-import {OAuthToken, UIColumn} from 'src/models'
 import {ColumnHeader, ColumnHeaderMenu, NowLoading} from 'src/pages/parts'
 import PagingColumnContent from 'src/pages/components/PagingColumnContent'
+import {columnDragSource, columnDragTarget} from './'
+import type {TimelineColumnProps} from './types'
 
 
-type Props = {
-  column: UIColumn,
-  token: OAuthToken,
-  tokens: List<OAuthToken>,
-  isLoading: boolean,
-  isTailLoading: boolean,
-  timeline: List<NotificationRef>,
-  onLockedPaging: () => void,
-  onUnlockedPaging: () => void,
-  onLoadMoreStatuses: () => void,
-  onSubscribeListener: () => void,
-  onUnsubscribeListener: () => void,
-  onClickHeader: (UIColumn, HTMLElement, ?HTMLElement) => void,
-  onClose: () => void,
-}
-
+type Props = TimelineColumnProps<NotificationRef>
 type State = {
   isMenuVisible: boolean,
 }
@@ -38,7 +27,7 @@ type State = {
 /**
  * 通知カラム
  */
-export default class NotificationColumn extends React.Component {
+class NotificationsColumn extends React.Component {
   static contextTypes = {
     context: ContextPropType,
     intl: intlShape,
@@ -79,10 +68,15 @@ export default class NotificationColumn extends React.Component {
    * @override
    */
   render() {
-    const {isLoading} = this.props
+    const {
+      isDragging, connectDragSource, connectDropTarget,
+      isLoading,
+    } = this.props
 
-    return (
-      <div className="column">
+    const opacity = isDragging ? 0 : 1
+
+    return connectDragSource(connectDropTarget(
+      <div className="column" style={{opacity}}>
         <ColumnHeader
           canShowMenuContent={!isLoading}
           isPrivate={true}
@@ -97,7 +91,7 @@ export default class NotificationColumn extends React.Component {
           : this.renderBody()
         }
       </div>
-    )
+    ))
   }
 
 
@@ -188,3 +182,13 @@ export default class NotificationColumn extends React.Component {
     this.setState({isMenuVisible: !this.state.isMenuVisible})
   }
 }
+
+export default flow(
+  DragSource(DRAG_SOURCE_COLUMN, columnDragSource, (connect, monitor) => ({  // eslint-disable-line new-cap
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
+  })),
+  DropTarget(DRAG_SOURCE_COLUMN, columnDragTarget, (connect) => ({  // eslint-disable-line new-cap
+    connectDropTarget: connect.dropTarget(),
+  }))
+)(NotificationsColumn)

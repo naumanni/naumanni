@@ -3,27 +3,28 @@ import React from 'react'
 import {findDOMNode} from 'react-dom'
 import {FormattedMessage as _FM} from 'react-intl'
 import {intlShape} from 'react-intl'
+import {DragSource, DropTarget} from 'react-dnd'
+import flow from 'lodash.flow'
 
 import {AppPropType, ContextPropType} from 'src/propTypes'
-import {SUBJECT_MIXED, COLUMN_FRIENDS, COLUMN_TALK} from 'src/constants'
-import {Account, OAuthToken, UIColumn} from 'src/models'
+import {
+  DRAG_SOURCE_COLUMN,
+  COLUMN_FRIENDS, COLUMN_TALK,
+  SUBJECT_MIXED,
+} from 'src/constants'
+import {Account} from 'src/models'
 import AddColumnUseCase from 'src/usecases/AddColumnUseCase'
 import TimelineActions from 'src/controllers/TimelineActions'
 import AccountRow from '../components/AccountRow'
 import {fuzzy_match as fuzzyMatch} from 'src/libs/fts_fuzzy_match'
 import {ColumnHeader, ColumnHeaderMenu, NowLoading} from '../parts'
 import FriendsListener, {UIFriend} from 'src/controllers/FriendsListener'
+import {columnDragSource, columnDragTarget} from 'src/pages/columns'
+import type {ColumnProps} from './types'
 
 
-type Props = {
-  column: UIColumn,
+type Props = ColumnProps & {
   friends: UIFriend[],
-  isLoading: boolean,
-  token: OAuthToken,
-  onClickHeader: (UIColumn, HTMLElement, ?HTMLElement) => void,
-  onClose: () => void,
-  onSubscribeListener: () => void,
-  onUnsubscribeListener: () => void,
 }
 
 type State = {
@@ -36,7 +37,7 @@ type State = {
 /**
  * タイムラインのカラム
  */
-export default class FriendsColumn extends React.Component {
+class FriendsColumn extends React.Component {
   static contextTypes = {
     app: AppPropType,
     context: ContextPropType,
@@ -81,10 +82,15 @@ export default class FriendsColumn extends React.Component {
    * @override
    */
   render() {
-    const {isLoading} = this.props
+    const {
+      isDragging, connectDragSource, connectDropTarget,
+      isLoading,
+    } = this.props
 
-    return (
-      <div className="column">
+    const opacity = isDragging ? 0 : 1
+
+    return connectDragSource(connectDropTarget(
+      <div className="column" style={{opacity}}>
         <ColumnHeader
           canShowMenuContent={!isLoading}
           isPrivate={true}
@@ -99,7 +105,7 @@ export default class FriendsColumn extends React.Component {
           : this.renderBody()
         }
       </div>
-    )
+    ))
   }
 
   renderTitle() {
@@ -231,3 +237,13 @@ export default class FriendsColumn extends React.Component {
     this.setState({filter, sortedFriends})
   }
 }
+
+export default flow(
+  DragSource(DRAG_SOURCE_COLUMN, columnDragSource, (connect, monitor) => ({  // eslint-disable-line new-cap
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
+  })),
+  DropTarget(DRAG_SOURCE_COLUMN, columnDragTarget, (connect) => ({  // eslint-disable-line new-cap
+    connectDropTarget: connect.dropTarget(),
+  }))
+)(FriendsColumn)

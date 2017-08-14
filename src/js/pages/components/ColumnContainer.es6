@@ -2,6 +2,8 @@
 import React from 'react'
 import {findDOMNode} from 'react-dom'
 import {Map} from 'immutable'
+import {DragDropContext} from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 
 import {COLUMN_FRIENDS, COLUMN_NOTIFICATIONS, COLUMN_TAG, COLUMN_TALK, COLUMN_TIMELINE} from 'src/constants'
 import {ContextPropType} from 'src/propTypes'
@@ -13,6 +15,7 @@ import TalkListenerManager, {TalkModel} from 'src/controllers/TalkListenerManage
 import TimelineListenerManager, {TimelineModel} from 'src/controllers/TimelineListenerManager'
 import TimelineActions from 'src/controllers/TimelineActions'
 import CloseColumnUseCase from 'src/usecases/CloseColumnUseCase'
+import SwapColumnUseCase from 'src/usecases/SwapColumnUseCase'
 import FriendsColumn from 'src/pages/columns/FriendsColumn'
 import HashTagColumn from 'src/pages/columns/HashTagColumn'
 import NotificationsColumn from 'src/pages/columns/NotificationsColumn'
@@ -33,7 +36,7 @@ type State = {
 /**
  * カラムのコンテナ
  */
-export default class ColumnContainer extends React.Component {
+class ColumnContainer extends React.Component {
   static contextTypes = {
     context: ContextPropType,
   }
@@ -159,6 +162,7 @@ export default class ColumnContainer extends React.Component {
   defaultPropsForColumn(column: UIColumn) {
     return {
       key: column.key,
+      index: this.props.columns.indexOf(column),
       column,
       ...this.handlerPropsForColumn(column),
     }
@@ -168,6 +172,7 @@ export default class ColumnContainer extends React.Component {
     return {
       onClickHeader: this.onClickColumnHeader.bind(this),
       onClose: this.onCloseColumn.bind(this, column),
+      onSwapColumn: this.onSwapColumn.bind(this),
     }
   }
 
@@ -256,6 +261,12 @@ export default class ColumnContainer extends React.Component {
     context.useCase(new CloseColumnUseCase()).execute(column)
   }
 
+  onSwapColumn(from: number, to: number) {
+    const {context} = this.context
+
+    context.useCase(new SwapColumnUseCase()).execute(from, to)
+  }
+
   onChangeFriends(columnKey: string, model: FriendsModel) {
     this.setState({
       friendsColumnModels: this.state.friendsColumnModels.set(columnKey, model),
@@ -274,3 +285,5 @@ export default class ColumnContainer extends React.Component {
     })
   }
 }
+
+export default DragDropContext(HTML5Backend)(ColumnContainer)  // eslint-disable-line new-cap
