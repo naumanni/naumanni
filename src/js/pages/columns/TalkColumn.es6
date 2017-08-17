@@ -2,6 +2,7 @@
 import React from 'react'
 import update from 'immutability-helper'
 import {findDOMNode} from 'react-dom'
+import {List} from 'immutable'
 import {FormattedMessage as _FM} from 'react-intl'
 import classNames from 'classnames'
 import {intlShape} from 'react-intl'
@@ -14,7 +15,7 @@ import {
   DRAG_SOURCE_COLUMN,
   SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
   KEY_ENTER} from 'src/constants'
-import {Account} from 'src/models'
+import {Account, Attachment} from 'src/models'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import {TalkBlock} from 'src/controllers/TalkListener'
 import TalkGroup, {TalkGroupModel} from 'src/pages/components/TalkGroup'
@@ -29,6 +30,7 @@ type Props = ColumnProps & {
   members: ?{[acct: string]: Account},
   talk: ?TalkBlock[],
   onClickHashTag: (string) => void,
+  onClickMedia: (mediaFiles: List<Attachment>, idx: number) => void,
 }
 
 type State = {
@@ -204,6 +206,7 @@ class TalkColumn extends React.Component {
       showAvatar,
       talkGroup,
       onClickHashTag: this.onClickHashTag.bind(this),
+      onClickMedia: this.onClickMedia.bind(this),
     }
 
     return <TalkGroup key={key} {...props} />
@@ -344,6 +347,11 @@ class TalkColumn extends React.Component {
   onClickHashTag(tag: string, e: SyntheticEvent) {
     e.preventDefault()
     this.props.onClickHashTag(tag)
+  }
+
+  onClickMedia(e: SyntheticEvent, mediaFiles: List<Attachment>, idx: number) {
+    e.preventDefault()
+    this.props.onClickMedia(mediaFiles, idx)
   }
 }
 

@@ -1,8 +1,9 @@
 /* @flow */
 import React from 'react'
+import {List} from 'immutable'
 import classNames from 'classnames'
 
-import {Account} from 'src/models'
+import {Account, Attachment} from 'src/models'
 import {TalkBlock} from 'src/controllers/TalkListener'
 import {TalkBubble, UserIconWithHost} from '../parts'
 
@@ -56,12 +57,13 @@ export default class TalkGroup extends React.PureComponent {
     showName: boolean,
     talkGroup: TalkBlock,
     onClickHashTag: (string, SyntheticEvent) => void,
+    onClickMedia: (e: SyntheticEvent, files: List<Attachment>, idx: number) => void,
   }
 
   render() {
     const {
       isMyTalk, showName, showAvatar, talkGroup,
-      onClickHashTag,
+      onClickHashTag, onClickMedia,
     } = this.props
 
     return (
@@ -83,13 +85,15 @@ export default class TalkGroup extends React.PureComponent {
           </div>
         )}
         <ul className="talk-talkGroupStatuses">
-          {talkGroup.contents.map(({key, parsedContent, createdAt, encrypted}) => (
+          {talkGroup.contents.map(({key, mediaFiles, parsedContent, createdAt, encrypted}) => (
             <TalkBubble
               key={key}
               createdAt={createdAt.toDate()}
               isEncrypted={encrypted}
+              mediaFiles={mediaFiles}
               parsedContent={parsedContent}
               onClickHashTag={onClickHashTag}
+              onClickMedia={onClickMedia}
             />
           ))}
         </ul>

@@ -410,6 +410,22 @@ class TimelineListenerManager extends ChangeEventEmitter {
     timeline && timeline.updateFilter(filters)
     subtimeline && subtimeline.updateFilter(filters)
   }
+
+  async onClearNotifications(column: UIColumn) {
+    const {key, params: {subject}} = column
+    const token = this._tokens.find((token) => token.acct === subject)
+
+    token && await token.requester.clearNotifications({}, {token})
+
+    const timeline = this.timelines.get(key)
+
+    if(timeline != null) {
+      const {uris} = timeline
+
+      uris.forEach((uri) => timeline.delete(uri))
+      this.db.decrement(uris)
+    }
+  }
 }
 
 export default new TimelineListenerManager()

@@ -423,6 +423,7 @@ export default class TalkListener extends EventEmitter {
           return {
             key: status.uri,
             parsedContent: parsedContent,
+            mediaFiles: status.media_attachments,
             createdAt: status.createdAt,
           }
         }

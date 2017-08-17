@@ -275,6 +275,11 @@ export default MastodonAPISpec.make({
     method: 'get',
   },
 
+  clearNotifications: {
+    endpoint: '/notifications/clear',
+    method: 'post',
+  },
+
   listReports: {
     endpoint: '/reports',
     method: 'get',

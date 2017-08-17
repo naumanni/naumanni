@@ -19,7 +19,9 @@ import {columnDragSource, columnDragTarget} from './'
 import type {TimelineColumnProps} from './types'
 
 
-type Props = TimelineColumnProps<NotificationRef>
+type Props = TimelineColumnProps<NotificationRef> & {
+  onClearNotifications: () => void,
+}
 type State = {
   isMenuVisible: boolean,
 }
@@ -123,7 +125,13 @@ class NotificationsColumn extends React.Component {
   }
 
   renderMenuContent() {
-    return <ColumnHeaderMenu isCollapsed={!this.state.isMenuVisible} onClickClose={this.props.onClose} />
+    return (
+      <ColumnHeaderMenu isCollapsed={!this.state.isMenuVisible} onClickClose={this.props.onClose}>
+        <div className="menu-item--default" onClick={this.onClickClear.bind(this)}>
+          <_FM id="column.menu.clear_notifications" />
+        </div>
+      </ColumnHeaderMenu>
+    )
   }
 
   renderBody() {
@@ -180,6 +188,15 @@ class NotificationsColumn extends React.Component {
   onClickMenuButton(e: SyntheticEvent) {
     e.stopPropagation()
     this.setState({isMenuVisible: !this.state.isMenuVisible})
+  }
+
+  // cb
+  onClickClear() {
+    const {formatMessage} = this.context.intl
+
+    if(window.confirm(formatMessage({id: 'column.menu.confirm.clear_notifications'}))) {
+      this.props.onClearNotifications()
+    }
   }
 }
 

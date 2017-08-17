@@ -132,7 +132,12 @@ class ColumnContainer extends React.Component {
   }
 
   makeNotificationsColumn(column: UIColumn): React.Element<any> {
-    return <NotificationsColumn {...this.propsForTimelineColumn(column)} />
+    const props = {
+      ...this.propsForTimelineColumn(column),
+      onClearNotifications: () => TimelineListenerManager.onClearNotifications(column),
+    }
+
+    return <NotificationsColumn {...props} />
   }
 
   makeTalkColumn(column: UIColumn): React.Element<any> {
@@ -146,6 +151,7 @@ class ColumnContainer extends React.Component {
       token,
       ...columnModel.toProps(),
       onClickHashTag: (tag) => this.actionDelegate.onClickHashTag(tag),
+      onClickMedia: (...args) => this.actionDelegate.onClickMedia(...args),
       onSubscribeListener: () => TalkListenerManager.onSubscribeListener(token, column),
       onUnsubscribeListener: () => TalkListenerManager.onUnsubscribeListener(column),
     }
