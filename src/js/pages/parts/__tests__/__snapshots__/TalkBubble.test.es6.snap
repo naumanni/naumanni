@@ -29,7 +29,22 @@ exports[`TalkBubble snapshot isEncrypted == false 1`] = `
     }
   }
   isEncrypted={false}
+  mediaFiles={
+    Array [
+      Object {
+        "id_by_host": Object {},
+        "meta": undefined,
+        "preview_url": "https://d2zoeobnny43zx.cloudfront.net/media_attachments/files/000/904/383/small/d8ffd22736103a82.jpg",
+        "preview_url_by_host": Object {},
+        "text_url": "",
+        "type": "",
+        "url": "https://d2zoeobnny43zx.cloudfront.net/media_attachments/files/000/904/383/small/d8ffd22736103a82.jpg",
+        "url_by_host": Object {},
+      },
+    ]
+  }
   onClickHashTag={[Function]}
+  onClickMedia={[Function]}
   parsedContent={
     Array [
       Object {
@@ -65,6 +80,21 @@ exports[`TalkBubble snapshot isEncrypted == false 1`] = `
           </a>
         </p>
       </SafeContent>
+      <div
+        className="status-mediaList status-mediaList1"
+      >
+        <a
+          className="status-media"
+          href="https://d2zoeobnny43zx.cloudfront.net/media_attachments/files/000/904/383/small/d8ffd22736103a82.jpg"
+          onClick={[Function]}
+          style={
+            Object {
+              "backgroundImage": "url(https://d2zoeobnny43zx.cloudfront.net/media_attachments/files/000/904/383/small/d8ffd22736103a82.jpg)",
+            }
+          }
+          target="_blank"
+        />
+      </div>
     </div>
     <div
       className="status-date"
@@ -116,7 +146,22 @@ exports[`TalkBubble snapshot isEncrypted == true 1`] = `
     }
   }
   isEncrypted={true}
+  mediaFiles={
+    Array [
+      Object {
+        "id_by_host": Object {},
+        "meta": undefined,
+        "preview_url": "https://d2zoeobnny43zx.cloudfront.net/media_attachments/files/000/904/383/small/d8ffd22736103a82.jpg",
+        "preview_url_by_host": Object {},
+        "text_url": "",
+        "type": "",
+        "url": "https://d2zoeobnny43zx.cloudfront.net/media_attachments/files/000/904/383/small/d8ffd22736103a82.jpg",
+        "url_by_host": Object {},
+      },
+    ]
+  }
   onClickHashTag={[Function]}
+  onClickMedia={[Function]}
   parsedContent={
     Array [
       Object {
@@ -152,6 +197,21 @@ exports[`TalkBubble snapshot isEncrypted == true 1`] = `
           </a>
         </p>
       </SafeContent>
+      <div
+        className="status-mediaList status-mediaList1"
+      >
+        <a
+          className="status-media"
+          href="https://d2zoeobnny43zx.cloudfront.net/media_attachments/files/000/904/383/small/d8ffd22736103a82.jpg"
+          onClick={[Function]}
+          style={
+            Object {
+              "backgroundImage": "url(https://d2zoeobnny43zx.cloudfront.net/media_attachments/files/000/904/383/small/d8ffd22736103a82.jpg)",
+            }
+          }
+          target="_blank"
+        />
+      </div>
     </div>
     <div
       className="status-date"

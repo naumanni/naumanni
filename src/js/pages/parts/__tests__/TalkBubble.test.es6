@@ -3,6 +3,7 @@ import {mountWithIntl} from 'enzyme-react-intl'
 import serializer from 'enzyme-to-json/serializer'
 import {List} from 'immutable'
 
+import {Attachment} from 'src/models'
 import {TOKEN_HASHTAG} from 'src/constants'
 import TalkBubble from '../TalkBubble'
 
@@ -13,6 +14,12 @@ describe('TalkBubble', () => {
   let defaultProps = {
     createdAt: new Date(2017, 7, 28),
     isEncrypted: false,
+    mediaFiles: List([
+      new Attachment({
+        url: 'https://d2zoeobnny43zx.cloudfront.net/media_attachments/files/000/904/383/small/d8ffd22736103a82.jpg',
+        preview_url: 'https://d2zoeobnny43zx.cloudfront.net/media_attachments/files/000/904/383/small/d8ffd22736103a82.jpg',
+      })
+    ]),
     parsedContent: List([
       {
         type: TOKEN_HASHTAG,
@@ -21,6 +28,7 @@ describe('TalkBubble', () => {
       }
     ]),
     onClickHashTag: jest.fn(),
+    onClickMedia: jest.fn(),
   }
 
   describe('snapshot', () => {
@@ -47,9 +55,23 @@ describe('TalkBubble', () => {
     }
     const wrapper = mountWithIntl(<TalkBubble {...props} />)
 
-    const hashtag = wrapper.find('a')
+    const hashtag = wrapper.find('p > a')
     hashtag.simulate('click')
 
     expect(onClickHashTag).toHaveBeenCalled()
+  })
+
+  it('propagate media click event', () => {
+    const onClickMedia = jest.fn()
+    const props = {
+      ...defaultProps,
+      onClickMedia,
+    }
+    const wrapper = mountWithIntl(<TalkBubble {...props} />)
+
+    const media = wrapper.find('a.status-media')
+    media.simulate('click')
+
+    expect(onClickMedia).toHaveBeenCalled()
   })
 })
