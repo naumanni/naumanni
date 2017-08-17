@@ -36,7 +36,7 @@ export default class ColumnHeaderMenu extends React.PureComponent {
     return (
       <div className="column-menuContent" ref="container">
         {this.props.children}
-        <div className="menu-item--close" onClick={onClickClose}>
+        <div className="menu-item--default" onClick={onClickClose}>
           <_FM id="column.menu.close" />
         </div>
       </div>

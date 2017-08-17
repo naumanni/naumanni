@@ -170,6 +170,26 @@ export class StatusTimeline extends Timeline {
 
 
 export class NotificationTimeline extends Timeline {
+  /**
+   * @override
+   */
+  delete(uri) {
+    const idx = this.timeline.findIndex((ref) => {
+      const accountRef = ref.accountRef
+      if(accountRef)
+        return accountRef.uri === uri
+      const statusRef = ref.statusRef
+      if(statusRef)
+        return statusRef.uri === uri
+      return false
+    })
+
+    if(idx >= 0) {
+      this._timeline = this.timeline.delete(idx)
+      this.emitChange()
+    }
+  }
+
   get uris() {
     const self = this
     return Array.from((function* () {

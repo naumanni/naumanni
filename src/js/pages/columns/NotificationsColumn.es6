@@ -50,6 +50,17 @@ export default class NotificationColumn extends PagingColumn {
   /**
    * @override
    */
+  columnMenus() {
+    return (
+      <div className="menu-item--default" onClick={this.onClickClear.bind(this)}>
+        <_FM id="column.menu.clear_notifications" />
+      </div>
+    )
+  }
+
+  /**
+   * @override
+   */
   renderTimelineRow(ref) {
     const {subject} = this.props
     const {tokens} = this.state.tokenState
@@ -86,6 +97,31 @@ export default class NotificationColumn extends PagingColumn {
    */
   makeLoaderForToken(timeline, token) {
     return new NotificationTimelineLoader(timeline, token, this.db)
+  }
+
+  // cb
+  onClickClear() {
+    const {formatMessage} = this.context.intl
+
+    if(window.confirm(formatMessage({id: 'column.menu.confirm.clear_notifications'}))) {
+      this.clear()
+    }
+  }
+
+  // private
+  async clear() {
+    this.subtimeline && this.clearTimeline(this.subtimeline)
+    this.clearTimeline(this.timeline)
+
+    const token = this.state.tokenState.getTokenByAcct(this.props.subject)
+    await token.requester.clearNotifications({}, {token})
+  }
+
+  clearTimeline(timeline) {
+    const {uris} = timeline
+
+    uris.forEach((uri) => timeline.delete(uri))
+    this.db.decrement(uris)
   }
 }
 require('./').registerColumn(COLUMN_NOTIFICATIONS, NotificationColumn)
