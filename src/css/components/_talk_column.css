@@ -101,6 +101,82 @@
         }
       }
 
+      .status-mediaList {
+        height: 120px;
+        position: relative;
+        border-radius: $radiusDefault;
+        margin: $marginDefault 0 0 0;
+        overflow: hidden;
+
+        .status-media {
+          display: block;
+          height: 100%;
+          background-size: cover;
+          background-position: center center;
+          text-decoration: none;
+          cursor: zoom-in;
+
+          img {
+            display: block;
+            width: 100%;
+          }
+        }
+
+        &.status-mediaList1 {
+        }
+
+        &.status-mediaList2 {
+          .status-media:nth-child(1) {
+            float: left;
+            width: calc(50% - $marginHalf / 2);
+          }
+
+          .status-media:nth-child(2) {
+            margin-left: calc(50% + $marginHalf / 2);
+          }
+        }
+
+        &.status-mediaList3 {
+          .status-media:nth-child(1) {
+            float: left;
+            width: calc(50% - $marginHalf / 2);
+          }
+
+          .status-media:nth-child(2) {
+            margin-bottom: $marginHalf;
+          }
+          .status-media:nth-child(2),
+          .status-media:nth-child(3) {
+            margin-left: calc(50% + $marginHalf / 2);
+            height: calc(50% - $marginHalf / 2)
+          }
+        }
+
+        &.status-mediaList4 {
+          .status-media {
+            height: calc(50% - $marginHalf / 2)
+          }
+
+          .status-media:nth-child(1) {
+            float: left;
+            width: calc(50% - $marginHalf / 2);
+            margin-bottom: $marginHalf;
+          }
+          .status-media:nth-child(2) {
+            margin-left: calc(50% + $marginHalf / 2);
+            margin-bottom: $marginHalf;
+          }
+
+          .status-media:nth-child(3) {
+            float: left;
+            width: calc(50% - $marginHalf / 2);
+          }
+          .status-media:nth-child(4) {
+            margin-left: calc(50% + $marginHalf / 2);
+          }
+        }
+      }
+
       .status-date {
         flex: 0 0 8em;
         margin: 0 $marginHalf;
