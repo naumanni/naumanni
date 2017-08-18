@@ -1,39 +1,116 @@
+/* @flow */
 import React from 'react'
+import {findDOMNode} from 'react-dom'
 import {FormattedMessage as _FM} from 'react-intl'
+import classNames from 'classnames'
+import {intlShape} from 'react-intl'
+import {DragSource, DropTarget} from 'react-dnd'
+import flow from 'lodash.flow'
 
+import {ContextPropType} from 'src/propTypes'
 import {
-  COLUMN_NOTIFICATIONS, SUBJECT_MIXED, MAX_STATUSES, AUTO_PAGING_MARGIN,
+  DRAG_SOURCE_COLUMN,
+  SUBJECT_MIXED,
 } from 'src/constants'
-import {NotificationTimeline} from 'src/models/Timeline'
-import NotificationListener from 'src/controllers/NotificationListener'
-import TimelineNotification from 'src/pages/components/TimelineNotification'
-import {NotificationTimelineLoader} from 'src/controllers/TimelineLoader'
-import PagingColumn from './PagingColumn'
+import {NotificationRef} from 'src/infra/TimelineData'
+import {ColumnHeader, ColumnHeaderMenu, NowLoading} from 'src/pages/parts'
+import PagingColumnContent from 'src/pages/components/PagingColumnContent'
+import {columnDragSource, columnDragTarget} from './'
+import type {TimelineColumnProps} from './types'
 
+
+type Props = TimelineColumnProps<NotificationRef> & {
+  onClearNotifications: () => void,
+}
+type State = {
+  isMenuVisible: boolean,
+}
 
 /**
  * 通知カラム
- * TODO: TimelineColumnとのコピペなのを何とかする
  */
-export default class NotificationColumn extends PagingColumn {
-  static propTypes = {
-    ...PagingColumn.propTypes,
+class NotificationsColumn extends React.Component {
+  static contextTypes = {
+    context: ContextPropType,
+    intl: intlShape,
+  }
+  props: Props
+  state: State
+
+  scrollNode: ?HTMLElement
+
+  constructor(...args: any[]) {
+    super(...args)
+    this.state = {
+      isMenuVisible: false,
+    }
   }
 
-  constructor(...args) {
-    super(...args)
+  get isMixedTimeline(): boolean {
+    const {column: {params: {subject}}} = this.props
+
+    return subject === SUBJECT_MIXED
   }
 
   /**
    * @override
    */
+  componentDidMount() {
+    this.props.onSubscribeListener()
+  }
+
+  /**
+   * @override
+   */
+  componentWillUnmount() {
+    this.props.onUnsubscribeListener()
+  }
+
+  /**
+   * @override
+   */
+  render() {
+    const {
+      isDragging, connectDragSource, connectDropTarget,
+      isLoading,
+    } = this.props
+
+    const opacity = isDragging ? 0 : 1
+
+    return connectDragSource(connectDropTarget(
+      <div className="column" style={{opacity}}>
+        <ColumnHeader
+          canShowMenuContent={!isLoading}
+          isPrivate={true}
+          menuContent={this.renderMenuContent()}
+          title={this.renderTitle()}
+          onClickHeader={this.onClickHeader.bind(this)}
+          onClickMenu={this.onClickMenuButton.bind(this)}
+        />
+
+        {isLoading
+          ? <div className="column-body is-loading"><NowLoading /></div>
+          : this.renderBody()
+        }
+      </div>
+    ))
+  }
+
+
+  // render
+
+
   renderTitle() {
     const {formatMessage} = this.context.intl
 
-    if(this.isMixedTimeline()) {
-      return formatMessage({id: 'column.title.united_notifications'})
+    if(this.isMixedTimeline) {
+      return (
+        <h1 className="column-headerTitle">
+          <_FM id="column.title.united_notifications" />
+        </h1>
+      )
     } else {
-      const {token} = this.state
+      const {token} = this.props
 
       if(!token)
         return formatMessage({id: 'column.title.notifications'})
@@ -47,56 +124,70 @@ export default class NotificationColumn extends PagingColumn {
     }
   }
 
-  /**
-   * @override
-   */
-  columnMenus() {
+  renderMenuContent() {
     return (
-      <div className="menu-item--default" onClick={this.onClickClear.bind(this)}>
-        <_FM id="column.menu.clear_notifications" />
+      <ColumnHeaderMenu isCollapsed={!this.state.isMenuVisible} onClickClose={this.props.onClose}>
+        <div className="menu-item--default" onClick={this.onClickClear.bind(this)}>
+          <_FM id="column.menu.clear_notifications" />
+        </div>
+      </ColumnHeaderMenu>
+    )
+  }
+
+  renderBody() {
+    const {
+      column: {params: {subject}},
+      isLoading, isTailLoading, timeline, tokens,
+      onLockedPaging, onUnlockedPaging,
+    } = this.props
+
+    return (
+      <div className={classNames(
+        'column-body',
+        {'is-loading': isLoading}
+      )}>
+        <PagingColumnContent
+          isTailLoading={isTailLoading}
+          subject={subject}
+          timeline={timeline}
+          tokens={tokens}
+          onLoadMoreStatuses={this.onLoadMoreStatuses.bind(this)}
+          onLockedPaging={onLockedPaging}
+          onUnlockedPaging={onUnlockedPaging}
+          onScrollNodeLoaded={this.onScrollNodeLoaded.bind(this)}
+        />
       </div>
     )
   }
 
-  /**
-   * @override
-   */
-  renderTimelineRow(ref) {
-    const {subject} = this.props
-    const {tokens} = this.state.tokenState
 
-    return (
-      <li key={ref.uri}>
-        <TimelineNotification
-          subject={subject !== SUBJECT_MIXED ? subject : null}
-          notificationRef={ref}
-          tokens={tokens}
-          onLockStatus={() => this.scrollLockCounter.increment()}
-          {...this.actionDelegate.props}
-        />
-      </li>
-    )
+  // private
+
+
+  onScrollNodeLoaded(el: HTMLElement) {
+    this.scrollNode = el
   }
 
-  /**
-   * @override
-   */
-  get timelineClass() {
-    return NotificationTimeline
+  onLoadMoreStatuses() {
+    this.props.onLoadMoreStatuses()
   }
 
-  /**
-   * @override
-   */
-  get listenerClass() {
-    return NotificationListener
+  onClickHeader() {
+    const {column, onClickHeader} = this.props
+    const node = findDOMNode(this)
+
+    if(node instanceof HTMLElement) {
+      if(this.scrollNode != null) {
+        onClickHeader(column, node, this.scrollNode)
+      } else {
+        onClickHeader(column, node, undefined)
+      }
+    }
   }
 
-  /**
-   * @override
-   */
-  makeLoaderForToken(timeline, token) {
-    return new NotificationTimelineLoader(timeline, token, this.db)
+  onClickMenuButton(e: SyntheticEvent) {
+    e.stopPropagation()
+    this.setState({isMenuVisible: !this.state.isMenuVisible})
   }
 
   // cb
@@ -104,24 +195,17 @@ export default class NotificationColumn extends PagingColumn {
     const {formatMessage} = this.context.intl
 
     if(window.confirm(formatMessage({id: 'column.menu.confirm.clear_notifications'}))) {
-      this.clear()
+      this.props.onClearNotifications()
     }
   }
-
-  // private
-  async clear() {
-    this.subtimeline && this.clearTimeline(this.subtimeline)
-    this.clearTimeline(this.timeline)
-
-    const token = this.state.tokenState.getTokenByAcct(this.props.subject)
-    await token.requester.clearNotifications({}, {token})
-  }
-
-  clearTimeline(timeline) {
-    const {uris} = timeline
-
-    uris.forEach((uri) => timeline.delete(uri))
-    this.db.decrement(uris)
-  }
 }
-require('./').registerColumn(COLUMN_NOTIFICATIONS, NotificationColumn)
+
+export default flow(
+  DragSource(DRAG_SOURCE_COLUMN, columnDragSource, (connect, monitor) => ({  // eslint-disable-line new-cap
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
+  })),
+  DropTarget(DRAG_SOURCE_COLUMN, columnDragTarget, (connect) => ({  // eslint-disable-line new-cap
+    connectDropTarget: connect.dropTarget(),
+  }))
+)(NotificationsColumn)

@@ -1,46 +1,77 @@
-// import update from 'immutability-helper'
-import PropTypes from 'prop-types'
+/* @flow */
 import React from 'react'
 import update from 'immutability-helper'
 import {findDOMNode} from 'react-dom'
-import {FormattedDate, FormattedMessage as _FM} from 'react-intl'
+import {List} from 'immutable'
+import {FormattedMessage as _FM} from 'react-intl'
 import classNames from 'classnames'
+import {intlShape} from 'react-intl'
+import {DragSource, DropTarget} from 'react-dnd'
+import flow from 'lodash.flow'
 
+import {ContextPropType} from 'src/propTypes'
 import {
   COLUMN_TAG,
+  DRAG_SOURCE_COLUMN,
   SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
   KEY_ENTER} from 'src/constants'
-import TimelineActions from 'src/controllers/TimelineActions'
+import {Account, Attachment} from 'src/models'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
-import TalkListener from 'src/controllers/TalkListener'
-import Column from './Column'
-import {IconFont, UserIconWithHost, SafeContent} from '../parts'
-import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
+import {TalkBlock} from 'src/controllers/TalkListener'
+import TalkGroup, {TalkGroupModel} from 'src/pages/components/TalkGroup'
+import TalkForm from 'src/pages/components/TalkForm'
+import {ColumnHeader, ColumnHeaderMenu, NowLoading} from '../parts'
+import {columnDragSource, columnDragTarget} from './'
+import type {ColumnProps} from './types'
 
+
+type Props = ColumnProps & {
+  me: ?Account,
+  members: ?{[acct: string]: Account},
+  talk: ?TalkBlock[],
+  onClickHashTag: (string) => void,
+  onClickMedia: (mediaFiles: List<Attachment>, idx: number) => void,
+}
+
+type State = {
+  keepAtBottom: boolean,
+  mediaFiles: File[],
+  isMenuVisible: boolean,
+  newMessage: string,
+  sendingMessage: boolean,
+  sensitive: boolean,
+}
 
 /**
  * タイムラインのカラム
  */
-export default class TalkColumn extends Column {
-  static propTypes = {
-    to: PropTypes.string.isRequired,
-    from: PropTypes.string.isRequired,
+class TalkColumn extends React.Component {
+  props: Props
+  state: State
+
+  static contextTypes = {
+    context: ContextPropType,
+    intl: intlShape,
   }
 
-  constructor(...args) {
+  mediaFileKeys: WeakMap<File, number>
+  mediaFileCounter: number
+  scrollChanging: boolean
+
+  /**
+   * @constructor
+   */
+  constructor(...args: any[]) {
     // mixed timeline not allowed
     require('assert')(args[0].subject !== SUBJECT_MIXED)
     super(...args)
 
-    this.actionDelegate = new TimelineActions(this.context)
-    this.listener = new TalkListener([this.props.to])
     // コードからスクロール量を変更している場合はtrue
     this.scrollChanging = false
     this.state = {
-      ...this.state,
       keepAtBottom: true,
-      loading: true,
       mediaFiles: [],
+      isMenuVisible: false,
       newMessage: '',
       sendingMessage: false,
       sensitive: false,
@@ -51,39 +82,21 @@ export default class TalkColumn extends Column {
   /**
    * @override
    */
-  isPrivate() {
-    return true
-  }
-
-  /**
-   * @override
-   */
   componentDidMount() {
-    super.componentDidMount()
-
-    this.listenerRemovers.push(
-      this.listener.onChange(::this.onChangeTalk),
-    )
-
-    // make event listener
-    this.listener.updateToken(this.state.token)
+    this.props.onSubscribeListener()
   }
 
   /**
    * @override
    */
   componentWillUnmount() {
-    super.componentWillUnmount()
-
-    clearInterval(this.timer)
-    this.listener.close()
-    delete this.listener
+    this.props.onUnsubscribeListener()
   }
 
   /**
    * @override
    */
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps: Props, prevState: State) {
     if(this.state.keepAtBottom) {
       const node = this.refs.talkGroups
       if(node) {
@@ -96,14 +109,44 @@ export default class TalkColumn extends Column {
   /**
    * @override
    */
+  render() {
+    const {
+      isDragging, connectDragSource, connectDropTarget,
+      isLoading,
+    } = this.props
+
+    const opacity = isDragging ? 0 : 1
+
+    return connectDragSource(connectDropTarget(
+      <div className="column" style={{opacity}}>
+        <ColumnHeader
+          canShowMenuContent={!isLoading}
+          isPrivate={true}
+          menuContent={this.renderMenuContent()}
+          title={this.renderTitle()}
+          onClickHeader={this.onClickHeader.bind(this)}
+          onClickMenu={this.onClickMenuButton.bind(this)}
+        />
+
+        {isLoading
+          ? <div className="column-body is-loading"><NowLoading /></div>
+          : this.renderBody()
+        }
+      </div>
+    ))
+  }
+
+  // render private
+
   renderTitle() {
-    const {me, members} = this.state
+    const {me, members} = this.props
 
     if(!me || !members) {
       return <_FM id="column.title.talk" />
     }
 
-    const memberNames = Object.values(members).map((a) => a.display_name || a.acct)
+    const memberNames = Object.values(members)
+      .map((a: Account) => a.displayName || a.acct)
 
     return (
       <h1 className="column-headerTitle">
@@ -115,173 +158,58 @@ export default class TalkColumn extends Column {
     )
   }
 
-  /**
-   * @override
-   */
+  renderMenuContent() {
+    return <ColumnHeaderMenu isCollapsed={!this.state.isMenuVisible} onClickClose={this.props.onClose} />
+  }
+
   renderBody() {
     const {formatMessage: _} = this.context.intl
 
-    if(this.state.loading) {
+    if(this.props.isLoading) {
       return <NowLoading />
     }
 
-    const {mediaFiles, sensitive, talk} = this.state
-
-    return (
-      <div className={this.columnBodyClassName()}>
-        <ul className="talk-talkGroups" ref="talkGroups" onScroll={::this.onScrollTalkGroups}>
-          {(talk || []).map((talkGroup, idx, talk) => this.renderTalkGroup(talkGroup, talk[idx - 1], talk[idx + 1]))}
-        </ul>
-        <div className="talkForm-content">
-          <div className="talkForm-status">
-            <textarea
-              value={this.state.newMessage}
-              onChange={::this.onChangeMessage}
-              onKeyDown={::this.onKeyDownMessage}
-              placeholder={_({id: 'talk.form.placeholder'})} />
-          </div>
-
-          {this.renderMediaFilesInForm()}
-
-          <div className="talkForm-contentActions">
-            <label className="tootForm-addMedia">
-              <IconFont iconName="camera" />
-              <input
-                type="file"
-                multiple="multiple"
-                style={{display: 'none'}} ref="fileInput" onChange={::this.onChangeMediaFile} />
-            </label>
-            {mediaFiles.length > 0 &&
-              <button
-                className={classNames(
-                  'tootForm-toggleNsfw',
-                  {'is-active': sensitive},
-                )}
-                type="button"
-                onClick={::this.onClickToggleNsfw}>
-                <IconFont iconName="nsfw" />
-              </button>
-            }
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  /**
-   * @override
-   */
-  columnBodyClassName() {
-    return super.columnBodyClassName() + ' column-body--talk'
-  }
-
-  /**
-   * @override
-   */
-  getStateFromContext() {
-    const state = super.getStateFromContext()
-    state.token = state.tokenState.getTokenByAcct(this.props.from)
-    return state
-  }
-
-  /**
-   * @override
-   */
-  onChangeContext() {
-    super.onChangeContext()
-
-    this.listener.updateToken(this.state.token)
-  }
-
-  /**
-   * @override
-   */
-  scrollNode() {
-    return findDOMNode(this.refs.talkGroups)
-  }
-
-  renderTalkGroup(talkGroup, prevTalkGroup, nextTalkGroup) {
-    const isMyTalk = talkGroup.account.isEqual(this.state.me)
-    // memberのtalkgroupは、前のTalkGroupが自分であれば名前を表示しない
-    const showName = !isMyTalk && !(prevTalkGroup && prevTalkGroup.account.isEqual(talkGroup.account))
-    // memberのtalkgroupは、次のTalkGroupが自分であればアバターを表示しない
-    const showAvatar = !isMyTalk && !(nextTalkGroup && nextTalkGroup.account.isEqual(talkGroup.account))
-
-    const key = `speak-${talkGroup.account.acct}-${talkGroup.statuses[0].uri}`
-
-    return (
-      <div className={`talk-talkGroup ${isMyTalk ? 'is-me' : 'is-member'}`} key={key}>
-        {showName && (
-          <div className="talk-speakerName">
-            {talkGroup.account.display_name || talkGroup.account.acct}
-          </div>
-        )}
-        {showAvatar && (
-          <div className="talk-speakerAvatar">
-            <UserIconWithHost account={talkGroup.account} />
-          </div>
-        )}
-        <ul className="talk-talkGroupStatuses">
-          {talkGroup.contents.map(({key, parsedContent, mediaFiles, createdAt, encrypted}) => {
-            return (
-              <li key={key}>
-                <div className={`status-content ${encrypted ? 'is-encrypted' : ''}`}>
-                  <SafeContent parsedContent={parsedContent} onClickHashTag={::this.onClickHashTag} />
-                  {this.renderMediaFilesInTalk(mediaFiles)}
-                </div>
-                <div className="status-date">
-                  <FormattedDate value={createdAt.toDate()}
-                    year="numeric" month="2-digit" day="2-digit"
-                    hour="2-digit" minute="2-digit" second="2-digit"
-                  />
-                </div>
-                {encrypted && <div className="status-isEncrypted"><IconFont iconName="lock" /></div>}
-              </li>
-            )
-          })}
-        </ul>
-      </div>
-    )
-  }
-
-  renderMediaFilesInTalk(files) {
-    if(!files.size)
-      return null
+    const {isLoading, talk} = this.props
+    const {mediaFiles, newMessage, sensitive} = this.state
 
     return (
       <div className={classNames(
-        'status-mediaList',
-        `status-mediaList${files.size}`,
+        'column-body',
+        'column-body--talk',
+        {'is-loading': isLoading},
       )}>
-        {files.map((media, idx) => (
-          <a key={media.preview_url}
-            className="status-media"
-            style={{backgroundImage: `url(${media.preview_url})`}}
-            target="_blank"
-            href={media.url}
-            onClick={this.onClickMedia.bind(this, files, idx)}
-            />
-        ))}
+        <ul className="talk-talkGroups" ref="talkGroups" onScroll={this.onScrollTalkGroups.bind(this)}>
+          {(talk || []).map((talkGroup, idx, talk) => this.renderTalkGroup(talkGroup, talk[idx - 1], talk[idx + 1]))}
+        </ul>
+        <TalkForm
+          mediaFiles={mediaFiles}
+          mediaFileKeys={this.mediaFileKeys}
+          placeholder={_({id: 'talk.form.placeholder'})}
+          sensitive={sensitive}
+          text={newMessage}
+          onChange={this.onChangeMessage.bind(this)}
+          onChangeMediaFile={this.onChangeMediaFile.bind(this)}
+          onClickToggleNsfw={this.onClickToggleNsfw.bind(this)}
+          onKeyDown={this.onKeyDownMessage.bind(this)}
+          onRemoveMediaFile={this.onRemoveMediaFile.bind(this)}
+        />
       </div>
     )
   }
 
-  renderMediaFilesInForm() {
-    const {mediaFiles} = this.state
-
-    if(!mediaFiles) {
-      return null
+  renderTalkGroup(talkGroup: TalkBlock, prevTalkGroup: TalkBlock, nextTalkGroup: TalkBlock) {
+    const model = new TalkGroupModel(this.props.me, talkGroup, prevTalkGroup, nextTalkGroup)
+    const {key, isMyTalk, showName, showAvatar} = model
+    const props = {
+      isMyTalk,
+      showName,
+      showAvatar,
+      talkGroup,
+      onClickHashTag: this.onClickHashTag.bind(this),
+      onClickMedia: this.onClickMedia.bind(this),
     }
 
-    return (
-      <div className="talkForm-mediaFiles">
-        {mediaFiles.map((file) => {
-          return <MediaFileThumbnail
-            key={this.mediaFileKeys.get(file)} mediaFile={file} showClose={true}
-            onClose={this.onRemoveMediaFile.bind(this, file)} />
-        })}
-      </div>
-    )
+    return <TalkGroup key={key} {...props} />
   }
 
   setUpMediaCounter() {
@@ -297,16 +225,18 @@ export default class TalkColumn extends Column {
     }
 
     // get latest status id
+    const {talk, token: {host}} = this.props
     let lastStatusId = null
-    if(this.state.talk.length) {
-      const lastTalkGroup = this.state.talk[this.state.talk.length - 1]
+    if(talk != null && talk.length) {
+      const lastTalkGroup = talk[talk.length - 1]
       const lastStatus = lastTalkGroup.statuses[lastTalkGroup.statuses.length - 1]
-      lastStatusId = lastStatus.getIdByHost(this.state.token.host)
+      lastStatusId = lastStatus.getIdByHost(host)
     }
 
     this.setState({sendingMessage: true}, async () => {
       const {context} = this.context
-      const {sensitive, token, me, members} = this.state
+      const {token, me, members} = this.props
+      const {sensitive} = this.state
 
       try {
         // TODO: SendDirectMessageUseCase SendTalkUseCaseに名前を変える?
@@ -335,18 +265,27 @@ export default class TalkColumn extends Column {
   }
 
   // cb
-  onChangeTalk() {
-    const {me, members, talk} = this.listener
 
-    this.setState({
-      me,
-      members,
-      talk,
-      loading: this.listener.isLoading(),
-    })
+  onClickHeader() {
+    const {column, onClickHeader} = this.props
+    const node = findDOMNode(this)
+    const scrollNode = findDOMNode(this.refs.talkGroups)
+
+    if(node instanceof HTMLElement) {
+      if(scrollNode && scrollNode instanceof HTMLElement) {
+        onClickHeader(column, node, scrollNode)
+      } else {
+        onClickHeader(column, node, undefined)
+      }
+    }
   }
 
-  onScrollTalkGroups(e) {
+  onClickMenuButton(e: SyntheticEvent) {
+    e.stopPropagation()
+    this.setState({isMenuVisible: !this.state.isMenuVisible})
+  }
+
+  onScrollTalkGroups(e: SyntheticEvent) {
     // コードから変更された場合は何もしない
     if(this.scrollChanging) {
       this.scrollChanging = false
@@ -354,19 +293,22 @@ export default class TalkColumn extends Column {
     }
 
     const node = e.target
-    const atBottom = node.scrollTop + node.clientHeight >= node.scrollHeight ? true : false
 
-    if(!atBottom && this.state.keepAtBottom)
-      this.setState({keepAtBottom: false})
-    else if(atBottom && !this.state.keepAtBottom)
-      this.setState({keepAtBottom: true})
+    if(node instanceof HTMLElement) {
+      const atBottom = node.scrollTop + node.clientHeight >= node.scrollHeight ? true : false
+
+      if(!atBottom && this.state.keepAtBottom)
+        this.setState({keepAtBottom: false})
+      else if(atBottom && !this.state.keepAtBottom)
+        this.setState({keepAtBottom: true})
+    }
   }
 
-  onChangeMessage(e) {
+  onChangeMessage(e: SyntheticInputEvent) {
     this.setState({newMessage: e.target.value})
   }
 
-  onChangeMediaFile(e) {
+  onChangeMediaFile(e: SyntheticInputEvent) {
     let files = Array.from(e.target.files)
 
     for(const file of files) {
@@ -374,10 +316,9 @@ export default class TalkColumn extends Column {
     }
 
     this.setState(update(this.state, {mediaFiles: {$push: files}}))
-    e.target.value = null
   }
 
-  onRemoveMediaFile(file) {
+  onRemoveMediaFile(file: File) {
     const idx = this.state.mediaFiles.indexOf(file)
     if(idx >= 0) {
       const newState = update(this.state, {mediaFiles: {$splice: [[idx, 1]]}})
@@ -394,8 +335,8 @@ export default class TalkColumn extends Column {
     })
   }
 
-  onKeyDownMessage(e) {
-    require('assert')(!this.state.loading)
+  onKeyDownMessage(e: SyntheticKeyboardEvent) {
+    require('assert')(!this.props.isLoading)
 
     if((e.ctrlKey || e.metaKey) && e.keyCode == KEY_ENTER) {
       e.preventDefault()
@@ -403,14 +344,23 @@ export default class TalkColumn extends Column {
     }
   }
 
-  onClickHashTag(tag, e) {
+  onClickHashTag(tag: string, e: SyntheticEvent) {
     e.preventDefault()
-    this.actionDelegate.onClickHashTag(tag)
+    this.props.onClickHashTag(tag)
   }
 
-  onClickMedia(mediaFiles, idx, e) {
+  onClickMedia(e: SyntheticEvent, mediaFiles: List<Attachment>, idx: number) {
     e.preventDefault()
-    this.actionDelegate.onClickMedia(mediaFiles, idx)
+    this.props.onClickMedia(mediaFiles, idx)
   }
 }
-require('./').registerColumn(COLUMN_TALK, TalkColumn)
+
+export default flow(
+  DragSource(DRAG_SOURCE_COLUMN, columnDragSource, (connect, monitor) => ({  // eslint-disable-line new-cap
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
+  })),
+  DropTarget(DRAG_SOURCE_COLUMN, columnDragTarget, (connect) => ({  // eslint-disable-line new-cap
+    connectDropTarget: connect.dropTarget(),
+  }))
+)(TalkColumn)

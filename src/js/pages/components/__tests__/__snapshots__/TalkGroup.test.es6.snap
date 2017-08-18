@@ -1,0 +1,115 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TalkGroup member's talk member's talk as last TalkBlock match snapshot 1`] = `
+<div
+  className="talk-talkGroup is-member"
+>
+  <div
+    className="talk-speakerName"
+  >
+    glpt@friends.nico
+  </div>
+  <div
+    className="talk-speakerAvatar"
+  >
+    <UserIconWithHost
+      account={
+        Object {
+          "acct": "glpt@friends.nico",
+          "avatar": "/avatars/original/missing.png",
+          "avatar_static": "/avatars/original/missing.png",
+          "created_at": "2017-05-15T08:06:48.470Z",
+          "display_name": "",
+          "followers_count": 6,
+          "following_count": 3,
+          "header": "/headers/original/missing.png",
+          "header_static": "/headers/original/missing.png",
+          "id_by_host": Object {
+            "friends.nico": 111166,
+          },
+          "locked": false,
+          "note": "<p></p>",
+          "statuses_count": 111,
+          "url": "https://friends.nico/@glpt",
+          "username": "glpt",
+        }
+      }
+    />
+  </div>
+  <ul
+    className="talk-talkGroupStatuses"
+  >
+    <TalkBubble
+      createdAt={2017-07-28T09:04:53.204Z}
+      onClickHashTag={[Function]}
+      parsedContent={
+        Array [
+          Object {
+            "tag": "naumanni",
+            "type": "hashtag",
+            "url": "https://friends.nico/tags/naumanni",
+          },
+        ]
+      }
+    />
+  </ul>
+</div>
+`;
+
+exports[`TalkGroup member's talk member's talk as new TalkBlock match snapshot 1`] = `
+<div
+  className="talk-talkGroup is-me"
+>
+  <ul
+    className="talk-talkGroupStatuses"
+  >
+    <TalkBubble
+      createdAt={2017-05-24T08:03:14.000Z}
+      onClickHashTag={[Function]}
+      parsedContent={
+        Array [
+          Object {
+            "text": " hi",
+            "type": "text",
+          },
+        ]
+      }
+    />
+    <TalkBubble
+      createdAt={2017-07-20T07:32:14.000Z}
+      onClickHashTag={[Function]}
+      parsedContent={
+        Array [
+          Object {
+            "text": " hello",
+            "type": "text",
+          },
+        ]
+      }
+    />
+  </ul>
+</div>
+`;
+
+exports[`TalkGroup own talk match snapshot 1`] = `
+<div
+  className="talk-talkGroup is-me"
+>
+  <ul
+    className="talk-talkGroupStatuses"
+  >
+    <TalkBubble
+      createdAt={2017-05-24T08:02:12.793Z}
+      onClickHashTag={[Function]}
+      parsedContent={
+        Array [
+          Object {
+            "text": " hello",
+            "type": "text",
+          },
+        ]
+      }
+    />
+  </ul>
+</div>
+`;

@@ -22,6 +22,8 @@ export default class ColumnState {
       return this.onColumnRemoveRequested(payload.column)
     case actions.COLUMN_REPLACE_REQUESTED:
       return this.onColumnReplaceRequested(payload.target, payload.column)
+    case actions.COLUMN_SWAP_REQUESTED:
+      return this.onColumnSwapRequested(payload.from, payload.to)
     default:
       return this
     }
@@ -56,6 +58,12 @@ export default class ColumnState {
 
     const newcolumns = [...this.columns]
     newcolumns.splice(idx, 1, column)
+    return new ColumnState(newcolumns)
+  }
+
+  onColumnSwapRequested(from, to) {
+    const newcolumns = [...this.columns]
+    newcolumns[from] = newcolumns.splice(to, 1, newcolumns[from])[0]
     return new ColumnState(newcolumns)
   }
 

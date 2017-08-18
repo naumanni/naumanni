@@ -115,7 +115,7 @@ class EncryptedStatus {
 }
 
 
-class TalkBlock {
+export class TalkBlock {
   constructor(lastStatus, account) {
     this.statuses = [lastStatus]
     this.account = account
