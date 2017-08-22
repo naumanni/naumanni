@@ -49,9 +49,11 @@ async function loadPlugin(pluginId, module) {
   const {default: initializer} = module
   const api = new PluginAPI()
 
+  const uiColumns = require('naumanni/pages/uiColumns').getColumnClasses()
   const uiComponents = require('naumanni/pages/uiComponents')
   return initializer({
     api,
+    uiColumns,
     uiComponents,
   })
 }

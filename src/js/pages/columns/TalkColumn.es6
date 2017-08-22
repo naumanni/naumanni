@@ -6,22 +6,20 @@ import {List} from 'immutable'
 import {FormattedMessage as _FM} from 'react-intl'
 import classNames from 'classnames'
 import {intlShape} from 'react-intl'
-import {DragSource, DropTarget} from 'react-dnd'
-import flow from 'lodash.flow'
 
 import {ContextPropType} from 'src/propTypes'
 import {
-  COLUMN_TAG,
-  DRAG_SOURCE_COLUMN,
-  SUBJECT_MIXED, COLUMN_TALK, NOTIFICATION_TYPE_MENTION, VISIBLITY_DIRECT,
-  KEY_ENTER} from 'src/constants'
+  COLUMN_TALK,
+  SUBJECT_MIXED,
+  KEY_ENTER,
+} from 'src/constants'
 import {Account, Attachment} from 'src/models'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import {TalkBlock} from 'src/controllers/TalkListener'
 import TalkGroup, {TalkGroupModel} from 'src/pages/components/TalkGroup'
 import TalkForm from 'src/pages/components/TalkForm'
 import {ColumnHeader, ColumnHeaderMenu, NowLoading} from '../parts'
-import {columnDragSource, columnDragTarget} from './'
+import {registerColumn} from 'src/pages/uiColumns'
 import type {ColumnProps} from './types'
 
 
@@ -45,7 +43,7 @@ type State = {
 /**
  * タイムラインのカラム
  */
-class TalkColumn extends React.Component {
+export default class TalkColumn extends React.Component {
   props: Props
   state: State
 
@@ -355,12 +353,4 @@ class TalkColumn extends React.Component {
   }
 }
 
-export default flow(
-  DragSource(DRAG_SOURCE_COLUMN, columnDragSource, (connect, monitor) => ({  // eslint-disable-line new-cap
-    connectDragSource: connect.dragSource(),
-    isDragging: monitor.isDragging(),
-  })),
-  DropTarget(DRAG_SOURCE_COLUMN, columnDragTarget, (connect) => ({  // eslint-disable-line new-cap
-    connectDropTarget: connect.dropTarget(),
-  }))
-)(TalkColumn)
+registerColumn(COLUMN_TALK, TalkColumn)

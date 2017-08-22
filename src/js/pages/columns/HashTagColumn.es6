@@ -4,16 +4,12 @@ import {findDOMNode} from 'react-dom'
 import {intlShape} from 'react-intl'
 import classNames from 'classnames'
 import Toggle from 'react-toggle'
-import {DragSource, DropTarget} from 'react-dnd'
 import {FormattedMessage as _FM} from 'react-intl'
-import flow from 'lodash.flow'
 
 import {ContextPropType} from 'src/propTypes'
 import {
   COLUMN_TAG,
-  DRAG_SOURCE_COLUMN,
   SUBJECT_MIXED,
-  STREAM_TAG,
   TIMELINE_FILTER_BOOST, TIMELINE_FILTER_REPLY,
 } from 'src/constants'
 import {StatusRef} from 'src/infra/TimelineData'
@@ -21,7 +17,7 @@ import ReplaceColumnUseCase from 'src/usecases/ReplaceColumnUseCase'
 import {ColumnHeader, ColumnHeaderMenu, NowLoading, UserIconWithHost} from 'src/pages/parts'
 import {Account} from 'src/models'
 import PagingColumnContent from 'src/pages/components/PagingColumnContent'
-import {columnDragSource, columnDragTarget} from './'
+import {registerColumn} from 'src/pages/uiColumns'
 import type {TimelineColumnProps, TimelineFilter} from './types'
 
 
@@ -45,7 +41,7 @@ type State = {
 /**
  * Hashtag Column
  */
-class HashTagColumn extends React.Component {
+export default class HashTagColumn extends React.Component {
   static contextTypes = {
     context: ContextPropType,
     intl: intlShape,
@@ -276,12 +272,4 @@ class HashTagColumn extends React.Component {
   }
 }
 
-export default flow(
-  DragSource(DRAG_SOURCE_COLUMN, columnDragSource, (connect, monitor) => ({  // eslint-disable-line new-cap
-    connectDragSource: connect.dragSource(),
-    isDragging: monitor.isDragging(),
-  })),
-  DropTarget(DRAG_SOURCE_COLUMN, columnDragTarget, (connect) => ({  // eslint-disable-line new-cap
-    connectDropTarget: connect.dropTarget(),
-  }))
-)(HashTagColumn)
+registerColumn(COLUMN_TAG, HashTagColumn)
