@@ -6,7 +6,7 @@ import {NotificationRef, StatusRef} from 'src/infra/TimelineData'
 import {OAuthToken, UIColumn} from 'src/models'
 
 
-export type ColumnFactoryFunction = (column: UIColumn) => React.Element<any>
+export type ColumnPropsFactoryFunction = (column: UIColumn) => {[props_key: string]: any}
 
 export type DraggableColumnProps = {
   connectDragSource: Function,

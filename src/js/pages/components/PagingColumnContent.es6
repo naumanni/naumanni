@@ -23,6 +23,7 @@ type Props = {
   onLockedPaging: () => void,
   onScrollNodeLoaded: (HTMLElement) => void,
   onUnlockedPaging: () => void,
+  options?: {[string]: any},
 }
 
 
@@ -84,6 +85,7 @@ export default class PagingColumnContent extends React.PureComponent {
       />
     } else {
       const {filterRegex} = this.props
+      const {options} = this.props || {}
 
       if(filterRegex != null && filterRegex.trim().length > 0) {
         const regex = new RegExp(filterRegex.trim(), 'i')
@@ -99,6 +101,7 @@ export default class PagingColumnContent extends React.PureComponent {
         onLockStatus={() => this.scrollLockCounter.increment()}
         {...ref.expand()}
         {...this.actionDelegate.props}
+        {...options}
       />
     }
 

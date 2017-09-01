@@ -3,12 +3,9 @@ import React from 'react'
 import {findDOMNode} from 'react-dom'
 import {FormattedMessage as _FM} from 'react-intl'
 import {intlShape} from 'react-intl'
-import {DragSource, DropTarget} from 'react-dnd'
-import flow from 'lodash.flow'
 
 import {AppPropType, ContextPropType} from 'src/propTypes'
 import {
-  DRAG_SOURCE_COLUMN,
   COLUMN_FRIENDS, COLUMN_TALK,
   SUBJECT_MIXED,
 } from 'src/constants'
@@ -19,7 +16,7 @@ import AccountRow from '../components/AccountRow'
 import {fuzzy_match as fuzzyMatch} from 'src/libs/fts_fuzzy_match'
 import {ColumnHeader, ColumnHeaderMenu, NowLoading} from '../parts'
 import FriendsListener, {UIFriend} from 'src/controllers/FriendsListener'
-import {columnDragSource, columnDragTarget} from 'src/pages/columns'
+import {registerColumn} from 'src/pages/uiColumns'
 import type {ColumnProps} from './types'
 
 
@@ -37,7 +34,7 @@ type State = {
 /**
  * タイムラインのカラム
  */
-class FriendsColumn extends React.Component {
+export default class FriendsColumn extends React.Component {
   static contextTypes = {
     app: AppPropType,
     context: ContextPropType,
@@ -238,12 +235,4 @@ class FriendsColumn extends React.Component {
   }
 }
 
-export default flow(
-  DragSource(DRAG_SOURCE_COLUMN, columnDragSource, (connect, monitor) => ({  // eslint-disable-line new-cap
-    connectDragSource: connect.dragSource(),
-    isDragging: monitor.isDragging(),
-  })),
-  DropTarget(DRAG_SOURCE_COLUMN, columnDragTarget, (connect) => ({  // eslint-disable-line new-cap
-    connectDropTarget: connect.dropTarget(),
-  }))
-)(FriendsColumn)
+registerColumn(COLUMN_FRIENDS, FriendsColumn)
