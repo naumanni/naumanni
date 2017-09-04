@@ -13,6 +13,7 @@ import {
   SUBJECT_MIXED,
   KEY_ENTER,
 } from 'src/constants'
+import {StatusRef} from 'src/infra/TimelineData'
 import {Account, Attachment} from 'src/models'
 import SendDirectMessageUseCase from 'src/usecases/SendDirectMessageUseCase'
 import {TalkBlock} from 'src/controllers/TalkListener'
@@ -29,6 +30,7 @@ type Props = ColumnProps & {
   talk: ?TalkBlock[],
   onClickHashTag: (string) => void,
   onClickMedia: (mediaFiles: List<Attachment>, idx: number) => void,
+  onPushLocalStatus: (accountUri: string, message: string) => ?Function,
 }
 
 type State = {
@@ -55,6 +57,7 @@ export default class TalkColumn extends React.Component {
   mediaFileKeys: WeakMap<File, number>
   mediaFileCounter: number
   scrollChanging: boolean
+  textNode: ?HTMLInputElement
 
   /**
    * @constructor
@@ -190,6 +193,7 @@ export default class TalkColumn extends React.Component {
           onClickToggleNsfw={this.onClickToggleNsfw.bind(this)}
           onKeyDown={this.onKeyDownMessage.bind(this)}
           onRemoveMediaFile={this.onRemoveMediaFile.bind(this)}
+          onTextNodeLoaded={this.onTextNodeLoaded.bind(this)}
         />
       </div>
     )
@@ -215,13 +219,7 @@ export default class TalkColumn extends React.Component {
     this.mediaFileCounter = 0
   }
 
-  sendMessage() {
-    const message = this.state.newMessage.trim()
-    if(!message) {
-      // cannot send message
-      return
-    }
-
+  sendMessage(message: string) {
     // get latest status id
     const {talk, token: {host}} = this.props
     let lastStatusId = null
@@ -233,8 +231,13 @@ export default class TalkColumn extends React.Component {
 
     this.setState({sendingMessage: true}, async () => {
       const {context} = this.context
-      const {token, me, members} = this.props
+      const {token, me, members, onPushLocalStatus} = this.props
       const {sensitive} = this.state
+      let remover
+
+      if(me != null) {
+        remover = onPushLocalStatus(me.uri, message)
+      }
 
       try {
         // TODO: SendDirectMessageUseCase SendTalkUseCaseに名前を変える?
@@ -246,8 +249,10 @@ export default class TalkColumn extends React.Component {
           in_reply_to_id: lastStatusId,
           recipients: Object.values(members),
           sensitive,
+          onSendDirectMessageComplete: (postedStatuses: StatusRef[]) => {
+            remover && remover(postedStatuses)
+          },
         })
-
         this.setState({
           mediaFiles: [],
           newMessage: '',
@@ -338,8 +343,20 @@ export default class TalkColumn extends React.Component {
 
     if((e.ctrlKey || e.metaKey) && e.keyCode == KEY_ENTER) {
       e.preventDefault()
-      this.sendMessage()
+
+      const message = this.state.newMessage.trim()
+
+      if(this.state.sendingMessage || !message) {
+        return
+      }
+
+      this.clearMessage()
+      this.sendMessage(message)
     }
+  }
+
+  onTextNodeLoaded(el: HTMLInputElement) {
+    this.textNode = el
   }
 
   onClickHashTag(tag: string, e: SyntheticEvent) {
@@ -351,6 +368,14 @@ export default class TalkColumn extends React.Component {
     e.preventDefault()
     this.props.onClickMedia(mediaFiles, idx)
   }
-}
 
+  // private
+
+  clearMessage() {
+    if(this.textNode != null) {
+      this.textNode.value = ''
+    }
+    this.setState({newMessage: ''})
+  }
+}
 registerColumn(COLUMN_TALK, TalkColumn)

@@ -149,6 +149,8 @@ class ColumnContainer extends React.Component {
       onClickMedia: (...args) => this.actionDelegate.onClickMedia(...args),
       onSubscribeListener: () => TalkListenerManager.onSubscribeListener(token, column),
       onUnsubscribeListener: () => TalkListenerManager.onUnsubscribeListener(column),
+      onPushLocalStatus: TalkListenerManager.onPushLocalStatus.bind(
+        TalkListenerManager, column),
     }
 
     return props

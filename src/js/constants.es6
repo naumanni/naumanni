@@ -73,6 +73,11 @@ export const TOKEN_MENTION = 'mention'
 export const TOKEN_HASHTAG = 'hashtag'
 export const TOKEN_EMOJI = 'emoji'
 
+// Toot send status
+export const TOOT_SEND_SUCCESS = 'success'
+export const TOOT_SEND_SENDING = 'sending'
+export const TOOT_SEND_FAIL = 'fail'
+
 // 最下部からこの位置に来たら、AutoPagingを開始する
 export const AUTO_PAGING_MARGIN = 300
 

@@ -54,6 +54,7 @@ describe('SendDirectMessageUseCase', () => {
         self: mockSelf,
         message: TEST_TEXT,
         recipients: [mockRecipient],
+        onSendDirectMessageComplete: jest.fn(),
       })
 
     // このテスト文だと2回ぐらいコールされるはず
@@ -99,6 +100,7 @@ describe('SendDirectMessageUseCase', () => {
         self: mockSelf,
         message: TEST_TEXT,
         recipients: [mockRecipient],
+        onSendDirectMessageComplete: jest.fn(),
       })
 
     // このテスト文だと1回コールされるはず

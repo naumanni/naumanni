@@ -3,6 +3,7 @@ import {is, fromJS, List, Map, Record} from 'immutable'
 
 import {
   MESSAGE_TAG_REX,
+  TOOT_SEND_SUCCESS, TOOT_SEND_SENDING,
   VISIBLITY_DIRECT, VISIBLITY_PRIVATE, VISIBLITY_UNLISTED, VISIBLITY_PUBLIC,
 } from 'src/constants'
 import {compareDateForTL, emojify, parseMastodonHtml, parsedHtmlToText} from 'src/utils'
@@ -51,6 +52,7 @@ const StatusRecord = Record({  // eslint-disable-line new-cap
   // naumanni
   fetched_at: null,  // WebSocketから取得した日付
   extended: new Map(),  // pluginが追加する値
+  send_status: TOOT_SEND_SUCCESS,
 })
 
 const NOT_SET = {}
@@ -82,6 +84,20 @@ export default class Status extends StatusRecord {
 
     super(raw)
     this.isOriginal = isOriginal || false
+  }
+
+  static Local(account, content, visibility) {
+    const createdAt = moment().format()
+    const data = {
+      account,
+      content,
+      created_at: createdAt,
+      send_status: TOOT_SEND_SENDING,
+      uri: `naumanni-local:${createdAt}`,
+      visibility,
+    }
+
+    return new Status(data)
   }
 
   // とりあえず

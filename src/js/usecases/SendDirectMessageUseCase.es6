@@ -22,7 +22,8 @@ export default class SendDirectMessageUseCase extends UseCase {
    * @param {string} message
    * @param {Account[]} recipients
    */
-  async execute({token, self, message, mediaFiles, in_reply_to_id, recipients, sensitive}) {
+  async execute({token, self, message, mediaFiles, in_reply_to_id, recipients, sensitive,
+    onSendDirectMessageComplete}) {
     if(message.length >= MASTODON_MAX_CONTENT_SIZE) {
       // encryptedの場合分割して送るから、ContentSizeはもはや関係ないはずなんだけど...
       throw new Error('__TODO_ERROR_MESSAGE__')
@@ -58,6 +59,8 @@ export default class SendDirectMessageUseCase extends UseCase {
       postedStatuses = [(await this.sendPlainMessage(
         {token, self, message, mediaFiles, in_reply_to_id, recipients, sensitive}))]
     }
+
+    onSendDirectMessageComplete(postedStatuses)
 
     // TalkRecordを更新する
     const latestStatusId = postedStatuses
