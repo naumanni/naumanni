@@ -93,20 +93,26 @@ export default class TimelineColumn extends React.Component {
 
   render() {
     const {
+      isDragging, connectDragSource, connectDropTarget,
       isLoading,
     } = this.props
 
-    return (
-      <div className="column">
-        <ColumnHeader
-          canShowMenuContent={!isLoading}
-          isPrivate={true}
-          menuContent={this.renderMenuContent()}
-          title={this.renderTitle()}
-          onClickHeader={this.onClickHeader.bind(this)}
-          onClickMenu={this.onClickMenuButton.bind(this)}
-        />
+    const opacity = isDragging ? 0 : 1
 
+    return connectDropTarget(
+      <div className="column" style={{opacity}}>
+        {connectDragSource(
+          <div>
+            <ColumnHeader
+              canShowMenuContent={!isLoading}
+              isPrivate={true}
+              menuContent={this.renderMenuContent()}
+              title={this.renderTitle()}
+              onClickHeader={this.onClickHeader.bind(this)}
+              onClickMenu={this.onClickMenuButton.bind(this)}
+            />
+          </div>
+        )}
         {isLoading
           ? <div className="column-body is-loading"><NowLoading /></div>
           : this.renderBody()
