@@ -1,4 +1,4 @@
-# Naumanni
+﻿# Naumanni
 [![CircleCI](https://circleci.com/gh/naumanni/naumanni/tree/master.svg?style=svg)](https://circleci.com/gh/naumanni/naumanni/tree/master)
 [![Test Coverage](https://codeclimate.com/github/naumanni/naumanni/badges/coverage.svg)](https://codeclimate.com/github/naumanni/naumanni/coverage)😢
 
@@ -59,6 +59,22 @@ $ docker run -it -p 8080:80 naumanni/naumanni-standalone
 # Setup for Developer
 
 ## Development
+
+### Edit and create config files
+
+for Welcome Screen:
+```
+$ pwd
+/path/to/naumanni
+$ cp config.es6.in config.es6
+$ vi config.es6
+```
+
+for Plugin:
+```
+$ cp plugin_entries.ci.es6 plugin_entries.es6
+$ touch plugin_entries.css
+```
 
 ### Build project
 
