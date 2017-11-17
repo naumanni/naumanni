@@ -65,6 +65,23 @@ $ brew install yarn
 
 ## Development
 
+### Edit and create config files
+
+for Welcome Screen:
+```
+$ pwd
+/path/to/naumanni
+$ cp config.es6.in config.es6
+$ vi config.es6
+```
+
+for Plugin:
+```
+$ cp plugin_entries.ci.es6 plugin_entries.es6
+$ touch plugin_entries.css
+```
+
+
 ### Build project
 
 ```
