@@ -59,7 +59,6 @@ export default class Dashboard extends React.Component {
 
     this.listenerRemovers = [
       context.onChange(::this.onConetextChanged),
-      context.onDispatch(::this.onContextDispatch),
     ]
 
     const {intlProvider} = this.refs
@@ -189,17 +188,6 @@ export default class Dashboard extends React.Component {
     })
 
     this.onLocaleUpdated()
-  }
-
-  onContextDispatch(payload) {
-    switch(payload.type) {
-    case actions.COLUMN_ADD_REQUESTED: {
-        // カラムが追加されたらそこにFocusする
-      const {column} = payload
-      this.refs.columnContainer.scrollToColumn(column.key)
-      break
-    }
-    }
   }
 
   /**
