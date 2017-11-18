@@ -5,6 +5,7 @@ import {Map} from 'immutable'
 import {DragDropContext} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
+import * as actions from 'src/actions'
 import {COLUMN_FRIENDS, COLUMN_NOTIFICATIONS, COLUMN_TAG, COLUMN_TALK, COLUMN_TIMELINE} from 'src/constants'
 import {ContextPropType} from 'src/propTypes'
 import {UIColumn} from 'src/models'
@@ -65,6 +66,7 @@ class ColumnContainer extends React.Component {
 
     this.listenerRemovers.push(
       context.onChange(this.onChangeContext.bind(this)),
+      context.onDispatch(this.onContextDispatch.bind(this)),
       FriendsListenerManager.onChange(this.onChangeFriends.bind(this)),
       TalkListenerManager.onChange(this.onChangeTalk.bind(this)),
       TimelineListenerManager.onChange(this.onChangeTimeline.bind(this)),
@@ -236,6 +238,17 @@ class ColumnContainer extends React.Component {
       })
 
     TimelineListenerManager.updateTokens(tokenState.tokens)
+  }
+
+  onContextDispatch(payload) {
+    switch(payload.type) {
+    case actions.COLUMN_ADD_REQUESTED: {
+        // カラムが追加されたらそこにFocusする
+      const {column} = payload
+      this.scrollToColumn(column.key)
+      break
+    }
+    }
   }
 
   onClickColumnHeader(column: UIColumn, columnNode: HTMLElement, columnScrollNode: ?HTMLElement) {
