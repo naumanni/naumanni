@@ -2,7 +2,6 @@ import moment from 'moment'
 import React from 'react'
 import {IntlProvider, addLocaleData, intlShape} from 'react-intl'
 
-import * as actions from 'src/actions'
 import {NAUMANNI_VERSION} from 'src/constants'
 import config from 'src/config'
 import {AppPropType, ContextPropType} from 'src/propTypes'
