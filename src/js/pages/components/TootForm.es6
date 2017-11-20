@@ -10,7 +10,8 @@ import {
   KEY_ENTER, KEY_ESC,
 } from 'src/constants'
 import {OAuthTokenListPropType} from 'src/propTypes'
-import {IconFont, UserIconWithHost} from 'src/pages/parts'
+import TootProgress from 'src/utils/TootProgress'
+import {IconFont, TootProgressBar, UserIconWithHost} from 'src/pages/parts'
 import MediaFileThumbnail from 'src/pages/parts/MediaFileThumbnail'
 import AutoSuggestTextarea from './AutoSuggestTextarea'
 
@@ -54,6 +55,8 @@ export default class TootForm extends React.Component {
       isSending: false,
       mediaFiles: [],
       messageTo: '',
+      progress: 0,
+      progressStatus: '',
       sendFrom: initialSendFrom != null ? initialSendFrom : [tokens.get(0).acct],
       showContentsWarning: false,
       spoilerTextContent: '',
@@ -63,6 +66,14 @@ export default class TootForm extends React.Component {
     }
     this.mediaFileKeys = new WeakMap()
     this.mediaFileCounter = 0
+    this.listenerRemovers = []
+  }
+
+  /**
+   * @override
+   */
+  componentWillUnmount() {
+    this.listenerRemovers.forEach((remover) => remover())
   }
 
   /**
@@ -73,7 +84,8 @@ export default class TootForm extends React.Component {
     const {maxContentLength, tokens} = this.props
     let {error} = this.state
     const {
-      showContentsWarning, sendFrom, statusContent, spoilerTextContent, visibility, mediaFiles, sensitive,
+      isSending, mediaFiles, progress, progressStatus,
+      sendFrom, sensitive, showContentsWarning, spoilerTextContent, statusContent, visibility,
     } = this.state
 
     if(mediaFiles.length > MAX_MEDIA_FILES)
@@ -181,6 +193,7 @@ export default class TootForm extends React.Component {
         </ul>
 
         <div className="tootForm-send">
+          {isSending && <TootProgressBar progress={progress} statusText={progressStatus} />}
           <span className="tootForm-charCount">{maxContentLength - this.charactersCount}</span>
           <button
             className="button button--primary"
@@ -301,7 +314,7 @@ export default class TootForm extends React.Component {
     e.preventDefault()
 
     const {
-      statusContent, showContentsWarning, spoilerTextContent, visibility, sensitive,
+      mediaFiles, statusContent, showContentsWarning, spoilerTextContent, visibility, sensitive,
     } = this.state
     const message = {
       status: statusContent.trim(),
@@ -309,19 +322,36 @@ export default class TootForm extends React.Component {
       visibility,
       sensitive,
     }
+    const messageContent = {
+      mediaFiles,
+      message,
+    }
+    this.tootProgress = new TootProgress(this.context, this.sendFromTokens, mediaFiles)
+    this.listenerRemovers.push(this.tootProgress.onChange(::this.onChangeProgress))
 
     this.setState({isSending: true, error: null}, () => {
-      this.props.onSend(this.sendFromTokens, {
-        mediaFiles: this.state.mediaFiles,
-        message,
-      })
+      this.props.onSend(
+        this.sendFromTokens,
+        messageContent,
+        this.tootProgress,
+      )
         .then(() => {
           // 送信成功したら閉じる
           this.setState({isSending: false})
+          this.tootProgress.clean()
           this.props.onClose()
         }, (error) => {
           this.setState({isSending: false, error: '' + error})
         })
+    })
+  }
+
+  onChangeProgress() {
+    const {progress, status: progressStatus} = this.tootProgress
+
+    this.setState({
+      progress,
+      progressStatus,
     })
   }
 

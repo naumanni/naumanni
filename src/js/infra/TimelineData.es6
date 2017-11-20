@@ -321,21 +321,24 @@ export default _TimelineData
 
 
 // TODO TimelineActionsに移す
-export async function postStatusManaged(token, {mediaFiles, message}) {
-  const {requester} = token
+export async function postStatusManaged(token, {mediaFiles, message}, tootProgress) {
+  const {acct, requester} = token
 
   if(mediaFiles && mediaFiles.length > 0) {
     const mediaFileResponses = await Promise.all(
       mediaFiles.map((file) => {
-        return requester.createMedia({file}, {onprogress: (e) => {
-          console.log('upload', e.percent)
-        }})
+        return requester.createMedia({file}, {
+          onprogress: ({percent}) => percent && tootProgress.updateMediaProgress(acct, file, percent),
+        })
       })
     )
     message.media_ids = mediaFileResponses.map((a) => a.result.id)
   }
   message.status = shortnameToUnicode(message.status)
 
-  const {entities, result} = await requester.postStatus(message, {token})
+  const {entities, result} = await requester.postStatus(message, {
+    token,
+    onprogress: ({percent}) => percent && tootProgress.updatePostProgress(percent),
+  })
   return _TimelineData.mergeStatuses(entities, [result])[0]
 }

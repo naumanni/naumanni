@@ -15,3 +15,4 @@ ratings:
     - "**.js"
 exclude_paths:
   - raw/
+  - flow-typed/

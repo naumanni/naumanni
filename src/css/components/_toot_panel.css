@@ -215,6 +215,15 @@
     text-align: right;
   }
 
+  .tootForm-progress {
+    float: left;
+    width: 40%;
+  }
+
+  .tootForm-progressStatus {
+    float: left;
+  }
+
   .tootForm-charCount {
     margin-right: 1ex;
   }
