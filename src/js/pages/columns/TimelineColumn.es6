@@ -177,6 +177,7 @@ export default class TimelineColumn extends React.Component {
 
     return [
       <ColumnFilterText
+        key={TIMELINE_FILTER_REGEX}
         onChange={this.onChangeFilterRegex.bind(this)}
         placeholder={formatMessage({id: 'column.menu.filter_regex'})}
         value={filterRegex}
