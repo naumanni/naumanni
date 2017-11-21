@@ -86,23 +86,27 @@ export default class FriendsColumn extends React.Component {
 
     const opacity = isDragging ? 0 : 1
 
-    return connectDragSource(connectDropTarget(
+    return connectDropTarget(
       <div className="column" style={{opacity}}>
-        <ColumnHeader
-          canShowMenuContent={!isLoading}
-          isPrivate={true}
-          menuContent={this.renderMenuContent()}
-          title={this.renderTitle()}
-          onClickHeader={this.onClickHeader.bind(this)}
-          onClickMenu={this.onClickMenuButton.bind(this)}
-        />
+        {connectDragSource(
+          <div>
+            <ColumnHeader
+              canShowMenuContent={!isLoading}
+              isPrivate={true}
+              menuContent={this.renderMenuContent()}
+              title={this.renderTitle()}
+              onClickHeader={this.onClickHeader.bind(this)}
+              onClickMenu={this.onClickMenuButton.bind(this)}
+            />
+          </div>
+        )}
 
         {isLoading
           ? <div className="column-body is-loading"><NowLoading /></div>
           : this.renderBody()
         }
       </div>
-    ))
+    )
   }
 
   renderTitle() {
