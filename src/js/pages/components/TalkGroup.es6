@@ -85,13 +85,15 @@ export default class TalkGroup extends React.PureComponent {
           </div>
         )}
         <ul className="talk-talkGroupStatuses">
-          {talkGroup.contents.map(({key, mediaFiles, parsedContent, createdAt, encrypted}) => (
+          {talkGroup.contents.map(({key, mediaFiles, parsedContent, createdAt, encrypted, sendStatus}) => (
             <TalkBubble
               key={key}
               createdAt={createdAt.toDate()}
               isEncrypted={encrypted}
+              isMyTalk={isMyTalk}
               mediaFiles={mediaFiles}
               parsedContent={parsedContent}
+              sendStatus={sendStatus}
               onClickHashTag={onClickHashTag}
               onClickMedia={onClickMedia}
             />

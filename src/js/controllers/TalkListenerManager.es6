@@ -1,6 +1,9 @@
 /* @flow */
-import {COLUMN_TALK} from 'src/constants'
-import {Account, OAuthToken, UIColumn} from 'src/models'
+import {
+  COLUMN_TALK,
+  VISIBLITY_DIRECT,
+} from 'src/constants'
+import {Account, OAuthToken, Status, UIColumn} from 'src/models'
 import ChangeEventEmitter from 'src/utils/EventEmitter'
 import TalkListener, {TalkBlock} from './TalkListener'
 
@@ -100,6 +103,21 @@ class TalkListenerManager extends ChangeEventEmitter {
 
   onChangeTalk(columnKey: string) {
     this.emitChange(columnKey)
+  }
+
+  onPushLocalStatus(column: UIColumn, accountUri: string, message: string): ?Function {
+    const listener = this.listeners.get(column.key)
+
+    if(listener != null) {
+      const status = new Status.Local(accountUri, message, VISIBLITY_DIRECT)
+
+      listener.pushLocalStatus(status)
+
+      const replacer = listener.replaceLocalStatus.bind(listener, status.uri)
+
+      return replacer
+    }
+    return null
   }
 }
 

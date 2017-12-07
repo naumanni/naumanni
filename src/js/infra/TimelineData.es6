@@ -25,6 +25,19 @@ export class TimelineData extends EventEmitter {
     this.timelines = new Set()
   }
 
+ /**
+   * Statusをプッシュして、TimelineDataを更新し、リファレンスだけ返す
+   * @param {Status} status
+   * @return {StatusRef}
+   */
+  pushStatus(status) {
+    const {uri} = status
+
+    this.statuses.set(uri, status)
+    this.increment([uri])
+    return new StatusRef(this, uri)
+  }
+
   /**
    * Statusをマージして、TimelineDataを更新し、リファレンスだけ返す
    * @param {object} entities

@@ -41,6 +41,7 @@ exports[`TalkGroup member's talk member's talk as last TalkBlock match snapshot 
   >
     <TalkBubble
       createdAt={2017-07-28T09:04:53.204Z}
+      isMyTalk={false}
       onClickHashTag={[Function]}
       parsedContent={
         Array [
@@ -65,6 +66,7 @@ exports[`TalkGroup member's talk member's talk as new TalkBlock match snapshot 1
   >
     <TalkBubble
       createdAt={2017-05-24T08:03:14.000Z}
+      isMyTalk={true}
       onClickHashTag={[Function]}
       parsedContent={
         Array [
@@ -77,6 +79,7 @@ exports[`TalkGroup member's talk member's talk as new TalkBlock match snapshot 1
     />
     <TalkBubble
       createdAt={2017-07-20T07:32:14.000Z}
+      isMyTalk={true}
       onClickHashTag={[Function]}
       parsedContent={
         Array [
@@ -100,6 +103,7 @@ exports[`TalkGroup own talk match snapshot 1`] = `
   >
     <TalkBubble
       createdAt={2017-05-24T08:02:12.793Z}
+      isMyTalk={true}
       onClickHashTag={[Function]}
       parsedContent={
         Array [

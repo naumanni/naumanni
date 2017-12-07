@@ -241,6 +241,10 @@
       .status-isEncrypted {
         order: 2;
       }
+      .status-sendStatus {
+        order: 4;
+        align-self: flex-end;
+      }
     }
   }
 
